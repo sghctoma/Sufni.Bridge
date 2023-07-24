@@ -2,7 +2,6 @@
 using Android.Content.PM;
 using Avalonia;
 using Avalonia.Android;
-using Avalonia.ReactiveUI;
 
 namespace Sufni.Bridge.Android
 {
@@ -17,8 +16,7 @@ namespace Sufni.Bridge.Android
         protected override AppBuilder CustomizeAppBuilder(AppBuilder builder)
         {
             return base.CustomizeAppBuilder(builder)
-                .WithInterFont()
-                .UseReactiveUI();
+                .WithInterFont();
         }
     }
 }

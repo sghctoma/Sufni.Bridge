@@ -11,5 +11,6 @@
 
     <Application.Styles>
         <FluentTheme />
+        <StyleInclude Source="/Views/SessionWidget.axaml"></StyleInclude>
     </Application.Styles>
 </Application>

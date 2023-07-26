@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 using SecureStorageDictionary = System.Collections.Concurrent.ConcurrentDictionary<string, byte[]>;
 
@@ -75,6 +76,18 @@ public class SecureStorage : ISecureStorage
             value, AdditionalEntropy, DataProtectionScope.CurrentUser);
     }
 
+    public string? GetString(string key)
+    {
+        if (!_secureStorage.TryGetValue(key, out var value))
+        {
+            return null;
+        }
+
+        var data = ProtectedData.Unprotect(
+            value, AdditionalEntropy, DataProtectionScope.CurrentUser);
+        return Encoding.UTF8.GetString(data);
+    }
+
     public void Set(string key, byte[]? value)
     {
         if (value is null)
@@ -85,6 +98,22 @@ public class SecureStorage : ISecureStorage
         {
             _secureStorage[key] = ProtectedData.Protect(
                 value, AdditionalEntropy, DataProtectionScope.CurrentUser);
+        }
+
+        Save();
+    }
+
+    public void SetString(string key, string? value)
+    {
+        if (value is null)
+        {
+            _secureStorage.TryRemove(key, out _);
+        }
+        else
+        {
+            var data = Encoding.UTF8.GetBytes(s: value);
+            _secureStorage[key] = ProtectedData.Protect(
+                data, AdditionalEntropy, DataProtectionScope.CurrentUser);
         }
 
         Save();

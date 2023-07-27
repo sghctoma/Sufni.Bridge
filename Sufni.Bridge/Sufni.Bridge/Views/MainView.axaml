@@ -30,9 +30,21 @@
     <Button Grid.Row="1" Grid.Column="0" Margin="5">
       <Button.Flyout>
         <Flyout>
-          <controls:RegisterView
-              Width="200"
-              ZIndex="10" />
+          <StackPanel Orientation="Vertical" Width="200">
+            <StackPanel.Styles>
+              <Style Selector="TextBox">
+                <Setter Property="Margin" Value="5" />
+              </Style>
+            </StackPanel.Styles>
+            <TextBox Watermark="API server" IsEnabled="{Binding !IsRegistered}" Text="{Binding ServerUrl}" />
+            <TextBox Watermark="Username" IsEnabled="{Binding !IsRegistered}" Text="{Binding Username}"/>
+            <TextBox Watermark="Password" IsEnabled="{Binding !IsRegistered}" PasswordChar="*" Text="{Binding Password}" />
+            <Button Margin="5"
+                    HorizontalContentAlignment="Center"
+                    HorizontalAlignment="Stretch"
+                    Content="{Binding RegisterLabel}"
+                    Command="{Binding DoRegisterCommand}" />
+          </StackPanel>
         </Flyout>
       </Button.Flyout>
       <Image Source="{SvgImage /Assets/gear_icon.svg}" />

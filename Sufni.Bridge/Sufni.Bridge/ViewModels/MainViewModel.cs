@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using SecureStorage;
 using Sufni.Bridge.Models;
 using Sufni.Bridge.Services;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -29,7 +30,10 @@ public partial class MainViewModel : ViewModelBase
     private string? password;
 
     [ObservableProperty]
-    public bool isRegistered;
+    private bool isRegistered;
+
+    [ObservableProperty]
+    private string? registrationError;
 
     private ISecureStorage _secureStorage;
     private IHttpApiService _httpApiService;
@@ -72,32 +76,44 @@ public partial class MainViewModel : ViewModelBase
         RegisterLabel = "Unregister";
     }
 
-    [RelayCommand]
-    private async Task DoRegister()
+    private async Task register()
     {
-        if (IsRegistered)
-        {
-            var refreshToken = _secureStorage.GetString("RefreshToken");
-            await _httpApiService.Unregister(refreshToken!);
-            _secureStorage.Remove("Username");
-            _secureStorage.Remove("ServerUrl");
-            _secureStorage.Remove("RefreshToken");
-            Username = null;
-            ServerUrl = null;
-            Password = null;
-            IsRegistered = false;
-            RegisterLabel = "Register";
-        }
-        else
-        {
-            if (string.IsNullOrEmpty(ServerUrl) || string.IsNullOrEmpty(Username) || string.IsNullOrEmpty(Password)) return;
+        if (string.IsNullOrEmpty(ServerUrl) || string.IsNullOrEmpty(Username) || string.IsNullOrEmpty(Password)) return;
 
+        try
+        {
             var refreshToken = await _httpApiService.RegisterAsync(ServerUrl, Username, Password);
             _secureStorage.SetString("Username", Username);
             _secureStorage.SetString("ServerUrl", ServerUrl);
             _secureStorage.SetString("RefreshToken", refreshToken);
             IsRegistered = true;
             RegisterLabel = "Unregister";
+            RegistrationError = null;
         }
+        catch(Exception ex)
+        {
+            RegistrationError = $"Registration failed: {ex.Message}";
+        }
+    }
+
+    private async Task unregister()
+    {
+        var refreshToken = _secureStorage.GetString("RefreshToken");
+        await _httpApiService.Unregister(refreshToken!);
+        _secureStorage.Remove("Username");
+        _secureStorage.Remove("ServerUrl");
+        _secureStorage.Remove("RefreshToken");
+        Username = null;
+        ServerUrl = null;
+        Password = null;
+        IsRegistered = false;
+        RegisterLabel = "Register";
+    }
+
+    [RelayCommand]
+    private async Task RegisterUnregister()
+    {
+        if (IsRegistered) await unregister();
+        else await register();
     }
 }

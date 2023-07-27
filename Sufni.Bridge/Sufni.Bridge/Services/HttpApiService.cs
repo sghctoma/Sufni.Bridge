@@ -1,55 +1,55 @@
-﻿using System;
+﻿using Sufni.Bridge.Models;
+using System;
+using System.Diagnostics;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Text;
-using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
 namespace Sufni.Bridge.Services;
 
 internal class HttpApiService : IHttpApiService
 {
-    public string? ServerUrl
-    {
-        get
-        {
-            return _client.BaseAddress?.ToString();
-        }
-
-        set
-        {
-            if (value != null)
-            {
-                _client.BaseAddress = new Uri(value);
-            }
-        }
-    }
-
-    private string? _sessionToken;
+    private string? _serverUrl;
 
     private readonly HttpClient _client = new();
 
-    public async Task<bool> IsRegisteredAsync()
+    public async Task<string> InitAsync(string url, string refreshToken)
     {
-        if (_sessionToken == null || ServerUrl == null)
-        {
-            return false;
-        }
+        _serverUrl = url;
 
-        var response = await _client.GetAsync("/auth/user");
-        return response.StatusCode == System.Net.HttpStatusCode.OK;
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", refreshToken);
+        using HttpResponseMessage response = await _client.PostAsync($"{_serverUrl}/auth/refresh", null);
+
+        response.EnsureSuccessStatusCode();
+        var tokens = await response.Content.ReadFromJsonAsync<Tokens>();
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens!.AccessToken);
+        Debug.Assert(tokens != null);
+        Debug.Assert(tokens.AccessToken != null);
+        Debug.Assert(tokens.RefreshToken != null);
+        return tokens.RefreshToken;
     }
 
-    public async Task<JsonObject?> RegisterAsync(string url, string username, string password)
+    public async Task<string> RegisterAsync(string url, string username, string password)
     {
-        _client.BaseAddress = new Uri(url);
+        _serverUrl = url;
+        using HttpResponseMessage response = await _client.PostAsJsonAsync($"{_serverUrl}/auth/login",
+            new User(Username: username, Password: password));
 
-        var jsonObject = new JsonObject();
-        jsonObject["username"] = username;
-        jsonObject["password"] = password;
-        var content = new StringContent(jsonObject.ToString(), Encoding.UTF8, "application/json");
-        var response = await _client.PostAsync("/auth/login", content);
+        response.EnsureSuccessStatusCode();
+        var tokens = await response.Content.ReadFromJsonAsync<Tokens>();
+        Debug.Assert(tokens != null);
+        Debug.Assert(tokens.AccessToken != null);
+        Debug.Assert(tokens.RefreshToken != null);
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
+        return tokens.RefreshToken;
+    }
 
-        return await response.Content.ReadFromJsonAsync<JsonObject>();
+    public async Task Unregister(string refreshToken)
+    {
+        _ = await _client.DeleteAsync($"{_serverUrl}/auth/logout");
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", refreshToken);
+        _ = await _client.DeleteAsync($"{_serverUrl}/auth/logout");
+        _client.DefaultRequestHeaders.Authorization = null;
     }
 }

@@ -1,15 +1,12 @@
-﻿using Avalonia.Controls.Documents;
+﻿using Sufni.Bridge.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
 namespace Sufni.Bridge.Services;
 
 internal interface IHttpApiService
 { 
-    public Task<bool> IsRegisteredAsync();
-    public Task<JsonObject?> RegisterAsync(string url, string username, string password);
+    public Task<string> InitAsync(string url, string refreshToken);
+    public Task<string> RegisterAsync(string url, string username, string password);
+    public Task Unregister(string refreshToken);
 }

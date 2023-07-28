@@ -8,7 +8,7 @@ public class TelemetryDataStore
 {
     public string Name { get; set; }
     public DirectoryInfo Path { get; set; }
-    public List<TelemetrySession> Files { get; set; }
+    public List<TelemetryFile> Files { get; set; }
     public string BoardId { get; }
 
     public TelemetryDataStore(string name, DirectoryInfo path)
@@ -19,7 +19,7 @@ public class TelemetryDataStore
         BoardId = File.ReadAllText($"{Path.FullName}/.boardid");
 
         Files = Path.GetFiles("*.SST")
-            .Select(f => new TelemetrySession(f, BoardId))
+            .Select(f => new TelemetryFile(f, BoardId))
             .OrderBy(f => f.StartTime)
             .ToList();
     }

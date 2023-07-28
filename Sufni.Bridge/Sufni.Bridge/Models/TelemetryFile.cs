@@ -1,29 +1,35 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
 
 namespace Sufni.Bridge.Models;
 
-public class TelemetrySession
+public class TelemetryFile
 {
     public string FileName => _fileInfo.Name;
     public string FullName => _fileInfo.FullName;
+    public string BoardId { get; }
     public DateTime StartTime { get; }
     public string Name { get; set; } = "";
     public string Duration => _duration.ToString("hh\\:mm\\:ss");
     public bool ShouldBeImported { get; set; }
+    public string Data
+    {
+        get
+        {
+            return Convert.ToBase64String(File.ReadAllBytes(FullName));
+        }
+    }
 
     public string Description { get; set; } = "";
 
     private readonly FileInfo _fileInfo;
     private readonly TimeSpan _duration;
-    private readonly string _boardId;
 
-    public TelemetrySession(FileInfo fileInfo, string boardId)
+    public TelemetryFile(FileInfo fileInfo, string boardId)
     {
         _fileInfo = fileInfo;
-        _boardId = boardId;
+        BoardId = boardId;
 
         using var stream = File.Open(_fileInfo.FullName, FileMode.Open);
         using var reader = new BinaryReader(stream);
@@ -43,18 +49,5 @@ public class TelemetrySession
         reader.ReadUInt16(); // padding
 
         StartTime = DateTimeOffset.FromUnixTimeSeconds(reader.ReadInt64()).DateTime;
-    }
-
-    public string ToJson()
-    {
-        var session = new
-        {
-            name = Name,
-            description = Description,
-            board = _boardId,
-            data = Convert.ToBase64String(File.ReadAllBytes(FullName))
-        };
-
-        return JsonSerializer.Serialize<object>(session);
     }
 }

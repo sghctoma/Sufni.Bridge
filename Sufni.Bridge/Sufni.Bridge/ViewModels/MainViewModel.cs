@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace Sufni.Bridge.ViewModels;
 public partial class MainViewModel : ViewModelBase
 {
-    public ObservableCollection<TelemetrySession>? TelemetryFiles { get; set; }
+    public ObservableCollection<TelemetryFile> TelemetryFiles { get; }
 
     public string ImportLabel { get; } = "Import Selected";
 
@@ -37,33 +37,21 @@ public partial class MainViewModel : ViewModelBase
 
     private ISecureStorage _secureStorage;
     private IHttpApiService _httpApiService;
+    private ITelemetryFileService _telemetryFileService;
 
     public MainViewModel()
     {
         _secureStorage = this.GetServiceOrCreateInstance<ISecureStorage>();
         _httpApiService = this.GetServiceOrCreateInstance<IHttpApiService>();
+        _telemetryFileService = this.GetServiceOrCreateInstance<ITelemetryFileService>();
 
         ServerUrl = _secureStorage.GetString("ServerUrl");
         Username = _secureStorage.GetString("Username");
         var refreshToken = _secureStorage.GetString("RefreshToken");
         _ = RefreshTokensAsync(ServerUrl, refreshToken);
 
-        var drives = DriveInfo.GetDrives()
-            .Where(drive => drive is
-            {
-                IsReady: true,
-                DriveType: DriveType.Removable,
-                DriveFormat: "FAT32"
-            } && File.Exists($"{drive.RootDirectory}/.boardid"))
-            .Select(d => new TelemetryDataStore(d.VolumeLabel, d.RootDirectory))
-            .ToList();
-
-        List<TelemetrySession> sessions = new List<TelemetrySession>();
-        foreach (var drive in drives)
-        {
-            sessions.AddRange(drive.Files);
-        }
-        TelemetryFiles = new ObservableCollection<TelemetrySession>(sessions);
+        var files = _telemetryFileService.GetTelemetryFiles();
+        TelemetryFiles = new ObservableCollection<TelemetryFile>(files);
     }
 
     private async Task RefreshTokensAsync(string? url, string? refreshToken)

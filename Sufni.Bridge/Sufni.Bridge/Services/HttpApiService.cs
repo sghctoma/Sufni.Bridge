@@ -52,4 +52,13 @@ internal class HttpApiService : IHttpApiService
         _ = await _client.DeleteAsync($"{_serverUrl}/auth/logout");
         _client.DefaultRequestHeaders.Authorization = null;
     }
+
+    public async Task<List<Board>> GetBoards()
+    {
+        using HttpResponseMessage response = await _client.GetAsync($"{_serverUrl}/api/board");
+        response.EnsureSuccessStatusCode() ;
+        var boards = await response.Content.ReadFromJsonAsync<List<Board>>();
+        Debug.Assert(boards != null);
+        return boards;
+    }
 }

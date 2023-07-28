@@ -9,3 +9,7 @@ public record class User(
 public record class Tokens(
     [property: JsonPropertyName("access_token")] string? AccessToken = null,
     [property: JsonPropertyName("refresh_token")] string? RefreshToken = null);
+
+public record class Board(
+    [property: JsonPropertyName("id")] string? Id = null,
+    [property: JsonPropertyName("setup_id")] int? SetupId = null);

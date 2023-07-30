@@ -104,4 +104,15 @@ public partial class MainViewModel : ViewModelBase
         if (IsRegistered) await unregister();
         else await register();
     }
+
+    [RelayCommand]
+    private void ReloadTelemetryFiles()
+    {
+        var files = _telemetryFileService.GetTelemetryFiles();
+        TelemetryFiles.Clear();
+        foreach (var file in files)
+        {
+            TelemetryFiles.Add(file);
+        }
+    }
 }

@@ -13,8 +13,8 @@
     <vm:MainViewModel />
   </Design.DataContext>
 
-  <Grid RowDefinitions="auto * 40" ColumnDefinitions="auto *">
-    <ListBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="5" 
+  <Grid RowDefinitions="auto * 40" ColumnDefinitions="auto * auto">
+    <ListBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="5" 
              ItemsSource="{Binding TelemetryFiles}">
       <ListBox.Styles>
         <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
@@ -42,7 +42,7 @@
         </DataTemplate>
       </ListBox.ItemTemplate>
     </ListBox>
-    <Button Grid.Row="2" Grid.Column="0" Margin="5">
+    <Button Grid.Row="2" Grid.Column="0" Margin="5,5,2,5">
       <Button.Flyout>
         <Flyout>
           <StackPanel Orientation="Vertical" Width="200">
@@ -75,14 +75,21 @@
           </StackPanel>
         </Flyout>
       </Button.Flyout>
-      <Image Source="{SvgImage /Assets/gear_icon.svg}" />
+      <Image Source="{SvgImage /Assets/gear-icon.svg}" />
     </Button>
     <Button Grid.Row="2" Grid.Column="1"
-            Margin="5"
+            Margin="2,5,2,5"
             HorizontalAlignment="Stretch"
             HorizontalContentAlignment="Center"
             IsEnabled="{Binding IsRegistered}"
             Content="{Binding ImportLabel}"
             Command="{Binding ImportSessionsCommand}"/>
+    <Button Grid.Row="2" Grid.Column="2"
+            Margin="2,5,5,5"
+            HorizontalAlignment="Stretch"
+            HorizontalContentAlignment="Center"
+            Command="{Binding ReloadTelemetryFilesCommand}">
+      <Image Source="{SvgImage /Assets/reload-icon.svg}" /> 
+     </Button>
   </Grid>
 </UserControl>

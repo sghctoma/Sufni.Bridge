@@ -5,11 +5,11 @@ using System.Linq;
 
 namespace Sufni.Bridge.Services;
 
-internal class TelemetryFileService : ITelemetryFileService
+internal class TelemetryDataStoreService : ITelemetryDataStoreService
 {
-    public IEnumerable<TelemetryFile> GetTelemetryFiles()
+    public IEnumerable<TelemetryDataStore> GetTelemetryDataStores()
     {
-        var drives = DriveInfo.GetDrives()
+        return DriveInfo.GetDrives()
             .Where(drive => drive is
             {
                 IsReady: true,
@@ -18,13 +18,5 @@ internal class TelemetryFileService : ITelemetryFileService
             } && File.Exists($"{drive.RootDirectory}/.boardid"))
             .Select(d => new TelemetryDataStore(d.VolumeLabel, d.RootDirectory))
             .ToList();
-
-        var files = new List<TelemetryFile>();
-        foreach (var drive in drives)
-        {
-            files.AddRange(drive.Files);
-        }
-
-        return files;
     }
 }

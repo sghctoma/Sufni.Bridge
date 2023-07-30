@@ -16,7 +16,7 @@ public partial class App : Application
     public App(IServiceCollection services)
     {
         services.AddSingleton<IHttpApiService, HttpApiService>();
-        services.AddSingleton<ITelemetryFileService, TelemetryFileService>();
+        services.AddSingleton<ITelemetryDataStoreService, TelemetryDataStoreService>();
         AppServiceProvider = services.BuildServiceProvider();
     }
 

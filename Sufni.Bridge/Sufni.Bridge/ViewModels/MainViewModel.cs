@@ -12,9 +12,14 @@ using System.Threading.Tasks;
 namespace Sufni.Bridge.ViewModels;
 public partial class MainViewModel : ViewModelBase
 {
-    public ObservableCollection<TelemetryFile> TelemetryFiles { get; }
-
     public string ImportLabel { get; } = "Import Selected";
+
+    #region Observable properties
+    public ObservableCollection<TelemetryDataStore> TelemetryDataStores { get; }
+    public ObservableCollection<TelemetryFile> TelemetryFiles { get; } = new ObservableCollection<TelemetryFile>();
+
+    [ObservableProperty]
+    private TelemetryDataStore? selectedDataStore;
 
     [ObservableProperty]
     private string registerLabel = "Register";
@@ -33,24 +38,45 @@ public partial class MainViewModel : ViewModelBase
 
     [ObservableProperty]
     private string? registrationError;
+    #endregion Observable properties
 
+    #region Private members
     private ISecureStorage _secureStorage;
     private IHttpApiService _httpApiService;
-    private ITelemetryFileService _telemetryFileService;
+    private ITelemetryDataStoreService _telemetryDataStoreService;
+    #endregion Private members
+
+    partial void OnSelectedDataStoreChanged(TelemetryDataStore? value)
+    {
+        TelemetryFiles.Clear();
+        if (value != null)
+        {
+            var files = value.Files;
+            foreach (var file in files)
+            {
+                TelemetryFiles.Add(file);
+            }
+        }
+    }
 
     public MainViewModel()
     {
         _secureStorage = this.GetServiceOrCreateInstance<ISecureStorage>();
         _httpApiService = this.GetServiceOrCreateInstance<IHttpApiService>();
-        _telemetryFileService = this.GetServiceOrCreateInstance<ITelemetryFileService>();
+        _telemetryDataStoreService = this.GetServiceOrCreateInstance<ITelemetryDataStoreService>();
 
         ServerUrl = _secureStorage.GetString("ServerUrl");
         Username = _secureStorage.GetString("Username");
         var refreshToken = _secureStorage.GetString("RefreshToken");
         _ = RefreshTokensAsync(ServerUrl, refreshToken);
 
-        var files = _telemetryFileService.GetTelemetryFiles();
-        TelemetryFiles = new ObservableCollection<TelemetryFile>(files);
+        var ds = _telemetryDataStoreService.GetTelemetryDataStores();
+        TelemetryDataStores = new ObservableCollection<TelemetryDataStore>(ds);
+
+        if (TelemetryDataStores.Count > 0)
+        {
+            SelectedDataStore = TelemetryDataStores[0];
+        }
     }
 
     private async Task RefreshTokensAsync(string? url, string? refreshToken)
@@ -111,13 +137,18 @@ public partial class MainViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private void ReloadTelemetryFiles()
+    private void ReloadTelemetryDataStores()
     {
-        var files = _telemetryFileService.GetTelemetryFiles();
-        TelemetryFiles.Clear();
-        foreach (var file in files)
+        TelemetryDataStores.Clear();
+        var ds = _telemetryDataStoreService.GetTelemetryDataStores();
+        foreach (var store in ds)
         {
-            TelemetryFiles.Add(file);
+            TelemetryDataStores.Add(store);
+        }
+
+        if (TelemetryDataStores.Count > 0)
+        {
+            SelectedDataStore = TelemetryDataStores[0];
         }
     }
 }

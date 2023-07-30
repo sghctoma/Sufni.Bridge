@@ -22,5 +22,8 @@ public class TelemetryDataStore
             .Select(f => new TelemetryFile(f, BoardId))
             .OrderBy(f => f.StartTime)
             .ToList();
+
+        if (!Directory.Exists($"{Path.FullName}/uploaded"))
+            Directory.CreateDirectory($"{Path.FullName}/uploaded");
     }
 }

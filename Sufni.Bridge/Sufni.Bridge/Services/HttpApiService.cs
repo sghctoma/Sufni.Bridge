@@ -1,5 +1,5 @@
 ﻿using Sufni.Bridge.Models;
-using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -60,5 +60,19 @@ internal class HttpApiService : IHttpApiService
         var boards = await response.Content.ReadFromJsonAsync<List<Board>>();
         Debug.Assert(boards != null);
         return boards;
+    }
+
+    public async Task ImportSession(TelemetryFile session, int setupId)
+    {
+        if (!session.ShouldBeImported) return;
+
+        using HttpResponseMessage response = await _client.PutAsJsonAsync($"{_serverUrl}/api/session",
+            new Session(
+                Name: session.Name,
+                Description: session.Description,
+                Setup: setupId,
+                Data: session.Data));
+
+        response.EnsureSuccessStatusCode();
     }
 }

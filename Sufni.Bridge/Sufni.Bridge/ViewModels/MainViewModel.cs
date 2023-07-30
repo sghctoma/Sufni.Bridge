@@ -4,7 +4,6 @@ using SecureStorage;
 using Sufni.Bridge.Models;
 using Sufni.Bridge.Services;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -103,6 +102,12 @@ public partial class MainViewModel : ViewModelBase
     {
         if (IsRegistered) await unregister();
         else await register();
+    }
+
+    [RelayCommand]
+    private async Task ImportSessions()
+    {
+        
     }
 
     [RelayCommand]

@@ -13,6 +13,13 @@ public partial class App : Application
 {
     public readonly IServiceProvider AppServiceProvider;
 
+    // This is just here to suppress a warning about public constructor not being present
+    public App()
+    {
+        var dummyServiceCollection = new ServiceCollection();
+        AppServiceProvider = dummyServiceCollection.BuildServiceProvider();
+    }
+
     public App(IServiceCollection services)
     {
         services.AddSingleton<IHttpApiService, HttpApiService>();

@@ -7,7 +7,7 @@ namespace Sufni.Bridge;
 
 public static class ViewModelBaseExtensions
 {
-    public static IServiceProvider GetServiceProvider(this ViewModelBase vm)
+    public static IServiceProvider GetServiceProvider(this ViewModelBase _)
     {
         if (Application.Current == null)
         {

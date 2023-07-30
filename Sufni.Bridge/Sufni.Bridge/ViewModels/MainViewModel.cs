@@ -89,7 +89,7 @@ public partial class MainViewModel : ViewModelBase
         RegisterLabel = "Unregister";
     }
 
-    private async Task register()
+    private async Task Register()
     {
         if (string.IsNullOrEmpty(ServerUrl) || string.IsNullOrEmpty(Username) || string.IsNullOrEmpty(Password)) return;
 
@@ -109,7 +109,7 @@ public partial class MainViewModel : ViewModelBase
         }
     }
 
-    private async Task unregister()
+    private async Task Unregister()
     {
         var refreshToken = _secureStorage.GetString("RefreshToken");
         await _httpApiService.Unregister(refreshToken!);
@@ -126,8 +126,8 @@ public partial class MainViewModel : ViewModelBase
     [RelayCommand]
     private async Task RegisterUnregister()
     {
-        if (IsRegistered) await unregister();
-        else await register();
+        if (IsRegistered) await Unregister();
+        else await Register();
     }
 
     [RelayCommand]

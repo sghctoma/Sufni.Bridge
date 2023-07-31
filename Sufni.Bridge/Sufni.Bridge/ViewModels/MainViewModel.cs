@@ -8,6 +8,9 @@ using System.Collections.ObjectModel;
 using System.Net.Http;
 using System.Net;
 using System.Threading.Tasks;
+using System.Linq;
+using System.Diagnostics;
+using System.IO;
 
 namespace Sufni.Bridge.ViewModels;
 public partial class MainViewModel : ViewModelBase
@@ -178,7 +181,23 @@ public partial class MainViewModel : ViewModelBase
     [RelayCommand]
     private async Task ImportSessions()
     {
+        Debug.Assert(SelectedDataStore != null);
+
+        var boards = await _httpApiService.GetBoards();
+        var boardsDict = boards.ToDictionary(b => b.Id!, b => b.SetupId);
+        var boardId = SelectedDataStore.BoardId;
+        var setupId = boardsDict[boardId];
         
+        Debug.Assert(setupId != null);
+
+        foreach (var telemetryFile in TelemetryFiles.Where(f => f.ShouldBeImported))
+        {
+            await _httpApiService.ImportSession(telemetryFile, setupId.Value);
+            File.Move(telemetryFile.FullName,
+                $"{Path.GetDirectoryName(telemetryFile.FullName)}/uploaded/{telemetryFile.FileName}");
+        }
+
+        ReloadTelemetryDataStores();
     }
 
     [RelayCommand]

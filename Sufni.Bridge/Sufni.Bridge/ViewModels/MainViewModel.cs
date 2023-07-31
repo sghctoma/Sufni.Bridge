@@ -5,16 +5,21 @@ using Sufni.Bridge.Models;
 using Sufni.Bridge.Services;
 using System;
 using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
+using System.Net.Http;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace Sufni.Bridge.ViewModels;
 public partial class MainViewModel : ViewModelBase
 {
+    #region Public properties
+
     public string ImportLabel { get; } = "Import Selected";
 
+    #endregion Public properties
+
     #region Observable properties
+
     public ObservableCollection<TelemetryDataStore> TelemetryDataStores { get; }
     public ObservableCollection<TelemetryFile> TelemetryFiles { get; } = new ObservableCollection<TelemetryFile>();
 
@@ -38,13 +43,10 @@ public partial class MainViewModel : ViewModelBase
 
     [ObservableProperty]
     private string? registrationError;
+
     #endregion Observable properties
 
-    #region Private members
-    private ISecureStorage _secureStorage;
-    private IHttpApiService _httpApiService;
-    private ITelemetryDataStoreService _telemetryDataStoreService;
-    #endregion Private members
+    #region Property change handlers
 
     partial void OnSelectedDataStoreChanged(TelemetryDataStore? value)
     {
@@ -58,6 +60,23 @@ public partial class MainViewModel : ViewModelBase
             }
         }
     }
+
+    partial void OnIsRegisteredChanged(bool value)
+    {
+        RegisterLabel = value ? "Unregister" : "Register";
+    }
+
+    #endregion Property change handlers
+
+    #region Private members
+
+    private ISecureStorage _secureStorage;
+    private IHttpApiService _httpApiService;
+    private ITelemetryDataStoreService _telemetryDataStoreService;
+
+    #endregion Private members
+
+    #region Constructors
 
     public MainViewModel()
     {
@@ -79,14 +98,38 @@ public partial class MainViewModel : ViewModelBase
         }
     }
 
+    #endregion Constructors
+
+    #region Private methods
+
     private async Task RefreshTokensAsync(string? url, string? refreshToken)
     {
         if (string.IsNullOrEmpty(url) || string.IsNullOrEmpty(refreshToken)) return;
 
-        var newRefreshToken = await _httpApiService.InitAsync(url, refreshToken);
-        _secureStorage.SetString("RefreshToken", newRefreshToken);
-        IsRegistered = true;
-        RegisterLabel = "Unregister";
+        // Set the new token's value to the old one, so that in case of e.g. a network error,
+        // we don't indicate "unregistered" state.
+        // NOTE: We could also check if token is still valid based on time (this would of course
+        //       not consider revoked keys, etc.)
+        var newRefreshToken = refreshToken;
+        IsRegistered = newRefreshToken != null;
+
+        try
+        {
+            newRefreshToken = await _httpApiService.RefreshTokensAsync(url, refreshToken);
+        }
+        catch (HttpRequestException ex)
+        {
+            // Null out the refreshtoken if we explicitly receive a 401 - Unauthorized HTTP response.
+            if (ex.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                newRefreshToken = null;
+                IsRegistered = false;
+            }
+        }
+        finally
+        {
+            _secureStorage.SetString("RefreshToken", newRefreshToken);
+        }
     }
 
     private async Task Register()
@@ -100,7 +143,6 @@ public partial class MainViewModel : ViewModelBase
             _secureStorage.SetString("ServerUrl", ServerUrl);
             _secureStorage.SetString("RefreshToken", refreshToken);
             IsRegistered = true;
-            RegisterLabel = "Unregister";
             RegistrationError = null;
         }
         catch(Exception ex)
@@ -120,8 +162,11 @@ public partial class MainViewModel : ViewModelBase
         ServerUrl = null;
         Password = null;
         IsRegistered = false;
-        RegisterLabel = "Register";
     }
+
+    #endregion Private methods
+
+    #region Commands
 
     [RelayCommand]
     private async Task RegisterUnregister()
@@ -151,4 +196,6 @@ public partial class MainViewModel : ViewModelBase
             SelectedDataStore = TelemetryDataStores[0];
         }
     }
+
+    #endregion Commands
 }

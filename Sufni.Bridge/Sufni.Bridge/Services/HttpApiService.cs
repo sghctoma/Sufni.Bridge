@@ -14,13 +14,13 @@ internal class HttpApiService : IHttpApiService
 
     private readonly HttpClient _client = new();
 
-    public async Task<string> InitAsync(string url, string refreshToken)
+    public async Task<string> RefreshTokensAsync(string url, string refreshToken)
     {
         _serverUrl = url;
 
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", refreshToken);
         using HttpResponseMessage response = await _client.PostAsync($"{_serverUrl}/auth/refresh", null);
-
+        
         response.EnsureSuccessStatusCode();
         var tokens = await response.Content.ReadFromJsonAsync<Tokens>();
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens!.AccessToken);

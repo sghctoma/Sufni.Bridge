@@ -8,7 +8,7 @@ public interface ISecureStorage
 
     void Set(string key, byte[]? value);
 
-    void SetString(string key, string value);
+    void SetString(string key, string? value);
 
     bool Remove(string key);
 

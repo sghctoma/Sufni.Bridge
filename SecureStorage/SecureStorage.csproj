@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net7.0-windows;net7.0-android;net7.0-ios;net7.0-macos;net7.0</TargetFrameworks>
+        <TargetFrameworks>net7.0-windows;net7.0</TargetFrameworks>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
@@ -11,9 +11,12 @@
         <Compile Include="SecureStorage.common.cs" />
     </ItemGroup>
     
-    <ItemGroup Condition="'$(TargetPlatformIdentifier)' == 'windows'">
+    <ItemGroup Condition="'$(TargetFramework)' == 'net7.0-windows'">
         <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="7.0.1" />
         <Compile Include="SecureStorage.win.cs" />
     </ItemGroup>
 
+    <ItemGroup Condition="'$(TargetFramework)' == 'net7.0'">
+        <Compile Include="SecureStorage.linux.cs" />
+    </ItemGroup>
 </Project>

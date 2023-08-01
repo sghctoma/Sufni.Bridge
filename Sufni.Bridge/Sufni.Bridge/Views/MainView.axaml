@@ -3,114 +3,57 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:Sufni.Bridge.ViewModels"
-             xmlns:controls="clr-namespace:Sufni.Bridge.Views"
              mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
              x:Class="Sufni.Bridge.Views.MainView"
              x:DataType="vm:MainViewModel">
   <Design.DataContext>
-    <!-- This only sets the DataContext for the previewer in an IDE,
-         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
     <vm:MainViewModel />
   </Design.DataContext>
 
-  <Grid RowDefinitions="40 * 40" ColumnDefinitions="auto * auto">
-    
-    <!-- Datastore selector -->
-    <ComboBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
-              Margin="5,5,2,5"
-              HorizontalAlignment="Stretch"
-              SelectedItem="{Binding SelectedDataStore}"
-              ItemsSource="{Binding TelemetryDataStores}">
-      <ComboBox.ItemTemplate>
-        <DataTemplate>
-          <TextBlock Text="{Binding Name}" />
-        </DataTemplate>
-      </ComboBox.ItemTemplate>
-    </ComboBox>
-    
-    <!-- Reload datastores -->
-    <Button Grid.Row="0" Grid.Column="2"
-            Margin="2,5,5,5"
-            HorizontalAlignment="Stretch"
-            HorizontalContentAlignment="Center"
-            Command="{Binding ReloadTelemetryDataStoresCommand}">
-      <Image Source="{SvgImage /Assets/reload-icon.svg}" />
-    </Button>
-    
-    <!-- List of SST files in selected datastore -->
-    <ListBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="5" 
-             ItemsSource="{Binding TelemetryFiles}">
-      <ListBox.Styles>
-        <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
-          <Setter Property="Background" Value="{DynamicResource ThemeBackgroundBrush}"/>
-        </Style>
-        <Style Selector="ListBoxItem:focus /template/ ContentPresenter">
-          <Setter Property="Background" Value="{DynamicResource ThemeBackgroundBrush}"/>
-        </Style>
-        <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
-          <Setter Property="Background" Value="LightGray"/>
-        </Style>
-      </ListBox.Styles>
-      <ListBox.ItemTemplate>
-        <DataTemplate>
-          <Grid ColumnDefinitions="auto auto auto * auto" RowDefinitions="auto auto auto auto auto *" Height="200" MinWidth="300" HorizontalAlignment="Stretch">
-            <TextBlock Grid.Row="0" Grid.Column="0" Margin="2" VerticalAlignment="Center" FontWeight="Black" Text="{Binding FullName}"/>
-            <TextBlock Grid.Row="0" Grid.Column="1" Margin="2" VerticalAlignment="Center" FontSize="12" Text="{Binding StartTime, StringFormat=Start: {0}}"/>
-            <TextBlock Grid.Row="0" Grid.Column="2" Margin="2" VerticalAlignment="Center" FontSize="12" Text="{Binding Duration, StringFormat=Duration: {0}}"/>
-            <CheckBox  Grid.Row="0" Grid.Column="4" Margin="2" IsChecked="{Binding ShouldBeImported}">Import</CheckBox>
-            <Label Grid.Row="3" Grid.Column="0" VerticalAlignment="Center">Name:</Label>
-            <TextBox Grid.Row="3" Grid.Column="1" Margin="2" Grid.ColumnSpan="4" Text="{Binding FileName}" />
-            <Label Grid.Row="4" Grid.Column="0" VerticalAlignment="Center">Description:</Label>
-            <TextBox Grid.Row="4" Grid.Column="1" Margin="2" Grid.RowSpan="2" Grid.ColumnSpan="4" AcceptsReturn="True" VerticalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding Description}" />
-          </Grid>
-        </DataTemplate>
-      </ListBox.ItemTemplate>
-    </ListBox>
-    
-    <!-- Register app to Sufni server -->
-    <Button Grid.Row="2" Grid.Column="0" Margin="5,5,2,5">
-      <Button.Flyout>
-        <Flyout>
-          <StackPanel Orientation="Vertical" Width="200">
-            <StackPanel.Styles>
-              <Style Selector="TextBox">
-                <Setter Property="Margin" Value="5" />
-              </Style>
-            </StackPanel.Styles>
-            <TextBox Watermark="API server" 
-                     IsEnabled="{Binding !IsRegistered}" 
-                     Text="{Binding ServerUrl}" />
-            <TextBox Watermark="Username" 
-                     IsEnabled="{Binding !IsRegistered}"
-                     Text="{Binding Username}" />
-            <TextBox Watermark="Password" 
-                     IsEnabled="{Binding !IsRegistered}" 
-                     PasswordChar="*" 
-                     Text="{Binding Password}" />
-            <Button Margin="5"
-                    HorizontalContentAlignment="Center"
-                    HorizontalAlignment="Stretch"
-                    IsTabStop="False"
-                    IsDefault="{Binding !IsRegistered}"
-                    Content="{Binding RegisterLabel}"
-                    Command="{Binding RegisterUnregisterCommand}" />
-            <TextBlock Text="{Binding RegistrationError}"
-                       TextWrapping="Wrap"
-                       Foreground="Gray"
-                       IsVisible="{Binding RegistrationError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-          </StackPanel>
-        </Flyout>
-      </Button.Flyout>
-      <Image Source="{SvgImage /Assets/gear-icon.svg}" />
-    </Button>
+  <UserControl.Styles>
 
-    <!-- Import selected SST files -->
-    <Button Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2"
-            Margin="2,5,5,5"
-            HorizontalAlignment="Stretch"
-            HorizontalContentAlignment="Center"
-            IsEnabled="{Binding IsRegistered}"
-            Content="{Binding ImportLabel}"
-            Command="{Binding ImportSessionsCommand}"/>
-  </Grid>
+    <Style Selector="TabControl">
+      <Setter Property="Padding" Value="0" />
+    </Style>
+    
+    <Style Selector="TabItem">
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="HorizontalContentAlignment" Value="Center" />
+      <Setter Property="FontSize" Value="14" />
+      <Setter Property="FontWeight" Value="DemiBold" />
+      <Setter Property="Margin" Value="1 0 0 0" />
+      <Setter Property="MinHeight" Value="28" />
+    </Style>
+
+    <Style Selector="TabItem:pointerover">
+      <Setter Property="Margin" Value="1 0 0 0" />
+    </Style>
+    <Style Selector="TabItem:pointerover /template/ ContentPresenter">
+      <Setter Property="TextBlock.Foreground" Value="#0D0D0D" />
+    </Style>
+    
+    <Style Selector="TabItem:selected /template/ Border#PART_SelectedPipe">
+      <Setter Property="Height" Value="0" />
+    </Style>
+
+  </UserControl.Styles>
+  
+  <TabControl TabStripPlacement="Bottom" Margin="5">
+    <TabControl.ItemsPanel>
+      <ItemsPanelTemplate>
+        <UniformGrid Rows="1" HorizontalAlignment="Stretch" />
+      </ItemsPanelTemplate>
+    </TabControl.ItemsPanel>
+    <TabItem Header="Import" Content="{Binding ImportSessionsPage}" />
+    <TabItem Header="Settings" Content="{Binding SettingsPage}" />
+    <TabItem Header="Linkages">
+      <TextBlock Margin="5">Linkages tab</TextBlock>
+    </TabItem>
+    <TabItem Header="Calibrations">
+      <TextBlock Margin="5">Calibrations tab</TextBlock>
+    </TabItem>
+    <TabItem Header="Bikes">
+      <TextBlock Margin="5">Bike setups tab</TextBlock>
+    </TabItem>
+  </TabControl>
 </UserControl>

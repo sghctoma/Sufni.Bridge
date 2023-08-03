@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Sufni.Bridge.Models;
 using Sufni.Bridge.Services;
@@ -7,6 +8,8 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.Diagnostics;
 using System.IO;
+using System.Net.Http;
+using SecureStorage;
 
 namespace Sufni.Bridge.ViewModels;
 
@@ -14,25 +17,42 @@ public partial class ImportSessionsViewModel : ViewModelBase
 {
     #region Public properties
 
-    public string ImportLabel { get; } = "Import Selected";
+    public string ImportLabel => "Import Selected";
 
     #endregion Public properties
 
     #region Observable properties
 
     public ObservableCollection<TelemetryDataStore> TelemetryDataStores { get; }
+    
     public ObservableCollection<TelemetryFile> TelemetryFiles { get; } = new();
 
     [ObservableProperty] private TelemetryDataStore? selectedDataStore;
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(ImportSessionsCommand))]
+    private int? selectedSetup;
     
     #endregion Observable properties
 
     #region Property change handlers
 
-    partial void OnSelectedDataStoreChanged(TelemetryDataStore? value)
+    async partial void OnSelectedDataStoreChanged(TelemetryDataStore? value)
     {
-        TelemetryFiles.Clear();
         if (value == null) return;
+
+        try
+        {
+            var boards = await _httpApiService.GetBoards();
+            var selectedBoard = boards.FirstOrDefault(b => b?.Id == value.BoardId, null);
+            SelectedSetup = selectedBoard?.SetupId;
+        }
+        catch
+        {
+            // ignored
+        }
+        
+        TelemetryFiles.Clear();
         var files = value.Files;
         foreach (var file in files)
         {
@@ -69,28 +89,49 @@ public partial class ImportSessionsViewModel : ViewModelBase
 
     #region Commands
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanImportSessions))]
     private async Task ImportSessions()
     {
-        Debug.Assert(SelectedDataStore != null);
-
-        var boards = await _httpApiService.GetBoards();
-        var boardsDict = boards.ToDictionary(b => b.Id!, b => b.SetupId);
-        var boardId = SelectedDataStore.BoardId;
-        var setupId = boardsDict[boardId];
-
-        Debug.Assert(setupId != null);
+        Debug.Assert(SelectedSetup != null);
 
         foreach (var telemetryFile in TelemetryFiles.Where(f => f.ShouldBeImported))
         {
-            await _httpApiService.ImportSession(telemetryFile, setupId.Value);
-            File.Move(telemetryFile.FullName,
-                $"{Path.GetDirectoryName(telemetryFile.FullName)}/uploaded/{telemetryFile.FileName}");
+            try
+            {
+                await _httpApiService.ImportSession(telemetryFile, SelectedSetup.Value);
+                telemetryFile.Imported = true;
+                File.Move(telemetryFile.FullName,
+                    $"{Path.GetDirectoryName(telemetryFile.FullName)}/uploaded/{telemetryFile.FileName}");
+            }
+            catch (HttpRequestException)
+            {
+                telemetryFile.Imported = false;
+            }
+            catch (Exception)
+            {
+                // NOTE: Move to "uploaded" failed. Should we handle this somehow?
+            }
         }
 
-        ReloadTelemetryDataStores();
+        var newTelemetryFiles = TelemetryFiles.Where(f => !f.Imported).ToList();
+        TelemetryFiles.Clear();
+        foreach (var file in newTelemetryFiles)
+        {
+            TelemetryFiles.Add(file);
+        }
     }
 
+    private bool CanImportSessions()
+    {
+        var secureStorage = this.GetServiceOrCreateInstance<ISecureStorage>();
+        
+        return SelectedSetup != null &&
+               !string.IsNullOrEmpty(secureStorage.GetString("RefreshToken"));
+        
+        //TODO: ShouldBeImported changes do not notify, so the last condition
+        //      is evaluated only when the program starts.
+    }
+    
     [RelayCommand]
     private void ReloadTelemetryDataStores()
     {

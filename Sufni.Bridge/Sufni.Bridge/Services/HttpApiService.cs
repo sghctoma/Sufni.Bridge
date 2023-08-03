@@ -10,10 +10,14 @@ namespace Sufni.Bridge.Services;
 
 internal class HttpApiService : IHttpApiService
 {
+    #region Private fields
+
     private string? _serverUrl;
-
+    private string? _refreshToken;
     private readonly HttpClient _client = new();
-
+    
+    #endregion
+    
     public async Task<string> RefreshTokensAsync(string url, string refreshToken)
     {
         _serverUrl = url;
@@ -27,6 +31,7 @@ internal class HttpApiService : IHttpApiService
         Debug.Assert(tokens != null);
         Debug.Assert(tokens.AccessToken != null);
         Debug.Assert(tokens.RefreshToken != null);
+        _refreshToken = tokens.RefreshToken;
         return tokens.RefreshToken;
     }
 

@@ -8,28 +8,21 @@ public class TelemetryFile
 {
     public string FileName => _fileInfo.Name;
     public string FullName => _fileInfo.FullName;
-    public string BoardId { get; }
     public DateTime StartTime { get; }
     public string Name { get; set; } = "";
     public string Duration => _duration.ToString("hh\\:mm\\:ss");
     public bool ShouldBeImported { get; set; }
-    public string Data
-    {
-        get
-        {
-            return Convert.ToBase64String(File.ReadAllBytes(FullName));
-        }
-    }
+    public bool Imported { get; set; }
+    public string Data => Convert.ToBase64String(File.ReadAllBytes(FullName));
 
     public string Description { get; set; } = "";
 
     private readonly FileInfo _fileInfo;
     private readonly TimeSpan _duration;
 
-    public TelemetryFile(FileInfo fileInfo, string boardId)
+    public TelemetryFile(FileInfo fileInfo)
     {
         _fileInfo = fileInfo;
-        BoardId = boardId;
 
         using var stream = File.Open(_fileInfo.FullName, FileMode.Open);
         using var reader = new BinaryReader(stream);

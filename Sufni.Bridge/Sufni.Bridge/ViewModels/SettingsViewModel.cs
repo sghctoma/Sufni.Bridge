@@ -43,7 +43,7 @@ public partial class SettingsViewModel : ViewModelBase
     
     #endregion Private members
 
-    #region
+    #region Constructors
 
     public SettingsViewModel()
     {
@@ -62,18 +62,22 @@ public partial class SettingsViewModel : ViewModelBase
 
     private async Task RefreshTokensAsync(string? url, string? refreshToken)
     {
-        if (string.IsNullOrEmpty(url) || string.IsNullOrEmpty(refreshToken)) return;
+        if (string.IsNullOrEmpty(url) || string.IsNullOrEmpty(refreshToken))
+        {
+            IsRegistered = false;
+            return;
+        }
 
         // Set the new token's value to the old one, so that in case of e.g. a network error,
         // we don't indicate "unregistered" state.
         // NOTE: We could also check if token is still valid based on time (this would of course
         //       not consider revoked keys, etc.)
         var newRefreshToken = refreshToken;
-        IsRegistered = newRefreshToken != null;
 
         try
         {
             newRefreshToken = await _httpApiService.RefreshTokensAsync(url, refreshToken);
+            IsRegistered = true;
         }
         catch (HttpRequestException ex)
         {

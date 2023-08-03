@@ -19,7 +19,7 @@ public class TelemetryDataStore
         BoardId = File.ReadAllText($"{Path.FullName}/.boardid");
 
         Files = Path.GetFiles("*.SST")
-            .Select(f => new TelemetryFile(f, BoardId))
+            .Select(f => new TelemetryFile(f))
             .OrderBy(f => f.StartTime)
             .ToList();
 

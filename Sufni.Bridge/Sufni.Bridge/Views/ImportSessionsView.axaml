@@ -34,42 +34,45 @@
             Command="{Binding ReloadTelemetryDataStoresCommand}">
       <Image Source="{SvgImage /Assets/reload-icon.svg}" />
     </Button>
-
+    
     <!-- List of SST files in selected datastore -->
-    <ListBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="5"
+    <ListBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
+             Background="Transparent"
              ItemsSource="{Binding TelemetryFiles}">
       <ListBox.Styles>
-        <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
-          <Setter Property="Background" Value="{DynamicResource ThemeBackgroundBrush}"/>
+        <Style Selector="ListBoxItem">
+          <Setter Property="Padding" Value="6,6, 6, 3" />
         </Style>
-        <Style Selector="ListBoxItem:focus /template/ ContentPresenter">
-          <Setter Property="Background" Value="{DynamicResource ThemeBackgroundBrush}"/>
+        <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
+          <Setter Property="Background" Value="Transparent"/>
         </Style>
         <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
-          <Setter Property="Background" Value="LightGray"/>
+          <Setter Property="Background" Value="Transparent"/>
         </Style>
       </ListBox.Styles>
       <ListBox.ItemTemplate>
         <DataTemplate>
-          <Grid ColumnDefinitions="auto auto auto * auto" RowDefinitions="auto auto auto auto auto *" 
-                Height="200" MinWidth="300" HorizontalAlignment="Stretch">
-            <TextBlock Grid.Row="0" Grid.Column="0" Margin="2" VerticalAlignment="Center" FontWeight="Black" 
-                       Text="{Binding FullName}"/>
-            <TextBlock Grid.Row="0" Grid.Column="1" Margin="2" VerticalAlignment="Center" FontSize="12" 
-                       Text="{Binding StartTime, StringFormat=Start: {0}}"/>
-            <TextBlock Grid.Row="0" Grid.Column="2" Margin="2" VerticalAlignment="Center" FontSize="12" 
-                       Text="{Binding Duration, StringFormat=Duration: {0}}"/>
-            <CheckBox  Grid.Row="0" Grid.Column="4" Margin="2" 
-                       IsChecked="{Binding ShouldBeImported}"
-                       Content="Import" />
-            <Label Grid.Row="3" Grid.Column="0" VerticalAlignment="Center">Name:</Label>
-            <TextBox Grid.Row="3" Grid.Column="1" Margin="2" Grid.ColumnSpan="4" 
-                     Text="{Binding FileName}" />
-            <Label Grid.Row="4" Grid.Column="0" VerticalAlignment="Center">Description:</Label>
-            <TextBox Grid.Row="4" Grid.Column="1" Grid.RowSpan="2" Grid.ColumnSpan="4"
-                     Margin="2" AcceptsReturn="True" VerticalAlignment="Stretch" TextWrapping="Wrap"
-                     Text="{Binding Description}" />
-          </Grid>
+          <Border CornerRadius="5" Padding="5" Background="LightGray">
+            <Grid ColumnDefinitions="auto auto auto * auto" RowDefinitions="auto auto auto auto auto *"
+                  Height="200" MinWidth="300" HorizontalAlignment="Stretch">
+              <TextBlock Grid.Row="0" Grid.Column="0" Margin="2" VerticalAlignment="Center" FontWeight="Black" 
+                         Text="{Binding FullName}"/>
+              <TextBlock Grid.Row="0" Grid.Column="1" Margin="2" VerticalAlignment="Center" FontSize="12" 
+                         Text="{Binding StartTime, StringFormat=Start: {0}}"/>
+              <TextBlock Grid.Row="0" Grid.Column="2" Margin="2" VerticalAlignment="Center" FontSize="12" 
+                         Text="{Binding Duration, StringFormat=Duration: {0}}"/>
+              <CheckBox  Grid.Row="0" Grid.Column="4" Margin="2" 
+                         IsChecked="{Binding ShouldBeImported}"
+                         Content="Import" />
+              <Label Grid.Row="3" Grid.Column="0" VerticalAlignment="Center">Name:</Label>
+              <TextBox Grid.Row="3" Grid.Column="1" Margin="2" Grid.ColumnSpan="4" 
+                       Text="{Binding FileName}" />
+              <Label Grid.Row="4" Grid.Column="0" VerticalAlignment="Center">Description:</Label>
+              <TextBox Grid.Row="4" Grid.Column="1" Grid.RowSpan="2" Grid.ColumnSpan="4"
+                       Margin="2" AcceptsReturn="True" VerticalAlignment="Stretch" TextWrapping="Wrap"
+                       Text="{Binding Description}" />
+            </Grid>
+          </Border>
         </DataTemplate>
       </ListBox.ItemTemplate>
     </ListBox>

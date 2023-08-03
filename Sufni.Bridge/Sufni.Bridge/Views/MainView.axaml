@@ -11,11 +11,9 @@
   </Design.DataContext>
 
   <UserControl.Styles>
-
     <Style Selector="TabControl">
       <Setter Property="Padding" Value="0" />
     </Style>
-    
     <Style Selector="TabItem">
       <Setter Property="HorizontalAlignment" Value="Stretch" />
       <Setter Property="HorizontalContentAlignment" Value="Center" />
@@ -24,36 +22,65 @@
       <Setter Property="Margin" Value="1 0 0 0" />
       <Setter Property="MinHeight" Value="28" />
     </Style>
-
     <Style Selector="TabItem:pointerover">
       <Setter Property="Margin" Value="1 0 0 0" />
     </Style>
     <Style Selector="TabItem:pointerover /template/ ContentPresenter">
       <Setter Property="TextBlock.Foreground" Value="#0D0D0D" />
     </Style>
-    
     <Style Selector="TabItem:selected /template/ Border#PART_SelectedPipe">
       <Setter Property="Height" Value="0" />
     </Style>
-
   </UserControl.Styles>
   
-  <TabControl TabStripPlacement="Bottom" Margin="5">
-    <TabControl.ItemsPanel>
-      <ItemsPanelTemplate>
-        <UniformGrid Rows="1" HorizontalAlignment="Stretch" />
-      </ItemsPanelTemplate>
-    </TabControl.ItemsPanel>
-    <TabItem Header="Import" Content="{Binding ImportSessionsPage}" />
-    <TabItem Header="Settings" Content="{Binding SettingsPage}" />
-    <TabItem Header="Linkages">
-      <TextBlock Margin="5">Linkages tab</TextBlock>
-    </TabItem>
-    <TabItem Header="Calibrations">
-      <TextBlock Margin="5">Calibrations tab</TextBlock>
-    </TabItem>
-    <TabItem Header="Bikes">
-      <TextBlock Margin="5">Bike setups tab</TextBlock>
-    </TabItem>
-  </TabControl>
+  <Panel>
+    <!-- Missing bike setup notification -->
+    <Border Name="MissingSetupNotification"
+            CornerRadius="5" Height="70" Width="160"
+            VerticalAlignment="Bottom" HorizontalAlignment="Right" ZIndex="10"
+            Background="PaleVioletRed">
+      <Border.IsVisible>
+        <MultiBinding Converter="{x:Static BoolConverters.And}">
+          <Binding Path="ImportSessionsPage.SelectedSetup" Converter="{x:Static ObjectConverters.IsNull}" />
+          <Binding Path="SettingsPage.IsRegistered" />
+          <Binding Path="IsImportSessionsPageSelected" />
+        </MultiBinding>
+      </Border.IsVisible>
+      <StackPanel>
+        <TextBlock 
+          Foreground="#0a0a0a"
+          Margin="5,5,5,5"
+          HorizontalAlignment="Center"
+          VerticalAlignment="Center"
+          TextWrapping="Wrap"
+          Text="Bike setup not found for this DAQ identifier.&#x0a;Create one here." />
+        <Path Data="M 0,0 L 10,10 L 20,0"
+              HorizontalAlignment="Right" Margin="0,6,15,0" 
+              Fill="PaleVioletRed" />
+      </StackPanel>
+    </Border>
+    
+    <!-- Menu tab -->
+    <TabControl TabStripPlacement="Bottom" Margin="5" SelectedIndex="{Binding SelectedIndex}">
+      <TabControl.ItemsPanel>
+        <ItemsPanelTemplate>
+          <UniformGrid Rows="1" HorizontalAlignment="Stretch" />
+        </ItemsPanelTemplate>
+      </TabControl.ItemsPanel>
+      <TabItem Header="Import" Name="ImportTabItem"
+               IsEnabled="{Binding SettingsPage.IsRegistered}"
+               Content="{Binding ImportSessionsPage}" />
+      <TabItem Header="Settings" Name="SettingsTabItem" Content="{Binding SettingsPage}" />
+      <TabItem Header="Linkages" Name="LinkagesTabItem"
+               IsEnabled="{Binding SettingsPage.IsRegistered}"
+               Content="Linkages tab" />
+      <TabItem Header="Calibrations" Name="CalibrationsTabItem"
+               IsEnabled="{Binding SettingsPage.IsRegistered}"
+               Content="Calibrations tab" />
+      <TabItem Header="Bikes" Name="BikeSetupsTabItem"
+               IsEnabled="{Binding SettingsPage.IsRegistered}"
+               Content="Bike setups tab" />
+    </TabControl>
+  </Panel>
+ 
 </UserControl>

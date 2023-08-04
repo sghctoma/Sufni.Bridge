@@ -1,4 +1,6 @@
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 
 namespace Sufni.Bridge.Views
 {
@@ -7,6 +9,12 @@ namespace Sufni.Bridge.Views
         public MainWindow()
         {
             InitializeComponent();
+            
+            #if DEBUG
+            
+            this.AttachDevTools(new KeyGesture(Key.F12, KeyModifiers.Alt));
+            
+            #endif
         }
     }
 }

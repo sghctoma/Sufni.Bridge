@@ -15,9 +15,9 @@ namespace Sufni.Bridge.Views
         {
             base.OnSizeChanged(e);
             
-            var rm = BikeSetupsTabItem.Bounds.Width / 2 - 20;
+            var rm = BikeSetupsTabItem.Bounds.Width / 2 - 10;
             if (double.IsNaN(rm)) return;
-            MissingSetupNotification.Margin = new Thickness(0, 0, rm, 35);
+            MissingSetupNotification.Margin = new Thickness(0, 0, rm, 40);
         }
     }
 }

@@ -15,18 +15,21 @@
       <Setter Property="Padding" Value="0" />
     </Style>
     <Style Selector="TabItem">
-      <Setter Property="HorizontalAlignment" Value="Stretch" />
-      <Setter Property="HorizontalContentAlignment" Value="Center" />
-      <Setter Property="FontSize" Value="14" />
-      <Setter Property="FontWeight" Value="DemiBold" />
-      <Setter Property="Margin" Value="1 0 0 0" />
-      <Setter Property="MinHeight" Value="28" />
+      <Setter Property="Margin" Value="2 0 2 0" />
+      <Setter Property="MinHeight" Value="32" />
+      <Setter Property="Height" Value="32" />
+      <Setter Property="Background" Value="{DynamicResource ButtonBackground}" />
+      <Setter Property="Padding" Value="5" />
+      <Setter Property="CornerRadius" Value="3" />
     </Style>
-    <Style Selector="TabItem:pointerover">
-      <Setter Property="Margin" Value="1 0 0 0" />
+    <Style Selector="TabItem:pointerover /template/ Border">
+      <Setter Property="Background" Value="{DynamicResource ButtonBackgroundPointerOver}" />
     </Style>
-    <Style Selector="TabItem:pointerover /template/ ContentPresenter">
-      <Setter Property="TextBlock.Foreground" Value="#0D0D0D" />
+    <Style Selector="TabItem:disabled /template/ Border">
+      <Setter Property="Opacity" Value="0.3" />
+    </Style>
+    <Style Selector="TabItem:selected /template/ Border">
+      <Setter Property="Background" Value="{DynamicResource ButtonBackgroundPressed}" />
     </Style>
     <Style Selector="TabItem:selected /template/ Border#PART_SelectedPipe">
       <Setter Property="Height" Value="0" />
@@ -64,22 +67,42 @@
     <TabControl TabStripPlacement="Bottom" Margin="5" SelectedIndex="{Binding SelectedIndex}">
       <TabControl.ItemsPanel>
         <ItemsPanelTemplate>
-          <UniformGrid Rows="1" HorizontalAlignment="Stretch" />
+          <UniformGrid Rows="1" Margin="3,0,3,0" HorizontalAlignment="Stretch" />
         </ItemsPanelTemplate>
       </TabControl.ItemsPanel>
-      <TabItem Header="Import" Name="ImportTabItem"
+      <TabItem Name="ImportTabItem"
                IsEnabled="{Binding SettingsPage.IsRegistered}"
-               Content="{Binding ImportSessionsPage}" />
-      <TabItem Header="Settings" Name="SettingsTabItem" Content="{Binding SettingsPage}" />
-      <TabItem Header="Linkages" Name="LinkagesTabItem"
+               Content="{Binding ImportSessionsPage}">
+        <TabItem.Header>
+          <Image Source="{SvgImage /Assets/fa-cloud-arrow-up.svg}" />
+        </TabItem.Header>
+      </TabItem>
+      <TabItem Name="SettingsTabItem" Content="{Binding SettingsPage}">
+        <TabItem.Header>
+          <Image Source="{SvgImage /Assets/cog.svg}" />
+        </TabItem.Header>
+      </TabItem>
+      <TabItem Name="LinkagesTabItem"
                IsEnabled="{Binding SettingsPage.IsRegistered}"
-               Content="Linkages tab" />
-      <TabItem Header="Calibrations" Name="CalibrationsTabItem"
+               Content="Linkages tab">
+        <TabItem.Header>
+          <Image Source="{SvgImage /Assets/leverage-ratio.svg}" />
+        </TabItem.Header>
+      </TabItem>
+      <TabItem Name="CalibrationsTabItem"
                IsEnabled="{Binding SettingsPage.IsRegistered}"
-               Content="Calibrations tab" />
-      <TabItem Header="Bikes" Name="BikeSetupsTabItem"
+               Content="Calibrations tab">
+        <TabItem.Header>
+          <Image Source="{SvgImage /Assets/fa-ruler.svg}" />
+        </TabItem.Header>
+      </TabItem>
+      <TabItem Name="BikeSetupsTabItem"
                IsEnabled="{Binding SettingsPage.IsRegistered}"
-               Content="Bike setups tab" />
+               Content="Bike setups tab">
+        <TabItem.Header>
+          <Image Source="{SvgImage /Assets/fa-biking.svg}" />
+        </TabItem.Header>
+      </TabItem>
     </TabControl>
   </Panel>
  

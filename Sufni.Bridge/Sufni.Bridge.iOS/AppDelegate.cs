@@ -16,7 +16,8 @@ namespace Sufni.Bridge.iOS
         protected override AppBuilder CustomizeAppBuilder(AppBuilder builder)
         {
             return base.CustomizeAppBuilder(builder)
-                .WithInterFont();
+                .WithInterFont()
+                .With(new SkiaOptions { UseOpacitySaveLayer = true });
         }
     }
 }

@@ -32,7 +32,7 @@
             HorizontalAlignment="Stretch"
             HorizontalContentAlignment="Center"
             Command="{Binding ReloadTelemetryDataStoresCommand}">
-      <Image Source="{SvgImage /Assets/reload-icon.svg}" />
+      <Image Source="{SvgImage /Assets/fa-sync-alt.svg}" />
     </Button>
     
     <!-- List of SST files in selected datastore -->
@@ -79,7 +79,7 @@
 
     <!-- Import selected SST files -->
     <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
-            Margin="2,5,5,5"
+            Margin="5,5,5,5"
             HorizontalAlignment="Stretch"
             HorizontalContentAlignment="Center"
             Content="{Binding ImportLabel}"

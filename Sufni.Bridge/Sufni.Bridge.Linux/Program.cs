@@ -27,6 +27,7 @@ namespace Sufni.Bridge.Linux
             => AppBuilder.Configure( () => new App(Services))
                 .UsePlatformDetect()
                 .WithInterFont()
-                .LogToTrace();
+                .LogToTrace()
+                .With(new SkiaOptions { UseOpacitySaveLayer = true });
     }
 }

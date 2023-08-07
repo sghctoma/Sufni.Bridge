@@ -60,11 +60,47 @@ internal class HttpApiService : IHttpApiService
 
     public async Task<List<Board>> GetBoards()
     {
-        using HttpResponseMessage response = await _client.GetAsync($"{_serverUrl}/api/board");
+        using var response = await _client.GetAsync($"{_serverUrl}/api/board");
         response.EnsureSuccessStatusCode() ;
         var boards = await response.Content.ReadFromJsonAsync<List<Board>>();
         Debug.Assert(boards != null);
         return boards;
+    }
+
+    public async Task<List<Linkage>> GetLinkages()
+    {
+        using var response = await _client.GetAsync($"{_serverUrl}/api/linkage");
+        response.EnsureSuccessStatusCode() ;
+        var linkages = await response.Content.ReadFromJsonAsync<List<Linkage>>();
+        Debug.Assert(linkages != null);
+        return linkages;
+    }
+
+    public async Task<List<CalibrationMethod>> GetCalibrationMethods()
+    {
+        using var response = await _client.GetAsync($"{_serverUrl}/api/calibration-method");
+        response.EnsureSuccessStatusCode();
+        var methods = await response.Content.ReadFromJsonAsync<List<CalibrationMethod>>();
+        Debug.Assert(methods != null);
+        return methods;
+    }
+
+    public async Task<List<Calibration>> GetCalibrations()
+    {
+        using var response = await _client.GetAsync($"{_serverUrl}/api/calibration");
+        response.EnsureSuccessStatusCode() ;
+        var calibrations = await response.Content.ReadFromJsonAsync<List<Calibration>>();
+        Debug.Assert(calibrations != null);
+        return calibrations;
+    }
+
+    public async Task<List<Setup>> GetSetups()
+    {
+        using var response = await _client.GetAsync($"{_serverUrl}/api/setup");
+        response.EnsureSuccessStatusCode() ;
+        var setups = await response.Content.ReadFromJsonAsync<List<Setup>>();
+        Debug.Assert(setups != null);
+        return setups;
     }
 
     public async Task ImportSession(TelemetryFile session, int setupId)

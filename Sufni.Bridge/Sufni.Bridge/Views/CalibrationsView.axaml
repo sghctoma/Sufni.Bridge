@@ -29,12 +29,18 @@
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Expander CornerRadius="5" Padding="5" HorizontalAlignment="Stretch"
-                              Header="{Binding Name}">
-                        <Grid ColumnDefinitions="auto auto auto * auto" RowDefinitions="auto auto auto auto auto *"
+                              Header="{Binding Calibration.Name}">
+                        <Grid ColumnDefinitions="auto *" RowDefinitions="auto auto auto auto 40"
                               Height="200" MinWidth="300" HorizontalAlignment="Stretch">
                             <TextBlock Grid.Row="0" Grid.Column="0" Margin="2" VerticalAlignment="Center"
                                        FontWeight="Black"
-                                       Text="{Binding Name}" />
+                                       Text="{Binding Calibration.Name}" />
+                            <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
+                                    Command="{Binding SaveCommand}"
+                                    Margin="0,20,0,0"
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Center"
+                                    Content="Save"/>
                         </Grid>
                     </Expander>
                 </DataTemplate>

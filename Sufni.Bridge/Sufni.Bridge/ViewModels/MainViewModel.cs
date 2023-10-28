@@ -1,7 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Sufni.Bridge.Models;
 using Sufni.Bridge.Services;
 
 namespace Sufni.Bridge.ViewModels;
@@ -14,8 +13,8 @@ public partial class MainViewModel : ViewModelBase
     [ObservableProperty] private SettingsViewModel settingsPage = new();
     [ObservableProperty] private int selectedIndex;
     [ObservableProperty] private bool isImportSessionsPageSelected = true;
-    public ObservableCollection<Linkage> Linkages { get; } = new();
-    public ObservableCollection<Calibration> Calibrations { get; } = new();
+    public ObservableCollection<LinkageViewModel> Linkages { get; } = new();
+    public ObservableCollection<CalibrationViewModel> Calibrations { get; } = new();
     public ObservableCollection<SetupViewModel> Setups { get; } = new();
     
     #endregion
@@ -65,7 +64,7 @@ public partial class MainViewModel : ViewModelBase
 
         foreach (var linkage in linkages)
         {
-            Linkages.Add(linkage);
+            Linkages.Add(new LinkageViewModel(linkage));
         }
     }
 
@@ -75,7 +74,7 @@ public partial class MainViewModel : ViewModelBase
 
         foreach (var calibration in calibrations)
         {
-            Calibrations.Add(calibration);
+            Calibrations.Add(new CalibrationViewModel(calibration));
         }
     }
 

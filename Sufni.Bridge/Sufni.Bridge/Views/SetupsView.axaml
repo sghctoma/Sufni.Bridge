@@ -5,10 +5,10 @@
              xmlns:vm="clr-namespace:Sufni.Bridge.ViewModels"
              mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
              x:Class="Sufni.Bridge.Views.SetupsView"
-             x:DataType="vm:SetupsViewModel">
+             x:DataType="vm:MainViewModel">
 
     <Design.DataContext>
-        <vm:SetupsViewModel />
+        <vm:MainViewModel />
     </Design.DataContext>
 
     <Grid RowDefinitions="*" ColumnDefinitions="*">
@@ -30,11 +30,50 @@
                 <DataTemplate>
                     <Expander CornerRadius="5" Padding="5" HorizontalAlignment="Stretch"
                               Header="{Binding Name}">
-                        <Grid ColumnDefinitions="auto auto auto * auto" RowDefinitions="auto auto auto auto auto *"
+                        <Grid ColumnDefinitions="auto *" RowDefinitions="auto auto auto auto auto *"
                               Height="200" MinWidth="300" HorizontalAlignment="Stretch">
-                            <TextBlock Grid.Row="0" Grid.Column="0" Margin="2" VerticalAlignment="Center"
-                                       FontWeight="Black"
-                                       Text="{Binding Name}" />
+                            <Label Grid.Row="0" Grid.Column="0" 
+                                   VerticalAlignment="Center"
+                                   Content="Linkage: " />
+                            <ComboBox Grid.Row="0" Grid.Column="1"
+                                      Margin="2"
+                                      HorizontalAlignment="Stretch"
+                                      ItemsSource="{Binding Linkages}"
+                                      SelectedItem="{Binding SelectedLinkage}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Name}" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                            <Label Grid.Row="1" Grid.Column="0"
+                                   VerticalAlignment="Center"
+                                   Content="Front calibration: " />
+                            <ComboBox Grid.Row="1" Grid.Column="1"
+                                      Margin="2"
+                                      HorizontalAlignment="Stretch"
+                                      ItemsSource="{Binding Calibrations}"
+                                      SelectedItem="{Binding SelectedFrontCalibration}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Name}" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                            <Label Grid.Row="2" Grid.Column="0"
+                                   VerticalAlignment="Center"
+                                   Content="Rear calibration: " />
+                            <ComboBox Grid.Row="2" Grid.Column="1"
+                                      Margin="2"
+                                      HorizontalAlignment="Stretch"
+                                      ItemsSource="{Binding Calibrations}"
+                                      SelectedItem="{Binding SelectedRearCalibration}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Name}" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
                         </Grid>
                     </Expander>
                 </DataTemplate>

@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:Sufni.Bridge.ViewModels"
+             xmlns:v="clr-namespace:Sufni.Bridge.Views"
              mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
              x:Class="Sufni.Bridge.Views.MainView"
              x:DataType="vm:MainViewModel">
@@ -83,25 +84,25 @@
         </TabItem.Header>
       </TabItem>
       <TabItem Name="LinkagesTabItem"
-               IsEnabled="{Binding SettingsPage.IsRegistered}"
-               Content="Linkages tab">
+               IsEnabled="{Binding SettingsPage.IsRegistered}">
         <TabItem.Header>
           <Image Source="{SvgImage /Assets/leverage-ratio.svg}" />
         </TabItem.Header>
+        <v:LinkagesView />
       </TabItem>
       <TabItem Name="CalibrationsTabItem"
-               IsEnabled="{Binding SettingsPage.IsRegistered}"
-               Content="Calibrations tab">
+               IsEnabled="{Binding SettingsPage.IsRegistered}">
         <TabItem.Header>
           <Image Source="{SvgImage /Assets/fa-ruler.svg}" />
         </TabItem.Header>
+        <v:CalibrationsView />
       </TabItem>
       <TabItem Name="BikeSetupsTabItem"
-               IsEnabled="{Binding SettingsPage.IsRegistered}"
-               Content="Bike setups tab">
+               IsEnabled="{Binding SettingsPage.IsRegistered}">
         <TabItem.Header>
           <Image Source="{SvgImage /Assets/fa-biking.svg}" />
         </TabItem.Header>
+        <v:SetupsView />
       </TabItem>
     </TabControl>
   </Panel>

@@ -1,4 +1,8 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.Collections.ObjectModel;
+using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
+using Sufni.Bridge.Models;
+using Sufni.Bridge.Services;
 
 namespace Sufni.Bridge.ViewModels;
 
@@ -10,6 +14,9 @@ public partial class MainViewModel : ViewModelBase
     [ObservableProperty] private SettingsViewModel settingsPage = new();
     [ObservableProperty] private int selectedIndex;
     [ObservableProperty] private bool isImportSessionsPageSelected = true;
+    public ObservableCollection<Linkage> Linkages { get; } = new();
+    public ObservableCollection<Calibration> Calibrations { get; } = new();
+    public ObservableCollection<SetupViewModel> Setups { get; } = new();
     
     #endregion
 
@@ -22,7 +29,7 @@ public partial class MainViewModel : ViewModelBase
 
     #endregion
     
-    #region Private fields
+    #region Private members
     
     private enum PageIndices
     {
@@ -32,6 +39,8 @@ public partial class MainViewModel : ViewModelBase
         Calibrations = 3,
         BikeSetups = 4,
     }
+    
+    private readonly IHttpApiService _httpApiService;
 
     #endregion
     
@@ -40,6 +49,44 @@ public partial class MainViewModel : ViewModelBase
     public MainViewModel()
     {
         SelectedIndex = SettingsPage.IsRegistered ? (int)PageIndices.ImportSessions : (int)PageIndices.Settings;
+        _httpApiService = this.GetServiceOrCreateInstance<IHttpApiService>();
+        _ = LoadLinkagesAsync();
+        _ = LoadCalibrationsAsync();
+        _ = LoadSetupsAsync();
+    }
+
+    #endregion
+
+    #region Private methods
+
+    private async Task LoadLinkagesAsync()
+    {
+        var linkages = await _httpApiService.GetLinkages();
+
+        foreach (var linkage in linkages)
+        {
+            Linkages.Add(linkage);
+        }
+    }
+
+    private async Task LoadCalibrationsAsync()
+    {
+        var calibrations = await _httpApiService.GetCalibrations();
+
+        foreach (var calibration in calibrations)
+        {
+            Calibrations.Add(calibration);
+        }
+    }
+
+    private async Task LoadSetupsAsync()
+    {
+        var setups = await _httpApiService.GetSetups();
+
+        foreach (var setup in setups)
+        {
+            Setups.Add(new SetupViewModel(setup, Linkages, Calibrations));
+        }
     }
 
     #endregion

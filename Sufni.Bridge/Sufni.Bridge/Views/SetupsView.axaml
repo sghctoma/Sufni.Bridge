@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:Sufni.Bridge.ViewModels"
+             xmlns:local="clr-namespace:Sufni.Bridge.Views"
              mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
              x:Class="Sufni.Bridge.Views.SetupsView"
              x:DataType="vm:MainViewModel">
@@ -10,6 +11,10 @@
     <Design.DataContext>
         <vm:MainViewModel />
     </Design.DataContext>
+    
+    <UserControl.Resources>
+        <local:HeaderColorConverter x:Key="HeaderColorConverter"/>
+    </UserControl.Resources>
 
     <Grid RowDefinitions="*" ColumnDefinitions="*">
         <ListBox Grid.Row="0" Grid.Column="0"
@@ -29,9 +34,15 @@
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Expander CornerRadius="5" Padding="5" HorizontalAlignment="Stretch"
-                              Header="{Binding Name}">
-                        <Grid ColumnDefinitions="auto *" RowDefinitions="auto auto auto auto auto *"
-                              Height="200" MinWidth="300" HorizontalAlignment="Stretch">
+                              Header="{Binding Setup.Name}">
+                        <Expander.Resources>
+                            <SolidColorBrush x:Key="ExpanderHeaderBackgroundPointerOver" 
+                                             Color="{Binding IsDirty, Converter={StaticResource HeaderColorConverter}}"/>
+                            <SolidColorBrush x:Key="ExpanderHeaderBackground" 
+                                             Color="{Binding IsDirty, Converter={StaticResource HeaderColorConverter}}"/>
+                        </Expander.Resources>
+                        <Grid ColumnDefinitions="auto *" RowDefinitions="auto auto auto auto 40"
+                              Height="160" MinWidth="300" HorizontalAlignment="Stretch">
                             <Label Grid.Row="0" Grid.Column="0" 
                                    VerticalAlignment="Center"
                                    Content="Linkage: " />
@@ -42,7 +53,7 @@
                                       SelectedItem="{Binding SelectedLinkage}">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding Name}" />
+                                        <TextBlock Text="{Binding Linkage.Name}" />
                                     </DataTemplate>
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
@@ -56,7 +67,7 @@
                                       SelectedItem="{Binding SelectedFrontCalibration}">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding Name}" />
+                                        <TextBlock Text="{Binding Calibration.Name}" />
                                     </DataTemplate>
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
@@ -70,10 +81,16 @@
                                       SelectedItem="{Binding SelectedRearCalibration}">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding Name}" />
+                                        <TextBlock Text="{Binding Calibration.Name}" />
                                     </DataTemplate>
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
+                            <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
+                                    Command="{Binding SaveCommand}"
+                                    Margin="0,20,0,0"
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Center"
+                                    Content="Save"/>
                         </Grid>
                     </Expander>
                 </DataTemplate>

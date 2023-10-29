@@ -8,9 +8,11 @@ namespace Sufni.Bridge.ViewModels;
 
 public partial class SetupViewModel : ViewModelBase
 {
+    private readonly Setup setup;
+
     #region Observable properties
 
-    [ObservableProperty] private Setup setup;
+    [ObservableProperty] private string? name;
     
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
@@ -29,17 +31,22 @@ public partial class SetupViewModel : ViewModelBase
 
     partial void OnSelectedLinkageChanged(LinkageViewModel? value)
     {
-        IsDirty = value == null || value.Linkage.Id != Setup.LinkageId;
+        IsDirty = value == null || value.Linkage.Id != setup.LinkageId;
     }
 
     partial void OnSelectedFrontCalibrationChanged(CalibrationViewModel? value)
     {
-        IsDirty = value == null || value.Calibration.Id != Setup.FrontCalibrationId;
+        IsDirty = value == null || value.Calibration.Id != setup.FrontCalibrationId;
     }
 
     partial void OnSelectedRearCalibrationChanged(CalibrationViewModel? value)
     {
-        IsDirty = value == null || value.Calibration.Id != Setup.RearCalibrationId;
+        IsDirty = value == null || value.Calibration.Id != setup.RearCalibrationId;
+    }
+
+    partial void OnNameChanged(string? value)
+    {
+        IsDirty = value == null || value != setup.Name;
     }
 
     #endregion
@@ -48,7 +55,8 @@ public partial class SetupViewModel : ViewModelBase
 
     public SetupViewModel(Setup setup, ObservableCollection<LinkageViewModel> linkages, ObservableCollection<CalibrationViewModel> calibrations)
     {
-        Setup = setup;
+        this.setup = setup;
+        Name = setup.Name;
         Linkages = linkages;
         Calibrations = calibrations;
 
@@ -72,5 +80,17 @@ public partial class SetupViewModel : ViewModelBase
         
     }
 
+    [RelayCommand]
+    private void Reset()
+    {
+        
+    }
+
+    [RelayCommand]
+    private void Delete()
+    {
+        
+    }
+    
     #endregion
 }

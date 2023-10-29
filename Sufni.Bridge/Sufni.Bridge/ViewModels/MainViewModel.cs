@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Sufni.Bridge.Services;
 
 namespace Sufni.Bridge.ViewModels;
@@ -86,6 +87,34 @@ public partial class MainViewModel : ViewModelBase
         {
             Setups.Add(new SetupViewModel(setup, Linkages, Calibrations));
         }
+    }
+
+    #endregion
+
+    #region Commands
+
+    [RelayCommand]
+    private void Refresh()
+    {
+        
+    }
+
+    [RelayCommand]
+    private void AddLinkage()
+    {
+        
+    }
+    
+    [RelayCommand]
+    private void AddCalibration()
+    {
+        
+    }
+    
+    [RelayCommand]
+    private void AddSetup()
+    {
+        
     }
 
     #endregion

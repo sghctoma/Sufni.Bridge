@@ -50,6 +50,11 @@ public partial class App : Application
                 break;
         }
 
+        if (topLevel != null)
+        {
+            serviceCollection.AddSingleton<IFilesService>(x => new FilesService(topLevel));
+        }
+        
         Services = serviceCollection.BuildServiceProvider();
         
         switch (ApplicationLifetime)

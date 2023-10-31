@@ -9,6 +9,7 @@ using System.Linq;
 using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
+using Microsoft.Extensions.DependencyInjection;
 using SecureStorage;
 
 namespace Sufni.Bridge.ViewModels;
@@ -23,8 +24,8 @@ public partial class ImportSessionsViewModel : ViewModelBase
 
     #region Observable properties
 
-    public ObservableCollection<TelemetryDataStore> TelemetryDataStores { get; }
-    
+    public ObservableCollection<TelemetryDataStore>? TelemetryDataStores { get; set; }
+
     public ObservableCollection<TelemetryFile> TelemetryFiles { get; } = new();
 
     [ObservableProperty] private TelemetryDataStore? selectedDataStore;
@@ -38,7 +39,9 @@ public partial class ImportSessionsViewModel : ViewModelBase
     #region Property change handlers
 
     async partial void OnSelectedDataStoreChanged(TelemetryDataStore? value)
-    {
+    {           
+        Debug.Assert(_httpApiService != null, nameof(_httpApiService) + " != null");
+
         if (value == null) return;
 
         try
@@ -64,17 +67,20 @@ public partial class ImportSessionsViewModel : ViewModelBase
 
     #region Private members
 
-    private readonly IHttpApiService _httpApiService;
-    private readonly ITelemetryDataStoreService _telemetryDataStoreService;
+    private readonly IHttpApiService? _httpApiService;
+    private readonly ITelemetryDataStoreService? _telemetryDataStoreService;
 
     #endregion Private members
-
+    
     #region Constructors
 
     public ImportSessionsViewModel()
     {
-        _httpApiService = this.GetServiceOrCreateInstance<IHttpApiService>();
-        _telemetryDataStoreService = this.GetServiceOrCreateInstance<ITelemetryDataStoreService>();
+        _httpApiService = App.Current?.Services?.GetService<IHttpApiService>();
+        _telemetryDataStoreService = App.Current?.Services?.GetService<ITelemetryDataStoreService>();
+        
+        Debug.Assert(_httpApiService != null, nameof(_telemetryDataStoreService) + " != null");
+        Debug.Assert(_telemetryDataStoreService != null, nameof(_telemetryDataStoreService) + " != null");
 
         var ds = _telemetryDataStoreService.GetTelemetryDataStores();
         TelemetryDataStores = new ObservableCollection<TelemetryDataStore>(ds);
@@ -85,7 +91,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
         }
     }
 
-    #endregion Constructors
+    #endregion
 
     #region Commands
 
@@ -93,7 +99,8 @@ public partial class ImportSessionsViewModel : ViewModelBase
     private async Task ImportSessions()
     {
         Debug.Assert(SelectedSetup != null);
-
+        Debug.Assert(_httpApiService != null, nameof(_httpApiService) + " != null");
+        
         foreach (var telemetryFile in TelemetryFiles.Where(f => f.ShouldBeImported))
         {
             try
@@ -123,7 +130,8 @@ public partial class ImportSessionsViewModel : ViewModelBase
 
     private bool CanImportSessions()
     {
-        var secureStorage = this.GetServiceOrCreateInstance<ISecureStorage>();
+        var secureStorage = App.Current?.Services?.GetService<ISecureStorage>();
+        Debug.Assert(secureStorage != null, nameof(secureStorage) + " != null");
         
         return SelectedSetup != null &&
                !string.IsNullOrEmpty(secureStorage.GetString("RefreshToken"));
@@ -135,6 +143,9 @@ public partial class ImportSessionsViewModel : ViewModelBase
     [RelayCommand]
     private void ReloadTelemetryDataStores()
     {
+        Debug.Assert(TelemetryDataStores != null, nameof(TelemetryDataStores) + " != null");
+        Debug.Assert(_telemetryDataStoreService != null, nameof(_telemetryDataStoreService) + " != null");
+
         TelemetryDataStores.Clear();
         var ds = _telemetryDataStoreService.GetTelemetryDataStores();
         foreach (var store in ds)

@@ -1,7 +1,9 @@
 ﻿using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using Sufni.Bridge.Services;
 
 namespace Sufni.Bridge.ViewModels;
@@ -39,8 +41,8 @@ public partial class MainViewModel : ViewModelBase
         Calibrations = 3,
         BikeSetups = 4,
     }
-    
-    private readonly IHttpApiService _httpApiService;
+
+    private readonly IHttpApiService? _httpApiService;
 
     #endregion
     
@@ -48,8 +50,10 @@ public partial class MainViewModel : ViewModelBase
 
     public MainViewModel()
     {
+        _httpApiService = App.Current?.Services?.GetService<IHttpApiService>();
+        
         SelectedIndex = SettingsPage.IsRegistered ? (int)PageIndices.ImportSessions : (int)PageIndices.Settings;
-        _httpApiService = this.GetServiceOrCreateInstance<IHttpApiService>();
+        
         _ = LoadLinkagesAsync();
         _ = LoadCalibrationsAsync();
         _ = LoadSetupsAsync();
@@ -61,6 +65,8 @@ public partial class MainViewModel : ViewModelBase
 
     private async Task LoadLinkagesAsync()
     {
+        Debug.Assert(_httpApiService != null, nameof(_httpApiService) + " != null");
+        
         var linkages = await _httpApiService.GetLinkages();
 
         foreach (var linkage in linkages)
@@ -71,6 +77,8 @@ public partial class MainViewModel : ViewModelBase
 
     private async Task LoadCalibrationsAsync()
     {
+        Debug.Assert(_httpApiService != null, nameof(_httpApiService) + " != null");
+        
         var calibrations = await _httpApiService.GetCalibrations();
 
         foreach (var calibration in calibrations)
@@ -81,6 +89,8 @@ public partial class MainViewModel : ViewModelBase
 
     private async Task LoadSetupsAsync()
     {
+        Debug.Assert(_httpApiService != null, nameof(_httpApiService) + " != null");
+        
         var setups = await _httpApiService.GetSetups();
 
         foreach (var setup in setups)

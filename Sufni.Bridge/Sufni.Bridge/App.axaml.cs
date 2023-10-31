@@ -6,51 +6,62 @@ using Sufni.Bridge.Services;
 using Sufni.Bridge.ViewModels;
 using Sufni.Bridge.Views;
 using System;
+using Avalonia.Controls;
 
 namespace Sufni.Bridge;
 
 public partial class App : Application
 {
-    public readonly IServiceProvider AppServiceProvider;
+    private readonly IServiceCollection serviceCollection;
+    public new static App? Current => Application.Current as App;
+    public IServiceProvider? Services { get; private set; }
 
     // This is just here to suppress a warning about public constructor not being present
     public App()
     {
-        var dummyServiceCollection = new ServiceCollection();
-        AppServiceProvider = dummyServiceCollection.BuildServiceProvider();
+        serviceCollection = new ServiceCollection();
     }
 
     public App(IServiceCollection services)
     {
         services.AddSingleton<IHttpApiService, HttpApiServiceStub>();
         services.AddSingleton<ITelemetryDataStoreService, TelemetryDataStoreService>();
-        AppServiceProvider = services.BuildServiceProvider();
+        serviceCollection = services;
     }
 
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
     }
-
+    
     public override void OnFrameworkInitializationCompleted()
     {
-        var viewModel = ActivatorUtilities.CreateInstance<MainViewModel>(AppServiceProvider);
-
-        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        TopLevel? topLevel = null;
+        
+        switch (ApplicationLifetime)
         {
-            desktop.MainWindow = new MainWindow
-            {
-                DataContext = viewModel
-            };
-        }
-        else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
-        {
-            singleViewPlatform.MainView = new MainView
-            {
-                DataContext = viewModel
-            };
+            case IClassicDesktopStyleApplicationLifetime desktop:
+                desktop.MainWindow = new MainWindow();
+                topLevel = TopLevel.GetTopLevel(desktop.MainWindow);
+                break;
+            case ISingleViewApplicationLifetime singleViewPlatform:
+                singleViewPlatform.MainView = new MainView();
+                topLevel = TopLevel.GetTopLevel(singleViewPlatform.MainView);
+                break;
         }
 
+        Services = serviceCollection.BuildServiceProvider();
+        
+        switch (ApplicationLifetime)
+        {
+            case IClassicDesktopStyleApplicationLifetime desktop:
+                desktop.MainWindow!.DataContext = new MainViewModel();
+                break;
+            case ISingleViewApplicationLifetime singleViewPlatform:
+                singleViewPlatform.MainView!.DataContext = new MainViewModel();
+                break;
+        }
+        
         base.OnFrameworkInitializationCompleted();
     }
 }

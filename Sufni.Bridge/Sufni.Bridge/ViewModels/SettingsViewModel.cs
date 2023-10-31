@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using SecureStorage;
 using Sufni.Bridge.Services;
 
@@ -38,30 +40,36 @@ public partial class SettingsViewModel : ViewModelBase
     
     #region Private members
     
-    private readonly ISecureStorage _secureStorage;
-    private readonly IHttpApiService _httpApiService;
+    private readonly ISecureStorage? _secureStorage;
+    private readonly IHttpApiService? _httpApiService;
     
     #endregion Private members
-
+    
     #region Constructors
 
     public SettingsViewModel()
     {
-        _secureStorage = this.GetServiceOrCreateInstance<ISecureStorage>();
-        _httpApiService = this.GetServiceOrCreateInstance<IHttpApiService>();
-
+        _secureStorage = App.Current?.Services?.GetService<ISecureStorage>();
+        _httpApiService = App.Current?.Services?.GetService<IHttpApiService>();
+        
+        Debug.Assert(_httpApiService != null, nameof(_httpApiService) + " != null");
+        Debug.Assert(_secureStorage != null, nameof(_secureStorage) + " != null");
+        
         ServerUrl = _secureStorage.GetString("ServerUrl");
         Username = _secureStorage.GetString("Username");
         var refreshToken = _secureStorage.GetString("RefreshToken");
         _ = RefreshTokensAsync(ServerUrl, refreshToken);
     }
-    
+
     #endregion
-    
+
     #region Private methods
 
     private async Task RefreshTokensAsync(string? url, string? refreshToken)
     {
+        Debug.Assert(_httpApiService != null, nameof(_httpApiService) + " != null");
+        Debug.Assert(_secureStorage != null, nameof(_secureStorage) + " != null");
+
         if (string.IsNullOrEmpty(url) || string.IsNullOrEmpty(refreshToken))
         {
             IsRegistered = false;
@@ -96,6 +104,9 @@ public partial class SettingsViewModel : ViewModelBase
 
     private async Task Register()
     {
+        Debug.Assert(_httpApiService != null, nameof(_httpApiService) + " != null");
+        Debug.Assert(_secureStorage != null, nameof(_secureStorage) + " != null");
+        
         if (string.IsNullOrEmpty(ServerUrl) || string.IsNullOrEmpty(Username) || string.IsNullOrEmpty(Password)) return;
 
         try
@@ -115,6 +126,9 @@ public partial class SettingsViewModel : ViewModelBase
 
     private async Task Unregister()
     {
+        Debug.Assert(_httpApiService != null, nameof(_httpApiService) + " != null");
+        Debug.Assert(_secureStorage != null, nameof(_secureStorage) + " != null");
+        
         var refreshToken = _secureStorage.GetString("RefreshToken");
         await _httpApiService.Unregister(refreshToken!);
         _secureStorage.Remove("Username");

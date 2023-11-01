@@ -15,6 +15,20 @@ public partial class LinkageViewModel : ViewModelBase
     private readonly Linkage linkage;
     private string? linkageData;
 
+    #region Private methods
+
+    private void EvaluateDirtiness()
+    {
+        IsDirty =
+            Name == null || Name != linkage.Name ||
+            HeadAngle == null || HeadAngle != linkage.HeadAngle ||
+            FrontStroke == null || FrontStroke != linkage.FrontStroke ||
+            RearStroke == null || RearStroke != linkage.RearStroke ||
+            LinkageDataFile != null;
+    }
+
+    #endregion
+    
     #region Observable properties
 
     [ObservableProperty] private int? id;
@@ -34,27 +48,27 @@ public partial class LinkageViewModel : ViewModelBase
     
     partial void OnNameChanged(string? value)
     {
-        IsDirty = value == null || value != linkage.Name;
+        EvaluateDirtiness();
     }
 
     partial void OnHeadAngleChanged(double? value)
     {
-        IsDirty = value == null || value != linkage.HeadAngle;
+        EvaluateDirtiness();
     }
 
     partial void OnFrontStrokeChanged(double? value)
     {
-        IsDirty = value == null || value != linkage.FrontStroke;
+        EvaluateDirtiness();
     }
 
     partial void OnRearStrokeChanged(double? value)
     {
-        IsDirty = value == null || value != linkage.RearStroke;
+        EvaluateDirtiness();
     }
 
     partial void OnLinkageDataFileChanged(string? value)
     {
-        IsDirty = value != null;
+        EvaluateDirtiness();
     }
 
     #endregion

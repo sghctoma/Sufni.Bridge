@@ -27,26 +27,39 @@ public partial class SetupViewModel : ViewModelBase
     
     #endregion
 
+    #region Private methods
+
+    private void EvaluateDirtiness()
+    {
+        IsDirty =
+            Name == null || Name != setup.Name ||
+            SelectedLinkage == null || SelectedLinkage.Id != setup.LinkageId ||
+            SelectedFrontCalibration == null || SelectedFrontCalibration.Id != setup.FrontCalibrationId ||
+            SelectedRearCalibration == null || SelectedRearCalibration.Id != setup.RearCalibrationId;
+    }
+
+    #endregion
+
     #region Property change handlers
 
     partial void OnSelectedLinkageChanged(LinkageViewModel? value)
     {
-        IsDirty = value == null || value.Id != setup.LinkageId;
+        EvaluateDirtiness();
     }
 
     partial void OnSelectedFrontCalibrationChanged(CalibrationViewModel? value)
     {
-        IsDirty = value == null || value.Calibration.Id != setup.FrontCalibrationId;
+        EvaluateDirtiness();
     }
 
     partial void OnSelectedRearCalibrationChanged(CalibrationViewModel? value)
     {
-        IsDirty = value == null || value.Calibration.Id != setup.RearCalibrationId;
+        EvaluateDirtiness();
     }
 
     partial void OnNameChanged(string? value)
     {
-        IsDirty = value == null || value != setup.Name;
+        EvaluateDirtiness();
     }
 
     #endregion

@@ -68,7 +68,7 @@
                                       SelectedItem="{Binding SelectedLinkage}">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding Linkage.Name}" />
+                                        <TextBlock Text="{Binding Name}" />
                                     </DataTemplate>
                                 </ComboBox.ItemTemplate>
                             </ComboBox>

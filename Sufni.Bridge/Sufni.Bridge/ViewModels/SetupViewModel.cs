@@ -31,7 +31,7 @@ public partial class SetupViewModel : ViewModelBase
 
     partial void OnSelectedLinkageChanged(LinkageViewModel? value)
     {
-        IsDirty = value == null || value.Linkage.Id != setup.LinkageId;
+        IsDirty = value == null || value.Id != setup.LinkageId;
     }
 
     partial void OnSelectedFrontCalibrationChanged(CalibrationViewModel? value)
@@ -60,7 +60,7 @@ public partial class SetupViewModel : ViewModelBase
         Linkages = linkages;
         Calibrations = calibrations;
 
-        SelectedLinkage = Linkages.First(l => l.Linkage.Id == setup.LinkageId);
+        SelectedLinkage = Linkages.First(l => l.Id == setup.LinkageId);
         SelectedFrontCalibration = Calibrations.First(c => c.Calibration.Id == setup.FrontCalibrationId);
         SelectedRearCalibration = Calibrations.First(c => c.Calibration.Id == setup.RearCalibrationId);
     }
@@ -91,6 +91,6 @@ public partial class SetupViewModel : ViewModelBase
     {
         
     }
-    
+
     #endregion
 }

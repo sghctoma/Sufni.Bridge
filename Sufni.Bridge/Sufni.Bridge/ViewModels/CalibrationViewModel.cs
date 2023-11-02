@@ -54,7 +54,7 @@ public partial class CalibrationViewModel : ViewModelBase
     
     #region Observable properties
     
-    [ObservableProperty] private int id;
+    [ObservableProperty] private int? id;
     [ObservableProperty] private string name;
     [ObservableProperty] private CalibrationMethod? selectedCalibrationMethod;
 
@@ -81,7 +81,7 @@ public partial class CalibrationViewModel : ViewModelBase
     
     #region Property change handlers
     
-    partial void OnNameChanged(string? value)
+    partial void OnNameChanged(string value)
     {
         EvaluateDirtiness();
     }

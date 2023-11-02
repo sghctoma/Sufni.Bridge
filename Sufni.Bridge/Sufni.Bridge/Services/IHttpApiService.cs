@@ -11,8 +11,14 @@ internal interface IHttpApiService
     public Task Unregister(string refreshToken);
     public Task<List<Board>> GetBoards();
     public Task<List<Linkage>> GetLinkages();
+    public Task<int> PutLinkage(Linkage linkage);
+    public Task DeleteLinkage(int id);
     public Task<List<CalibrationMethod>> GetCalibrationMethods();
     public Task<List<Calibration>> GetCalibrations();
+    public Task<int> PutCalibration(Calibration calibration);
+    public Task DeleteCalibration(int id);
     public Task<List<Setup>> GetSetups();
+    public Task<int> PutSetup(Setup setup);
+    public Task DeleteSetup(int id);
     public Task ImportSession(TelemetryFile session, int setupId);
 }

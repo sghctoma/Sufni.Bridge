@@ -22,11 +22,11 @@ public record Session(
     [property: JsonPropertyName("data")] string Data);
     
 public record Linkage(
-    [property: JsonPropertyName("id")] int Id,
+    [property: JsonPropertyName("id")] int? Id,
     [property: JsonPropertyName("name")] string Name,
     [property: JsonPropertyName("head_angle")] double HeadAngle,
-    [property: JsonPropertyName("front_stroke")] double FrontStroke,
-    [property: JsonPropertyName("rear_stroke")] double RearStroke,
+    [property: JsonPropertyName("front_stroke")] double? FrontStroke,
+    [property: JsonPropertyName("rear_stroke")] double? RearStroke,
     [property: JsonPropertyName("data")] string Data);
 
 public record CalibrationMethodProperties(
@@ -41,14 +41,17 @@ public record CalibrationMethod(
     [property: JsonPropertyName("properties")] CalibrationMethodProperties Properties);
 
 public record Calibration(
-    [property: JsonPropertyName("id")] int Id,
+    [property: JsonPropertyName("id")] int? Id,
     [property: JsonPropertyName("name")] string Name,
     [property: JsonPropertyName("method_id")] int MethodId,
     [property: JsonPropertyName("inputs")] Dictionary<string, double> Inputs);
 
 public record Setup(
-    [property: JsonPropertyName("id")] int Id,
+    [property: JsonPropertyName("id")] int? Id,
     [property: JsonPropertyName("name")] string Name,
     [property: JsonPropertyName("linkage_id")] int LinkageId,
-    [property: JsonPropertyName("front_calibration_id")] int FrontCalibrationId,
-    [property: JsonPropertyName("rear_calibration_id")] int RearCalibrationId);
+    [property: JsonPropertyName("front_calibration_id")] int? FrontCalibrationId,
+    [property: JsonPropertyName("rear_calibration_id")] int? RearCalibrationId);
+
+public record PutResponse(
+    [property: JsonPropertyName("id")] int Id);

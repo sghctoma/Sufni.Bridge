@@ -23,8 +23,8 @@ public partial class LinkageViewModel : ViewModelBase
         IsDirty =
             Name != linkage.Name ||
             Math.Abs(HeadAngle - linkage.HeadAngle) > 0.00001 ||
-            Math.Abs(FrontStroke - linkage.FrontStroke) > 0.00001 ||
-            Math.Abs(RearStroke - linkage.RearStroke) > 0.00001 ||
+            Math.Abs((FrontStroke ?? 0.0) - (linkage.FrontStroke ?? 0.0)) > 0.00001 ||
+            Math.Abs((RearStroke ?? 0.0) - (linkage.RearStroke ?? 0.0)) > 0.00001 ||
             LinkageDataFile != null;
     }
 
@@ -32,11 +32,11 @@ public partial class LinkageViewModel : ViewModelBase
     
     #region Observable properties
 
-    [ObservableProperty] private int id;
+    [ObservableProperty] private int? id;
     [ObservableProperty] private string name;
     [ObservableProperty] private double headAngle;
-    [ObservableProperty] private double frontStroke;
-    [ObservableProperty] private double rearStroke;
+    [ObservableProperty] private double? frontStroke;
+    [ObservableProperty] private double? rearStroke;
     [ObservableProperty] private string? linkageDataFile;
     
     [ObservableProperty]
@@ -47,7 +47,7 @@ public partial class LinkageViewModel : ViewModelBase
 
     #region Property change handlers
     
-    partial void OnNameChanged(string? value)
+    partial void OnNameChanged(string value)
     {
         EvaluateDirtiness();
     }
@@ -57,12 +57,12 @@ public partial class LinkageViewModel : ViewModelBase
         EvaluateDirtiness();
     }
 
-    partial void OnFrontStrokeChanged(double value)
+    partial void OnFrontStrokeChanged(double? value)
     {
         EvaluateDirtiness();
     }
 
-    partial void OnRearStrokeChanged(double value)
+    partial void OnRearStrokeChanged(double? value)
     {
         EvaluateDirtiness();
     }

@@ -1,5 +1,7 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -60,6 +62,8 @@ public partial class MainViewModel : ViewModelBase
         _ = LoadCalibrationMethodsAsync();
         _ = LoadCalibrationsAsync();
         _ = LoadSetupsAsync();
+        
+        // TODO: disable calibrations page if no calibration methods are present, etc...
     }
 
     #endregion
@@ -124,39 +128,73 @@ public partial class MainViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private void AddLinkage()
+    private async Task AddLinkage()
     {
-        
+        Debug.Assert(_httpApiService != null, nameof(_httpApiService) + " != null");
+
+        var linkage = new Linkage(null, "new linkage", 65, 180, 65, "");
+        var id = await _httpApiService.PutLinkage(linkage);
+        Linkages.Add(new LinkageViewModel(linkage with { Id = id }));
     }
-    
+
     [RelayCommand]
     private void DeleteLinkage(int id)
     {
-        var x = id;
+        Debug.Assert(_httpApiService != null, nameof(_httpApiService) + " != null");
+        _httpApiService.DeleteLinkage(id);
+        var toDelete = Linkages.First(l => l.Id == id);
+        Linkages.Remove(toDelete);
     }
-    
+
     [RelayCommand]
-    private void AddCalibration()
+    private async Task AddCalibration()
     {
+        Debug.Assert(_httpApiService != null, nameof(_httpApiService) + " != null");
+
+        var methodId = CalibrationMethods[0].Id;
+        var inputs = new Dictionary<string, double>();
+        foreach (var input in CalibrationMethods[0].Properties.Inputs)
+        {
+            inputs.Add(input, 0.0);
+        }
+        var calibration = new Calibration(null, "new calibration", methodId, inputs);
         
+        var id = await _httpApiService.PutCalibration(calibration);
+        Calibrations.Add(new CalibrationViewModel(calibration with { Id = id }, CalibrationMethods));
     }
     
     [RelayCommand]
     private void DeleteCalibration(int id)
     {
-        var x = id;
+        Debug.Assert(_httpApiService != null, nameof(_httpApiService) + " != null");
+        _httpApiService.DeleteCalibration(id);
+        var toDelete = Calibrations.First(c => c.Id == id);
+        Calibrations.Remove(toDelete);
     }
     
     [RelayCommand]
-    private void AddSetup()
+    private async Task AddSetup()
     {
+        Debug.Assert(_httpApiService != null, nameof(_httpApiService) + " != null");
+
+        var setup = new Setup(
+            null,
+            "new setup",
+            Linkages[0].Id!.Value,
+            null,
+            null);
         
+        var id = await _httpApiService.PutSetup(setup);
+        Setups.Add(new SetupViewModel(setup with { Id = id }, Linkages, Calibrations));
     }
     
     [RelayCommand]
     private void DeleteSetup(int id)
     {
-        var x = id;
+        Debug.Assert(_httpApiService != null, nameof(_httpApiService) + " != null");
+        _httpApiService.DeleteSetup(id);
+        var toDelete = Setups.First(s => s.Id == id);
+        Setups.Remove(toDelete);
     }
 
     #endregion

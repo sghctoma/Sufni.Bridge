@@ -12,7 +12,7 @@ public partial class SetupViewModel : ViewModelBase
 
     #region Observable properties
 
-    [ObservableProperty] private int id;
+    [ObservableProperty] private int? id;
     [ObservableProperty] private string name;
     
     [ObservableProperty]
@@ -76,8 +76,8 @@ public partial class SetupViewModel : ViewModelBase
         Calibrations = calibrations;
 
         SelectedLinkage = Linkages.First(l => l.Id == setup.LinkageId);
-        SelectedFrontCalibration = Calibrations.First(c => c.Id == setup.FrontCalibrationId);
-        SelectedRearCalibration = Calibrations.First(c => c.Id == setup.RearCalibrationId);
+        SelectedFrontCalibration = Calibrations.FirstOrDefault(c => c.Id == setup.FrontCalibrationId, null);
+        SelectedRearCalibration = Calibrations.FirstOrDefault(c => c.Id == setup.RearCalibrationId, null);
     }
 
     #endregion

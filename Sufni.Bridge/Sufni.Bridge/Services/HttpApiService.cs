@@ -70,12 +70,27 @@ internal class HttpApiService : IHttpApiService
     public async Task<List<Linkage>> GetLinkages()
     {
         using var response = await _client.GetAsync($"{_serverUrl}/api/linkage");
-        response.EnsureSuccessStatusCode() ;
+        response.EnsureSuccessStatusCode();
         var linkages = await response.Content.ReadFromJsonAsync<List<Linkage>>();
         Debug.Assert(linkages != null);
         return linkages;
     }
+    
+    public async Task<int> PutLinkage(Linkage linkage)
+    {
+        using HttpResponseMessage response = await _client.PutAsJsonAsync($"{_serverUrl}/api/linkage", linkage);
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<PutResponse>();
+        Debug.Assert(result != null);
+        return result.Id;
+    }
 
+    public async Task DeleteLinkage(int id)
+    {
+        using var response = await _client.DeleteAsync($"{_serverUrl}/api/linkage/{id}");
+        response.EnsureSuccessStatusCode();
+    }
+    
     public async Task<List<CalibrationMethod>> GetCalibrationMethods()
     {
         using var response = await _client.GetAsync($"{_serverUrl}/api/calibration-method");
@@ -93,6 +108,21 @@ internal class HttpApiService : IHttpApiService
         Debug.Assert(calibrations != null);
         return calibrations;
     }
+    
+    public async Task<int> PutCalibration(Calibration calibration)
+    {
+        using HttpResponseMessage response = await _client.PutAsJsonAsync($"{_serverUrl}/api/calibration", calibration);
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<PutResponse>();
+        Debug.Assert(result != null);
+        return result.Id;
+    }
+
+    public async Task DeleteCalibration(int id)
+    {
+        using var response = await _client.DeleteAsync($"{_serverUrl}/api/calibration/{id}");
+        response.EnsureSuccessStatusCode();
+    }
 
     public async Task<List<Setup>> GetSetups()
     {
@@ -101,6 +131,21 @@ internal class HttpApiService : IHttpApiService
         var setups = await response.Content.ReadFromJsonAsync<List<Setup>>();
         Debug.Assert(setups != null);
         return setups;
+    }
+    
+    public async Task<int> PutSetup(Setup setup)
+    {
+        using HttpResponseMessage response = await _client.PutAsJsonAsync($"{_serverUrl}/api/setup", setup);
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<PutResponse>();
+        Debug.Assert(result != null);
+        return result.Id;
+    }
+
+    public async Task DeleteSetup(int id)
+    {
+        using var response = await _client.DeleteAsync($"{_serverUrl}/api/setup/{id}");
+        response.EnsureSuccessStatusCode();
     }
 
     public async Task ImportSession(TelemetryFile session, int setupId)

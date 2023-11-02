@@ -109,12 +109,6 @@ public partial class LinkageViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private void Delete()
-    {
-        
-    }
-    
-    [RelayCommand]
     private async Task OpenLeverageRatioFile(CancellationToken token)
     {
         var filesService = App.Current?.Services?.GetService<IFilesService>();

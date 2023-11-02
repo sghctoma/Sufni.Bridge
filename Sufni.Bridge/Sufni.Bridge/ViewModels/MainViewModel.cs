@@ -130,15 +130,33 @@ public partial class MainViewModel : ViewModelBase
     }
     
     [RelayCommand]
+    private void DeleteLinkage(int id)
+    {
+        var x = id;
+    }
+    
+    [RelayCommand]
     private void AddCalibration()
     {
         
     }
     
     [RelayCommand]
+    private void DeleteCalibration(int id)
+    {
+        var x = id;
+    }
+    
+    [RelayCommand]
     private void AddSetup()
     {
         
+    }
+    
+    [RelayCommand]
+    private void DeleteSetup(int id)
+    {
+        var x = id;
     }
 
     #endregion

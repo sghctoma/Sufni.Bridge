@@ -115,7 +115,8 @@
                                            Source="{SvgImage /Assets/fa-rotate-left.svg}"/>
                                 </Button>
                                 <Button Grid.Row="0" Grid.Column="2" VerticalAlignment="Stretch"
-                                        Command="{Binding DeleteCommand}">
+                                        Command="{Binding $parent[ListBox].((vm:MainViewModel)DataContext).DeleteCalibrationCommand}"
+                                        CommandParameter="{Binding Id}">
                                     <Image Width="16" Height="16"
                                            Source="{SvgImage /Assets/fa-trash-can.svg}" />
                                 </Button>

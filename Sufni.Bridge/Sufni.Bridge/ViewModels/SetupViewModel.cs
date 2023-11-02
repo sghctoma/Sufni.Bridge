@@ -12,6 +12,7 @@ public partial class SetupViewModel : ViewModelBase
 
     #region Observable properties
 
+    [ObservableProperty] private int id;
     [ObservableProperty] private string name;
     
     [ObservableProperty]
@@ -69,6 +70,7 @@ public partial class SetupViewModel : ViewModelBase
     public SetupViewModel(Setup setup, ObservableCollection<LinkageViewModel> linkages, ObservableCollection<CalibrationViewModel> calibrations)
     {
         this.setup = setup;
+        Id = setup.Id;
         Name = setup.Name;
         Linkages = linkages;
         Calibrations = calibrations;
@@ -95,12 +97,6 @@ public partial class SetupViewModel : ViewModelBase
 
     [RelayCommand]
     private void Reset()
-    {
-        
-    }
-
-    [RelayCommand]
-    private void Delete()
     {
         
     }

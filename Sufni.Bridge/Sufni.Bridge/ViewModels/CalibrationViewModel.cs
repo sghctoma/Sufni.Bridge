@@ -152,11 +152,5 @@ public partial class CalibrationViewModel : ViewModelBase
         
     }
 
-    [RelayCommand]
-    private void Delete()
-    {
-        
-    }
-    
     #endregion
 }

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
+using Sufni.Bridge.Models;
 using Sufni.Bridge.Services;
 
 namespace Sufni.Bridge.ViewModels;
@@ -19,6 +20,7 @@ public partial class MainViewModel : ViewModelBase
     public ObservableCollection<LinkageViewModel> Linkages { get; } = new();
     public ObservableCollection<CalibrationViewModel> Calibrations { get; } = new();
     public ObservableCollection<SetupViewModel> Setups { get; } = new();
+    public ObservableCollection<CalibrationMethod> CalibrationMethods { get; } = new();
     
     #endregion
 
@@ -55,6 +57,7 @@ public partial class MainViewModel : ViewModelBase
         SelectedIndex = SettingsPage.IsRegistered ? (int)PageIndices.ImportSessions : (int)PageIndices.Settings;
         
         _ = LoadLinkagesAsync();
+        _ = LoadCalibrationMethodsAsync();
         _ = LoadCalibrationsAsync();
         _ = LoadSetupsAsync();
     }
@@ -74,6 +77,17 @@ public partial class MainViewModel : ViewModelBase
             Linkages.Add(new LinkageViewModel(linkage));
         }
     }
+    private async Task LoadCalibrationMethodsAsync()
+    {
+        Debug.Assert(_httpApiService != null, nameof(_httpApiService) + " != null");
+        
+        var methods = await _httpApiService.GetCalibrationMethods();
+
+        foreach (var method in methods)
+        {
+            CalibrationMethods.Add(method);
+        }
+    }
 
     private async Task LoadCalibrationsAsync()
     {
@@ -83,7 +97,7 @@ public partial class MainViewModel : ViewModelBase
 
         foreach (var calibration in calibrations)
         {
-            Calibrations.Add(new CalibrationViewModel(calibration));
+            Calibrations.Add(new CalibrationViewModel(calibration, CalibrationMethods));
         }
     }
 
@@ -104,7 +118,7 @@ public partial class MainViewModel : ViewModelBase
     #region Commands
 
     [RelayCommand]
-    private void Refresh()
+    private void Reload()
     {
         
     }

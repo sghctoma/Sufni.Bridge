@@ -84,7 +84,7 @@
                                       SelectedItem="{Binding SelectedFrontCalibration}">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding Calibration.Name}" />
+                                        <TextBlock Text="{Binding Name}" />
                                     </DataTemplate>
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
@@ -100,7 +100,7 @@
                                       SelectedItem="{Binding SelectedRearCalibration}">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding Calibration.Name}" />
+                                        <TextBlock Text="{Binding Name}" />
                                     </DataTemplate>
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
@@ -134,13 +134,13 @@
         
         <Grid Grid.Row="1" Grid.Column="0"
               ColumnDefinitions="* auto" RowDefinitions="30"
-              Margin="2,5,5,5">
+              Margin="5,5,5,5">
             
             <!-- Reload Setups -->
             <Button Grid.Row="0" Grid.Column="0"
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Center"
-                    Command="{Binding RefreshCommand}">
+                    Command="{Binding ReloadCommand}">
                 <Image Source="{SvgImage /Assets/fa-sync-alt.svg}" />
             </Button>
             

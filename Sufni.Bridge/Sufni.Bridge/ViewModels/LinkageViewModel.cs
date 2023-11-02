@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
@@ -20,10 +21,10 @@ public partial class LinkageViewModel : ViewModelBase
     private void EvaluateDirtiness()
     {
         IsDirty =
-            Name == null || Name != linkage.Name ||
-            HeadAngle == null || HeadAngle != linkage.HeadAngle ||
-            FrontStroke == null || FrontStroke != linkage.FrontStroke ||
-            RearStroke == null || RearStroke != linkage.RearStroke ||
+            Name != linkage.Name ||
+            Math.Abs(HeadAngle - linkage.HeadAngle) > 0.00001 ||
+            Math.Abs(FrontStroke - linkage.FrontStroke) > 0.00001 ||
+            Math.Abs(RearStroke - linkage.RearStroke) > 0.00001 ||
             LinkageDataFile != null;
     }
 
@@ -31,11 +32,11 @@ public partial class LinkageViewModel : ViewModelBase
     
     #region Observable properties
 
-    [ObservableProperty] private int? id;
-    [ObservableProperty] private string? name;
-    [ObservableProperty] private double? headAngle;
-    [ObservableProperty] private double? frontStroke;
-    [ObservableProperty] private double? rearStroke;
+    [ObservableProperty] private int id;
+    [ObservableProperty] private string name;
+    [ObservableProperty] private double headAngle;
+    [ObservableProperty] private double frontStroke;
+    [ObservableProperty] private double rearStroke;
     [ObservableProperty] private string? linkageDataFile;
     
     [ObservableProperty]
@@ -51,17 +52,17 @@ public partial class LinkageViewModel : ViewModelBase
         EvaluateDirtiness();
     }
 
-    partial void OnHeadAngleChanged(double? value)
+    partial void OnHeadAngleChanged(double value)
     {
         EvaluateDirtiness();
     }
 
-    partial void OnFrontStrokeChanged(double? value)
+    partial void OnFrontStrokeChanged(double value)
     {
         EvaluateDirtiness();
     }
 
-    partial void OnRearStrokeChanged(double? value)
+    partial void OnRearStrokeChanged(double value)
     {
         EvaluateDirtiness();
     }

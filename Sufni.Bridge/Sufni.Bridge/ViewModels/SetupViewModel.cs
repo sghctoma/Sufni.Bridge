@@ -12,7 +12,7 @@ public partial class SetupViewModel : ViewModelBase
 
     #region Observable properties
 
-    [ObservableProperty] private string? name;
+    [ObservableProperty] private string name;
     
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
@@ -32,7 +32,7 @@ public partial class SetupViewModel : ViewModelBase
     private void EvaluateDirtiness()
     {
         IsDirty =
-            Name == null || Name != setup.Name ||
+            Name != setup.Name ||
             SelectedLinkage == null || SelectedLinkage.Id != setup.LinkageId ||
             SelectedFrontCalibration == null || SelectedFrontCalibration.Id != setup.FrontCalibrationId ||
             SelectedRearCalibration == null || SelectedRearCalibration.Id != setup.RearCalibrationId;
@@ -57,7 +57,7 @@ public partial class SetupViewModel : ViewModelBase
         EvaluateDirtiness();
     }
 
-    partial void OnNameChanged(string? value)
+    partial void OnNameChanged(string value)
     {
         EvaluateDirtiness();
     }
@@ -74,8 +74,8 @@ public partial class SetupViewModel : ViewModelBase
         Calibrations = calibrations;
 
         SelectedLinkage = Linkages.First(l => l.Id == setup.LinkageId);
-        SelectedFrontCalibration = Calibrations.First(c => c.Calibration.Id == setup.FrontCalibrationId);
-        SelectedRearCalibration = Calibrations.First(c => c.Calibration.Id == setup.RearCalibrationId);
+        SelectedFrontCalibration = Calibrations.First(c => c.Id == setup.FrontCalibrationId);
+        SelectedRearCalibration = Calibrations.First(c => c.Id == setup.RearCalibrationId);
     }
 
     #endregion

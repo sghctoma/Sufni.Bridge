@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:Sufni.Bridge.ViewModels"
+             xmlns:local="clr-namespace:Sufni.Bridge.Views"
              mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
              x:Class="Sufni.Bridge.Views.CalibrationsView"
              x:DataType="vm:MainViewModel">
@@ -11,7 +12,13 @@
         <vm:MainViewModel />
     </Design.DataContext>
     
-    <Grid RowDefinitions="*" ColumnDefinitions="*">
+    <UserControl.Resources>
+        <local:HeaderColorConverter x:Key="HeaderColorConverter"/>
+    </UserControl.Resources>
+    
+    <Grid RowDefinitions="* 40" ColumnDefinitions="*">
+        
+        <!-- List of Calibrations -->
         <ListBox Grid.Row="0" Grid.Column="0"
                  Background="Transparent"
                  ItemsSource="{Binding Calibrations}">
@@ -28,23 +35,114 @@
             </ListBox.Styles>
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <Expander CornerRadius="5" Padding="5" HorizontalAlignment="Stretch"
-                              Header="{Binding Calibration.Name}">
+                    <Expander CornerRadius="5" Padding="5" HorizontalAlignment="Stretch">
+                        
+                        <!-- Indicate modifications with header color -->
+                        <Expander.Resources>
+                            <SolidColorBrush x:Key="ExpanderHeaderBackgroundPointerOver" 
+                                             Color="{Binding IsDirty, Converter={StaticResource HeaderColorConverter}}"/>
+                            <SolidColorBrush x:Key="ExpanderHeaderBackground" 
+                                             Color="{Binding IsDirty, Converter={StaticResource HeaderColorConverter}}"/>
+                        </Expander.Resources>
+                        
+                        <!-- Editable name in header -->
+                        <Expander.Header>
+                            <Grid ColumnDefinitions="auto" RowDefinitions="*">
+                                <TextBox Grid.Column="0" BorderBrush="Transparent"
+                                         HorizontalAlignment="Stretch"
+                                         Text="{Binding Name}" />
+                            </Grid>
+                        </Expander.Header>
+                        
                         <Grid ColumnDefinitions="auto *" RowDefinitions="auto auto auto auto 40"
-                              Height="200" MinWidth="300" HorizontalAlignment="Stretch">
-                            <TextBlock Grid.Row="0" Grid.Column="0" Margin="2" VerticalAlignment="Center"
-                                       FontWeight="Black"
-                                       Text="{Binding Calibration.Name}" />
-                            <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
-                                    Command="{Binding SaveCommand}"
-                                    Margin="0,20,0,0"
-                                    HorizontalAlignment="Stretch"
-                                    HorizontalContentAlignment="Center"
-                                    Content="Save"/>
+                              MinWidth="300" HorizontalAlignment="Stretch">
+                            
+                            <!-- Calibration method -->
+                            <Label Grid.Row="0" Grid.Column="0"
+                                   VerticalAlignment="Center"
+                                   Content="Calibration method: " />
+                            <ComboBox Grid.Row="0" Grid.Column="1"
+                                      Name="MethodsComboBox"
+                                      Margin="2"
+                                      HorizontalAlignment="Stretch"
+                                      ItemsSource="{Binding CalibrationMethods}"
+                                      SelectedItem="{Binding SelectedCalibrationMethod}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Name}" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                            
+                            <!-- List of inputs -->
+                            <ItemsControl Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                                          ItemsSource="{Binding Inputs}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid RowDefinitions="*" ColumnDefinitions="auto *">
+                                            <!--
+                                            Label.Width is set to 141 manually, because it
+                                            matches the width of the "Calibration method: "
+                                            label, and I could not bind the Width to that
+                                            control's Width.
+                                            -->
+                                            <Label Grid.Row="0" Grid.Column="0"
+                                                   Width="141"
+                                                   VerticalAlignment="Center"
+                                                   Content="{Binding Name}" />
+                                            <NumericUpDown Grid.Row="0" Grid.Column="1"
+                                                           Margin="2"
+                                                           HorizontalAlignment="Stretch"
+                                                           Value="{Binding Value}"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            
+                            <!-- Save, Reset and Delete buttons -->
+                            <Grid Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2"
+                                  Margin="0,15,0,5"
+                                  ColumnDefinitions="* auto auto" RowDefinitions="30">
+                                <Button Grid.Row="0" Grid.Column="0"
+                                        Command="{Binding SaveCommand}"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Stretch"
+                                        HorizontalContentAlignment="Center"
+                                        Content="Save"/>
+                                <Button Grid.Row="0" Grid.Column="1" VerticalAlignment="Stretch"
+                                        Command="{Binding ResetCommand}">
+                                    <Image Width="16" Height="16"
+                                           Source="{SvgImage /Assets/fa-rotate-left.svg}"/>
+                                </Button>
+                                <Button Grid.Row="0" Grid.Column="2" VerticalAlignment="Stretch"
+                                        Command="{Binding DeleteCommand}">
+                                    <Image Width="16" Height="16"
+                                           Source="{SvgImage /Assets/fa-trash-can.svg}" />
+                                </Button>
+                            </Grid>
                         </Grid>
                     </Expander>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
+        
+        <Grid Grid.Row="1" Grid.Column="0"
+              ColumnDefinitions="* auto" RowDefinitions="30"
+              Margin="5,5,5,5">
+            
+            <!-- Reload Calibrations -->
+            <Button Grid.Row="0" Grid.Column="0"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    Command="{Binding ReloadCommand}">
+                <Image Source="{SvgImage /Assets/fa-sync-alt.svg}" />
+            </Button>
+            
+            <!-- Add new Calibration -->
+            <Button Grid.Row="0" Grid.Column="1"
+                    Command="{Binding AddCalibrationCommand}">
+                <Image Source="{SvgImage /Assets/fa-plus.svg}" />
+            </Button>
+        </Grid>
     </Grid>
 </UserControl>

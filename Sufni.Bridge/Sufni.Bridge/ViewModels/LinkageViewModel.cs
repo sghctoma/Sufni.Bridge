@@ -80,11 +80,7 @@ public partial class LinkageViewModel : ViewModelBase
     {
         this.linkage = linkage;
         Id = linkage.Id;
-        Name = linkage.Name;
-        HeadAngle = linkage.HeadAngle;
-        FrontStroke = linkage.FrontStroke;
-        RearStroke = linkage.RearStroke;
-        LinkageDataFile = null;
+        Reset();
     }
 
     #endregion
@@ -105,7 +101,11 @@ public partial class LinkageViewModel : ViewModelBase
     [RelayCommand]
     private void Reset()
     {
-        
+        Name = linkage.Name;
+        HeadAngle = linkage.HeadAngle;
+        FrontStroke = linkage.FrontStroke;
+        RearStroke = linkage.RearStroke;
+        LinkageDataFile = null;
     }
 
     [RelayCommand]

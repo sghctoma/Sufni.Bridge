@@ -125,10 +125,8 @@ public partial class CalibrationViewModel : ViewModelBase
     {
         this.calibration = calibration;
         Id = calibration.Id;
-        Name = calibration.Name;
-        
         CalibrationMethods = calibrationMethods;
-        SelectedCalibrationMethod = calibrationMethods.First(m => m.Id == calibration.MethodId);
+        Reset();
     }
 
     #endregion
@@ -149,7 +147,9 @@ public partial class CalibrationViewModel : ViewModelBase
     [RelayCommand]
     private void Reset()
     {
-        
+        Name = calibration.Name;
+        SelectedCalibrationMethod = null; // so that OnSelectedCalibrationMethodChanged kicks in, resetting inputs too
+        SelectedCalibrationMethod = CalibrationMethods.First(m => m.Id == calibration.MethodId);
     }
 
     #endregion

@@ -71,13 +71,9 @@ public partial class SetupViewModel : ViewModelBase
     {
         this.setup = setup;
         Id = setup.Id;
-        Name = setup.Name;
         Linkages = linkages;
         Calibrations = calibrations;
-
-        SelectedLinkage = Linkages.First(l => l.Id == setup.LinkageId);
-        SelectedFrontCalibration = Calibrations.FirstOrDefault(c => c.Id == setup.FrontCalibrationId, null);
-        SelectedRearCalibration = Calibrations.FirstOrDefault(c => c.Id == setup.RearCalibrationId, null);
+        Reset();
     }
 
     #endregion
@@ -98,7 +94,10 @@ public partial class SetupViewModel : ViewModelBase
     [RelayCommand]
     private void Reset()
     {
-        
+        Name = setup.Name;
+        SelectedLinkage = Linkages.First(l => l.Id == setup.LinkageId);
+        SelectedFrontCalibration = Calibrations.FirstOrDefault(c => c.Id == setup.FrontCalibrationId, null);
+        SelectedRearCalibration = Calibrations.FirstOrDefault(c => c.Id == setup.RearCalibrationId, null);
     }
 
     #endregion

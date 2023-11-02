@@ -73,6 +73,11 @@ public partial class MainViewModel : ViewModelBase
         {
             HasCalibrations = Calibrations.Count != 0;
         };
+        Setups.CollectionChanged += (sender, args) =>
+        {
+            DeleteLinkageCommand.NotifyCanExecuteChanged();
+            DeleteCalibrationCommand.NotifyCanExecuteChanged();
+        };
         
         _ = LoadLinkagesAsync();
         _ = LoadCalibrationMethodsAsync();
@@ -127,7 +132,18 @@ public partial class MainViewModel : ViewModelBase
 
         foreach (var setup in setups)
         {
-            Setups.Add(new SetupViewModel(setup, Linkages, Calibrations));
+            var svm = new SetupViewModel(setup, Linkages, Calibrations);
+            svm.PropertyChanged += (sender, args) =>
+            {
+                if (sender is not null &&
+                    args.PropertyName == nameof(SetupViewModel.IsDirty) &&
+                    !((SetupViewModel)sender).IsDirty)
+                {
+                    DeleteCalibrationCommand.NotifyCanExecuteChanged();
+                    DeleteLinkageCommand.NotifyCanExecuteChanged();
+                }
+            };
+            Setups.Add(svm);
         }
     }
 
@@ -151,7 +167,12 @@ public partial class MainViewModel : ViewModelBase
         Linkages.Add(new LinkageViewModel(linkage with { Id = id }));
     }
 
-    [RelayCommand]
+    private bool CanDeleteLinkage(int id)
+    {
+        return !Setups.Any(s => s.SelectedLinkage != null && s.SelectedLinkage.Id == id);
+    }
+    
+    [RelayCommand(CanExecute = nameof(CanDeleteLinkage))]
     private void DeleteLinkage(int id)
     {
         Debug.Assert(_httpApiService != null, nameof(_httpApiService) + " != null");
@@ -177,7 +198,14 @@ public partial class MainViewModel : ViewModelBase
         Calibrations.Add(new CalibrationViewModel(calibration with { Id = id }, CalibrationMethods));
     }
     
-    [RelayCommand]
+    private bool CanDeleteCalibration(int id)
+    {
+        return !Setups.Any(s => 
+            (s.SelectedFrontCalibration != null && s.SelectedFrontCalibration.Id == id) ||
+            (s.SelectedRearCalibration != null && s.SelectedRearCalibration.Id == id));
+    }
+    
+    [RelayCommand(CanExecute = nameof(CanDeleteCalibration))]
     private void DeleteCalibration(int id)
     {
         Debug.Assert(_httpApiService != null, nameof(_httpApiService) + " != null");
@@ -199,7 +227,19 @@ public partial class MainViewModel : ViewModelBase
             null);
         
         var id = await _httpApiService.PutSetup(setup);
-        Setups.Add(new SetupViewModel(setup with { Id = id }, Linkages, Calibrations));
+
+        var svm = new SetupViewModel(setup with { Id = id }, Linkages, Calibrations);
+        svm.PropertyChanged += (sender, args) =>
+        {
+            if (sender is not null &&
+                args.PropertyName == nameof(SetupViewModel.IsDirty) &&
+                !((SetupViewModel)sender).IsDirty)
+            {
+                DeleteCalibrationCommand.NotifyCanExecuteChanged();
+                DeleteLinkageCommand.NotifyCanExecuteChanged();
+            }
+        };
+        Setups.Add(svm);
     }
     
     [RelayCommand]

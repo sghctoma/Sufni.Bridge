@@ -19,6 +19,9 @@ public partial class MainViewModel : ViewModelBase
     [ObservableProperty] private SettingsViewModel settingsPage = new();
     [ObservableProperty] private int selectedIndex;
     [ObservableProperty] private bool isImportSessionsPageSelected = true;
+    [ObservableProperty] private bool hasLinkages;
+    [ObservableProperty] private bool hasCalibrationMethods;
+    [ObservableProperty] private bool hasCalibrations;
     public ObservableCollection<LinkageViewModel> Linkages { get; } = new();
     public ObservableCollection<CalibrationViewModel> Calibrations { get; } = new();
     public ObservableCollection<SetupViewModel> Setups { get; } = new();
@@ -57,13 +60,24 @@ public partial class MainViewModel : ViewModelBase
         _httpApiService = App.Current?.Services?.GetService<IHttpApiService>();
         
         SelectedIndex = SettingsPage.IsRegistered ? (int)PageIndices.ImportSessions : (int)PageIndices.Settings;
+
+        Linkages.CollectionChanged += (sender, args) =>
+        {
+            HasLinkages = Linkages.Count != 0;
+        };
+        CalibrationMethods.CollectionChanged += (sender, args) =>
+        {
+            HasCalibrationMethods = CalibrationMethods.Count != 0;
+        };
+        Calibrations.CollectionChanged += (sender, args) =>
+        {
+            HasCalibrations = Calibrations.Count != 0;
+        };
         
         _ = LoadLinkagesAsync();
         _ = LoadCalibrationMethodsAsync();
         _ = LoadCalibrationsAsync();
         _ = LoadSetupsAsync();
-        
-        // TODO: disable calibrations page if no calibration methods are present, etc...
     }
 
     #endregion

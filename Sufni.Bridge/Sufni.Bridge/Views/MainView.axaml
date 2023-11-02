@@ -90,15 +90,26 @@
         </TabItem.Header>
         <v:LinkagesView />
       </TabItem>
-      <TabItem Name="CalibrationsTabItem"
-               IsEnabled="{Binding SettingsPage.IsRegistered}">
+      <TabItem Name="CalibrationsTabItem">
+        <TabItem.IsEnabled>
+          <MultiBinding Converter="{x:Static BoolConverters.And}">
+            <Binding Path="SettingsPage.IsRegistered" />
+            <Binding Path="HasCalibrationMethods" />
+          </MultiBinding>
+        </TabItem.IsEnabled>
         <TabItem.Header>
           <Image Source="{SvgImage /Assets/fa-ruler.svg}" />
         </TabItem.Header>
         <v:CalibrationsView />
       </TabItem>
-      <TabItem Name="BikeSetupsTabItem"
-               IsEnabled="{Binding SettingsPage.IsRegistered}">
+      <TabItem Name="BikeSetupsTabItem">
+        <TabItem.IsEnabled>
+          <MultiBinding Converter="{x:Static BoolConverters.And}">
+            <Binding Path="SettingsPage.IsRegistered" />
+            <Binding Path="HasCalibrations" />
+            <Binding Path="HasLinkages" />
+          </MultiBinding>
+        </TabItem.IsEnabled>
         <TabItem.Header>
           <Image Source="{SvgImage /Assets/fa-biking.svg}" />
         </TabItem.Header>

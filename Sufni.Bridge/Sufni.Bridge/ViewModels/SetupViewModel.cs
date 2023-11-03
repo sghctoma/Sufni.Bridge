@@ -1,14 +1,17 @@
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using Sufni.Bridge.Models;
+using Sufni.Bridge.Services;
 
 namespace Sufni.Bridge.ViewModels;
 
 public partial class SetupViewModel : ViewModelBase
 {
-    private readonly Setup setup;
+    private Setup setup;
 
     #region Observable properties
 
@@ -88,7 +91,23 @@ public partial class SetupViewModel : ViewModelBase
     [RelayCommand(CanExecute = nameof(CanSave))]
     private void Save()
     {
+        Debug.Assert(SelectedLinkage != null, nameof(SelectedLinkage) + " != null");
+        Debug.Assert(SelectedLinkage.Id != null, "SelectedLinkage.Id != null");
+        Debug.Assert(SelectedFrontCalibration != null, nameof(SelectedFrontCalibration) + " != null");
+        Debug.Assert(SelectedRearCalibration != null, nameof(SelectedRearCalibration) + " != null");
         
+        var httpApiService = App.Current?.Services?.GetService<IHttpApiService>();
+        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
+
+        var newSetup = new Setup(
+            Id,
+            Name,
+            SelectedLinkage.Id.Value,
+            SelectedFrontCalibration.Id,
+            SelectedRearCalibration.Id);
+        httpApiService.PutSetup(newSetup);
+        setup = newSetup;
+        IsDirty = false;
     }
 
     [RelayCommand]

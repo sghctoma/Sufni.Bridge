@@ -154,7 +154,14 @@ public partial class MainViewModel : ViewModelBase
     [RelayCommand]
     private void Reload()
     {
-        
+        Linkages.Clear();
+        CalibrationMethods.Clear();
+        Calibrations.Clear();
+        Setups.Clear();
+        _ = LoadLinkagesAsync();
+        _ = LoadCalibrationMethodsAsync();
+        _ = LoadCalibrationsAsync();
+        _ = LoadSetupsAsync();
     }
 
     [RelayCommand]

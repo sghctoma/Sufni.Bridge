@@ -1,9 +1,12 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using Sufni.Bridge.Models;
+using Sufni.Bridge.Services;
 
 namespace Sufni.Bridge.ViewModels;
 
@@ -50,7 +53,7 @@ public partial class CalibrationInputViewModel : ViewModelBase
 
 public partial class CalibrationViewModel : ViewModelBase
 {
-    private readonly Calibration calibration;
+    private Calibration calibration;
     
     #region Observable properties
     
@@ -141,7 +144,19 @@ public partial class CalibrationViewModel : ViewModelBase
     [RelayCommand(CanExecute = nameof(CanSave))]
     private void Save()
     {
+        Debug.Assert(SelectedCalibrationMethod != null, nameof(SelectedCalibrationMethod) + " != null");
         
+        var httpApiService = App.Current?.Services?.GetService<IHttpApiService>();
+        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
+        
+        var newCalibration = new Calibration(
+            Id,
+            Name,
+            SelectedCalibrationMethod.Id,
+            Inputs.ToDictionary(input => input.Name, input => input.Value));
+        httpApiService.PutCalibration(newCalibration);
+        calibration = newCalibration;
+        IsDirty = false;
     }
 
     [RelayCommand]

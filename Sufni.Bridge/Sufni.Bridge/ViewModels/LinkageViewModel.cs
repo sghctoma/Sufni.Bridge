@@ -13,7 +13,7 @@ namespace Sufni.Bridge.ViewModels;
 
 public partial class LinkageViewModel : ViewModelBase
 {
-    private readonly Linkage linkage;
+    private Linkage linkage;
     private string? linkageData;
 
     #region Private methods
@@ -95,7 +95,21 @@ public partial class LinkageViewModel : ViewModelBase
     [RelayCommand(CanExecute = nameof(CanSave))]
     private void Save()
     {
+        Debug.Assert(linkageData != null, nameof(linkageData) + " != null");
         
+        var httpApiService = App.Current?.Services?.GetService<IHttpApiService>();
+        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
+
+        var newLinkage = new Linkage(
+            Id,
+            Name,
+            HeadAngle,
+            FrontStroke,
+            RearStroke,
+            linkageData);
+        httpApiService.PutLinkage(newLinkage);
+        linkage = newLinkage;
+        IsDirty = false;
     }
 
     [RelayCommand]

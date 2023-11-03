@@ -16,6 +16,12 @@
         <local:HeaderColorConverter x:Key="HeaderColorConverter"/>
     </UserControl.Resources>
     
+    <UserControl.Styles>
+        <Style Selector="Button:disabled Image">
+            <Setter Property="Opacity" Value="0.3" />
+        </Style>
+    </UserControl.Styles>
+    
     <Grid RowDefinitions="* 40" ColumnDefinitions="*">
         
         <!-- List of Calibrations -->

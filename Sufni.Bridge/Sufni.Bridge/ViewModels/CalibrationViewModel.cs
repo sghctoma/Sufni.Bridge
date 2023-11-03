@@ -66,6 +66,7 @@ public partial class CalibrationViewModel : ViewModelBase
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ResetCommand))]
     private bool isDirty;
     
     #endregion
@@ -159,7 +160,12 @@ public partial class CalibrationViewModel : ViewModelBase
         IsDirty = false;
     }
 
-    [RelayCommand]
+    private bool CanReset()
+    {
+        return IsDirty;
+    }
+    
+    [RelayCommand(CanExecute = nameof(CanReset))]
     private void Reset()
     {
         Name = calibration.Name;

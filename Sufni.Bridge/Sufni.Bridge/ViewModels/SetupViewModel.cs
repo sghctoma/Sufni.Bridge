@@ -20,6 +20,7 @@ public partial class SetupViewModel : ViewModelBase
     
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ResetCommand))]
     private bool isDirty;
 
     public ObservableCollection<LinkageViewModel> Linkages { get; }
@@ -110,7 +111,12 @@ public partial class SetupViewModel : ViewModelBase
         IsDirty = false;
     }
 
-    [RelayCommand]
+    private bool CanReset()
+    {
+        return IsDirty;
+    }
+    
+    [RelayCommand(CanExecute = nameof(CanReset))]
     private void Reset()
     {
         Name = setup.Name;

@@ -96,8 +96,6 @@ public partial class LinkageViewModel : ViewModelBase
     [RelayCommand(CanExecute = nameof(CanSave))]
     private void Save()
     {
-        Debug.Assert(linkageData != null, nameof(linkageData) + " != null");
-        
         var httpApiService = App.Current?.Services?.GetService<IHttpApiService>();
         Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
 

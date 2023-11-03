@@ -27,7 +27,7 @@ public record Linkage(
     [property: JsonPropertyName("head_angle")] double HeadAngle,
     [property: JsonPropertyName("front_stroke")] double? FrontStroke,
     [property: JsonPropertyName("rear_stroke")] double? RearStroke,
-    [property: JsonPropertyName("data")] string Data);
+    [property: JsonPropertyName("data")] string? Data);
 
 public record CalibrationMethodProperties(
     [property: JsonPropertyName("inputs")] List<string> Inputs,

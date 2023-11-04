@@ -22,6 +22,7 @@ public partial class MainViewModel : ViewModelBase
     [ObservableProperty] private bool hasLinkages;
     [ObservableProperty] private bool hasCalibrationMethods;
     [ObservableProperty] private bool hasCalibrations;
+
     public ObservableCollection<LinkageViewModel> Linkages { get; } = new();
     public ObservableCollection<CalibrationViewModel> Calibrations { get; } = new();
     public ObservableCollection<SetupViewModel> Setups { get; } = new();
@@ -150,7 +151,7 @@ public partial class MainViewModel : ViewModelBase
     #endregion
 
     #region Commands
-
+    
     [RelayCommand]
     private void Reload()
     {

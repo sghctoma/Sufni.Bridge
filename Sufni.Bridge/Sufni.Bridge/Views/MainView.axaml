@@ -7,6 +7,7 @@
              mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
              x:Class="Sufni.Bridge.Views.MainView"
              x:DataType="vm:MainViewModel">
+
   <Design.DataContext>
     <vm:MainViewModel />
   </Design.DataContext>
@@ -65,7 +66,8 @@
     </Border>
     
     <!-- Menu tab -->
-    <TabControl TabStripPlacement="Bottom" Margin="5" SelectedIndex="{Binding SelectedIndex}">
+    <TabControl TabStripPlacement="Bottom" Margin="5"
+                SelectedIndex="{Binding SelectedIndex}">
       <TabControl.ItemsPanel>
         <ItemsPanelTemplate>
           <UniformGrid Rows="1" Margin="3,0,3,0" HorizontalAlignment="Stretch" />

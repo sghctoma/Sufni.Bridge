@@ -16,16 +16,10 @@ public partial class SettingsViewModel : ViewModelBase
     #region Observable properties
 
     [ObservableProperty] private string registerLabel = "Register";
-
     [ObservableProperty] private string? serverUrl;
-
     [ObservableProperty] private string? username;
-
     [ObservableProperty] private string? password;
-
     [ObservableProperty] private bool isRegistered;
-
-    [ObservableProperty] private string? registrationError;
     
     #endregion
     
@@ -116,11 +110,11 @@ public partial class SettingsViewModel : ViewModelBase
             _secureStorage.SetString("ServerUrl", ServerUrl);
             _secureStorage.SetString("RefreshToken", refreshToken);
             IsRegistered = true;
-            RegistrationError = null;
+            ErrorMessages.Clear();
         }
         catch(Exception ex)
         {
-            RegistrationError = $"Registration failed: {ex.Message}";
+            ErrorMessages.Add($"Registration failed: {ex.Message}");
         }
     }
 

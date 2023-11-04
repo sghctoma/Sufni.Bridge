@@ -8,5 +8,5 @@
         Icon="/Assets/avalonia-logo.ico"
         Title="Sufni.Bridge"
         Width="500" Height="600">
-        <views:MainView />
+    <views:MainView />
 </Window>

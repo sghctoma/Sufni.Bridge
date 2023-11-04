@@ -22,27 +22,27 @@
                                 CornerRadius="2" Padding="0" Width="50" Height="20"
                                 Content="close"
                                 Background="PaleVioletRed"
-                                Command="{TemplateBinding ClearErrorsCommand}"/>
-                            <ListBox Grid.Row="1" Background="Transparent"
-                                     ItemsSource="{TemplateBinding ErrorMessages}">
-                                <ListBox.Styles>
-                                    <Style Selector="ListBoxItem">
-                                        <Setter Property="Padding" Value="0,2, 0, 0" />
-                                    </Style>
-                                    <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
-                                        <Setter Property="Background" Value="Transparent"/>
-                                    </Style>
-                                    <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
-                                        <Setter Property="Background" Value="#19000000"/>
-                                    </Style>
-                                </ListBox.Styles>
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding (system:String)}"
-                                                   TextWrapping="Wrap"/>
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
+                                Command="{TemplateBinding ClearErrorsCommand}" />
+                        <ListBox Grid.Row="1" Background="Transparent"
+                                 ItemsSource="{TemplateBinding ErrorMessages}">
+                            <ListBox.Styles>
+                                <Style Selector="ListBoxItem">
+                                    <Setter Property="Padding" Value="0,2, 0, 0" />
+                                </Style>
+                                <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
+                                    <Setter Property="Background" Value="Transparent" />
+                                </Style>
+                                <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
+                                    <Setter Property="Background" Value="#19000000" />
+                                </Style>
+                            </ListBox.Styles>
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding (system:String)}"
+                                               TextWrapping="Wrap" />
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
                     </Grid>
                 </Border>
             </ControlTemplate>

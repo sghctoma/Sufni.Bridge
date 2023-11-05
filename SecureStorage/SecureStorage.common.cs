@@ -10,7 +10,7 @@ public interface ISecureStorage
 
     void SetString(string key, string? value);
 
-    bool Remove(string key);
+    void Remove(string key);
 
     void RemoveAll();
 }

@@ -119,11 +119,10 @@ public class SecureStorage : ISecureStorage
         Save();
     }
 
-    public bool Remove(string key)
+    public void Remove(string key)
     {
-        var result = secureStorage.TryRemove(key, out _);
+        secureStorage.Remove(key, out _);
         Save();
-        return result;
     }
 
     public void RemoveAll()

@@ -1,9 +1,9 @@
 using Avalonia;
-using Avalonia.Controls;
 using Avalonia.iOS;
-using Avalonia.Media;
 using Foundation;
-using UIKit;
+using Microsoft.Extensions.DependencyInjection;
+using SecureStorage;
+using Sufni.Bridge.Services;
 
 namespace Sufni.Bridge.iOS
 {
@@ -15,6 +15,7 @@ namespace Sufni.Bridge.iOS
     {
         protected override AppBuilder CustomizeAppBuilder(AppBuilder builder)
         {
+            RegisteredServices.Collection.AddSingleton<ISecureStorage, SecureStorage.SecureStorage>();
             return base.CustomizeAppBuilder(builder)
                 .WithInterFont()
                 .With(new SkiaOptions { UseOpacitySaveLayer = true });

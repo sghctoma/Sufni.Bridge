@@ -145,6 +145,12 @@ public class HttpApiServiceStub : IHttpApiService
         return Task.FromResult(Boards);
     }
 
+    public Task PutBoard(Board board)
+    {
+        Boards.Add(board);
+        return Task.CompletedTask;
+    }
+
     public Task<List<Linkage>> GetLinkages()
     {
         return Task.FromResult(Linkages);

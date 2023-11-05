@@ -16,7 +16,7 @@ public record Tokens(
 
 public record Board(
     [property: JsonPropertyName("id")] string Id,
-    [property: JsonPropertyName("setup_id")] int SetupId);
+    [property: JsonPropertyName("setup_id")] int? SetupId);
 
 public record Session(
     [property: JsonPropertyName("name")] string Name,

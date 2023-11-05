@@ -65,11 +65,20 @@
                         <Grid ColumnDefinitions="auto *" RowDefinitions="auto auto auto auto auto 40"
                               MinWidth="300" HorizontalAlignment="Stretch">
 
-                            <!-- Linkage -->
+                            <!-- Board ID -->
                             <Label Grid.Row="0" Grid.Column="0"
                                    VerticalAlignment="Center"
+                                   Content="Board ID: " />
+                            <TextBox Grid.Row="0" Grid.Column="1"
+                                      Margin="2"
+                                      HorizontalAlignment="Stretch"
+                                      Text="{Binding BoardId}" />
+                            
+                            <!-- Linkage -->
+                            <Label Grid.Row="1" Grid.Column="0"
+                                   VerticalAlignment="Center"
                                    Content="Linkage: " />
-                            <ComboBox Grid.Row="0" Grid.Column="1"
+                            <ComboBox Grid.Row="1" Grid.Column="1"
                                       Margin="2"
                                       HorizontalAlignment="Stretch"
                                       ItemsSource="{Binding Linkages}"
@@ -82,10 +91,10 @@
                             </ComboBox>
 
                             <!-- Front Calibration -->
-                            <Label Grid.Row="1" Grid.Column="0"
+                            <Label Grid.Row="2" Grid.Column="0"
                                    VerticalAlignment="Center"
                                    Content="Front calibration: " />
-                            <ComboBox Grid.Row="1" Grid.Column="1"
+                            <ComboBox Grid.Row="2" Grid.Column="1"
                                       Margin="2"
                                       HorizontalAlignment="Stretch"
                                       ItemsSource="{Binding Calibrations}"
@@ -98,10 +107,10 @@
                             </ComboBox>
 
                             <!-- Rear Calibration -->
-                            <Label Grid.Row="2" Grid.Column="0"
+                            <Label Grid.Row="3" Grid.Column="0"
                                    VerticalAlignment="Center"
                                    Content="Rear calibration: " />
-                            <ComboBox Grid.Row="2" Grid.Column="1"
+                            <ComboBox Grid.Row="3" Grid.Column="1"
                                       Margin="2"
                                       HorizontalAlignment="Stretch"
                                       ItemsSource="{Binding Calibrations}"

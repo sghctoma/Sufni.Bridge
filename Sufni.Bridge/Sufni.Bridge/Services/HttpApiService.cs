@@ -65,6 +65,14 @@ internal class HttpApiService : IHttpApiService
         return boards;
     }
 
+    public async Task PutBoard(Board board)
+    {
+        using HttpResponseMessage response = await client.PutAsJsonAsync($"{serverUrl}/api/board", board);
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<PutResponse>();
+        Debug.Assert(result != null);
+    }
+    
     public async Task<List<Linkage>> GetLinkages()
     {
         using var response = await client.GetAsync($"{serverUrl}/api/linkage");

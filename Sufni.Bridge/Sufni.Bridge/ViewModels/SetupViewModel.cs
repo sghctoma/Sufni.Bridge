@@ -13,6 +13,7 @@ namespace Sufni.Bridge.ViewModels;
 public partial class SetupViewModel : ViewModelBase
 {
     private Setup setup;
+    private string? originalBoardId;
 
     #region Observable properties
     [ObservableProperty] private int? id;
@@ -25,7 +26,8 @@ public partial class SetupViewModel : ViewModelBase
 
     public ObservableCollection<LinkageViewModel> Linkages { get; }
     public ObservableCollection<CalibrationViewModel> Calibrations { get; }
-    
+
+    [ObservableProperty] private string? boardId;
     [ObservableProperty] private LinkageViewModel? selectedLinkage;
     [ObservableProperty] private CalibrationViewModel? selectedFrontCalibration;
     [ObservableProperty] private CalibrationViewModel? selectedRearCalibration;
@@ -38,6 +40,7 @@ public partial class SetupViewModel : ViewModelBase
     {
         IsDirty =
             Name != setup.Name ||
+            BoardId != originalBoardId ||
             SelectedLinkage == null || SelectedLinkage.Id != setup.LinkageId ||
             SelectedFrontCalibration == null || SelectedFrontCalibration.Id != setup.FrontCalibrationId ||
             SelectedRearCalibration == null || SelectedRearCalibration.Id != setup.RearCalibrationId;
@@ -71,14 +74,21 @@ public partial class SetupViewModel : ViewModelBase
         EvaluateDirtiness();
     }
 
+    // ReSharper disable once UnusedParameterInPartialMethod
+    partial void OnBoardIdChanged(string? value)
+    {
+        EvaluateDirtiness();
+    }
+    
     #endregion
 
     #region Constructors
     
-    public SetupViewModel(Setup setup, ObservableCollection<LinkageViewModel> linkages, ObservableCollection<CalibrationViewModel> calibrations)
+    public SetupViewModel(Setup setup, string? boardId, ObservableCollection<LinkageViewModel> linkages, ObservableCollection<CalibrationViewModel> calibrations)
     {
         this.setup = setup;
         Id = setup.Id;
+        BoardId = originalBoardId = boardId;
         Linkages = linkages;
         Calibrations = calibrations;
         Reset();
@@ -114,11 +124,21 @@ public partial class SetupViewModel : ViewModelBase
                 SelectedRearCalibration.Id);
             httpApiService.PutSetup(newSetup);
             setup = newSetup;
+            originalBoardId = BoardId;
             IsDirty = false;
         }
         catch (Exception e)
         {
             ErrorMessages.Add($"Setup could not be saved: {e.Message}");
+        }
+
+        try
+        {
+            httpApiService.PutBoard(new Board(BoardId!, Id));
+        }
+        catch (Exception e)
+        {
+            ErrorMessages.Add($"Could not associate Setup with Board: {e.Message}");
         }
     }
 
@@ -133,6 +153,7 @@ public partial class SetupViewModel : ViewModelBase
         try
         {
             Name = setup.Name;
+            BoardId = originalBoardId;
             SelectedLinkage = Linkages.First(l => l.Id == setup.LinkageId);
             SelectedFrontCalibration = Calibrations.FirstOrDefault(c => c?.Id == setup.FrontCalibrationId, null);
             SelectedRearCalibration = Calibrations.FirstOrDefault(c => c?.Id == setup.RearCalibrationId, null);

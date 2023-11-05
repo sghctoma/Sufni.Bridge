@@ -156,10 +156,16 @@ public partial class MainViewModel : ViewModelBase
         try
         {
             var setups = await httpApiService.GetSetups();
+            var boards = await httpApiService.GetBoards();
 
             foreach (var setup in setups)
             {
-                var svm = new SetupViewModel(setup, Linkages, Calibrations);
+                var board = boards.FirstOrDefault(b => b?.SetupId == setup.Id, null);
+                var svm = new SetupViewModel(
+                    setup,
+                    board?.Id,
+                    Linkages,
+                    Calibrations);
                 svm.PropertyChanged += (sender, args) =>
                 {
                     if (sender is not null &&
@@ -299,7 +305,11 @@ public partial class MainViewModel : ViewModelBase
         
             var id = await httpApiService.PutSetup(setup);
 
-            var svm = new SetupViewModel(setup with { Id = id }, Linkages, Calibrations);
+            var svm = new SetupViewModel(
+                setup with { Id = id },
+                ImportSessionsPage.SelectedDataStore?.BoardId,
+                Linkages,
+                Calibrations);
             svm.PropertyChanged += (sender, args) =>
             {
                 if (sender is not null &&

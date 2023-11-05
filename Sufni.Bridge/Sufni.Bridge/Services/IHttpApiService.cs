@@ -10,6 +10,7 @@ internal interface IHttpApiService
     public Task<string> RegisterAsync(string url, string username, string password);
     public Task Unregister(string refreshToken);
     public Task<List<Board>> GetBoards();
+    public Task PutBoard(Board board);
     public Task<List<Linkage>> GetLinkages();
     public Task<int> PutLinkage(Linkage linkage);
     public Task DeleteLinkage(int id);

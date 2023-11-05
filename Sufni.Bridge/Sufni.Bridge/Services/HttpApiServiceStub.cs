@@ -46,6 +46,7 @@ public class HttpApiServiceStub : IHttpApiService
     {
         new(1, "Clash (Manitou,sensitive}", 2, 1, 2),
         new(2, "Clash (new)", 2, 1, 3),
+        new(2, "Setup with one Calibration", 2, 1, null),
     };
     
     private static readonly List<Board> Boards = new()

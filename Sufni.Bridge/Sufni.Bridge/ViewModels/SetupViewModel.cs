@@ -42,8 +42,8 @@ public partial class SetupViewModel : ViewModelBase
             Name != setup.Name ||
             BoardId != originalBoardId ||
             SelectedLinkage == null || SelectedLinkage.Id != setup.LinkageId ||
-            SelectedFrontCalibration == null || SelectedFrontCalibration.Id != setup.FrontCalibrationId ||
-            SelectedRearCalibration == null || SelectedRearCalibration.Id != setup.RearCalibrationId;
+            SelectedFrontCalibration?.Id != setup.FrontCalibrationId ||
+            SelectedRearCalibration?.Id != setup.RearCalibrationId;
     }
 
     #endregion
@@ -108,8 +108,8 @@ public partial class SetupViewModel : ViewModelBase
     {
         Debug.Assert(SelectedLinkage != null, nameof(SelectedLinkage) + " != null");
         Debug.Assert(SelectedLinkage.Id != null, "SelectedLinkage.Id != null");
-        Debug.Assert(SelectedFrontCalibration != null, nameof(SelectedFrontCalibration) + " != null");
-        Debug.Assert(SelectedRearCalibration != null, nameof(SelectedRearCalibration) + " != null");
+        Debug.Assert(!(SelectedFrontCalibration == null && SelectedRearCalibration == null), 
+            nameof(SelectedFrontCalibration) + " and " + nameof(SelectedRearCalibration) + " can't be both null");
         
         var httpApiService = App.Current?.Services?.GetService<IHttpApiService>();
         Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
@@ -120,8 +120,8 @@ public partial class SetupViewModel : ViewModelBase
                 Id,
                 Name ?? $"setup #{Id}",
                 SelectedLinkage.Id.Value,
-                SelectedFrontCalibration.Id,
-                SelectedRearCalibration.Id);
+                SelectedFrontCalibration?.Id,
+                SelectedRearCalibration?.Id);
             httpApiService.PutSetup(newSetup);
             setup = newSetup;
             originalBoardId = BoardId;

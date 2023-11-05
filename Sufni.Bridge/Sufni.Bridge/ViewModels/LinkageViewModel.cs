@@ -104,16 +104,23 @@ public partial class LinkageViewModel : ViewModelBase
         var httpApiService = App.Current?.Services?.GetService<IHttpApiService>();
         Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
 
-        var newLinkage = new Linkage(
-            Id,
-            Name ?? $"linkage #{Id}",
-            HeadAngle,
-            FrontStroke,
-            RearStroke,
-            linkageData);
-        httpApiService.PutLinkage(newLinkage);
-        linkage = newLinkage;
-        IsDirty = false;
+        try
+        {
+            var newLinkage = new Linkage(
+                Id,
+                Name ?? $"linkage #{Id}",
+                HeadAngle,
+                FrontStroke,
+                RearStroke,
+                linkageData);
+            httpApiService.PutLinkage(newLinkage);
+            linkage = newLinkage;
+            IsDirty = false;
+        }
+        catch (Exception e)
+        {
+            ErrorMessages.Add($"Linkage could not be saved: {e.Message}");
+        }
     }
 
     private bool CanReset()
@@ -140,12 +147,23 @@ public partial class LinkageViewModel : ViewModelBase
         var file = await filesService.OpenLeverageRatioFileAsync();
         if (file is null) return;
 
-        if ((await file.GetBasicPropertiesAsync()).Size <= 1024 * 1024 * 1)
+        try
         {
-            LinkageDataFile = file.Name;
-            await using var readStream = await file.OpenReadAsync();
-            using var reader = new StreamReader(readStream);
-            linkageData = await reader.ReadToEndAsync(token);
+            if ((await file.GetBasicPropertiesAsync()).Size <= 1024 * 1024 * 1)
+            {
+                LinkageDataFile = file.Name;
+                await using var readStream = await file.OpenReadAsync();
+                using var reader = new StreamReader(readStream);
+                linkageData = await reader.ReadToEndAsync(token);
+            }
+            else
+            {
+                ErrorMessages.Add("File is larger than 1 MB!");
+            }
+        }
+        catch (Exception e)
+        {
+            ErrorMessages.Add($"Leverage ratio file could not be read: {e.Message}");
         }
     }
     

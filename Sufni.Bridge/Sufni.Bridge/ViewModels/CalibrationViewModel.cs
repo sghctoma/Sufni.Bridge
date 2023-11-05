@@ -151,15 +151,22 @@ public partial class CalibrationViewModel : ViewModelBase
         
         var httpApiService = App.Current?.Services?.GetService<IHttpApiService>();
         Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
-        
-        var newCalibration = new Calibration(
-            Id,
-            Name ?? $"calibration #{Id}",
-            SelectedCalibrationMethod.Id,
-            Inputs.ToDictionary(input => input.Name, input => input.Value));
-        httpApiService.PutCalibration(newCalibration);
-        calibration = newCalibration;
-        IsDirty = false;
+
+        try
+        {
+            var newCalibration = new Calibration(
+                Id,
+                Name ?? $"calibration #{Id}",
+                SelectedCalibrationMethod.Id,
+                Inputs.ToDictionary(input => input.Name, input => input.Value));
+            httpApiService.PutCalibration(newCalibration);
+            calibration = newCalibration;
+            IsDirty = false;
+        }
+        catch (Exception e)
+        {
+            ErrorMessages.Add($"Calibration could not be saved: {e.Message}");
+        }
     }
 
     private bool CanReset()
@@ -170,9 +177,16 @@ public partial class CalibrationViewModel : ViewModelBase
     [RelayCommand(CanExecute = nameof(CanReset))]
     private void Reset()
     {
-        Name = calibration.Name;
-        SelectedCalibrationMethod = null; // so that OnSelectedCalibrationMethodChanged kicks in, resetting inputs too
-        SelectedCalibrationMethod = CalibrationMethods.First(m => m.Id == calibration.MethodId);
+        try
+        {
+            Name = calibration.Name;
+            SelectedCalibrationMethod = null; // so that OnSelectedCalibrationMethodChanged kicks in, resetting inputs too
+            SelectedCalibrationMethod = CalibrationMethods.First(m => m.Id == calibration.MethodId);
+        }
+        catch (Exception e)
+        {
+            ErrorMessages.Add($"Calibration could not be reset: {e.Message}");
+        }
     }
 
     #endregion

@@ -48,11 +48,18 @@ public partial class SettingsViewModel : ViewModelBase
         
         Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
         Debug.Assert(secureStorage != null, nameof(secureStorage) + " != null");
-        
-        ServerUrl = secureStorage.GetString("ServerUrl");
-        Username = secureStorage.GetString("Username");
-        var refreshToken = secureStorage.GetString("RefreshToken");
-        _ = RefreshTokensAsync(ServerUrl, refreshToken);
+
+        try
+        {
+            ServerUrl = secureStorage.GetString("ServerUrl");
+            Username = secureStorage.GetString("Username");
+            var refreshToken = secureStorage.GetString("RefreshToken");
+            _ = RefreshTokensAsync(ServerUrl, refreshToken);
+        }
+        catch (Exception e)
+        {
+            ErrorMessages.Add($"Could not read API connection information: {e.Message}");
+        }
     }
 
     #endregion
@@ -81,13 +88,18 @@ public partial class SettingsViewModel : ViewModelBase
             newRefreshToken = await httpApiService.RefreshTokensAsync(url, refreshToken);
             IsRegistered = true;
         }
-        catch (HttpRequestException ex)
+        catch (HttpRequestException e)
         {
             // Null out the refresh token if we explicitly receive a 401 - Unauthorized HTTP response.
-            if (ex.StatusCode == HttpStatusCode.Unauthorized)
+            if (e.StatusCode == HttpStatusCode.Unauthorized)
             {
                 newRefreshToken = null;
                 IsRegistered = false;
+                ErrorMessages.Add("Refresh token is not longer valid. Please log in!");
+            }
+            else
+            {
+                ErrorMessages.Add($"Could not refresh tokens: {e.Message}");
             }
         }
         finally
@@ -112,9 +124,9 @@ public partial class SettingsViewModel : ViewModelBase
             IsRegistered = true;
             ErrorMessages.Clear();
         }
-        catch(Exception ex)
+        catch(Exception e)
         {
-            ErrorMessages.Add($"Registration failed: {ex.Message}");
+            ErrorMessages.Add($"Could not register: {e.Message}");
         }
     }
 
@@ -123,15 +135,22 @@ public partial class SettingsViewModel : ViewModelBase
         Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
         Debug.Assert(secureStorage != null, nameof(secureStorage) + " != null");
         
-        var refreshToken = secureStorage.GetString("RefreshToken");
-        await httpApiService.Unregister(refreshToken!);
-        secureStorage.Remove("Username");
-        secureStorage.Remove("ServerUrl");
-        secureStorage.Remove("RefreshToken");
-        Username = null;
-        ServerUrl = null;
-        Password = null;
-        IsRegistered = false;
+        try
+        {
+            var refreshToken = secureStorage.GetString("RefreshToken");
+            await httpApiService.Unregister(refreshToken!);
+            secureStorage.Remove("Username");
+            secureStorage.Remove("ServerUrl");
+            secureStorage.Remove("RefreshToken");
+            Username = null;
+            ServerUrl = null;
+            Password = null;
+            IsRegistered = false;
+        }
+        catch (Exception e)
+        {
+            ErrorMessages.Add($"Could not unregister: {e.Message}");
+        }
     }
 
     #endregion Private methods

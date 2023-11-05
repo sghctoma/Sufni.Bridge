@@ -50,9 +50,9 @@ public partial class ImportSessionsViewModel : ViewModelBase
             var selectedBoard = boards.FirstOrDefault(b => b?.Id == value.BoardId, null);
             SelectedSetup = selectedBoard?.SetupId;
         }
-        catch
+        catch(Exception e)
         {
-            // ignored
+            ErrorMessages.Add($"Error while changing data store: {e.Message}");
         }
         
         TelemetryFiles.Clear();
@@ -82,12 +82,18 @@ public partial class ImportSessionsViewModel : ViewModelBase
         Debug.Assert(httpApiService != null, nameof(telemetryDataStoreService) + " != null");
         Debug.Assert(telemetryDataStoreService != null, nameof(telemetryDataStoreService) + " != null");
 
-        var ds = telemetryDataStoreService.GetTelemetryDataStores();
-        TelemetryDataStores = new ObservableCollection<TelemetryDataStore>(ds);
-
-        if (TelemetryDataStores.Count > 0)
+        try
         {
-            SelectedDataStore = TelemetryDataStores[0];
+            var ds = telemetryDataStoreService.GetTelemetryDataStores();
+            TelemetryDataStores = new ObservableCollection<TelemetryDataStore>(ds);
+            if (TelemetryDataStores.Count > 0)
+            {
+                SelectedDataStore = TelemetryDataStores[0];
+            }
+        }
+        catch (Exception e)
+        {
+            ErrorMessages.Add($"Could not load data stores: {e.Message}");
         }
     }
 
@@ -110,13 +116,14 @@ public partial class ImportSessionsViewModel : ViewModelBase
                 File.Move(telemetryFile.FullName,
                     $"{Path.GetDirectoryName(telemetryFile.FullName)}/uploaded/{telemetryFile.FileName}");
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException e)
             {
                 telemetryFile.Imported = false;
+                ErrorMessages.Add($"Could not import {telemetryFile.FileName}: {e.Message}");
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                // NOTE: Move to "uploaded" failed. Should we handle this somehow?
+                ErrorMessages.Add($"Could not move {telemetryFile.Name} to uploaded: {e.Message}");
             }
         }
 
@@ -132,12 +139,19 @@ public partial class ImportSessionsViewModel : ViewModelBase
     {
         var secureStorage = App.Current?.Services?.GetService<ISecureStorage>();
         Debug.Assert(secureStorage != null, nameof(secureStorage) + " != null");
-        
-        return SelectedSetup != null &&
-               !string.IsNullOrEmpty(secureStorage.GetString("RefreshToken"));
-        
-        //TODO: ShouldBeImported changes do not notify, so the last condition
-        //      is evaluated only when the program starts.
+
+        try
+        {
+            return SelectedSetup != null &&
+                   !string.IsNullOrEmpty(secureStorage.GetString("RefreshToken"));
+            //TODO: ShouldBeImported changes do not notify, so the last condition
+            //      is evaluated only when the program starts.
+        }
+        catch (Exception e)
+        {
+            ErrorMessages.Add($"Could not get refresh token: {e.Message}");
+            return false;
+        }
     }
     
     [RelayCommand]
@@ -146,16 +160,23 @@ public partial class ImportSessionsViewModel : ViewModelBase
         Debug.Assert(TelemetryDataStores != null, nameof(TelemetryDataStores) + " != null");
         Debug.Assert(telemetryDataStoreService != null, nameof(telemetryDataStoreService) + " != null");
 
-        TelemetryDataStores.Clear();
-        var ds = telemetryDataStoreService.GetTelemetryDataStores();
-        foreach (var store in ds)
+        try
         {
-            TelemetryDataStores.Add(store);
-        }
+            TelemetryDataStores.Clear();
+            var ds = telemetryDataStoreService.GetTelemetryDataStores();
+            foreach (var store in ds)
+            {
+                TelemetryDataStores.Add(store);
+            }
 
-        if (TelemetryDataStores.Count > 0)
+            if (TelemetryDataStores.Count > 0)
+            {
+                SelectedDataStore = TelemetryDataStores[0];
+            }
+        }
+        catch (Exception e)
         {
-            SelectedDataStore = TelemetryDataStores[0];
+            ErrorMessages.Add($"Could not reload data stores: {e.Message}");
         }
     }
 

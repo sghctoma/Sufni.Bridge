@@ -1,3 +1,4 @@
+using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
@@ -103,15 +104,22 @@ public partial class SetupViewModel : ViewModelBase
         var httpApiService = App.Current?.Services?.GetService<IHttpApiService>();
         Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
 
-        var newSetup = new Setup(
-            Id,
-            Name ?? $"setup #{Id}",
-            SelectedLinkage.Id.Value,
-            SelectedFrontCalibration.Id,
-            SelectedRearCalibration.Id);
-        httpApiService.PutSetup(newSetup);
-        setup = newSetup;
-        IsDirty = false;
+        try
+        {
+            var newSetup = new Setup(
+                Id,
+                Name ?? $"setup #{Id}",
+                SelectedLinkage.Id.Value,
+                SelectedFrontCalibration.Id,
+                SelectedRearCalibration.Id);
+            httpApiService.PutSetup(newSetup);
+            setup = newSetup;
+            IsDirty = false;
+        }
+        catch (Exception e)
+        {
+            ErrorMessages.Add($"Setup could not be saved: {e.Message}");
+        }
     }
 
     private bool CanReset()
@@ -122,10 +130,17 @@ public partial class SetupViewModel : ViewModelBase
     [RelayCommand(CanExecute = nameof(CanReset))]
     private void Reset()
     {
-        Name = setup.Name;
-        SelectedLinkage = Linkages.First(l => l.Id == setup.LinkageId);
-        SelectedFrontCalibration = Calibrations.FirstOrDefault(c => c?.Id == setup.FrontCalibrationId, null);
-        SelectedRearCalibration = Calibrations.FirstOrDefault(c => c?.Id == setup.RearCalibrationId, null);
+        try
+        {
+            Name = setup.Name;
+            SelectedLinkage = Linkages.First(l => l.Id == setup.LinkageId);
+            SelectedFrontCalibration = Calibrations.FirstOrDefault(c => c?.Id == setup.FrontCalibrationId, null);
+            SelectedRearCalibration = Calibrations.FirstOrDefault(c => c?.Id == setup.RearCalibrationId, null);
+        }
+        catch (Exception e)
+        {
+            ErrorMessages.Add($"Setup could not be reset: {e.Message}");
+        }
     }
 
     #endregion

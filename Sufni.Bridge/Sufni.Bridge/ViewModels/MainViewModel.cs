@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
@@ -95,23 +96,37 @@ public partial class MainViewModel : ViewModelBase
     private async Task LoadLinkagesAsync()
     {
         Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
-        
-        var linkages = await httpApiService.GetLinkages();
 
-        foreach (var linkage in linkages)
+        try
         {
-            Linkages.Add(new LinkageViewModel(linkage));
+            var linkages = await httpApiService.GetLinkages();
+
+            foreach (var linkage in linkages)
+            {
+                Linkages.Add(new LinkageViewModel(linkage));
+            }
+        }
+        catch (Exception e)
+        {
+            ErrorMessages.Add($"Could not load Linkages: {e.Message}");
         }
     }
     private async Task LoadCalibrationMethodsAsync()
     {
         Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
         
-        var methods = await httpApiService.GetCalibrationMethods();
-
-        foreach (var method in methods)
+        try
         {
-            CalibrationMethods.Add(method);
+            var methods = await httpApiService.GetCalibrationMethods();
+
+            foreach (var method in methods)
+            {
+                CalibrationMethods.Add(method);
+            }
+        }
+        catch (Exception e)
+        {
+            ErrorMessages.Add($"Could not load Calibration methods: {e.Message}");
         }
     }
 
@@ -119,11 +134,18 @@ public partial class MainViewModel : ViewModelBase
     {
         Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
         
-        var calibrations = await httpApiService.GetCalibrations();
-
-        foreach (var calibration in calibrations)
+        try
         {
-            Calibrations.Add(new CalibrationViewModel(calibration, CalibrationMethods));
+            var calibrations = await httpApiService.GetCalibrations();
+
+            foreach (var calibration in calibrations)
+            {
+                Calibrations.Add(new CalibrationViewModel(calibration, CalibrationMethods));
+            }
+        }
+        catch (Exception e)
+        {
+            ErrorMessages.Add($"Could not load Calibrations: {e.Message}");
         }
     }
 
@@ -131,22 +153,29 @@ public partial class MainViewModel : ViewModelBase
     {
         Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
         
-        var setups = await httpApiService.GetSetups();
-
-        foreach (var setup in setups)
+        try
         {
-            var svm = new SetupViewModel(setup, Linkages, Calibrations);
-            svm.PropertyChanged += (sender, args) =>
+            var setups = await httpApiService.GetSetups();
+
+            foreach (var setup in setups)
             {
-                if (sender is not null &&
-                    args.PropertyName == nameof(SetupViewModel.IsDirty) &&
-                    !((SetupViewModel)sender).IsDirty)
+                var svm = new SetupViewModel(setup, Linkages, Calibrations);
+                svm.PropertyChanged += (sender, args) =>
                 {
-                    DeleteCalibrationCommand.NotifyCanExecuteChanged();
-                    DeleteLinkageCommand.NotifyCanExecuteChanged();
-                }
-            };
-            Setups.Add(svm);
+                    if (sender is not null &&
+                        args.PropertyName == nameof(SetupViewModel.IsDirty) &&
+                        !((SetupViewModel)sender).IsDirty)
+                    {
+                        DeleteCalibrationCommand.NotifyCanExecuteChanged();
+                        DeleteLinkageCommand.NotifyCanExecuteChanged();
+                    }
+                };
+                Setups.Add(svm);
+            }
+        }
+        catch (Exception e)
+        {
+            ErrorMessages.Add($"Could not load Setups: {e.Message}");
         }
     }
 
@@ -172,9 +201,16 @@ public partial class MainViewModel : ViewModelBase
     {
         Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
 
-        var linkage = new Linkage(null, "new linkage", 65, 180, 65, "");
-        var id = await httpApiService.PutLinkage(linkage);
-        Linkages.Add(new LinkageViewModel(linkage with { Id = id }));
+        try
+        {
+            var linkage = new Linkage(null, "new linkage", 65, 180, 65, "");
+            var id = await httpApiService.PutLinkage(linkage);
+            Linkages.Add(new LinkageViewModel(linkage with { Id = id }));
+        }
+        catch (Exception e)
+        {
+            ErrorMessages.Add($"Could not add Linkage: {e.Message}");
+        }
     }
 
     private bool CanDeleteLinkage(int id)
@@ -186,9 +222,17 @@ public partial class MainViewModel : ViewModelBase
     private void DeleteLinkage(int id)
     {
         Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
-        httpApiService.DeleteLinkage(id);
-        var toDelete = Linkages.First(l => l.Id == id);
-        Linkages.Remove(toDelete);
+        
+        try
+        {
+            httpApiService.DeleteLinkage(id);
+            var toDelete = Linkages.First(l => l.Id == id);
+            Linkages.Remove(toDelete);
+        }
+        catch (Exception e)
+        {
+            ErrorMessages.Add($"Could not delete Linkage: {e.Message}");
+        }
     }
 
     [RelayCommand]
@@ -196,16 +240,23 @@ public partial class MainViewModel : ViewModelBase
     {
         Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
 
-        var methodId = CalibrationMethods[0].Id;
-        var inputs = new Dictionary<string, double>();
-        foreach (var input in CalibrationMethods[0].Properties.Inputs)
+        try
         {
-            inputs.Add(input, 0.0);
-        }
-        var calibration = new Calibration(null, "new calibration", methodId, inputs);
+            var methodId = CalibrationMethods[0].Id;
+            var inputs = new Dictionary<string, double>();
+            foreach (var input in CalibrationMethods[0].Properties.Inputs)
+            {
+                inputs.Add(input, 0.0);
+            }
+            var calibration = new Calibration(null, "new calibration", methodId, inputs);
         
-        var id = await httpApiService.PutCalibration(calibration);
-        Calibrations.Add(new CalibrationViewModel(calibration with { Id = id }, CalibrationMethods));
+            var id = await httpApiService.PutCalibration(calibration);
+            Calibrations.Add(new CalibrationViewModel(calibration with { Id = id }, CalibrationMethods));
+        }
+        catch (Exception e)
+        {
+            ErrorMessages.Add($"Could not add Calibration: {e.Message}");
+        }
     }
     
     private bool CanDeleteCalibration(int id)
@@ -219,9 +270,17 @@ public partial class MainViewModel : ViewModelBase
     private void DeleteCalibration(int id)
     {
         Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
-        httpApiService.DeleteCalibration(id);
-        var toDelete = Calibrations.First(c => c.Id == id);
-        Calibrations.Remove(toDelete);
+        
+        try
+        {
+            httpApiService.DeleteCalibration(id);
+            var toDelete = Calibrations.First(c => c.Id == id);
+            Calibrations.Remove(toDelete);
+        }
+        catch (Exception e)
+        {
+            ErrorMessages.Add($"Could not delete Calibration: {e.Message}");
+        }
     }
     
     [RelayCommand]
@@ -229,36 +288,51 @@ public partial class MainViewModel : ViewModelBase
     {
         Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
 
-        var setup = new Setup(
-            null,
-            "new setup",
-            Linkages[0].Id!.Value,
-            null,
-            null);
-        
-        var id = await httpApiService.PutSetup(setup);
-
-        var svm = new SetupViewModel(setup with { Id = id }, Linkages, Calibrations);
-        svm.PropertyChanged += (sender, args) =>
+        try
         {
-            if (sender is not null &&
-                args.PropertyName == nameof(SetupViewModel.IsDirty) &&
-                !((SetupViewModel)sender).IsDirty)
+            var setup = new Setup(
+                null,
+                "new setup",
+                Linkages[0].Id!.Value,
+                null,
+                null);
+        
+            var id = await httpApiService.PutSetup(setup);
+
+            var svm = new SetupViewModel(setup with { Id = id }, Linkages, Calibrations);
+            svm.PropertyChanged += (sender, args) =>
             {
-                DeleteCalibrationCommand.NotifyCanExecuteChanged();
-                DeleteLinkageCommand.NotifyCanExecuteChanged();
-            }
-        };
-        Setups.Add(svm);
+                if (sender is not null &&
+                    args.PropertyName == nameof(SetupViewModel.IsDirty) &&
+                    !((SetupViewModel)sender).IsDirty)
+                {
+                    DeleteCalibrationCommand.NotifyCanExecuteChanged();
+                    DeleteLinkageCommand.NotifyCanExecuteChanged();
+                }
+            };
+            Setups.Add(svm);
+        }
+        catch (Exception e)
+        {
+            ErrorMessages.Add($"Could not add Setup: {e.Message}");
+        }
     }
     
     [RelayCommand]
     private void DeleteSetup(int id)
     {
         Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
-        httpApiService.DeleteSetup(id);
-        var toDelete = Setups.First(s => s.Id == id);
-        Setups.Remove(toDelete);
+        
+        try
+        {
+            httpApiService.DeleteSetup(id);
+            var toDelete = Setups.First(s => s.Id == id);
+            Setups.Remove(toDelete);
+        }
+        catch (Exception e)
+        {
+            ErrorMessages.Add($"Could not delete Setup: {e.Message}");
+        }
     }
 
     #endregion

@@ -4,6 +4,7 @@ using Avalonia;
 using Avalonia.Android;
 using Microsoft.Extensions.DependencyInjection;
 using SecureStorage;
+using Sufni.Bridge.Services;
 
 namespace Sufni.Bridge.Android
 {
@@ -15,19 +16,12 @@ namespace Sufni.Bridge.Android
         ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.ScreenSize | ConfigChanges.UiMode)]
     public class MainActivity : AvaloniaMainActivity<App>
     {
-        private static readonly IServiceCollection Services;
-
-        static MainActivity()
-        {
-            Services = new ServiceCollection();
-            Services.AddSingleton<ISecureStorage, SecureStorage.SecureStorage>();
-        }
-        
         protected override AppBuilder CustomizeAppBuilder(AppBuilder builder)
         {
-            var realBuilder = AppBuilder.Configure( () => new App(Services) );
+            RegisteredServices.Collection.AddSingleton<ISecureStorage, SecureStorage.SecureStorage>();
             
-            return base.CustomizeAppBuilder(realBuilder)
+            return base.CustomizeAppBuilder(builder)
+                .UseAndroid()
                 .WithInterFont()
                 .With(new SkiaOptions { UseOpacitySaveLayer = true });
         }

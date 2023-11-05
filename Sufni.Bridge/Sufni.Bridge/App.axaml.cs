@@ -12,21 +12,13 @@ namespace Sufni.Bridge;
 
 public partial class App : Application
 {
-    private readonly IServiceCollection serviceCollection;
     public new static App? Current => Application.Current as App;
     public IServiceProvider? Services { get; private set; }
 
-    // This is just here to suppress a warning about public constructor not being present
     public App()
     {
-        serviceCollection = new ServiceCollection();
-    }
-
-    public App(IServiceCollection services)
-    {
-        services.AddSingleton<IHttpApiService, HttpApiServiceStub>();
-        services.AddSingleton<ITelemetryDataStoreService, TelemetryDataStoreService>();
-        serviceCollection = services;
+        RegisteredServices.Collection.AddSingleton<IHttpApiService, HttpApiServiceStub>();
+        RegisteredServices.Collection.AddSingleton<ITelemetryDataStoreService, TelemetryDataStoreService>();
     }
 
     public override void Initialize()
@@ -52,10 +44,10 @@ public partial class App : Application
 
         if (topLevel != null)
         {
-            serviceCollection.AddSingleton<IFilesService>(x => new FilesService(topLevel));
+            RegisteredServices.Collection.AddSingleton<IFilesService>(x => new FilesService(topLevel));
         }
         
-        Services = serviceCollection.BuildServiceProvider();
+        Services = RegisteredServices.Collection.BuildServiceProvider();
         
         switch (ApplicationLifetime)
         {

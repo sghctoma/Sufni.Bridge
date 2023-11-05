@@ -3,6 +3,9 @@ using Avalonia.Browser;
 using Sufni.Bridge;
 using System.Runtime.Versioning;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using SecureStorage;
+using Sufni.Bridge.Services;
 
 [assembly: SupportedOSPlatform("browser")]
 
@@ -13,5 +16,8 @@ internal partial class Program
             .StartBrowserAppAsync("out");
 
     public static AppBuilder BuildAvaloniaApp()
-        => AppBuilder.Configure<App>();
+    {
+        RegisteredServices.Collection.AddSingleton<ISecureStorage, SecureStorage.SecureStorage>();
+        return AppBuilder.Configure<App>();
+    }
 }

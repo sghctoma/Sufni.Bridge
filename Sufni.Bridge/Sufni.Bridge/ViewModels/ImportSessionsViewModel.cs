@@ -40,13 +40,13 @@ public partial class ImportSessionsViewModel : ViewModelBase
 
     async partial void OnSelectedDataStoreChanged(TelemetryDataStore? value)
     {           
-        Debug.Assert(_httpApiService != null, nameof(_httpApiService) + " != null");
+        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
 
         if (value == null) return;
 
         try
         {
-            var boards = await _httpApiService.GetBoards();
+            var boards = await httpApiService.GetBoards();
             var selectedBoard = boards.FirstOrDefault(b => b?.Id == value.BoardId, null);
             SelectedSetup = selectedBoard?.SetupId;
         }
@@ -67,8 +67,8 @@ public partial class ImportSessionsViewModel : ViewModelBase
 
     #region Private members
 
-    private readonly IHttpApiService? _httpApiService;
-    private readonly ITelemetryDataStoreService? _telemetryDataStoreService;
+    private readonly IHttpApiService? httpApiService;
+    private readonly ITelemetryDataStoreService? telemetryDataStoreService;
 
     #endregion Private members
     
@@ -76,13 +76,13 @@ public partial class ImportSessionsViewModel : ViewModelBase
 
     public ImportSessionsViewModel()
     {
-        _httpApiService = App.Current?.Services?.GetService<IHttpApiService>();
-        _telemetryDataStoreService = App.Current?.Services?.GetService<ITelemetryDataStoreService>();
+        httpApiService = App.Current?.Services?.GetService<IHttpApiService>();
+        telemetryDataStoreService = App.Current?.Services?.GetService<ITelemetryDataStoreService>();
         
-        Debug.Assert(_httpApiService != null, nameof(_telemetryDataStoreService) + " != null");
-        Debug.Assert(_telemetryDataStoreService != null, nameof(_telemetryDataStoreService) + " != null");
+        Debug.Assert(httpApiService != null, nameof(telemetryDataStoreService) + " != null");
+        Debug.Assert(telemetryDataStoreService != null, nameof(telemetryDataStoreService) + " != null");
 
-        var ds = _telemetryDataStoreService.GetTelemetryDataStores();
+        var ds = telemetryDataStoreService.GetTelemetryDataStores();
         TelemetryDataStores = new ObservableCollection<TelemetryDataStore>(ds);
 
         if (TelemetryDataStores.Count > 0)
@@ -99,13 +99,13 @@ public partial class ImportSessionsViewModel : ViewModelBase
     private async Task ImportSessions()
     {
         Debug.Assert(SelectedSetup != null);
-        Debug.Assert(_httpApiService != null, nameof(_httpApiService) + " != null");
+        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
         
         foreach (var telemetryFile in TelemetryFiles.Where(f => f.ShouldBeImported))
         {
             try
             {
-                await _httpApiService.ImportSession(telemetryFile, SelectedSetup.Value);
+                await httpApiService.ImportSession(telemetryFile, SelectedSetup.Value);
                 telemetryFile.Imported = true;
                 File.Move(telemetryFile.FullName,
                     $"{Path.GetDirectoryName(telemetryFile.FullName)}/uploaded/{telemetryFile.FileName}");
@@ -144,10 +144,10 @@ public partial class ImportSessionsViewModel : ViewModelBase
     private void ReloadTelemetryDataStores()
     {
         Debug.Assert(TelemetryDataStores != null, nameof(TelemetryDataStores) + " != null");
-        Debug.Assert(_telemetryDataStoreService != null, nameof(_telemetryDataStoreService) + " != null");
+        Debug.Assert(telemetryDataStoreService != null, nameof(telemetryDataStoreService) + " != null");
 
         TelemetryDataStores.Clear();
-        var ds = _telemetryDataStoreService.GetTelemetryDataStores();
+        var ds = telemetryDataStoreService.GetTelemetryDataStores();
         foreach (var store in ds)
         {
             TelemetryDataStores.Add(store);

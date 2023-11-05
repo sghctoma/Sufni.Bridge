@@ -14,9 +14,8 @@ public partial class SetupViewModel : ViewModelBase
     private Setup setup;
 
     #region Observable properties
-
     [ObservableProperty] private int? id;
-    [ObservableProperty] private string name;
+    [ObservableProperty] private string? name;
     
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
@@ -47,22 +46,26 @@ public partial class SetupViewModel : ViewModelBase
 
     #region Property change handlers
 
+    // ReSharper disable once UnusedParameterInPartialMethod
     partial void OnSelectedLinkageChanged(LinkageViewModel? value)
     {
         EvaluateDirtiness();
     }
-
+    
+    // ReSharper disable once UnusedParameterInPartialMethod
     partial void OnSelectedFrontCalibrationChanged(CalibrationViewModel? value)
     {
         EvaluateDirtiness();
     }
 
+    // ReSharper disable once UnusedParameterInPartialMethod
     partial void OnSelectedRearCalibrationChanged(CalibrationViewModel? value)
     {
         EvaluateDirtiness();
     }
 
-    partial void OnNameChanged(string value)
+    // ReSharper disable once UnusedParameterInPartialMethod
+    partial void OnNameChanged(string? value)
     {
         EvaluateDirtiness();
     }
@@ -70,7 +73,7 @@ public partial class SetupViewModel : ViewModelBase
     #endregion
 
     #region Constructors
-
+    
     public SetupViewModel(Setup setup, ObservableCollection<LinkageViewModel> linkages, ObservableCollection<CalibrationViewModel> calibrations)
     {
         this.setup = setup;
@@ -102,7 +105,7 @@ public partial class SetupViewModel : ViewModelBase
 
         var newSetup = new Setup(
             Id,
-            Name,
+            Name ?? $"setup #{Id}",
             SelectedLinkage.Id.Value,
             SelectedFrontCalibration.Id,
             SelectedRearCalibration.Id);
@@ -121,8 +124,8 @@ public partial class SetupViewModel : ViewModelBase
     {
         Name = setup.Name;
         SelectedLinkage = Linkages.First(l => l.Id == setup.LinkageId);
-        SelectedFrontCalibration = Calibrations.FirstOrDefault(c => c.Id == setup.FrontCalibrationId, null);
-        SelectedRearCalibration = Calibrations.FirstOrDefault(c => c.Id == setup.RearCalibrationId, null);
+        SelectedFrontCalibration = Calibrations.FirstOrDefault(c => c?.Id == setup.FrontCalibrationId, null);
+        SelectedRearCalibration = Calibrations.FirstOrDefault(c => c?.Id == setup.RearCalibrationId, null);
     }
 
     #endregion

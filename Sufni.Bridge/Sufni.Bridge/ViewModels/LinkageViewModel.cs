@@ -33,7 +33,7 @@ public partial class LinkageViewModel : ViewModelBase
     #region Observable properties
 
     [ObservableProperty] private int? id;
-    [ObservableProperty] private string name;
+    [ObservableProperty] private string? name;
     [ObservableProperty] private double headAngle;
     [ObservableProperty] private double? frontStroke;
     [ObservableProperty] private double? rearStroke;
@@ -48,26 +48,31 @@ public partial class LinkageViewModel : ViewModelBase
 
     #region Property change handlers
     
-    partial void OnNameChanged(string value)
+    // ReSharper disable once UnusedParameterInPartialMethod
+    partial void OnNameChanged(string? value)
     {
         EvaluateDirtiness();
     }
 
+    // ReSharper disable once UnusedParameterInPartialMethod
     partial void OnHeadAngleChanged(double value)
     {
         EvaluateDirtiness();
     }
 
+    // ReSharper disable once UnusedParameterInPartialMethod
     partial void OnFrontStrokeChanged(double? value)
     {
         EvaluateDirtiness();
     }
 
+    // ReSharper disable once UnusedParameterInPartialMethod
     partial void OnRearStrokeChanged(double? value)
     {
         EvaluateDirtiness();
     }
 
+    // ReSharper disable once UnusedParameterInPartialMethod
     partial void OnLinkageDataFileChanged(string? value)
     {
         EvaluateDirtiness();
@@ -101,7 +106,7 @@ public partial class LinkageViewModel : ViewModelBase
 
         var newLinkage = new Linkage(
             Id,
-            Name,
+            Name ?? $"linkage #{Id}",
             HeadAngle,
             FrontStroke,
             RearStroke,

@@ -45,12 +45,14 @@ public partial class MainViewModel : ViewModelBase
     {
         ImportSessions = 0,
         Settings = 1,
+        /*
         Linkages = 2,
         Calibrations = 3,
         BikeSetups = 4,
+        */
     }
 
-    private readonly IHttpApiService? _httpApiService;
+    private readonly IHttpApiService? httpApiService;
 
     #endregion
     
@@ -58,23 +60,23 @@ public partial class MainViewModel : ViewModelBase
 
     public MainViewModel()
     {
-        _httpApiService = App.Current?.Services?.GetService<IHttpApiService>();
+        httpApiService = App.Current?.Services?.GetService<IHttpApiService>();
         
         SelectedIndex = SettingsPage.IsRegistered ? (int)PageIndices.ImportSessions : (int)PageIndices.Settings;
 
-        Linkages.CollectionChanged += (sender, args) =>
+        Linkages.CollectionChanged += (_, _) =>
         {
             HasLinkages = Linkages.Count != 0;
         };
-        CalibrationMethods.CollectionChanged += (sender, args) =>
+        CalibrationMethods.CollectionChanged += (_, _) =>
         {
             HasCalibrationMethods = CalibrationMethods.Count != 0;
         };
-        Calibrations.CollectionChanged += (sender, args) =>
+        Calibrations.CollectionChanged += (_, _) =>
         {
             HasCalibrations = Calibrations.Count != 0;
         };
-        Setups.CollectionChanged += (sender, args) =>
+        Setups.CollectionChanged += (_, _) =>
         {
             DeleteLinkageCommand.NotifyCanExecuteChanged();
             DeleteCalibrationCommand.NotifyCanExecuteChanged();
@@ -92,9 +94,9 @@ public partial class MainViewModel : ViewModelBase
 
     private async Task LoadLinkagesAsync()
     {
-        Debug.Assert(_httpApiService != null, nameof(_httpApiService) + " != null");
+        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
         
-        var linkages = await _httpApiService.GetLinkages();
+        var linkages = await httpApiService.GetLinkages();
 
         foreach (var linkage in linkages)
         {
@@ -103,9 +105,9 @@ public partial class MainViewModel : ViewModelBase
     }
     private async Task LoadCalibrationMethodsAsync()
     {
-        Debug.Assert(_httpApiService != null, nameof(_httpApiService) + " != null");
+        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
         
-        var methods = await _httpApiService.GetCalibrationMethods();
+        var methods = await httpApiService.GetCalibrationMethods();
 
         foreach (var method in methods)
         {
@@ -115,9 +117,9 @@ public partial class MainViewModel : ViewModelBase
 
     private async Task LoadCalibrationsAsync()
     {
-        Debug.Assert(_httpApiService != null, nameof(_httpApiService) + " != null");
+        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
         
-        var calibrations = await _httpApiService.GetCalibrations();
+        var calibrations = await httpApiService.GetCalibrations();
 
         foreach (var calibration in calibrations)
         {
@@ -127,9 +129,9 @@ public partial class MainViewModel : ViewModelBase
 
     private async Task LoadSetupsAsync()
     {
-        Debug.Assert(_httpApiService != null, nameof(_httpApiService) + " != null");
+        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
         
-        var setups = await _httpApiService.GetSetups();
+        var setups = await httpApiService.GetSetups();
 
         foreach (var setup in setups)
         {
@@ -168,10 +170,10 @@ public partial class MainViewModel : ViewModelBase
     [RelayCommand]
     private async Task AddLinkage()
     {
-        Debug.Assert(_httpApiService != null, nameof(_httpApiService) + " != null");
+        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
 
         var linkage = new Linkage(null, "new linkage", 65, 180, 65, "");
-        var id = await _httpApiService.PutLinkage(linkage);
+        var id = await httpApiService.PutLinkage(linkage);
         Linkages.Add(new LinkageViewModel(linkage with { Id = id }));
     }
 
@@ -183,8 +185,8 @@ public partial class MainViewModel : ViewModelBase
     [RelayCommand(CanExecute = nameof(CanDeleteLinkage))]
     private void DeleteLinkage(int id)
     {
-        Debug.Assert(_httpApiService != null, nameof(_httpApiService) + " != null");
-        _httpApiService.DeleteLinkage(id);
+        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
+        httpApiService.DeleteLinkage(id);
         var toDelete = Linkages.First(l => l.Id == id);
         Linkages.Remove(toDelete);
     }
@@ -192,7 +194,7 @@ public partial class MainViewModel : ViewModelBase
     [RelayCommand]
     private async Task AddCalibration()
     {
-        Debug.Assert(_httpApiService != null, nameof(_httpApiService) + " != null");
+        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
 
         var methodId = CalibrationMethods[0].Id;
         var inputs = new Dictionary<string, double>();
@@ -202,7 +204,7 @@ public partial class MainViewModel : ViewModelBase
         }
         var calibration = new Calibration(null, "new calibration", methodId, inputs);
         
-        var id = await _httpApiService.PutCalibration(calibration);
+        var id = await httpApiService.PutCalibration(calibration);
         Calibrations.Add(new CalibrationViewModel(calibration with { Id = id }, CalibrationMethods));
     }
     
@@ -216,8 +218,8 @@ public partial class MainViewModel : ViewModelBase
     [RelayCommand(CanExecute = nameof(CanDeleteCalibration))]
     private void DeleteCalibration(int id)
     {
-        Debug.Assert(_httpApiService != null, nameof(_httpApiService) + " != null");
-        _httpApiService.DeleteCalibration(id);
+        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
+        httpApiService.DeleteCalibration(id);
         var toDelete = Calibrations.First(c => c.Id == id);
         Calibrations.Remove(toDelete);
     }
@@ -225,7 +227,7 @@ public partial class MainViewModel : ViewModelBase
     [RelayCommand]
     private async Task AddSetup()
     {
-        Debug.Assert(_httpApiService != null, nameof(_httpApiService) + " != null");
+        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
 
         var setup = new Setup(
             null,
@@ -234,7 +236,7 @@ public partial class MainViewModel : ViewModelBase
             null,
             null);
         
-        var id = await _httpApiService.PutSetup(setup);
+        var id = await httpApiService.PutSetup(setup);
 
         var svm = new SetupViewModel(setup with { Id = id }, Linkages, Calibrations);
         svm.PropertyChanged += (sender, args) =>
@@ -253,8 +255,8 @@ public partial class MainViewModel : ViewModelBase
     [RelayCommand]
     private void DeleteSetup(int id)
     {
-        Debug.Assert(_httpApiService != null, nameof(_httpApiService) + " != null");
-        _httpApiService.DeleteSetup(id);
+        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
+        httpApiService.DeleteSetup(id);
         var toDelete = Setups.First(s => s.Id == id);
         Setups.Remove(toDelete);
     }

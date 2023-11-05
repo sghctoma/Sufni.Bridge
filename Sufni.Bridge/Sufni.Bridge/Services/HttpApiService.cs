@@ -12,33 +12,31 @@ internal class HttpApiService : IHttpApiService
 {
     #region Private fields
 
-    private string? _serverUrl;
-    private string? _refreshToken;
-    private readonly HttpClient _client = new();
+    private string? serverUrl;
+    private readonly HttpClient client = new();
     
     #endregion
     
     public async Task<string> RefreshTokensAsync(string url, string refreshToken)
     {
-        _serverUrl = url;
+        serverUrl = url;
 
-        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", refreshToken);
-        using HttpResponseMessage response = await _client.PostAsync($"{_serverUrl}/auth/refresh", null);
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", refreshToken);
+        using HttpResponseMessage response = await client.PostAsync($"{serverUrl}/auth/refresh", null);
         
         response.EnsureSuccessStatusCode();
         var tokens = await response.Content.ReadFromJsonAsync<Tokens>();
-        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens!.AccessToken);
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens!.AccessToken);
         Debug.Assert(tokens != null);
         Debug.Assert(tokens.AccessToken != null);
         Debug.Assert(tokens.RefreshToken != null);
-        _refreshToken = tokens.RefreshToken;
         return tokens.RefreshToken;
     }
 
     public async Task<string> RegisterAsync(string url, string username, string password)
     {
-        _serverUrl = url;
-        using HttpResponseMessage response = await _client.PostAsJsonAsync($"{_serverUrl}/auth/login",
+        serverUrl = url;
+        using HttpResponseMessage response = await client.PostAsJsonAsync($"{serverUrl}/auth/login",
             new User(Username: username, Password: password));
 
         response.EnsureSuccessStatusCode();
@@ -46,21 +44,21 @@ internal class HttpApiService : IHttpApiService
         Debug.Assert(tokens != null);
         Debug.Assert(tokens.AccessToken != null);
         Debug.Assert(tokens.RefreshToken != null);
-        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
         return tokens.RefreshToken;
     }
 
     public async Task Unregister(string refreshToken)
     {
-        _ = await _client.DeleteAsync($"{_serverUrl}/auth/logout");
-        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", refreshToken);
-        _ = await _client.DeleteAsync($"{_serverUrl}/auth/logout");
-        _client.DefaultRequestHeaders.Authorization = null;
+        _ = await client.DeleteAsync($"{serverUrl}/auth/logout");
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", refreshToken);
+        _ = await client.DeleteAsync($"{serverUrl}/auth/logout");
+        client.DefaultRequestHeaders.Authorization = null;
     }
 
     public async Task<List<Board>> GetBoards()
     {
-        using var response = await _client.GetAsync($"{_serverUrl}/api/board");
+        using var response = await client.GetAsync($"{serverUrl}/api/board");
         response.EnsureSuccessStatusCode() ;
         var boards = await response.Content.ReadFromJsonAsync<List<Board>>();
         Debug.Assert(boards != null);
@@ -69,7 +67,7 @@ internal class HttpApiService : IHttpApiService
 
     public async Task<List<Linkage>> GetLinkages()
     {
-        using var response = await _client.GetAsync($"{_serverUrl}/api/linkage");
+        using var response = await client.GetAsync($"{serverUrl}/api/linkage");
         response.EnsureSuccessStatusCode();
         var linkages = await response.Content.ReadFromJsonAsync<List<Linkage>>();
         Debug.Assert(linkages != null);
@@ -78,7 +76,7 @@ internal class HttpApiService : IHttpApiService
     
     public async Task<int> PutLinkage(Linkage linkage)
     {
-        using HttpResponseMessage response = await _client.PutAsJsonAsync($"{_serverUrl}/api/linkage", linkage);
+        using HttpResponseMessage response = await client.PutAsJsonAsync($"{serverUrl}/api/linkage", linkage);
         response.EnsureSuccessStatusCode();
         var result = await response.Content.ReadFromJsonAsync<PutResponse>();
         Debug.Assert(result != null);
@@ -87,13 +85,13 @@ internal class HttpApiService : IHttpApiService
 
     public async Task DeleteLinkage(int id)
     {
-        using var response = await _client.DeleteAsync($"{_serverUrl}/api/linkage/{id}");
+        using var response = await client.DeleteAsync($"{serverUrl}/api/linkage/{id}");
         response.EnsureSuccessStatusCode();
     }
     
     public async Task<List<CalibrationMethod>> GetCalibrationMethods()
     {
-        using var response = await _client.GetAsync($"{_serverUrl}/api/calibration-method");
+        using var response = await client.GetAsync($"{serverUrl}/api/calibration-method");
         response.EnsureSuccessStatusCode();
         var methods = await response.Content.ReadFromJsonAsync<List<CalibrationMethod>>();
         Debug.Assert(methods != null);
@@ -102,7 +100,7 @@ internal class HttpApiService : IHttpApiService
 
     public async Task<List<Calibration>> GetCalibrations()
     {
-        using var response = await _client.GetAsync($"{_serverUrl}/api/calibration");
+        using var response = await client.GetAsync($"{serverUrl}/api/calibration");
         response.EnsureSuccessStatusCode() ;
         var calibrations = await response.Content.ReadFromJsonAsync<List<Calibration>>();
         Debug.Assert(calibrations != null);
@@ -111,7 +109,7 @@ internal class HttpApiService : IHttpApiService
     
     public async Task<int> PutCalibration(Calibration calibration)
     {
-        using HttpResponseMessage response = await _client.PutAsJsonAsync($"{_serverUrl}/api/calibration", calibration);
+        using HttpResponseMessage response = await client.PutAsJsonAsync($"{serverUrl}/api/calibration", calibration);
         response.EnsureSuccessStatusCode();
         var result = await response.Content.ReadFromJsonAsync<PutResponse>();
         Debug.Assert(result != null);
@@ -120,13 +118,13 @@ internal class HttpApiService : IHttpApiService
 
     public async Task DeleteCalibration(int id)
     {
-        using var response = await _client.DeleteAsync($"{_serverUrl}/api/calibration/{id}");
+        using var response = await client.DeleteAsync($"{serverUrl}/api/calibration/{id}");
         response.EnsureSuccessStatusCode();
     }
 
     public async Task<List<Setup>> GetSetups()
     {
-        using var response = await _client.GetAsync($"{_serverUrl}/api/setup");
+        using var response = await client.GetAsync($"{serverUrl}/api/setup");
         response.EnsureSuccessStatusCode() ;
         var setups = await response.Content.ReadFromJsonAsync<List<Setup>>();
         Debug.Assert(setups != null);
@@ -135,7 +133,7 @@ internal class HttpApiService : IHttpApiService
     
     public async Task<int> PutSetup(Setup setup)
     {
-        using HttpResponseMessage response = await _client.PutAsJsonAsync($"{_serverUrl}/api/setup", setup);
+        using HttpResponseMessage response = await client.PutAsJsonAsync($"{serverUrl}/api/setup", setup);
         response.EnsureSuccessStatusCode();
         var result = await response.Content.ReadFromJsonAsync<PutResponse>();
         Debug.Assert(result != null);
@@ -144,7 +142,7 @@ internal class HttpApiService : IHttpApiService
 
     public async Task DeleteSetup(int id)
     {
-        using var response = await _client.DeleteAsync($"{_serverUrl}/api/setup/{id}");
+        using var response = await client.DeleteAsync($"{serverUrl}/api/setup/{id}");
         response.EnsureSuccessStatusCode();
     }
 
@@ -152,7 +150,7 @@ internal class HttpApiService : IHttpApiService
     {
         if (!session.ShouldBeImported) return;
 
-        using HttpResponseMessage response = await _client.PutAsJsonAsync($"{_serverUrl}/api/session",
+        using HttpResponseMessage response = await client.PutAsJsonAsync($"{serverUrl}/api/session",
             new Session(
                 Name: session.Name,
                 Description: session.Description,

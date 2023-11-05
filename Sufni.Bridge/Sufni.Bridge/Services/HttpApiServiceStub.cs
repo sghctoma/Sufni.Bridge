@@ -125,82 +125,87 @@ public class HttpApiServiceStub : IHttpApiService
                 "max - sqrt(arms_sqr_sum - dbl_arm1_arm2 * cos(start_angle-(factor*sample)))")),
     };
     
-    public async Task<string> RefreshTokensAsync(string url, string refreshToken)
+    public Task<string> RefreshTokensAsync(string url, string refreshToken)
     {
-        return refreshToken;
+        return Task.FromResult(refreshToken);
     }
 
-    public async Task<string> RegisterAsync(string url, string username, string password)
+    public Task<string> RegisterAsync(string url, string username, string password)
     {
-        return "MOCK_TOKEN";
+        return Task.FromResult("MOCK_TOKEN");
     }
 
-    public async Task Unregister(string refreshToken)
+    public Task Unregister(string refreshToken)
     {
+        return Task.CompletedTask;
     }
 
-    public async Task<List<Board>> GetBoards()
+    public Task<List<Board>> GetBoards()
     {
-        return Boards;
+        return Task.FromResult(Boards);
     }
 
-    public async Task<List<Linkage>> GetLinkages()
+    public Task<List<Linkage>> GetLinkages()
     {
-        return Linkages;
+        return Task.FromResult(Linkages);
     }
 
-    public async Task<int> PutLinkage(Linkage linkage)
+    public Task<int> PutLinkage(Linkage linkage)
     {
         var id = linkage.Id ?? (Linkages.Max(l => l.Id) ?? 0) + 1;
         Linkages.Add(linkage with { Id = id });
-        return id;
+        return Task.FromResult(id);
     }
 
-    public async Task DeleteLinkage(int id)
+    public Task DeleteLinkage(int id)
     {
         Linkages.RemoveAll(l => l.Id == id);
+        return Task.CompletedTask;
     }
 
-    public async Task<List<CalibrationMethod>> GetCalibrationMethods()
+    public Task<List<CalibrationMethod>> GetCalibrationMethods()
     {
-        return CalibrationMethods;
+        return Task.FromResult(CalibrationMethods);
     }
 
-    public async Task<List<Calibration>> GetCalibrations()
+    public Task<List<Calibration>> GetCalibrations()
     {
-        return Calibrations;
+        return Task.FromResult(Calibrations);
     }
     
-    public async Task<int> PutCalibration(Calibration calibration)
+    public Task<int> PutCalibration(Calibration calibration)
     {
         var id = calibration.Id ?? (Calibrations.Max(c => c.Id) ?? 0) + 1;
         Calibrations.Add(calibration with { Id = id });
-        return id;
+        return Task.FromResult(id);
     }
 
-    public async Task DeleteCalibration(int id)
+    public Task DeleteCalibration(int id)
     {
         Calibrations.RemoveAll(c => c.Id == id);
+        return Task.CompletedTask;
     }
     
-    public async Task<List<Setup>> GetSetups()
+    public Task<List<Setup>> GetSetups()
     {
-        return Setups;
+        return Task.FromResult(Setups);
     }
     
-    public async Task<int> PutSetup(Setup setup)
+    public Task<int> PutSetup(Setup setup)
     {
         var id = setup.Id ?? (Setups.Max(s => s.Id) ?? 0) + 1;
         Setups.Add(setup with { Id = id });
-        return id;
+        return Task.FromResult(id);
     }
 
-    public async Task DeleteSetup(int id)
+    public Task DeleteSetup(int id)
     {
         Setups.RemoveAll(s => s.Id == id);
+        return Task.CompletedTask;
     }
     
-    public async Task ImportSession(TelemetryFile session, int setupId)
+    public Task ImportSession(TelemetryFile session, int setupId)
     {
+        return Task.CompletedTask;
     }
 }

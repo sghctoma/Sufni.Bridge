@@ -34,8 +34,8 @@ public partial class SettingsViewModel : ViewModelBase
     
     #region Private members
     
-    private readonly ISecureStorage? _secureStorage;
-    private readonly IHttpApiService? _httpApiService;
+    private readonly ISecureStorage? secureStorage;
+    private readonly IHttpApiService? httpApiService;
     
     #endregion Private members
     
@@ -43,15 +43,15 @@ public partial class SettingsViewModel : ViewModelBase
 
     public SettingsViewModel()
     {
-        _secureStorage = App.Current?.Services?.GetService<ISecureStorage>();
-        _httpApiService = App.Current?.Services?.GetService<IHttpApiService>();
+        secureStorage = App.Current?.Services?.GetService<ISecureStorage>();
+        httpApiService = App.Current?.Services?.GetService<IHttpApiService>();
         
-        Debug.Assert(_httpApiService != null, nameof(_httpApiService) + " != null");
-        Debug.Assert(_secureStorage != null, nameof(_secureStorage) + " != null");
+        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
+        Debug.Assert(secureStorage != null, nameof(secureStorage) + " != null");
         
-        ServerUrl = _secureStorage.GetString("ServerUrl");
-        Username = _secureStorage.GetString("Username");
-        var refreshToken = _secureStorage.GetString("RefreshToken");
+        ServerUrl = secureStorage.GetString("ServerUrl");
+        Username = secureStorage.GetString("Username");
+        var refreshToken = secureStorage.GetString("RefreshToken");
         _ = RefreshTokensAsync(ServerUrl, refreshToken);
     }
 
@@ -61,8 +61,8 @@ public partial class SettingsViewModel : ViewModelBase
 
     private async Task RefreshTokensAsync(string? url, string? refreshToken)
     {
-        Debug.Assert(_httpApiService != null, nameof(_httpApiService) + " != null");
-        Debug.Assert(_secureStorage != null, nameof(_secureStorage) + " != null");
+        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
+        Debug.Assert(secureStorage != null, nameof(secureStorage) + " != null");
 
         if (string.IsNullOrEmpty(url) || string.IsNullOrEmpty(refreshToken))
         {
@@ -78,7 +78,7 @@ public partial class SettingsViewModel : ViewModelBase
 
         try
         {
-            newRefreshToken = await _httpApiService.RefreshTokensAsync(url, refreshToken);
+            newRefreshToken = await httpApiService.RefreshTokensAsync(url, refreshToken);
             IsRegistered = true;
         }
         catch (HttpRequestException ex)
@@ -92,23 +92,23 @@ public partial class SettingsViewModel : ViewModelBase
         }
         finally
         {
-            _secureStorage.SetString("RefreshToken", newRefreshToken);
+            secureStorage.SetString("RefreshToken", newRefreshToken);
         }
     }
 
     private async Task Register()
     {
-        Debug.Assert(_httpApiService != null, nameof(_httpApiService) + " != null");
-        Debug.Assert(_secureStorage != null, nameof(_secureStorage) + " != null");
+        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
+        Debug.Assert(secureStorage != null, nameof(secureStorage) + " != null");
         
         if (string.IsNullOrEmpty(ServerUrl) || string.IsNullOrEmpty(Username) || string.IsNullOrEmpty(Password)) return;
 
         try
         {
-            var refreshToken = await _httpApiService.RegisterAsync(ServerUrl, Username, Password);
-            _secureStorage.SetString("Username", Username);
-            _secureStorage.SetString("ServerUrl", ServerUrl);
-            _secureStorage.SetString("RefreshToken", refreshToken);
+            var refreshToken = await httpApiService.RegisterAsync(ServerUrl, Username, Password);
+            secureStorage.SetString("Username", Username);
+            secureStorage.SetString("ServerUrl", ServerUrl);
+            secureStorage.SetString("RefreshToken", refreshToken);
             IsRegistered = true;
             ErrorMessages.Clear();
         }
@@ -120,14 +120,14 @@ public partial class SettingsViewModel : ViewModelBase
 
     private async Task Unregister()
     {
-        Debug.Assert(_httpApiService != null, nameof(_httpApiService) + " != null");
-        Debug.Assert(_secureStorage != null, nameof(_secureStorage) + " != null");
+        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
+        Debug.Assert(secureStorage != null, nameof(secureStorage) + " != null");
         
-        var refreshToken = _secureStorage.GetString("RefreshToken");
-        await _httpApiService.Unregister(refreshToken!);
-        _secureStorage.Remove("Username");
-        _secureStorage.Remove("ServerUrl");
-        _secureStorage.Remove("RefreshToken");
+        var refreshToken = secureStorage.GetString("RefreshToken");
+        await httpApiService.Unregister(refreshToken!);
+        secureStorage.Remove("Username");
+        secureStorage.Remove("ServerUrl");
+        secureStorage.Remove("RefreshToken");
         Username = null;
         ServerUrl = null;
         Password = null;

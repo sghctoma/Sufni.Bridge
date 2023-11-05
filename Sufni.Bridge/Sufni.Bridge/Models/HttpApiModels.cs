@@ -3,10 +3,13 @@ using System.Text.Json.Serialization;
 
 namespace Sufni.Bridge.Models;
 
+// ReSharper disable NotAccessedPositionalProperty.Global
 public record User(
     [property: JsonPropertyName("username")] string Username,
     [property: JsonPropertyName("password")] string Password);
 
+// ReSharper disable once ClassNeverInstantiated.Global
+// It's used in response.Content.ReadFromJsonAsync<Tokens>() calls
 public record Tokens(
     [property: JsonPropertyName("access_token")] string AccessToken,
     [property: JsonPropertyName("refresh_token")] string RefreshToken);
@@ -53,5 +56,7 @@ public record Setup(
     [property: JsonPropertyName("front_calibration_id")] int? FrontCalibrationId,
     [property: JsonPropertyName("rear_calibration_id")] int? RearCalibrationId);
 
+// ReSharper disable once ClassNeverInstantiated.Global
+// It's used in response.Content.ReadFromJsonAsync<Tokens>() calls
 public record PutResponse(
     [property: JsonPropertyName("id")] int Id);

@@ -7,9 +7,10 @@ namespace Sufni.Bridge.Models;
 public class TelemetryDataStore
 {
     public string Name { get; set; }
-    public DirectoryInfo Path { get; set; }
-    public List<TelemetryFile> Files { get; set; }
+    public List<TelemetryFile> Files { get; }
     public string BoardId { get; }
+
+    private DirectoryInfo Path { get; }
 
     public TelemetryDataStore(string name, DirectoryInfo path)
     {

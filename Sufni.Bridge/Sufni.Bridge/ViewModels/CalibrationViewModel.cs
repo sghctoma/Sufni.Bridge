@@ -43,6 +43,7 @@ public partial class CalibrationInputViewModel : ViewModelBase
 
     #region Property change handlers
 
+    // ReSharper disable once ParameterHidesMember
     partial void OnValueChanged(double value)
     {
         IsDirty = Math.Abs(value - originalValue) > 0.00001;
@@ -58,7 +59,7 @@ public partial class CalibrationViewModel : ViewModelBase
     #region Observable properties
     
     [ObservableProperty] private int? id;
-    [ObservableProperty] private string name;
+    [ObservableProperty] private string? name;
     [ObservableProperty] private CalibrationMethod? selectedCalibrationMethod;
 
     public ObservableCollection<CalibrationMethod> CalibrationMethods { get; }
@@ -85,7 +86,8 @@ public partial class CalibrationViewModel : ViewModelBase
     
     #region Property change handlers
     
-    partial void OnNameChanged(string value)
+    // ReSharper disable once UnusedParameterInPartialMethod
+    partial void OnNameChanged(string? value)
     {
         EvaluateDirtiness();
     }
@@ -104,7 +106,7 @@ public partial class CalibrationViewModel : ViewModelBase
             foreach (var input in calibration.Inputs)
             {
                 var ivm = new CalibrationInputViewModel(input.Key, input.Value);
-                ivm.PropertyChanged += (sender, args) => EvaluateDirtiness();
+                ivm.PropertyChanged += (_, _) => EvaluateDirtiness();
                 Inputs.Add(ivm);
             }
         }
@@ -113,7 +115,7 @@ public partial class CalibrationViewModel : ViewModelBase
             foreach (var input in value.Properties.Inputs)
             {
                 var ivm = new CalibrationInputViewModel(input);
-                ivm.PropertyChanged += (sender, args) => EvaluateDirtiness();
+                ivm.PropertyChanged += (_, _) => EvaluateDirtiness();
                 Inputs.Add(ivm);
             }
         }
@@ -152,7 +154,7 @@ public partial class CalibrationViewModel : ViewModelBase
         
         var newCalibration = new Calibration(
             Id,
-            Name,
+            Name ?? $"calibration #{Id}",
             SelectedCalibrationMethod.Id,
             Inputs.ToDictionary(input => input.Name, input => input.Value));
         httpApiService.PutCalibration(newCalibration);

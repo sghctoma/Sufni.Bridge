@@ -12,10 +12,15 @@ public class SecureStorage : ISecureStorage
         ".config",
         "Sufni.Bridge",
         "preferences.dat");
-    
-    readonly SecureStorageDictionary _secureStorage = new();
 
-    void Load()
+    private readonly SecureStorageDictionary secureStorage = new();
+
+    public SecureStorage()
+    {
+        Load();
+    }
+    
+    private void Load()
     {
         if (!File.Exists(AppSecureStoragePath))
             return;
@@ -27,9 +32,9 @@ public class SecureStorage : ISecureStorage
 
             if (readPreferences != null)
             {
-                _secureStorage.Clear();
+                secureStorage.Clear();
                 foreach (var pair in readPreferences)
-                    _secureStorage.TryAdd(pair.Key, pair.Value);
+                    secureStorage.TryAdd(pair.Key, pair.Value);
             }
         }
         catch (JsonException)
@@ -38,19 +43,19 @@ public class SecureStorage : ISecureStorage
         }
     }
 
-    void Save()
+    private void Save()
     {
         var dir = Path.GetDirectoryName(AppSecureStoragePath);
         Debug.Assert(dir != null, nameof(dir) + " != null");
         Directory.CreateDirectory(dir);
 
         using var stream = File.Create(AppSecureStoragePath);
-        JsonSerializer.Serialize(stream, _secureStorage);
+        JsonSerializer.Serialize(stream, secureStorage);
     }
     
     public byte[]? Get(string key)
     {
-        if (!_secureStorage.TryGetValue(key, out var value))
+        if (!secureStorage.TryGetValue(key, out var value))
         {
             return null;
         }
@@ -61,7 +66,7 @@ public class SecureStorage : ISecureStorage
 
     public string? GetString(string key)
     {
-        if (!_secureStorage.TryGetValue(key, out var value))
+        if (!secureStorage.TryGetValue(key, out var value))
         {
             return null;
         }
@@ -74,12 +79,12 @@ public class SecureStorage : ISecureStorage
     {
         if (value is null)
         {
-            _secureStorage.TryRemove(key, out _);
+            secureStorage.TryRemove(key, out _);
         }
         else
         {
             // TODO: protect
-            _secureStorage[key] = value;
+            secureStorage[key] = value;
         }
 
         Save();
@@ -89,13 +94,13 @@ public class SecureStorage : ISecureStorage
     {
         if (value is null)
         {
-            _secureStorage.TryRemove(key, out _);
+            secureStorage.TryRemove(key, out _);
         }
         else
         {
             var data = Encoding.UTF8.GetBytes(s: value);
             // TODO: protect
-            _secureStorage[key] = data;
+            secureStorage[key] = data;
         }
 
         Save();
@@ -103,14 +108,14 @@ public class SecureStorage : ISecureStorage
 
     public bool Remove(string key)
     {
-        var result = _secureStorage.TryRemove(key, out _);
+        var result = secureStorage.TryRemove(key, out _);
         Save();
         return result;
     }
 
     public void RemoveAll()
     {
-        _secureStorage.Clear();
+        secureStorage.Clear();
         Save();
     }
 }

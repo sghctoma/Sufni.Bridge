@@ -2,6 +2,8 @@
 using Android.Content.PM;
 using Avalonia;
 using Avalonia.Android;
+using Microsoft.Extensions.DependencyInjection;
+using SecureStorage;
 
 namespace Sufni.Bridge.Android
 {
@@ -13,9 +15,19 @@ namespace Sufni.Bridge.Android
         ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.ScreenSize | ConfigChanges.UiMode)]
     public class MainActivity : AvaloniaMainActivity<App>
     {
+        private static readonly IServiceCollection Services;
+
+        static MainActivity()
+        {
+            Services = new ServiceCollection();
+            Services.AddSingleton<ISecureStorage, SecureStorage.SecureStorage>();
+        }
+        
         protected override AppBuilder CustomizeAppBuilder(AppBuilder builder)
         {
-            return base.CustomizeAppBuilder(builder)
+            var realBuilder = AppBuilder.Configure( () => new App(Services) );
+            
+            return base.CustomizeAppBuilder(realBuilder)
                 .WithInterFont()
                 .With(new SkiaOptions { UseOpacitySaveLayer = true });
         }

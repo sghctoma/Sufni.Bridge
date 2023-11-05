@@ -45,8 +45,10 @@
 
                         <!-- Indicate modifications with header color -->
                         <Expander.Resources>
+                            <!-- ReSharper disable once Xaml.RedundantResource -->
                             <SolidColorBrush x:Key="ExpanderHeaderBackgroundPointerOver"
                                              Color="{Binding IsDirty, Converter={StaticResource HeaderColorConverter}}" />
+                            <!-- ReSharper disable once Xaml.RedundantResource -->
                             <SolidColorBrush x:Key="ExpanderHeaderBackground"
                                              Color="{Binding IsDirty, Converter={StaticResource HeaderColorConverter}}" />
                         </Expander.Resources>

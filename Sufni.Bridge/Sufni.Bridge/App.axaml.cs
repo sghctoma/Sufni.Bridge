@@ -17,7 +17,11 @@ public partial class App : Application
 
     public App()
     {
+#if DEBUG
         RegisteredServices.Collection.AddSingleton<IHttpApiService, HttpApiServiceStub>();
+#else
+        RegisteredServices.Collection.AddSingleton<IHttpApiService, HttpApiService>();
+#endif
         RegisteredServices.Collection.AddSingleton<ITelemetryDataStoreService, TelemetryDataStoreService>();
     }
 
@@ -25,11 +29,11 @@ public partial class App : Application
     {
         AvaloniaXamlLoader.Load(this);
     }
-    
+
     public override void OnFrameworkInitializationCompleted()
     {
         TopLevel? topLevel = null;
-        
+
         switch (ApplicationLifetime)
         {
             case IClassicDesktopStyleApplicationLifetime desktop:
@@ -44,11 +48,11 @@ public partial class App : Application
 
         if (topLevel != null)
         {
-            RegisteredServices.Collection.AddSingleton<IFilesService>(x => new FilesService(topLevel));
+            RegisteredServices.Collection.AddSingleton<IFilesService>(_ => new FilesService(topLevel));
         }
-        
+
         Services = RegisteredServices.Collection.BuildServiceProvider();
-        
+
         switch (ApplicationLifetime)
         {
             case IClassicDesktopStyleApplicationLifetime desktop:
@@ -58,7 +62,7 @@ public partial class App : Application
                 singleViewPlatform.MainView!.DataContext = new MainViewModel();
                 break;
         }
-        
+
         base.OnFrameworkInitializationCompleted();
     }
 }

@@ -1,120 +1,129 @@
 using System.Diagnostics;
 using System.Text;
-using System.Text.Json;
-using SecureStorageDictionary = System.Collections.Concurrent.ConcurrentDictionary<string, byte[]>;
+using DBus.Services.Secrets;
 
 namespace SecureStorage;
 
 public class SecureStorage : ISecureStorage
 {
-    private static readonly string AppSecureStoragePath = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-        ".config",
-        "Sufni.Bridge",
-        "preferences.dat");
+    private const string ContentTypeText = "text/plain; charset=utf8";
+    private const string ContentTypeBytes = "application/octet-stream";
+    private const string LabelPrefix = "Sufni Suspension Telemetry";
 
-    private readonly SecureStorageDictionary secureStorage = new();
+    private Collection? defaultCollection;
 
     public SecureStorage()
     {
-        Load();
+        var secretService = Task.Run(async () => await SecretService.ConnectAsync(EncryptionType.Dh)).Result;
+        defaultCollection = Task.Run(async () => await secretService.GetDefaultCollectionAsync()).Result;
+        
+        if (defaultCollection is null)
+        {
+            throw new Exception("Could not access secret storage.");
+        }
+    }
+
+    private static Dictionary<string, string> GetAttributes(string? key)
+    {
+        var attributes = new Dictionary<string, string>
+        {
+            { "service", "sufni-suspension-telemetry" },
+        };
+        if (key is not null)
+        {
+            attributes.Add("sufni-suspension-telemetry-api-setting", key);
+        }
+
+        return attributes;
     }
     
-    private void Load()
+    private void CreateItem(string key, object? value)
     {
-        if (!File.Exists(AppSecureStoragePath))
-            return;
-
-        try
+        Debug.Assert(defaultCollection != null, nameof(defaultCollection) + " != null");
+        
+        if (value is null)
         {
-            using var stream = File.OpenRead(AppSecureStoragePath);
-            var readPreferences = JsonSerializer.Deserialize<SecureStorageDictionary>(stream);
-
-            if (readPreferences != null)
-            {
-                secureStorage.Clear();
-                foreach (var pair in readPreferences)
-                    secureStorage.TryAdd(pair.Key, pair.Value);
-            }
+            Remove(key);
         }
-        catch (JsonException)
+
+        if (value is not (byte[] or string))
         {
-            // if deserialization fails proceed with empty settings
+            throw new Exception("Invalid value type!");
+        }
+        
+        var createdItem = Task.Run(async () => await defaultCollection.CreateItemAsync(
+            $"{LabelPrefix} ({key})",
+            GetAttributes(key),
+            value as byte[] ?? Encoding.UTF8.GetBytes((value as string)!),
+            value is byte[] ? ContentTypeBytes : ContentTypeText,
+            true)).Result;
+
+        if (createdItem == null)
+        {
+            throw new Exception($"Could not save {key}");
         }
     }
 
-    private void Save()
+    private void DeleteItems(string? key)
     {
-        var dir = Path.GetDirectoryName(AppSecureStoragePath);
-        Debug.Assert(dir != null, nameof(dir) + " != null");
-        Directory.CreateDirectory(dir);
+        Debug.Assert(defaultCollection != null, nameof(defaultCollection) + " != null");
+        
+        var attributes = GetAttributes(key);
+        var matchedItems = Task.Run(async () => await defaultCollection.SearchItemsAsync(attributes)).Result;
+        foreach (var matchedItem in matchedItems)
+        {
+            Task.Run(async () => await matchedItem.DeleteAsync()).Wait();
+        }
+    }
 
-        using var stream = File.Create(AppSecureStoragePath);
-        JsonSerializer.Serialize(stream, secureStorage);
+    private byte[]? SearchItem(string key)
+    {
+        Debug.Assert(defaultCollection != null, nameof(defaultCollection) + " != null");
+      
+        var attributes = GetAttributes(key);
+        var matchedItems = Task.Run(async () => await defaultCollection.SearchItemsAsync(attributes)).Result;
+        byte[]? secret = null;
+        if (matchedItems.Length == 1)
+        {
+            secret = Task.Run(async () => await matchedItems[0].GetSecretAsync()).Result;
+        }
+        
+        if (matchedItems.Length > 1)
+        {
+            throw new Exception("Duplicate items!");
+        }
+
+        return secret;
     }
     
     public byte[]? Get(string key)
     {
-        if (!secureStorage.TryGetValue(key, out var value))
-        {
-            return null;
-        }
-
-        // TODO: unprotect
-        return value;
+        return SearchItem(key);
     }
 
     public string? GetString(string key)
     {
-        if (!secureStorage.TryGetValue(key, out var value))
-        {
-            return null;
-        }
-
-        // TODO: unprotect
-        return Encoding.UTF8.GetString(value);
+        var valueBytes = SearchItem(key);
+        return valueBytes is not null ? Encoding.UTF8.GetString(valueBytes) : null;
     }
 
     public void Set(string key, byte[]? value)
     {
-        if (value is null)
-        {
-            secureStorage.TryRemove(key, out _);
-        }
-        else
-        {
-            // TODO: protect
-            secureStorage[key] = value;
-        }
-
-        Save();
+        CreateItem(key, value);
     }
 
     public void SetString(string key, string? value)
     {
-        if (value is null)
-        {
-            secureStorage.TryRemove(key, out _);
-        }
-        else
-        {
-            var data = Encoding.UTF8.GetBytes(s: value);
-            // TODO: protect
-            secureStorage[key] = data;
-        }
-
-        Save();
+        CreateItem(key, value);
     }
 
     public void Remove(string key)
     {
-        secureStorage.Remove(key, out _);
-        Save();
+        DeleteItems(key);
     }
 
     public void RemoveAll()
     {
-        secureStorage.Clear();
-        Save();
+        DeleteItems(null);
     }
 }

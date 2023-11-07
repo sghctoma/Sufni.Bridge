@@ -27,6 +27,7 @@
     </ItemGroup>
     
     <ItemGroup Condition="'$(TargetFramework)' == 'net7.0'">
+        <PackageReference Include="Ace4896.DBus.Services.Secrets" Version="1.2.0" />
         <Compile Include="SecureStorage.linux.cs" />
     </ItemGroup>
 </Project>

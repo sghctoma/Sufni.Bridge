@@ -29,23 +29,23 @@ public class SecureStorage : ISecureStorage
 	    };
     }
 
-    public byte[]? Get(string key)
+    public Task<byte[]?> GetAsync(string key)
     {
 	    using var record = RecordForKey(key);
 	    using var match = SecKeyChain.QueryAsRecord(record, out var result);
-	    return result == SecStatusCode.Success ? match!.ValueData!.ToArray() : null;
+	    return Task.FromResult(result == SecStatusCode.Success ? match!.ValueData!.ToArray() : null);
     }
 
-    public string? GetString(string key)
+    public Task<string?> GetStringAsync(string key)
     {
 	    using var record = RecordForKey(key);
 	    using var match = SecKeyChain.QueryAsRecord(record, out var result);
-	    return result == SecStatusCode.Success ? NSString.FromData(match!.ValueData!, NSStringEncoding.UTF8) : null;
+	    return Task.FromResult<string?>(result == SecStatusCode.Success ? NSString.FromData(match!.ValueData!, NSStringEncoding.UTF8) : null);
     }
 
-    public void Set(string key, byte[]? value)
+    public async Task SetAsync(string key, byte[]? value)
     {
-	    Remove(key);
+	    await RemoveAsync(key);
 
 	    if (value is null)
 	    {
@@ -60,24 +60,26 @@ public class SecureStorage : ISecureStorage
 	    }
     }
 
-    public void SetString(string key, string? value)
+    public async Task SetStringAsync(string key, string? value)
     {
 	    var bytes = value is not null ? Encoding.UTF8.GetBytes(s: value) : null;
-	    Set(key, bytes);
+	    await SetAsync(key, bytes);
     }
 
-    public void Remove(string key)
+    public Task RemoveAsync(string key)
     {
 	    using var record = RecordForKey(key);
 	    var result = SecKeyChain.Remove(record);
 	    if (result != SecStatusCode.Success && result != SecStatusCode.ItemNotFound)
 		    throw new Exception($"Error removing record: {result}");
+	    return Task.CompletedTask;
     }
 
-    public void RemoveAll()
+    public Task RemoveAllAsync()
     {
 	    using var query = new SecRecord(SecKind.GenericPassword);
 	    query.Service = Alias;
 	    SecKeyChain.Remove(query);
+	    return Task.CompletedTask;
     }
 }

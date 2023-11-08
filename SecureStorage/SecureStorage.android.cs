@@ -8,14 +8,19 @@ namespace SecureStorage;
 public class SecureStorage : ISecureStorage
 {
     private const string Alias = "sufni.bridge.android.preferences";
-    private readonly ISharedPreferences? sharedPreferences;
+    private ISharedPreferences? sharedPreferences;
 
     public SecureStorage()
     {
-        sharedPreferences = GetEncryptedSharedPreferences();
+        _ = InitAsync();
     }
     
-    private ISharedPreferences? GetEncryptedSharedPreferences()
+    private async Task InitAsync()
+    {
+        sharedPreferences = await GetEncryptedSharedPreferences();
+    }
+    
+    private async Task<ISharedPreferences?> GetEncryptedSharedPreferences()
     {
         Debug.Assert(EncryptedSharedPreferences.PrefValueEncryptionScheme.Aes256Gcm != null, 
             "EncryptedSharedPreferences.PrefValueEncryptionScheme.Aes256Gcm != null");
@@ -39,23 +44,23 @@ public class SecureStorage : ISecureStorage
         }
         catch (InvalidProtocolBufferException)
         {
-            RemoveAll();
+            await RemoveAllAsync();
             return null;
         }
     }
 
-    public byte[]? Get(string key)
+    public Task<byte[]?> GetAsync(string key)
     {
         var value = sharedPreferences?.GetString(key, null);
-        return value is null ? null : Convert.FromBase64String(value);
+        return Task.FromResult(value is null ? null : Convert.FromBase64String(value));
     }
 
-    public string? GetString(string key)
+    public Task<string?> GetStringAsync(string key)
     {
-        return sharedPreferences?.GetString(key, null);
+        return Task.FromResult(sharedPreferences?.GetString(key, null));
     }
 
-    public void Set(string key, byte[]? value)
+    public Task SetAsync(string key, byte[]? value)
     {
         using var editor = sharedPreferences?.Edit();
         if (value is null)
@@ -68,9 +73,10 @@ public class SecureStorage : ISecureStorage
         }
 
         editor?.Apply();
+        return Task.CompletedTask;
     }
 
-    public void SetString(string key, string? value)
+    public Task SetStringAsync(string key, string? value)
     {
         using var editor = sharedPreferences?.Edit();
         if (value is null)
@@ -83,19 +89,22 @@ public class SecureStorage : ISecureStorage
         }
 
         editor?.Apply();
+        return Task.CompletedTask;
     }
 
-    public void Remove(string key)
+    public Task RemoveAsync(string key)
     {
         using var editor = sharedPreferences?.Edit();
         editor?.Remove(key);
         editor?.Apply();
+        return Task.CompletedTask;
     }
 
-    public void RemoveAll()
+    public Task RemoveAllAsync()
     {
         using var editor = sharedPreferences?.Edit();
         editor?.Clear();
         editor?.Apply();
+        return Task.CompletedTask;
     }
 }

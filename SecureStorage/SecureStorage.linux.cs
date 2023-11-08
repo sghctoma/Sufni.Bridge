@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Text;
 using DBus.Services.Secrets;
 
@@ -11,11 +10,17 @@ public class SecureStorage : ISecureStorage
     private const string LabelPrefix = "Sufni Suspension Telemetry";
 
     private Collection? defaultCollection;
+    private Task Initialization { get; }
 
     public SecureStorage()
     {
-        var secretService = Task.Run(async () => await SecretService.ConnectAsync(EncryptionType.Dh)).Result;
-        defaultCollection = Task.Run(async () => await secretService.GetDefaultCollectionAsync()).Result;
+        Initialization = InitAsync();
+    }
+
+    private async Task InitAsync()
+    {
+        var secretService = await SecretService.ConnectAsync(EncryptionType.Dh);
+        defaultCollection = await secretService.GetDefaultCollectionAsync();
         
         if (defaultCollection is null)
         {
@@ -37,13 +42,14 @@ public class SecureStorage : ISecureStorage
         return attributes;
     }
     
-    private void CreateItem(string key, object? value)
+    private async Task CreateItemAsync(string key, object? value)
     {
-        Debug.Assert(defaultCollection != null, nameof(defaultCollection) + " != null");
+        await Initialization;
         
         if (value is null)
         {
-            Remove(key);
+            await RemoveAsync(key);
+            return;
         }
 
         if (value is not (byte[] or string))
@@ -51,12 +57,12 @@ public class SecureStorage : ISecureStorage
             throw new Exception("Invalid value type!");
         }
         
-        var createdItem = Task.Run(async () => await defaultCollection.CreateItemAsync(
+        var createdItem = await defaultCollection!.CreateItemAsync(
             $"{LabelPrefix} ({key})",
             GetAttributes(key),
             value as byte[] ?? Encoding.UTF8.GetBytes((value as string)!),
             value is byte[] ? ContentTypeBytes : ContentTypeText,
-            true)).Result;
+            true);
 
         if (createdItem == null)
         {
@@ -64,28 +70,28 @@ public class SecureStorage : ISecureStorage
         }
     }
 
-    private void DeleteItems(string? key)
+    private async Task DeleteItemsAsync(string? key)
     {
-        Debug.Assert(defaultCollection != null, nameof(defaultCollection) + " != null");
+        await Initialization;
         
         var attributes = GetAttributes(key);
-        var matchedItems = Task.Run(async () => await defaultCollection.SearchItemsAsync(attributes)).Result;
+        var matchedItems = await defaultCollection!.SearchItemsAsync(attributes);
         foreach (var matchedItem in matchedItems)
         {
             Task.Run(async () => await matchedItem.DeleteAsync()).Wait();
         }
     }
 
-    private byte[]? SearchItem(string key)
+    private async Task<byte[]?> SearchItemAsync(string key)
     {
-        Debug.Assert(defaultCollection != null, nameof(defaultCollection) + " != null");
+        await Initialization;
       
         var attributes = GetAttributes(key);
-        var matchedItems = Task.Run(async () => await defaultCollection.SearchItemsAsync(attributes)).Result;
+        var matchedItems = await defaultCollection!.SearchItemsAsync(attributes);
         byte[]? secret = null;
         if (matchedItems.Length == 1)
         {
-            secret = Task.Run(async () => await matchedItems[0].GetSecretAsync()).Result;
+            secret = await matchedItems[0].GetSecretAsync();
         }
         
         if (matchedItems.Length > 1)
@@ -96,34 +102,34 @@ public class SecureStorage : ISecureStorage
         return secret;
     }
     
-    public byte[]? Get(string key)
+    public async Task<byte[]?> GetAsync(string key)
     {
-        return SearchItem(key);
+        return await SearchItemAsync(key);
     }
 
-    public string? GetString(string key)
+    public async Task<string?> GetStringAsync(string key)
     {
-        var valueBytes = SearchItem(key);
+        var valueBytes = await SearchItemAsync(key);
         return valueBytes is not null ? Encoding.UTF8.GetString(valueBytes) : null;
     }
 
-    public void Set(string key, byte[]? value)
+    public async Task SetAsync(string key, byte[]? value)
     {
-        CreateItem(key, value);
+        await CreateItemAsync(key, value);
     }
 
-    public void SetString(string key, string? value)
+    public async Task SetStringAsync(string key, string? value)
     {
-        CreateItem(key, value);
+        await CreateItemAsync(key, value);
     }
 
-    public void Remove(string key)
+    public async Task RemoveAsync(string key)
     {
-        DeleteItems(key);
+        await DeleteItemsAsync(key);
     }
 
-    public void RemoveAll()
+    public async Task RemoveAllAsync()
     {
-        DeleteItems(null);
+        await DeleteItemsAsync(null);
     }
 }

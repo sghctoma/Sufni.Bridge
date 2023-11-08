@@ -26,27 +26,30 @@ public class SecureStorage : ISecureStorage
         "preferences.dat");
 
     private readonly SecureStorageDictionary secureStorage = new();
+    private Task Initialization { get; }
     
     public SecureStorage()
     {
-        Load();
+         Initialization = InitAsync();
     }
 
-    private void Load()
+    private async Task InitAsync()
     {
         if (!File.Exists(AppSecureStoragePath))
             return;
 
         try
         {
-            using var stream = File.OpenRead(AppSecureStoragePath);
-            var readPreferences = JsonSerializer.Deserialize<SecureStorageDictionary>(stream);
+            await using var stream = File.OpenRead(AppSecureStoragePath);
+            var readPreferences = await JsonSerializer.DeserializeAsync<SecureStorageDictionary>(stream);
 
             if (readPreferences != null)
             {
                 secureStorage.Clear();
                 foreach (var pair in readPreferences)
+                {
                     secureStorage.TryAdd(pair.Key, pair.Value);
+                }
             }
         }
         catch (JsonException)
@@ -55,29 +58,37 @@ public class SecureStorage : ISecureStorage
         }
     }
 
-    void Save()
+    private async Task SaveAsync()
     {
+        await Initialization;
+        
         var dir = Path.GetDirectoryName(AppSecureStoragePath);
         Debug.Assert(dir != null, nameof(dir) + " != null");
         Directory.CreateDirectory(dir);
 
-        using var stream = File.Create(AppSecureStoragePath);
-        JsonSerializer.Serialize(stream, secureStorage);
+        await using var stream = File.Create(AppSecureStoragePath);
+        await JsonSerializer.SerializeAsync(stream, secureStorage);
     }
 
-    public byte[]? Get(string key)
+    public async Task<byte[]?> GetAsync(string key)
     {
+        await Initialization;
+        
         if (!secureStorage.TryGetValue(key, out var value))
         {
             return null;
         }
 
         return ProtectedData.Unprotect(
-            value, AdditionalEntropy, DataProtectionScope.CurrentUser);
+            value, 
+            AdditionalEntropy, 
+            DataProtectionScope.CurrentUser);
     }
 
-    public string? GetString(string key)
+    public async Task<string?> GetStringAsync(string key)
     {
+        await Initialization;
+        
         if (!secureStorage.TryGetValue(key, out var value))
         {
             return null;
@@ -88,8 +99,10 @@ public class SecureStorage : ISecureStorage
         return Encoding.UTF8.GetString(data);
     }
 
-    public void Set(string key, byte[]? value)
+    public async Task SetAsync(string key, byte[]? value)
     {
+        await Initialization;
+        
         if (value is null)
         {
             secureStorage.TryRemove(key, out _);
@@ -100,11 +113,13 @@ public class SecureStorage : ISecureStorage
                 value, AdditionalEntropy, DataProtectionScope.CurrentUser);
         }
 
-        Save();
+        await SaveAsync();
     }
 
-    public void SetString(string key, string? value)
+    public async Task SetStringAsync(string key, string? value)
     {
+        await Initialization;
+        
         if (value is null)
         {
             secureStorage.TryRemove(key, out _);
@@ -116,18 +131,22 @@ public class SecureStorage : ISecureStorage
                 data, AdditionalEntropy, DataProtectionScope.CurrentUser);
         }
 
-        Save();
+        await SaveAsync();
     }
 
-    public void Remove(string key)
+    public async Task RemoveAsync(string key)
     {
+        await Initialization;
+        
         secureStorage.Remove(key, out _);
-        Save();
+        await SaveAsync();
     }
 
-    public void RemoveAll()
+    public async Task RemoveAllAsync()
     {
+        await Initialization;
+        
         secureStorage.Clear();
-        Save();
+        await SaveAsync();
     }
 }

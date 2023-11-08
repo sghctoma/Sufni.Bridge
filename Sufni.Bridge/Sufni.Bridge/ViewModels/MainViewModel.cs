@@ -64,6 +64,14 @@ public partial class MainViewModel : ViewModelBase
         httpApiService = App.Current?.Services?.GetService<IHttpApiService>();
         
         SelectedIndex = SettingsPage.IsRegistered ? (int)PageIndices.ImportSessions : (int)PageIndices.Settings;
+        SettingsPage.PropertyChanged += (_, args) =>
+        {
+            if (args.PropertyName != nameof(SettingsPage.IsRegistered))
+            {
+                return;
+            }
+            SelectedIndex = SettingsPage.IsRegistered ? (int)PageIndices.ImportSessions : (int)PageIndices.Settings;
+        };
 
         Linkages.CollectionChanged += (_, _) =>
         {

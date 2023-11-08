@@ -2,15 +2,15 @@ namespace SecureStorage;
 
 public interface ISecureStorage
 {
-    byte[]? Get(string key);
+    Task<byte[]?> GetAsync(string key);
 
-    string? GetString(string key);
+    Task<string?> GetStringAsync(string key);
 
-    void Set(string key, byte[]? value);
+    Task SetAsync(string key, byte[]? value);
 
-    void SetString(string key, string? value);
+    Task SetStringAsync(string key, string? value);
 
-    void Remove(string key);
+    Task RemoveAsync(string key);
 
-    void RemoveAll();
+    Task RemoveAllAsync();
 }

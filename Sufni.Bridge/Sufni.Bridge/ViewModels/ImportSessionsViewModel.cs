@@ -10,7 +10,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 using Microsoft.Extensions.DependencyInjection;
-using SecureStorage;
 
 namespace Sufni.Bridge.ViewModels;
 
@@ -137,21 +136,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
 
     private bool CanImportSessions()
     {
-        var secureStorage = App.Current?.Services?.GetService<ISecureStorage>();
-        Debug.Assert(secureStorage != null, nameof(secureStorage) + " != null");
-
-        try
-        {
-            return SelectedSetup != null &&
-                   !string.IsNullOrEmpty(secureStorage.GetString("RefreshToken"));
-            //TODO: ShouldBeImported changes do not notify, so the last condition
-            //      is evaluated only when the program starts.
-        }
-        catch (Exception e)
-        {
-            ErrorMessages.Add($"Could not get refresh token: {e.Message}");
-            return false;
-        }
+        return SelectedSetup != null;
     }
     
     [RelayCommand]

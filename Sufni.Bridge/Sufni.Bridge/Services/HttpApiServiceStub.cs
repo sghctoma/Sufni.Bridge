@@ -136,82 +136,82 @@ public class HttpApiServiceStub : IHttpApiService
         return Task.FromResult("MOCK_TOKEN");
     }
 
-    public Task Unregister(string refreshToken)
+    public Task UnregisterAsync(string refreshToken)
     {
         return Task.CompletedTask;
     }
 
-    public Task<List<Board>> GetBoards()
+    public Task<List<Board>> GetBoardsAsync()
     {
         return Task.FromResult(Boards);
     }
 
-    public Task PutBoard(Board board)
+    public Task PutBoardAsync(Board board)
     {
         Boards.Add(board);
         return Task.CompletedTask;
     }
 
-    public Task<List<Linkage>> GetLinkages()
+    public Task<List<Linkage>> GetLinkagesAsync()
     {
         return Task.FromResult(Linkages);
     }
 
-    public Task<int> PutLinkage(Linkage linkage)
+    public Task<int> PutLinkageAsync(Linkage linkage)
     {
         var id = linkage.Id ?? (Linkages.Max(l => l.Id) ?? 0) + 1;
         Linkages.Add(linkage with { Id = id });
         return Task.FromResult(id);
     }
 
-    public Task DeleteLinkage(int id)
+    public Task DeleteLinkageAsync(int id)
     {
         Linkages.RemoveAll(l => l.Id == id);
         return Task.CompletedTask;
     }
 
-    public Task<List<CalibrationMethod>> GetCalibrationMethods()
+    public Task<List<CalibrationMethod>> GetCalibrationMethodsAsync()
     {
         return Task.FromResult(CalibrationMethods);
     }
 
-    public Task<List<Calibration>> GetCalibrations()
+    public Task<List<Calibration>> GetCalibrationsAsync()
     {
         return Task.FromResult(Calibrations);
     }
     
-    public Task<int> PutCalibration(Calibration calibration)
+    public Task<int> PutCalibrationAsync(Calibration calibration)
     {
         var id = calibration.Id ?? (Calibrations.Max(c => c.Id) ?? 0) + 1;
         Calibrations.Add(calibration with { Id = id });
         return Task.FromResult(id);
     }
 
-    public Task DeleteCalibration(int id)
+    public Task DeleteCalibrationAsync(int id)
     {
         Calibrations.RemoveAll(c => c.Id == id);
         return Task.CompletedTask;
     }
     
-    public Task<List<Setup>> GetSetups()
+    public Task<List<Setup>> GetSetupsAsync()
     {
         return Task.FromResult(Setups);
     }
     
-    public Task<int> PutSetup(Setup setup)
+    public Task<int> PutSetupAsync(Setup setup)
     {
         var id = setup.Id ?? (Setups.Max(s => s.Id) ?? 0) + 1;
         Setups.Add(setup with { Id = id });
         return Task.FromResult(id);
     }
 
-    public Task DeleteSetup(int id)
+    public Task DeleteSetupAsync(int id)
     {
         Setups.RemoveAll(s => s.Id == id);
         return Task.CompletedTask;
     }
     
-    public Task ImportSession(TelemetryFile session, int setupId)
+    public Task ImportSessionAsync(TelemetryFile session, int setupId)
     {
         return Task.CompletedTask;
     }

@@ -122,7 +122,7 @@ public partial class SetupViewModel : ViewModelBase
                 SelectedLinkage.Id.Value,
                 SelectedFrontCalibration?.Id,
                 SelectedRearCalibration?.Id);
-            httpApiService.PutSetup(newSetup);
+            httpApiService.PutSetupAsync(newSetup);
             setup = newSetup;
             originalBoardId = BoardId;
             IsDirty = false;
@@ -134,7 +134,7 @@ public partial class SetupViewModel : ViewModelBase
 
         try
         {
-            httpApiService.PutBoard(new Board(BoardId!, Id));
+            httpApiService.PutBoardAsync(new Board(BoardId!, Id));
         }
         catch (Exception e)
         {

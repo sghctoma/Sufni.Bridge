@@ -113,7 +113,7 @@ public partial class LinkageViewModel : ViewModelBase
                 FrontStroke,
                 RearStroke,
                 linkageData);
-            httpApiService.PutLinkage(newLinkage);
+            httpApiService.PutLinkageAsync(newLinkage);
             linkage = newLinkage;
             IsDirty = false;
         }

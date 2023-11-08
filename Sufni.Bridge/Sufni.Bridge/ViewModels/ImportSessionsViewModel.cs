@@ -45,7 +45,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
 
         try
         {
-            var boards = await httpApiService.GetBoards();
+            var boards = await httpApiService.GetBoardsAsync();
             var selectedBoard = boards.FirstOrDefault(b => b?.Id == value.BoardId, null);
             SelectedSetup = selectedBoard?.SetupId;
         }
@@ -110,7 +110,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
         {
             try
             {
-                await httpApiService.ImportSession(telemetryFile, SelectedSetup.Value);
+                await httpApiService.ImportSessionAsync(telemetryFile, SelectedSetup.Value);
                 telemetryFile.Imported = true;
                 File.Move(telemetryFile.FullName,
                     $"{Path.GetDirectoryName(telemetryFile.FullName)}/uploaded/{telemetryFile.FileName}");

@@ -159,7 +159,7 @@ public partial class CalibrationViewModel : ViewModelBase
                 Name ?? $"calibration #{Id}",
                 SelectedCalibrationMethod.Id,
                 Inputs.ToDictionary(input => input.Name, input => input.Value));
-            httpApiService.PutCalibration(newCalibration);
+            httpApiService.PutCalibrationAsync(newCalibration);
             calibration = newCalibration;
             IsDirty = false;
         }

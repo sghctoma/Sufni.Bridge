@@ -143,7 +143,7 @@ public partial class SettingsViewModel : ViewModelBase
         try
         {
             var refreshToken = await secureStorage.GetStringAsync("RefreshToken");
-            await httpApiService.Unregister(refreshToken!);
+            await httpApiService.UnregisterAsync(refreshToken!);
             await secureStorage.RemoveAsync("Username");
             await secureStorage.RemoveAsync("ServerUrl");
             await secureStorage.RemoveAsync("RefreshToken");

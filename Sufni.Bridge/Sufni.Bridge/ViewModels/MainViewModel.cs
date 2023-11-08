@@ -107,7 +107,7 @@ public partial class MainViewModel : ViewModelBase
 
         try
         {
-            var linkages = await httpApiService.GetLinkages();
+            var linkages = await httpApiService.GetLinkagesAsync();
 
             foreach (var linkage in linkages)
             {
@@ -125,7 +125,7 @@ public partial class MainViewModel : ViewModelBase
         
         try
         {
-            var methods = await httpApiService.GetCalibrationMethods();
+            var methods = await httpApiService.GetCalibrationMethodsAsync();
 
             foreach (var method in methods)
             {
@@ -144,7 +144,7 @@ public partial class MainViewModel : ViewModelBase
         
         try
         {
-            var calibrations = await httpApiService.GetCalibrations();
+            var calibrations = await httpApiService.GetCalibrationsAsync();
 
             foreach (var calibration in calibrations)
             {
@@ -163,8 +163,8 @@ public partial class MainViewModel : ViewModelBase
         
         try
         {
-            var setups = await httpApiService.GetSetups();
-            var boards = await httpApiService.GetBoards();
+            var setups = await httpApiService.GetSetupsAsync();
+            var boards = await httpApiService.GetBoardsAsync();
 
             foreach (var setup in setups)
             {
@@ -218,7 +218,7 @@ public partial class MainViewModel : ViewModelBase
         try
         {
             var linkage = new Linkage(null, "new linkage", 65, 180, 65, "");
-            var id = await httpApiService.PutLinkage(linkage);
+            var id = await httpApiService.PutLinkageAsync(linkage);
             Linkages.Add(new LinkageViewModel(linkage with { Id = id }));
         }
         catch (Exception e)
@@ -239,7 +239,7 @@ public partial class MainViewModel : ViewModelBase
         
         try
         {
-            httpApiService.DeleteLinkage(id);
+            httpApiService.DeleteLinkageAsync(id);
             var toDelete = Linkages.First(l => l.Id == id);
             Linkages.Remove(toDelete);
         }
@@ -264,7 +264,7 @@ public partial class MainViewModel : ViewModelBase
             }
             var calibration = new Calibration(null, "new calibration", methodId, inputs);
         
-            var id = await httpApiService.PutCalibration(calibration);
+            var id = await httpApiService.PutCalibrationAsync(calibration);
             Calibrations.Add(new CalibrationViewModel(calibration with { Id = id }, CalibrationMethods));
         }
         catch (Exception e)
@@ -287,7 +287,7 @@ public partial class MainViewModel : ViewModelBase
         
         try
         {
-            httpApiService.DeleteCalibration(id);
+            httpApiService.DeleteCalibrationAsync(id);
             var toDelete = Calibrations.First(c => c.Id == id);
             Calibrations.Remove(toDelete);
         }
@@ -311,7 +311,7 @@ public partial class MainViewModel : ViewModelBase
                 null,
                 null);
         
-            var id = await httpApiService.PutSetup(setup);
+            var id = await httpApiService.PutSetupAsync(setup);
 
             var svm = new SetupViewModel(
                 setup with { Id = id },
@@ -343,7 +343,7 @@ public partial class MainViewModel : ViewModelBase
         
         try
         {
-            httpApiService.DeleteSetup(id);
+            httpApiService.DeleteSetupAsync(id);
             var toDelete = Setups.First(s => s.Id == id);
             Setups.Remove(toDelete);
         }

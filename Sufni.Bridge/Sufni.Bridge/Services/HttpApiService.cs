@@ -5,6 +5,10 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using MessagePack;
+using Sufni.Bridge.Models.Telemetry;
+using Calibration = Sufni.Bridge.Models.Calibration;
+using Linkage = Sufni.Bridge.Models.Linkage;
 
 namespace Sufni.Bridge.Services;
 
@@ -153,6 +157,39 @@ internal class HttpApiService : IHttpApiService
         using var response = await client.DeleteAsync($"{serverUrl}/api/setup/{id}");
         response.EnsureSuccessStatusCode();
     }
+    
+    public async Task<List<Session>> GetSessionsAsync()
+    {
+        using var response = await client.GetAsync($"{serverUrl}/api/session");
+        response.EnsureSuccessStatusCode() ;
+        var sessions = await response.Content.ReadFromJsonAsync<List<Session>>();
+        Debug.Assert(sessions != null);
+        return sessions;
+    }
+
+    public async Task<TelemetryData> GetSessionPsstAsync(int id)
+    {
+        using var response = await client.GetAsync($"{serverUrl}/api/session/{id}/psst");
+        response.EnsureSuccessStatusCode() ;
+        var psst = await response.Content.ReadAsByteArrayAsync();
+        Debug.Assert(psst != null);
+        return MessagePackSerializer.Deserialize<TelemetryData>(psst);
+    }
+    
+    public async Task<int> PutSessionAsync(Session session)
+    {
+        using HttpResponseMessage response = await client.PutAsJsonAsync($"{serverUrl}/api/session", session);
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<PutResponse>();
+        Debug.Assert(result != null);
+        return result.Id;
+    }
+
+    public async Task DeleteSessionAsync(int id)
+    {
+        using var response = await client.DeleteAsync($"{serverUrl}/api/session/{id}");
+        response.EnsureSuccessStatusCode();
+    }
 
     public async Task ImportSessionAsync(TelemetryFile session, int setupId)
     {
@@ -163,7 +200,8 @@ internal class HttpApiService : IHttpApiService
                 Name: session.Name,
                 Description: session.Description,
                 Setup: setupId,
-                Data: session.Data));
+                Data: session.Data,
+                Id: null, Timestamp: null, Track: null));
 
         response.EnsureSuccessStatusCode();
     }

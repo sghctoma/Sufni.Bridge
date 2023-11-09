@@ -1,7 +1,14 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
+using MessagePack;
 using Sufni.Bridge.Models;
+using Sufni.Bridge.Models.Telemetry;
+using Calibration = Sufni.Bridge.Models.Calibration;
+using Linkage = Sufni.Bridge.Models.Linkage;
 
 namespace Sufni.Bridge.Services;
 
@@ -125,6 +132,13 @@ public class HttpApiServiceStub : IHttpApiService
                 },
                 "max - sqrt(arms_sqr_sum - dbl_arm1_arm2 * cos(start_angle-(factor*sample)))")),
     };
+
+    private static readonly List<Session> Sessions = new()
+    {
+        new Session(1, "session 1", "Test session #1", 1, 1686998748, null, null),
+        new Session(2, "session 2", "Test session #2", 1, 1682943649, null, null),
+        new Session(2, "session 3", "Test session #3", 1, 1682760595, null, null),
+    };
     
     public Task<string> RefreshTokensAsync(string url, string refreshToken)
     {
@@ -208,6 +222,37 @@ public class HttpApiServiceStub : IHttpApiService
     public Task DeleteSetupAsync(int id)
     {
         Setups.RemoveAll(s => s.Id == id);
+        return Task.CompletedTask;
+    }
+    
+    public Task<List<Session>> GetSessionsAsync()
+    {
+        return Task.FromResult(Sessions);
+    }
+    
+    public async Task<TelemetryData> GetSessionPsstAsync(int id)
+    {
+        if (Sessions.Any(s => s.Id == id))
+        {
+            var psst = await File.ReadAllBytesAsync("sample.psst");
+            return MessagePackSerializer.Deserialize<TelemetryData>(psst);
+        }
+        else
+        {
+            throw new Exception($"Invalid session id ({id})!");
+        }
+    }
+    
+    public Task<int> PutSessionAsync(Session session)
+    {
+        var id = session.Id ?? (Sessions.Max(s => s.Id) ?? 0) + 1;
+        Sessions.Add(session with { Id = id });
+        return Task.FromResult(id);
+    }
+
+    public Task DeleteSessionAsync(int id)
+    {
+        Sessions.RemoveAll(s => s.Id == id);
         return Task.CompletedTask;
     }
     

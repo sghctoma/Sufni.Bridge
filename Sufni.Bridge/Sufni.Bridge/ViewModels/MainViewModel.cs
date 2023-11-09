@@ -27,8 +27,9 @@ public partial class MainViewModel : ViewModelBase
     public ObservableCollection<LinkageViewModel> Linkages { get; } = new();
     public ObservableCollection<CalibrationViewModel> Calibrations { get; } = new();
     public ObservableCollection<SetupViewModel> Setups { get; } = new();
+    public ObservableCollection<SessionViewModel> Sessions { get; } = new();
     public ObservableCollection<CalibrationMethod> CalibrationMethods { get; } = new();
-    
+
     #endregion
 
     #region Property change handlers
@@ -95,6 +96,7 @@ public partial class MainViewModel : ViewModelBase
         _ = LoadCalibrationMethodsAsync();
         _ = LoadCalibrationsAsync();
         _ = LoadSetupsAsync();
+        _ = LoadSessionsAsync();
     }
 
     #endregion
@@ -193,6 +195,25 @@ public partial class MainViewModel : ViewModelBase
         }
     }
 
+    private async Task LoadSessionsAsync()
+    {
+        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
+        
+        try
+        {
+            var sessions = await httpApiService.GetSessionsAsync();
+
+            foreach (var session in sessions)
+            {
+                Sessions.Add(new SessionViewModel(session));
+            }
+        }
+        catch (Exception e)
+        {
+            ErrorMessages.Add($"Could not load Sessions: {e.Message}");
+        }
+    }
+
     #endregion
 
     #region Commands
@@ -204,10 +225,12 @@ public partial class MainViewModel : ViewModelBase
         CalibrationMethods.Clear();
         Calibrations.Clear();
         Setups.Clear();
+        Sessions.Clear();
         _ = LoadLinkagesAsync();
         _ = LoadCalibrationMethodsAsync();
         _ = LoadCalibrationsAsync();
         _ = LoadSetupsAsync();
+        _ = LoadSessionsAsync();
     }
 
     [RelayCommand]
@@ -353,5 +376,22 @@ public partial class MainViewModel : ViewModelBase
         }
     }
 
+    [RelayCommand]
+    private void DeleteSession(int id)
+    {
+        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
+        
+        try
+        {
+            httpApiService.DeleteSessionAsync(id);
+            var toDelete = Sessions.First(s => s.Id == id);
+            Sessions.Remove(toDelete);
+        }
+        catch (Exception e)
+        {
+            ErrorMessages.Add($"Could not delete Session: {e.Message}");
+        }
+    }
+    
     #endregion
 }

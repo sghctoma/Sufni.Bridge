@@ -12,5 +12,6 @@
     <Application.Styles>
         <FluentTheme />
         <StyleInclude Source="/Views/ErrorMessagesControl.axaml" />
+        <StyleInclude Source="/Views/SuspensionStatistics.axaml" />
     </Application.Styles>
 </Application>

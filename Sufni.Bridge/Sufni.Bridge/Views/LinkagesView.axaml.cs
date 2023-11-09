@@ -8,7 +8,7 @@ namespace Sufni.Bridge.Views;
 
 public class LinkageFileNameConverter : IValueConverter
 {
-    public static readonly HeaderColorConverter Instance = new();
+    public static readonly LinkageFileNameConverter Instance = new();
 
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {

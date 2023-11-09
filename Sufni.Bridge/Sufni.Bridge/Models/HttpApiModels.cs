@@ -19,10 +19,13 @@ public record Board(
     [property: JsonPropertyName("setup_id")] int? SetupId);
 
 public record Session(
+    [property: JsonPropertyName("id"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] int? Id,
     [property: JsonPropertyName("name")] string Name,
     [property: JsonPropertyName("description")] string Description,
     [property: JsonPropertyName("setup")] int Setup,
-    [property: JsonPropertyName("data")] string Data);
+    [property: JsonPropertyName("timestamp"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] int? Timestamp,
+    [property: JsonPropertyName("track"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] int? Track,
+    [property: JsonPropertyName("data")] string? Data);
     
 public record Linkage(
     [property: JsonPropertyName("id")] int? Id,

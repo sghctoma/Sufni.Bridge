@@ -1,6 +1,9 @@
 ﻿using Sufni.Bridge.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Sufni.Bridge.Models.Telemetry;
+using Calibration = Sufni.Bridge.Models.Calibration;
+using Linkage = Sufni.Bridge.Models.Linkage;
 
 namespace Sufni.Bridge.Services;
 
@@ -21,5 +24,9 @@ internal interface IHttpApiService
     public Task<List<Setup>> GetSetupsAsync();
     public Task<int> PutSetupAsync(Setup setup);
     public Task DeleteSetupAsync(int id);
+    public Task<List<Session>> GetSessionsAsync();
+    public Task<TelemetryData> GetSessionPsstAsync(int id);
+    public Task<int> PutSessionAsync(Session setup);
+    public Task DeleteSessionAsync(int id);
     public Task ImportSessionAsync(TelemetryFile session, int setupId);
 }

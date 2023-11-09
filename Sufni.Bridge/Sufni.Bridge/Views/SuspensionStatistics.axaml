@@ -1,0 +1,157 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="using:Sufni.Bridge.Views">
+    <Design.PreviewWith>
+        <controls:SuspensionStatistics />
+    </Design.PreviewWith>
+
+    <Style Selector="controls|SuspensionStatistics">
+        <!-- Set Defaults -->
+        <Setter Property="SuspensionType" Value="Front" />
+        
+        <Setter Property="TravelAverageString" Value="53.38 mm (33.1%)" />
+        <Setter Property="TravelMaxString" Value="130.01 mm (80.07%) / 0 bottom outs" />
+        
+        <Setter Property="AverageReboundVelocity" Value="-254.2 mm/s" />
+        <Setter Property="MaximumReboundVelocity" Value="-1527 mm/s" />
+        <Setter Property="AverageCompressionVelocity" Value="262.2 mm/s" />
+        <Setter Property="MaximumCompressionVelocity" Value="3451.5 mm/s" />
+        
+        <!--
+        <Setter Property="LowSpeedRebound" Value="20.00 %" />
+        <Setter Property="HighSpeedRebound" Value="30.00 %" />
+        <Setter Property="LowSpeedCompression" Value="20.00 %" />
+        <Setter Property="HighSpeedCompression" Value="30.00 %" />
+        -->
+        
+        <Setter Property="Template">
+            <ControlTemplate>
+                <StackPanel Orientation="Vertical">
+                    
+                    <!-- Travel statistics -->
+                    <Grid ColumnDefinitions="150 *" RowDefinitions="auto auto auto"
+                          Margin="0,0,0,10">
+                        <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal">
+                            <TextBlock 
+                                FontWeight="Black" Text="{TemplateBinding SuspensionType}" />
+                            <TextBlock FontWeight="Black" Text=" travel" />
+                        </StackPanel>
+                    
+                        <Label Grid.Row="1" Grid.Column="0"
+                               VerticalAlignment="Center"
+                               Content="Average: " />
+                        <TextBlock Grid.Row="1" Grid.Column="1" 
+                                   HorizontalAlignment="Stretch" VerticalAlignment="Center" 
+                                   Text="{TemplateBinding TravelAverageString}" />
+                    
+                        <Label Grid.Row="2" Grid.Column="0" 
+                               VerticalAlignment="Center" 
+                               Content="Maximum: " />
+                        <TextBlock Grid.Row="2" Grid.Column="1" 
+                                   HorizontalAlignment="Stretch" VerticalAlignment="Center" 
+                                   Text="{TemplateBinding TravelMaxString}" />
+                    </Grid>
+                    
+                    <!-- Velocity statistics -->
+                    <Grid ColumnDefinitions="150 * *" RowDefinitions="auto auto auto auto"
+                          Margin="0,0,0,10">
+                        <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal">
+                            <TextBlock 
+                                FontWeight="Black" Text="{TemplateBinding SuspensionType}" />
+                            <TextBlock FontWeight="Black" Text=" velocity" />
+                        </StackPanel>
+                        
+                        <Label Grid.Row="1" Grid.Column="1"
+                               FontWeight="500"
+                               VerticalAlignment="Center"
+                               Content="Rebound" />
+                        <Label Grid.Row="1" Grid.Column="2"
+                               FontWeight="500"
+                               VerticalAlignment="Center"
+                               Content="Compression" />
+                        <Label Grid.Row="2" Grid.Column="0"
+                               FontWeight="500"
+                               VerticalAlignment="Center"
+                               Content="Average" />
+                        <Label Grid.Row="3" Grid.Column="0"
+                               FontWeight="500"
+                               VerticalAlignment="Center"
+                               Content="Maximum" />
+                        
+                        <TextBlock Grid.Row="2" Grid.Column="1" 
+                                   HorizontalAlignment="Stretch" VerticalAlignment="Center" 
+                                   Text="{TemplateBinding AverageReboundVelocity}" />
+                        <TextBlock Grid.Row="2" Grid.Column="2" 
+                                   HorizontalAlignment="Stretch" VerticalAlignment="Center" 
+                                   Text="{TemplateBinding AverageCompressionVelocity}" />
+                        <TextBlock Grid.Row="3" Grid.Column="1" 
+                                   HorizontalAlignment="Stretch" VerticalAlignment="Center" 
+                                   Text="{TemplateBinding MaximumReboundVelocity}" />
+                        <TextBlock Grid.Row="3" Grid.Column="2" 
+                                   HorizontalAlignment="Stretch" VerticalAlignment="Center" 
+                                   Text="{TemplateBinding MaximumCompressionVelocity}" />
+                    </Grid>
+
+                    <!-- Velocity bands -->
+                    <!--Grid RowDefinitions="auto auto"
+                          Margin="0,0,0,10">
+                        
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="{TemplateBinding HighSpeedReboundColumnDefinition}" />
+                            <ColumnDefinition Width="{TemplateBinding LowSpeedReboundColumnDefinition}" />
+                            <ColumnDefinition Width="{TemplateBinding LowSpeedCompressionColumnDefinition}" />
+                            <ColumnDefinition Width="{TemplateBinding HighSpeedCompressionColumnDefinition}" />
+                        </Grid.ColumnDefinitions>
+                        
+                        <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4"
+                                    Orientation="Horizontal" Margin="0,0,0,2">
+                            <TextBlock 
+                                FontWeight="Black" Text="{TemplateBinding SuspensionType}" />
+                            <TextBlock FontWeight="Black" Text=" velocity bands" />
+                        </StackPanel>
+                        
+                        <Border Margin="2" Grid.Row="1" Grid.Column="0"
+                                CornerRadius="3"
+                                BorderBrush="Black" BorderThickness="1" >
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock FontSize="12" Text="HSR" HorizontalAlignment="Center" />
+                                <TextBlock FontSize="12" HorizontalAlignment="Center"
+                                           Text="{TemplateBinding HighSpeedRebound}" />
+                            </StackPanel>
+                        </Border>
+                        <Border Margin="2" Grid.Row="1" Grid.Column="1"
+                                CornerRadius="3"
+                                BorderBrush="Black" BorderThickness="1" >
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock FontSize="12" Text="LSR" HorizontalAlignment="Center"/>
+                                <TextBlock FontSize="12" HorizontalAlignment="Center"
+                                           Text="{TemplateBinding LowSpeedRebound}" />
+                            </StackPanel>
+                        </Border>
+                        <Border Margin="2" Grid.Row="1" Grid.Column="2"
+                                CornerRadius="3"
+                                BorderBrush="Black" BorderThickness="1" >
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock FontSize="12" Text="LSC" HorizontalAlignment="Center"/>
+                                <TextBlock FontSize="12" HorizontalAlignment="Center"
+                                           Text="{TemplateBinding LowSpeedCompression}" />
+                            </StackPanel>
+                        </Border>
+                        <Border Margin="2" Grid.Row="1" Grid.Column="3"
+                                CornerRadius="3"
+                                BorderBrush="Black" BorderThickness="1" >
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock FontSize="12" Text="HSC" HorizontalAlignment="Center"/>
+                                <TextBlock FontSize="12" HorizontalAlignment="Center"
+                                           Text="{TemplateBinding HighSpeedCompression}" />
+                            </StackPanel>
+                        </Border>
+                        
+                    </Grid-->
+                    
+                </StackPanel>
+                
+            </ControlTemplate>
+        </Setter>
+    </Style>
+</Styles>

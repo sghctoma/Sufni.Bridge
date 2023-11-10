@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -44,7 +45,9 @@ public partial class SessionViewModel : ViewModelBase
     [ObservableProperty] private TravelStatistics? rearTravelStatistics;
     [ObservableProperty] private VelocityStatistics? rearVelocityStatistics;
     [ObservableProperty] private VelocityBands? rearVelocityBands;
-    [ObservableProperty] private double? balance;
+    
+    [ObservableProperty] private double? compressionBalanceMsd;
+    [ObservableProperty] private double? reboundBalanceMsd;
     
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
@@ -114,7 +117,18 @@ public partial class SessionViewModel : ViewModelBase
 
         if (psst.Front.Present && psst.Rear.Present)
         {
-            Balance = psst.CalculateBalance();
+            var compressionBalance = psst.CalculateBalance(BalanceType.Compression);
+            var reboundBalance = psst.CalculateBalance(BalanceType.Rebound);
+
+            var compressionMax = Math.Max(
+                compressionBalance.FrontVelocity.Max(),
+                compressionBalance.RearVelocity.Max());
+            var reboundMax = Math.Abs(Math.Min(
+                reboundBalance.FrontVelocity.Min(),
+                reboundBalance.RearVelocity.Min()));
+            
+            CompressionBalanceMsd = compressionBalance.MeanSignedDeviation / compressionMax * 100.0;
+            ReboundBalanceMsd = reboundBalance.MeanSignedDeviation / reboundMax * 100.0;
         }
     }
     

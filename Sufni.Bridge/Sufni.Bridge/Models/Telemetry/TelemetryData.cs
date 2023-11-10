@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using MathNet.Numerics;
 using MessagePack;
 
 // ReSharper disable NotAccessedPositionalProperty.Global
@@ -98,6 +100,21 @@ public enum SuspensionType
     Front,
     Rear
 }
+
+public enum BalanceType
+{
+    Compression,
+    Rebound
+}
+
+public record BalanceData(
+    List<double> FrontTravel,
+    List<double> FrontVelocity,
+    List<double> FrontTrend,
+    List<double> RearTravel,
+    List<double> RearVelocity,
+    List<double> RearTrend,
+    double MeanSignedDeviation);
 
 [MessagePackObject(keyAsPropertyName: true)]
 public class TelemetryData
@@ -208,10 +225,59 @@ public class TelemetryData
             lsr / totalCount * 100.0,
             hsr / totalCount * 100.0);
     }
-
-    public double CalculateBalance()
+    
+    private static Func<double, double> FitPolynomial(double[] x, double[] y)
     {
-        return 0;
-        // TODO: implement
+        var coefficients = Fit.Polynomial(x, y, 1);
+        return t => coefficients[1] * t + coefficients[0];
+    }
+    
+    private (double[], double[]) TravelVelocity(SuspensionType suspensionType, BalanceType balanceType)
+    {
+        var suspension = suspensionType == SuspensionType.Front ? Front : Rear;
+        var travelMax = suspensionType == SuspensionType.Front ? Linkage.MaxFrontTravel : Linkage.MaxRearTravel;
+        var strokes = balanceType == BalanceType.Compression
+            ? suspension.Strokes.Compressions
+            : suspension.Strokes.Rebounds;
+
+        var t = new List<double>();
+        var v = new List<double>();
+
+        foreach (var s in strokes)
+        {
+            t.Add(s.Stat.MaxTravel / travelMax * 100);
+            v.Add(s.Stat.MaxVelocity);
+        }
+
+        var  tArray = t.ToArray();
+        var vArray = v.ToArray();
+
+        Array.Sort(tArray, vArray);
+
+        return (tArray, vArray);
+    }
+
+    public BalanceData CalculateBalance(BalanceType type)
+    {
+        var frontTravelVelocity = TravelVelocity(SuspensionType.Front, type);
+        var rearTravelVelocity = TravelVelocity(SuspensionType.Rear, type);
+
+        var frontPoly = FitPolynomial(frontTravelVelocity.Item1, frontTravelVelocity.Item2);
+        var rearPoly = FitPolynomial(rearTravelVelocity.Item1, rearTravelVelocity.Item2);
+        
+        var frontTrend = frontTravelVelocity.Item1.Select(t => frontPoly(t)).ToList();
+        var rearTrend = rearTravelVelocity.Item1.Select(t => rearPoly(t)).ToList();
+        
+        var sum = frontTrend.Zip(rearTrend, (fx, gx) => fx - gx).Sum();
+        var msd = sum / frontTrend.Count;
+
+        return new BalanceData(
+            frontTravelVelocity.Item1.ToList(),
+            frontTravelVelocity.Item2.ToList(),
+            frontTravelVelocity.Item1.Select(t => frontPoly(t)).ToList(),
+            rearTravelVelocity.Item1.ToList(),
+            rearTravelVelocity.Item2.ToList(),
+            rearTravelVelocity.Item1.Select(t => rearPoly(t)).ToList(),
+            msd);
     }
 };

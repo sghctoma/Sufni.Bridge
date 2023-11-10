@@ -8,22 +8,16 @@
              xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
              mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
              x:Class="Sufni.Bridge.Views.SessionsView"
-             x:DataType="vm:MainViewModel">
+             x:DataType="vm:MainViewModel"
+             Background="#15191c">
 
     <Design.DataContext>
         <vm:MainViewModel />
     </Design.DataContext>
 
     <UserControl.Resources>
-        <v:HeaderColorConverter x:Key="HeaderColorConverter" />
         <v:CustomGridLengthConverter x:Key="CustomGridLengthConverter" />
     </UserControl.Resources>
-
-    <UserControl.Styles>
-        <Style Selector="Button:disabled Image">
-            <Setter Property="Opacity" Value="0.3" />
-        </Style>
-    </UserControl.Styles>
 
     <Grid RowDefinitions="* auto 40" ColumnDefinitions="*">
 
@@ -31,38 +25,24 @@
         <ListBox Grid.Row="0" Grid.Column="0"
                  Background="Transparent"
                  ItemsSource="{Binding Sessions}">
-            <ListBox.Styles>
-                <Style Selector="ListBoxItem">
-                    <Setter Property="Padding" Value="6,6, 6, 3" />
-                </Style>
-                <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
-                    <Setter Property="Background" Value="Transparent" />
-                </Style>
-                <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
-                    <Setter Property="Background" Value="Transparent" />
-                </Style>
-            </ListBox.Styles>
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Expander CornerRadius="5" Padding="5" HorizontalAlignment="Stretch">
 
-                        <!-- Indicate modifications with header color -->
-                        <Expander.Resources>
-                            <!-- ReSharper disable once Xaml.RedundantResource -->
-                            <SolidColorBrush x:Key="ExpanderHeaderBackgroundPointerOver"
-                                             Color="{Binding IsDirty, Converter={StaticResource HeaderColorConverter}}" />
-                            <!-- ReSharper disable once Xaml.RedundantResource -->
-                            <SolidColorBrush x:Key="ExpanderHeaderBackground"
-                                             Color="{Binding IsDirty, Converter={StaticResource HeaderColorConverter}}" />
-                        </Expander.Resources>
-
                         <!-- Editable name and non-editable timestamp in header -->
                         <Expander.Header>
-                            <Grid ColumnDefinitions="* 150" RowDefinitions="*">
+                            <Grid ColumnDefinitions="auto * 32" RowDefinitions="*">
                                 <TextBox Grid.Column="0" BorderBrush="Transparent"
                                          HorizontalAlignment="Stretch"
                                          Text="{Binding Name}" />
-                                <TextBlock Grid.Column="1" VerticalAlignment="Center" Text="{Binding Timestamp}" />
+                                <TextBlock Grid.Column="1"
+                                           VerticalAlignment="Center" HorizontalAlignment="Right"
+                                           Text="{Binding Timestamp}" />
+                                <Image Grid.Column="2"
+                                       IsVisible="{Binding IsDirty}"
+                                       Height="20"
+                                       HorizontalAlignment="Right"
+                                       Source="{SvgImage /Assets/fa-circle-exclamation.svg}" />
                             </Grid>
                         </Expander.Header>
                         
@@ -73,7 +53,7 @@
                             </ia:EventTriggerBehavior>
                         </i:Interaction.Behaviors>
 
-                        <Grid ColumnDefinitions="auto *" RowDefinitions="auto auto auto auto auto auto auto 40"
+                        <Grid ColumnDefinitions="auto *" RowDefinitions="auto auto auto auto auto 120 auto 40"
                               MinWidth="300" HorizontalAlignment="Stretch">
                             
                             <!-- Front suspension statistics -->
@@ -112,7 +92,7 @@
                                 
                                 <Border Margin="2" Grid.Row="1" Grid.Column="0"
                                         CornerRadius="3"
-                                        BorderBrush="DarkGray" BorderThickness="1" >
+                                        BorderBrush="#505050" BorderThickness="1" >
                                     <StackPanel VerticalAlignment="Center">
                                         <TextBlock FontSize="12" Text="HSR" HorizontalAlignment="Center" />
                                         <TextBlock FontSize="12" HorizontalAlignment="Center"
@@ -121,7 +101,7 @@
                                 </Border>
                                 <Border Margin="2" Grid.Row="1" Grid.Column="1"
                                         CornerRadius="3"
-                                        BorderBrush="DarkGray" BorderThickness="1" >
+                                        BorderBrush="#505050" BorderThickness="1" >
                                     <StackPanel VerticalAlignment="Center">
                                         <TextBlock FontSize="12" Text="LSR" HorizontalAlignment="Center"/>
                                         <TextBlock FontSize="12" HorizontalAlignment="Center"
@@ -130,7 +110,7 @@
                                 </Border>
                                 <Border Margin="2" Grid.Row="1" Grid.Column="2"
                                         CornerRadius="3"
-                                        BorderBrush="DarkGray" BorderThickness="1" >
+                                        BorderBrush="#505050" BorderThickness="1" >
                                     <StackPanel VerticalAlignment="Center">
                                         <TextBlock FontSize="12" Text="LSC" HorizontalAlignment="Center"/>
                                         <TextBlock FontSize="12" HorizontalAlignment="Center"
@@ -139,7 +119,7 @@
                                 </Border>
                                 <Border Margin="2" Grid.Row="1" Grid.Column="3"
                                         CornerRadius="3"
-                                        BorderBrush="DarkGray" BorderThickness="1" >
+                                        BorderBrush="#505050" BorderThickness="1" >
                                     <StackPanel VerticalAlignment="Center">
                                         <TextBlock FontSize="12" Text="HSC" HorizontalAlignment="Center"/>
                                         <TextBlock FontSize="12" HorizontalAlignment="Center"
@@ -184,7 +164,7 @@
                                 
                                 <Border Margin="2" Grid.Row="1" Grid.Column="0"
                                         CornerRadius="3"
-                                        BorderBrush="DarkGray" BorderThickness="1" >
+                                        BorderBrush="#505050" BorderThickness="1" >
                                     <StackPanel VerticalAlignment="Center">
                                         <TextBlock FontSize="12" Text="HSR" HorizontalAlignment="Center" />
                                         <TextBlock FontSize="12" HorizontalAlignment="Center"
@@ -193,7 +173,7 @@
                                 </Border>
                                 <Border Margin="2" Grid.Row="1" Grid.Column="1"
                                         CornerRadius="3"
-                                        BorderBrush="DarkGray" BorderThickness="1" >
+                                        BorderBrush="#505050" BorderThickness="1" >
                                     <StackPanel VerticalAlignment="Center">
                                         <TextBlock FontSize="12" Text="LSR" HorizontalAlignment="Center"/>
                                         <TextBlock FontSize="12" HorizontalAlignment="Center"
@@ -202,7 +182,7 @@
                                 </Border>
                                 <Border Margin="2" Grid.Row="1" Grid.Column="2"
                                         CornerRadius="3"
-                                        BorderBrush="DarkGray" BorderThickness="1" >
+                                        BorderBrush="#505050" BorderThickness="1" >
                                     <StackPanel VerticalAlignment="Center">
                                         <TextBlock FontSize="12" Text="LSC" HorizontalAlignment="Center"/>
                                         <TextBlock FontSize="12" HorizontalAlignment="Center"
@@ -211,7 +191,7 @@
                                 </Border>
                                 <Border Margin="2" Grid.Row="1" Grid.Column="3"
                                         CornerRadius="3"
-                                        BorderBrush="DarkGray" BorderThickness="1" >
+                                        BorderBrush="#505050" BorderThickness="1" >
                                     <StackPanel VerticalAlignment="Center">
                                         <TextBlock FontSize="12" Text="HSC" HorizontalAlignment="Center"/>
                                         <TextBlock FontSize="12" HorizontalAlignment="Center"
@@ -227,7 +207,7 @@
                             <TextBox Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2"
                                      Margin="2"
                                      HorizontalAlignment="Stretch"
-                                     MaxLines="10"
+                                     AcceptsReturn="True" TextWrapping="Wrap"
                                      Text="{Binding Description}" />
                             
                             <!-- Error messages for Calibration instance -->

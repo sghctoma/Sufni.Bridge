@@ -5,7 +5,8 @@
              xmlns:vm="clr-namespace:Sufni.Bridge.ViewModels"
              mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
              x:Class="Sufni.Bridge.Views.ImportSessionsView"
-             x:DataType="vm:ImportSessionsViewModel">
+             x:DataType="vm:ImportSessionsViewModel"
+             Background="#15191c">
 
     <Design.DataContext>
         <vm:ImportSessionsViewModel />
@@ -39,25 +40,13 @@
         <ListBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
                  Background="Transparent"
                  ItemsSource="{Binding TelemetryFiles}">
-            <ListBox.Styles>
-                <Style Selector="ListBoxItem">
-                    <Setter Property="Padding" Value="6,6, 6, 3" />
-                </Style>
-                <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
-                    <Setter Property="Background" Value="Transparent" />
-                </Style>
-                <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
-                    <Setter Property="Background" Value="Transparent" />
-                </Style>
-            </ListBox.Styles>
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <Border CornerRadius="5" Padding="5" Background="LightGray">
+                    <Border BorderThickness="1" BorderBrush="#505050" CornerRadius="5" Padding="5" Background="#20262b">
                         <Grid ColumnDefinitions="auto auto auto * auto" RowDefinitions="auto auto auto auto auto *"
                               Height="200" MinWidth="300" HorizontalAlignment="Stretch">
                             <TextBlock Grid.Row="0" Grid.Column="0" Margin="2" VerticalAlignment="Center"
-                                       FontWeight="Black"
-                                       Text="{Binding FullName}" />
+                                       FontWeight="Black" Text="{Binding FullName}" />
                             <TextBlock Grid.Row="0" Grid.Column="1" Margin="2" VerticalAlignment="Center" FontSize="12"
                                        Text="{Binding StartTime, StringFormat=Start: {0}}" />
                             <TextBlock Grid.Row="0" Grid.Column="2" Margin="2" VerticalAlignment="Center" FontSize="12"

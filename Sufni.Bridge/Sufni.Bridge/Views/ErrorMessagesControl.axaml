@@ -11,7 +11,7 @@
         <Setter Property="MaxHeight" Value="100" />
         <Setter Property="Template">
             <ControlTemplate>
-                <Border Background="PaleVioletRed"
+                <Border Background="#6f312d"
                         BorderThickness="2" BorderBrush="Brown"
                         MaxHeight="{TemplateBinding MaxHeight}"
                         Padding="5"
@@ -21,7 +21,7 @@
                                 HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
                                 CornerRadius="2" Padding="0" Width="50" Height="20"
                                 Content="close"
-                                Background="PaleVioletRed"
+                                Background="#6f312d" Foreground="#d0d0d0"
                                 Command="{TemplateBinding ClearErrorsCommand}" />
                         <ListBox Grid.Row="1" Background="Transparent"
                                  ItemsSource="{TemplateBinding ErrorMessages}">
@@ -39,6 +39,7 @@
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding (system:String)}"
+                                               Foreground="#d0d0d0"
                                                TextWrapping="Wrap" />
                                 </DataTemplate>
                             </ListBox.ItemTemplate>

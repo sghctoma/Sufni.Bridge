@@ -2,7 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="using:Sufni.Bridge"
              x:Class="Sufni.Bridge.App"
-             RequestedThemeVariant="Default">
+             RequestedThemeVariant="Dark">
     <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
     <Application.DataTemplates>
@@ -13,5 +13,122 @@
         <FluentTheme />
         <StyleInclude Source="/Views/ErrorMessagesControl.axaml" />
         <StyleInclude Source="/Views/SuspensionStatistics.axaml" />
+        
+        <!-- Global styles for TextBlock -->
+        <Style Selector="TextBlock">
+            <Setter Property="Foreground" Value="#a0a0a0" />
+        </Style>
+        
+        <!-- Global styles for Label -->
+        <Style Selector="Label">
+            <Setter Property="Foreground" Value="#a0a0a0" />
+        </Style>
+        
+        <!-- Global styles for CheckBlock -->
+        <Style Selector="CheckBox">
+            <Setter Property="Background" Value="#20262b" />
+            <Setter Property="Foreground" Value="#a0a0a0" />
+        </Style>
+        
+        <!-- Global styles for Expander -->
+        <Style Selector="Expander">
+            <Setter Property="Background" Value="#15191c" />
+        </Style>
+        <Style Selector="Expander ToggleButton:pressed /template/ Border">
+            <Setter Property="Background" Value="#20262b" />
+        </Style>
+        
+        <!-- Global styles for Button -->
+        <Style Selector="Button">
+            <Setter Property="Background" Value="#20262b" />
+            <Setter Property="Foreground" Value="#a0a0a0" />
+        </Style>
+        <Style Selector="Button:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#25292c" />
+            <Setter Property="TextElement.Foreground" Value="#606060" />
+        </Style>
+        <Style Selector="Button:disabled Image">
+            <Setter Property="Opacity" Value="0.3" />
+        </Style>
+        <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="TextElement.Foreground" Value="#a0a0a0" />
+        </Style>
+        
+        <!-- Global styles for NumericUpDown -->
+        <Style Selector="NumericUpDown">
+            <Setter Property="Background" Value="#20262b" />
+            <Setter Property="Foreground" Value="#a0a0a0" />
+            <Setter Property="BorderBrush" Value="#505050" />
+        </Style>
+        
+        <!-- Global styles for TextBox -->
+        <Style Selector="TextBox">
+            <Setter Property="Background" Value="#20262b" />
+            <Setter Property="Foreground" Value="#a0a0a0" />
+            <Setter Property="BorderBrush" Value="#505050" />
+        </Style>
+        <Style Selector="TextBox:disabled /template/ Border">
+            <Setter Property="Background" Value="#25292c" />
+            <Setter Property="BorderBrush" Value="#303030" />
+        </Style>
+        <Style Selector="TextBox:pointerover /template/ Border">
+            <Setter Property="Background" Value="#10161b" />
+            <Setter Property="BorderBrush" Value="#505050" />
+        </Style>
+        <Style Selector="TextBox:focus /template/ Border">
+            <Setter Property="Background" Value="#10161b" />
+            <Setter Property="BorderBrush" Value="#0078D7" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+        <Style Selector="TextBox:focus:pointerover /template/ Border">
+            <Setter Property="Background" Value="#10161b" />
+            <Setter Property="BorderBrush" Value="#0078D7" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+        <Style Selector="TextBox:pointerover /template/ TextPresenter#PART_TextPresenter">
+            <Setter Property="TextElement.Foreground" Value="#a0a0a0" />
+        </Style>
+        <Style Selector="TextBox:focus /template/ TextPresenter#PART_TextPresenter">
+            <Setter Property="TextElement.Foreground" Value="#a0a0a0" />
+        </Style>
+        <Style Selector="TextBox:disabled /template/ TextPresenter#PART_TextPresenter">
+            <Setter Property="TextElement.Foreground" Value="#606060" />
+        </Style>
+        
+        <!-- Global styles for ComboBox -->
+        <Style Selector="ComboBox">
+            <Setter Property="Background" Value="#20262b" />
+            <Setter Property="Foreground" Value="#a0a0a0" />
+            <Setter Property="BorderBrush" Value="#505050" />
+        </Style>
+        <Style Selector="ComboBox:pointerover /template/ Border">
+            <Setter Property="Background" Value="#2c3032" />
+            <Setter Property="BorderBrush" Value="#505050" />
+        </Style>
+        
+        <!-- Global styles for ListBoxItem -->
+        <Style Selector="ListBoxItem">
+            <Setter Property="Padding" Value="6,6, 6, 3" />
+        </Style>
+        <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="ListBoxItem:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        
     </Application.Styles>
+    
+    <Application.Resources>
+        <!-- ReSharper disable once Xaml.RedundantResource -->
+        <SolidColorBrush x:Key="ComboBoxDropDownBackground" Color="#20262b" />
+        <!-- ReSharper disable once Xaml.RedundantResource -->
+        <SolidColorBrush x:Key="ExpanderHeaderBackgroundPointerOver" Color="#20262b" />
+        <!-- ReSharper disable once Xaml.RedundantResource -->
+        <SolidColorBrush x:Key="ExpanderHeaderBackground" Color="#20262b" />
+    </Application.Resources>
+    
 </Application>

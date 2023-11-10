@@ -46,7 +46,10 @@ public partial class MainViewModel : ViewModelBase
     private enum PageIndices
     {
         ImportSessions = 0,
-        Settings = 1,
+        /*
+        Sessions = 2,
+        */
+        Settings = 2,
         /*
         Linkages = 2,
         Calibrations = 3,

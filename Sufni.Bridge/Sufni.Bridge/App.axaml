@@ -13,6 +13,7 @@
         <FluentTheme />
         <StyleInclude Source="/Views/ErrorMessagesControl.axaml" />
         <StyleInclude Source="/Views/SuspensionStatistics.axaml" />
+        <StyleInclude Source="/Views/SufniPlotView.axaml" />
         
         <!-- Global styles for TextBlock -->
         <Style Selector="TextBlock">

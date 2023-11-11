@@ -15,6 +15,7 @@ public partial class SessionViewModel : ViewModelBase
 {
     private Session session;
     private const double HighSpeedThreshold = 200;
+    private TelemetryData? psst;
 
     #region Private methods
 
@@ -48,6 +49,8 @@ public partial class SessionViewModel : ViewModelBase
     
     [ObservableProperty] private double? compressionBalanceMsd;
     [ObservableProperty] private double? reboundBalanceMsd;
+
+    [ObservableProperty] private TelemetryData? telemetryData;
     
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
@@ -85,12 +88,18 @@ public partial class SessionViewModel : ViewModelBase
     #region Commands
 
     [RelayCommand]
+    private void SetTelemetryData()
+    {
+        TelemetryData = psst;
+    }
+
+    [RelayCommand]
     private async Task LoadPsst()
     {
         var httpApiService = App.Current?.Services?.GetService<IHttpApiService>();
         Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
-        var psst = await httpApiService.GetSessionPsstAsync(Id ?? 0);
-
+        psst = await httpApiService.GetSessionPsstAsync(Id ?? 0);
+        
         if (psst.Front.Present)
         {
             FrontTravelStatistics = psst.CalculateTravelStatistics(SuspensionType.Front);
@@ -123,9 +132,9 @@ public partial class SessionViewModel : ViewModelBase
             var compressionMax = Math.Max(
                 compressionBalance.FrontVelocity.Max(),
                 compressionBalance.RearVelocity.Max());
-            var reboundMax = Math.Abs(Math.Min(
-                reboundBalance.FrontVelocity.Min(),
-                reboundBalance.RearVelocity.Min()));
+            var reboundMax = Math.Abs(Math.Max(
+                reboundBalance.FrontVelocity.Max(),
+                reboundBalance.RearVelocity.Max()));
             
             CompressionBalanceMsd = compressionBalance.MeanSignedDeviation / compressionMax * 100.0;
             ReboundBalanceMsd = reboundBalance.MeanSignedDeviation / reboundMax * 100.0;

@@ -93,7 +93,6 @@ public class SufniPlotView : TemplatedControl
             {
                 case nameof(Telemetry):
                     plot.Clear();
-                    plot.Clear();
                     OnTelemetryChanged((TelemetryData)e.NewValue);
                     break;
             }

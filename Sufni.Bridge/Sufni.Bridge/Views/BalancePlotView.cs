@@ -5,7 +5,7 @@ using Sufni.Bridge.Models.Telemetry;
 
 namespace Sufni.Bridge.Views;
 
-public class BalanceView : SufniPlotView
+public class BalancePlotView : SufniPlotView
 {
     public static readonly StyledProperty<BalanceType> TypeProperty = AvaloniaProperty.Register<BalanceView, BalanceType>(
         "Type");

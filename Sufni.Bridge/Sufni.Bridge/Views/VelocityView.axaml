@@ -1,0 +1,62 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:v="using:Sufni.Bridge.Views">
+    <Design.PreviewWith>
+        <v:VelocityView />
+    </Design.PreviewWith>
+
+    <Style Selector="v|VelocityView">
+        <!-- Set Defaults -->
+
+        <Setter Property="AverageReboundVelocity" Value="-254.2 mm/s" />
+        <Setter Property="MaximumReboundVelocity" Value="-1527 mm/s" />
+        <Setter Property="AverageCompressionVelocity" Value="262.2 mm/s" />
+        <Setter Property="MaximumCompressionVelocity" Value="3451.5 mm/s" />
+
+        <!-- Template -->
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid ColumnDefinitions="150 * *" RowDefinitions="400 auto auto auto auto">
+                    
+                    <!-- Velocity histogram -->
+                    <v:VelocityHistogramView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" 
+                                             IsHitTestVisible="False"
+                                             Type="{TemplateBinding SuspensionType}"
+                                             Telemetry="{TemplateBinding Telemetry}" />
+
+                    <!-- Statistics table headers -->
+                    <Label Grid.Row="1" Grid.Column="1"
+                           FontWeight="500"
+                           VerticalAlignment="Center"
+                           Content="Rebound" />
+                    <Label Grid.Row="1" Grid.Column="2"
+                           FontWeight="500"
+                           VerticalAlignment="Center"
+                           Content="Compression" />
+                    <Label Grid.Row="2" Grid.Column="0"
+                           FontWeight="500"
+                           VerticalAlignment="Center"
+                           Content="Average" />
+                    <Label Grid.Row="3" Grid.Column="0"
+                           FontWeight="500"
+                           VerticalAlignment="Center"
+                           Content="Maximum" />
+
+                    <!-- Statistics table values -->
+                    <TextBlock Grid.Row="2" Grid.Column="1"
+                               HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                               Text="{TemplateBinding AverageReboundVelocity}" />
+                    <TextBlock Grid.Row="2" Grid.Column="2"
+                               HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                               Text="{TemplateBinding AverageCompressionVelocity}" />
+                    <TextBlock Grid.Row="3" Grid.Column="1"
+                               HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                               Text="{TemplateBinding MaximumReboundVelocity}" />
+                    <TextBlock Grid.Row="3" Grid.Column="2"
+                               HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                               Text="{TemplateBinding MaximumCompressionVelocity}" />
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+</Styles>

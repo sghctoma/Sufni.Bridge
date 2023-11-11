@@ -81,7 +81,7 @@ public class Suspension
     public double[] FineVelocityBins { get; set; }
 };
 
-public record TravelHistogramData(List<double> Bins, List<double> Values);
+public record HistogramData(List<double> Bins, List<double> Values);
 
 public record TravelStatistics(double Max, double Average, int Bottomouts);
 
@@ -130,7 +130,7 @@ public class TelemetryData
     public Linkage Linkage { get; set; }
     public Airtime[] Airtimes { get; set; }
     
-    public TravelHistogramData CalculateTravelHistogram(SuspensionType type)
+    public HistogramData CalculateTravelHistogram(SuspensionType type)
     {
         var suspension = type == SuspensionType.Front ? Front : Rear;
 
@@ -148,8 +148,31 @@ public class TelemetryData
 
         hist = hist.Select(value => value / totalCount * 100.0).ToArray();
 
-        return new TravelHistogramData(
+        return new HistogramData(
             suspension.TravelBins.ToList().GetRange(0, suspension.TravelBins.Length),
+            hist.ToList());
+    }
+    
+    public HistogramData CalculateVelocityHistogram(SuspensionType type)
+    {
+        var suspension = type == SuspensionType.Front ? Front : Rear;
+
+        var hist = new double[suspension.VelocityBins.Length - 1];
+        var totalCount = 0;
+
+        foreach (var s in suspension.Strokes.Compressions.Concat(suspension.Strokes.Rebounds))
+        {
+            totalCount += s.Stat.Count;
+            foreach (var d in s.DigitizedVelocity)
+            {
+                hist[d] += 1;
+            }
+        }
+
+        hist = hist.Select(value => value / totalCount * 100.0).ToArray();
+
+        return new HistogramData(
+            suspension.VelocityBins.ToList().GetRange(0, suspension.VelocityBins.Length),
             hist.ToList());
     }
 

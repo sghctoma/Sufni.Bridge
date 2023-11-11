@@ -59,11 +59,11 @@ public class SufniPlotView : TemplatedControl
         
         plot.LeftAxis.Label.Font.Color = Color.FromHex("#D0D0D0");
         plot.LeftAxis.MajorTickColor = Color.FromHex("#D0D0D0");
-        plot.LeftAxis.Label.Font.Bold = true;
-        plot.LeftAxis.Label.Font.Size = 13;
+        plot.LeftAxis.Label.Font.Bold = false;
+        plot.LeftAxis.Label.Font.Size = 14;
 
         plot.XAxis.TickFont.Bold = true;
-        plot.XAxis.TickFont.Size = 11;
+        plot.XAxis.TickFont.Size = 12;
         plot.XAxis.MajorTickLength = 0;
         plot.XAxis.MinorTickLength = 0;
         plot.XAxis.MajorTickWidth = 0;
@@ -71,11 +71,11 @@ public class SufniPlotView : TemplatedControl
         
         plot.BottomAxis.Label.Font.Color = Color.FromHex("#D0D0D0");
         plot.BottomAxis.MajorTickColor = Color.FromHex("#D0D0D0");
-        plot.BottomAxis.Label.Font.Bold = true;
-        plot.BottomAxis.Label.Font.Size = 13;
+        plot.BottomAxis.Label.Font.Bold = false;
+        plot.BottomAxis.Label.Font.Size = 14;
         
         plot.YAxis.TickFont.Bold = true;
-        plot.YAxis.TickFont.Size = 11;
+        plot.YAxis.TickFont.Size = 12;
         plot.YAxis.MajorTickLength = 0;
         plot.YAxis.MinorTickLength = 0;
         plot.YAxis.MajorTickWidth = 0;

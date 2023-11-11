@@ -246,7 +246,9 @@ public class TelemetryData
         foreach (var s in strokes)
         {
             t.Add(s.Stat.MaxTravel / travelMax * 100);
-            v.Add(s.Stat.MaxVelocity);
+            
+            // Use positive values for rebound too, because ScottPlot can't invert axis easily. 
+            v.Add(balanceType == BalanceType.Rebound ?  -s.Stat.MaxVelocity : s.Stat.MaxVelocity);
         }
 
         var  tArray = t.ToArray();

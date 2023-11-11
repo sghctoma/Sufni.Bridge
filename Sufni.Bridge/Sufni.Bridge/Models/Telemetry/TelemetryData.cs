@@ -81,6 +81,8 @@ public class Suspension
     public double[] FineVelocityBins { get; set; }
 };
 
+public record TravelHistogramData(List<double> Bins, List<double> Values);
+
 public record TravelStatistics(double Max, double Average, int Bottomouts);
 
 public record VelocityStatistics(
@@ -127,6 +129,29 @@ public class TelemetryData
     public Suspension Rear { get; set; }
     public Linkage Linkage { get; set; }
     public Airtime[] Airtimes { get; set; }
+    
+    public TravelHistogramData CalculateTravelHistogram(SuspensionType type)
+    {
+        var suspension = type == SuspensionType.Front ? Front : Rear;
+
+        var hist = new double[suspension.TravelBins.Length - 1];
+        var totalCount = 0;
+
+        foreach (var s in suspension.Strokes.Compressions.Concat(suspension.Strokes.Rebounds))
+        {
+            totalCount += s.Stat.Count;
+            foreach (var d in s.DigitizedTravel)
+            {
+                hist[d] += 1;
+            }
+        }
+
+        hist = hist.Select(value => value / totalCount * 100.0).ToArray();
+
+        return new TravelHistogramData(
+            suspension.TravelBins.ToList().GetRange(0, suspension.TravelBins.Length),
+            hist.ToList());
+    }
 
     public TravelStatistics CalculateTravelStatistics(SuspensionType type)
     {

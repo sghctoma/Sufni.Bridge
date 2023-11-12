@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
+using Avalonia.Platform;
 using MessagePack;
 using Sufni.Bridge.Models;
 using Sufni.Bridge.Models.Telemetry;
@@ -230,17 +229,16 @@ public class HttpApiServiceStub : IHttpApiService
         return Task.FromResult(Sessions);
     }
     
-    public async Task<TelemetryData> GetSessionPsstAsync(int id)
+    public Task<TelemetryData> GetSessionPsstAsync(int id)
     {
+        var psst = AssetLoader.Open(new Uri("avares://Sufni.Bridge/Assets/sample.psst"));
+        
         if (Sessions.Any(s => s.Id == id))
         {
-            var psst = await File.ReadAllBytesAsync("sample.psst");
-            return MessagePackSerializer.Deserialize<TelemetryData>(psst);
+            return Task.FromResult(MessagePackSerializer.Deserialize<TelemetryData>(psst));
         }
-        else
-        {
-            throw new Exception($"Invalid session id ({id})!");
-        }
+
+        throw new Exception($"Invalid session id ({id})!");
     }
     
     public Task<int> PutSessionAsync(Session session)

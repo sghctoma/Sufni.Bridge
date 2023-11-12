@@ -11,6 +11,10 @@
     <AvaloniaResource Include="Assets\**" />
   </ItemGroup>
 
+    <ItemGroup Condition="'$(Configuration)' == 'Release'">
+        <AvaloniaResource Remove="Assets\sample.psst" />
+    </ItemGroup>
+
    <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.0.5" />
     <PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0.3" />
@@ -30,10 +34,5 @@
   <ItemGroup>
     <ProjectReference Include="..\..\SecureStorage\SecureStorage.csproj" />
   </ItemGroup>
-
-  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
-    <None Update="sample.psst">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+    
 </Project>

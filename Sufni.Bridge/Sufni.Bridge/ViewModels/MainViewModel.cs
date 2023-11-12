@@ -46,9 +46,7 @@ public partial class MainViewModel : ViewModelBase
     private enum PageIndices
     {
         ImportSessions = 0,
-        /*
-        Sessions = 2,
-        */
+        Sessions = 1,
         Settings = 2,
         /*
         Linkages = 2,
@@ -67,14 +65,15 @@ public partial class MainViewModel : ViewModelBase
     {
         httpApiService = App.Current?.Services?.GetService<IHttpApiService>();
         
-        SelectedIndex = SettingsPage.IsRegistered ? (int)PageIndices.ImportSessions : (int)PageIndices.Settings;
+        SelectPage();
         SettingsPage.PropertyChanged += (_, args) =>
         {
             if (args.PropertyName != nameof(SettingsPage.IsRegistered))
             {
                 return;
             }
-            SelectedIndex = SettingsPage.IsRegistered ? (int)PageIndices.ImportSessions : (int)PageIndices.Settings;
+
+            SelectPage();
         };
 
         Linkages.CollectionChanged += (_, _) =>
@@ -106,6 +105,25 @@ public partial class MainViewModel : ViewModelBase
 
     #region Private methods
 
+    private void SelectPage()
+    {
+        if (SettingsPage.IsRegistered)
+        {
+            if (ImportSessionsPage.SelectedDataStore is not null)
+            {
+                SelectedIndex = (int)PageIndices.ImportSessions;
+            }
+            else
+            {
+                SelectedIndex = (int)PageIndices.Sessions;
+            }
+        }
+        else
+        {
+            SelectedIndex = (int)PageIndices.Settings;
+        }
+    }
+    
     private async Task LoadLinkagesAsync()
     {
         Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");

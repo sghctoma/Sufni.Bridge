@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MathNet.Numerics;
+using MathNet.Numerics.Distributions;
+using MathNet.Numerics.Statistics;
 using MessagePack;
 
 // ReSharper disable NotAccessedPositionalProperty.Global
@@ -91,6 +93,10 @@ public record VelocityStatistics(
     double AverageCompression,
     double MaxCompression);
 
+public record NormalDistributionData(
+    List<double> Y,
+    List<double> Pdf);
+
 public record VelocityBands(
     double LowSpeedCompression,
     double HighSpeedCompression,
@@ -174,6 +180,31 @@ public class TelemetryData
         return new HistogramData(
             suspension.VelocityBins.ToList().GetRange(0, suspension.VelocityBins.Length),
             hist.ToList());
+    }
+
+    public NormalDistributionData CalculateNormalDistribution(SuspensionType type)
+    {
+        var suspension = type == SuspensionType.Front ? Front : Rear;
+        var step = suspension.VelocityBins[1] - suspension.VelocityBins[0];
+        var velocity = suspension.Velocity.ToList();
+        
+        var strokeVelocity = new List<double>();
+        foreach (var s in suspension.Strokes.Compressions.Concat(suspension.Strokes.Rebounds))
+        {
+            strokeVelocity.AddRange(velocity.GetRange(s.Start, s.End - s.Start + 1));
+        }
+
+        var strokeVelocityArray = strokeVelocity.ToArray();
+        var mu = strokeVelocity.Mean();
+        var std = strokeVelocity.StandardDeviation();
+
+        var ny = Enumerable.Range(0, 100)
+            .Select(i => strokeVelocityArray.Min() + i * (strokeVelocityArray.Max() - strokeVelocityArray.Min()) / 99)
+            .ToArray();
+
+        var pdf = ny.Select(value => Normal.PDF(mu, std, value) * step * 100).ToList();
+
+        return new NormalDistributionData(ny.ToList(), pdf);
     }
 
     public TravelStatistics CalculateTravelStatistics(SuspensionType type)

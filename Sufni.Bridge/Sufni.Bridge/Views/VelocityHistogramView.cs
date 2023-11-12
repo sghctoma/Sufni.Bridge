@@ -71,5 +71,15 @@ public class VelocityHistogramView : SufniPlotView
         Plot!.Plot.LeftAxis.TickGenerator = new NumericManual(
             ticks.Select(b => (max - b + min) / step).ToArray(),
             ticks.Select(b => $"{b:0}").ToArray());
+        
+        var normalData = telemetryData.CalculateNormalDistribution(Type);
+        var normal = Plot!.Plot.Add.Scatter(
+            normalData.Pdf.ToArray(),
+            normalData.Y.Select(y => (max - y + min) / step).ToArray());
+        normal.Color = Color.FromHex("#d53e4f");
+        normal.MarkerStyle.IsVisible = false;
+        normal.LineStyle.Width = 3;
+        normal.LineStyle.Pattern = LinePattern.Dot;
+
     }
 }

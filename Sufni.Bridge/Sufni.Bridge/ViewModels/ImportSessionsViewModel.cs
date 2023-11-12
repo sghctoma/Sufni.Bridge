@@ -41,7 +41,11 @@ public partial class ImportSessionsViewModel : ViewModelBase
     {           
         Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
 
-        if (value == null) return;
+        if (value == null)
+        {
+            TelemetryFiles.Clear();
+            return;
+        }
 
         try
         {

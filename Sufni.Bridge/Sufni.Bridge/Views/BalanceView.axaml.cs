@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using Avalonia;
 using Avalonia.Controls.Primitives;
 using Sufni.Bridge.Models.Telemetry;
@@ -6,6 +8,8 @@ namespace Sufni.Bridge.Views;
 
 public class BalanceView : TemplatedControl
 {
+    #region Styled properties
+
     public static readonly StyledProperty<string> MeanSignedDeviationProperty = AvaloniaProperty.Register<BalanceView, string>(
         "MeanSignedDeviation");
 
@@ -31,5 +35,35 @@ public class BalanceView : TemplatedControl
     {
         get => GetValue(TelemetryProperty);
         set => SetValue(TelemetryProperty, value);
+    }
+    
+    #endregion
+
+    private void CalculateStatistics()
+    {
+        if (!Telemetry.Front.Present || !Telemetry.Rear.Present) return;
+        var balance = Telemetry.CalculateBalance(BalanceType);
+
+        var max = Math.Max(
+            balance.FrontVelocity.Max(),
+            balance.RearVelocity.Max());
+            
+        var msd = balance.MeanSignedDeviation / max * 100.0;
+        MeanSignedDeviation = $"{msd:+0.00;-#.00} %";
+    }
+
+    public BalanceView()
+    {  
+        PropertyChanged += (_, e) =>
+        {
+            if (e.NewValue is null) return;
+            
+            switch (e.Property.Name)
+            {
+                case nameof(Telemetry):
+                    CalculateStatistics();
+                    break;
+            }
+        };
     }
 }

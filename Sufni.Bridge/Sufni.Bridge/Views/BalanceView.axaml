@@ -7,7 +7,7 @@
 
     <Style Selector="v|BalanceView">
         <!-- Set Defaults -->
-        <Setter Property="MeanSignedDeviation" Value="12 %" />
+        <Setter Property="MeanSignedDeviation" Value="+12%" />
 
         <!-- Template -->
         <Setter Property="Template">

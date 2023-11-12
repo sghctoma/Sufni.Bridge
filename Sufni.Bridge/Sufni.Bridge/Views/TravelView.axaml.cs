@@ -6,6 +6,8 @@ namespace Sufni.Bridge.Views;
 
 public class TravelView : TemplatedControl
 {
+    #region Styled properties
+    
     public static readonly StyledProperty<string> TravelAverageStringProperty = AvaloniaProperty.Register<TravelView, string>(
         "TravelAverageString");
     
@@ -40,5 +42,33 @@ public class TravelView : TemplatedControl
     {
         get => GetValue(TelemetryProperty);
         set => SetValue(TelemetryProperty, value);
+    }
+    
+    #endregion
+
+    private void CalculateStatistics()
+    {
+        var statistics = Telemetry.CalculateTravelStatistics(SuspensionType);
+        
+        var avgPercentage = statistics.Average / Telemetry.Linkage.MaxFrontTravel * 100.0;
+        var maxPercentage = statistics.Max / Telemetry.Linkage.MaxFrontTravel * 100.0;
+        
+        TravelAverageString = $"{statistics.Average:F2} mm ({avgPercentage:F2}%)";
+        TravelMaxString = $"{statistics.Max:F2} mm ({maxPercentage:F2}%) / {statistics.Bottomouts} bottom outs";
+    }
+
+    public TravelView()
+    {  
+        PropertyChanged += (_, e) =>
+        {
+            if (e.NewValue is null) return;
+            
+            switch (e.Property.Name)
+            {
+                case nameof(Telemetry):
+                    CalculateStatistics();
+                    break;
+            }
+        };
     }
 }

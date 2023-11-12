@@ -57,53 +57,53 @@
                             
                             <!-- Front travel -->
                             <v:TravelView Grid.Row="0" Grid.Column="0"
-                                          IsVisible="{Binding FrontTravelStatistics, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                          IsVisible="{Binding TelemetryData.Front.Present}"
                                           SuspensionType="Front"
-                                          Telemetry="{Binding TelemetryData}"
-                                          TravelAverageString="{Binding FrontTravelAverageString}"
-                                          TravelMaxString="{Binding FrontTravelMaxString}" />
+                                          Telemetry="{Binding TelemetryData}" />
                             
                             <!-- Rear travel -->
                             <v:TravelView Grid.Row="1" Grid.Column="0"
-                                          IsVisible="{Binding RearTravelStatistics, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                          IsVisible="{Binding TelemetryData.Rear.Present}"
                                           SuspensionType="Rear"
-                                          Telemetry="{Binding TelemetryData}"
-                                          TravelAverageString="{Binding RearTravelAverageString}"
-                                          TravelMaxString="{Binding RearTravelMaxString}" />
+                                          Telemetry="{Binding TelemetryData}" />
                             
                             <!-- Front velocity -->
                             <v:VelocityView Grid.Row="2" Grid.Column="0"
-                                            IsVisible="{Binding FrontVelocityStatistics, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                            IsVisible="{Binding TelemetryData.Front.Present}"
                                             SuspensionType="Front"
-                                            Telemetry="{Binding TelemetryData}"
-                                            AverageReboundVelocity="{Binding FrontVelocityStatistics.AverageRebound, StringFormat={}{0:0.00} mm/s}"
-                                            MaximumReboundVelocity="{Binding FrontVelocityStatistics.MaxRebound, StringFormat={}{0:0.00} mm/s}"
-                                            AverageCompressionVelocity="{Binding FrontVelocityStatistics.AverageCompression, StringFormat={}{0:0.00} mm/s}"
-                                            MaximumCompressionVelocity="{Binding FrontVelocityStatistics.MaxCompression, StringFormat={}{0:0.00} mm/s}" />
+                                            Telemetry="{Binding TelemetryData}" />
                             
                             <!-- Rear velocity -->
                             <v:VelocityView Grid.Row="3" Grid.Column="0"
-                                            IsVisible="{Binding RearVelocityStatistics, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                            IsVisible="{Binding TelemetryData.Rear.Present}"
                                             SuspensionType="Rear"
-                                            Telemetry="{Binding TelemetryData}"
-                                            AverageReboundVelocity="{Binding RearVelocityStatistics.AverageRebound, StringFormat={}{0:0.00} mm/s}"
-                                            MaximumReboundVelocity="{Binding RearVelocityStatistics.MaxRebound, StringFormat={}{0:0.00} mm/s}"
-                                            AverageCompressionVelocity="{Binding RearVelocityStatistics.AverageCompression, StringFormat={}{0:0.00} mm/s}"
-                                            MaximumCompressionVelocity="{Binding RearVelocityStatistics.MaxCompression, StringFormat={}{0:0.00} mm/s}" />
+                                            Telemetry="{Binding TelemetryData}" />
                             
                             <!-- Compression balance -->
                             <v:BalanceView Grid.Row="4" Grid.Column="0"
-                                           IsVisible="{Binding CompressionBalanceMsd, Converter={x:Static ObjectConverters.IsNotNull}}"
                                            BalanceType="Compression"
-                                           Telemetry="{Binding TelemetryData}"
-                                           MeanSignedDeviation="{Binding CompressionBalanceMsd, StringFormat={}{0:0.00} %}" />
+                                           Telemetry="{Binding TelemetryData}">
+                                <v:BalanceView.IsVisible>
+                                    <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                        <Binding Path="TelemetryData" Converter="{x:Static ObjectConverters.IsNotNull}" />
+                                        <Binding Path="TelemetryData.Front.Present" />
+                                        <Binding Path="TelemetryData.Rear.Present" />
+                                    </MultiBinding>
+                                </v:BalanceView.IsVisible>
+                            </v:BalanceView>
                             
                             <!-- Rebound balance -->
                             <v:BalanceView Grid.Row="5" Grid.Column="0"
-                                           IsVisible="{Binding ReboundBalanceMsd, Converter={x:Static ObjectConverters.IsNotNull}}"
                                            BalanceType="Rebound"
-                                           Telemetry="{Binding TelemetryData}"
-                                           MeanSignedDeviation="{Binding ReboundBalanceMsd, StringFormat={}{0:0.00} %}" />
+                                           Telemetry="{Binding TelemetryData}">
+                                <v:BalanceView.IsVisible>
+                                    <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                        <Binding Path="TelemetryData" Converter="{x:Static ObjectConverters.IsNotNull}" />
+                                        <Binding Path="TelemetryData.Front.Present" />
+                                        <Binding Path="TelemetryData.Rear.Present" />
+                                    </MultiBinding>
+                                </v:BalanceView.IsVisible>
+                            </v:BalanceView>
                             
                             <!-- Description -->
                             <TextBlock Grid.Row="6" Grid.Column="0"

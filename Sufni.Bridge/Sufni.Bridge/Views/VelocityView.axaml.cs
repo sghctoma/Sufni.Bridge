@@ -6,6 +6,10 @@ namespace Sufni.Bridge.Views;
 
 public class VelocityView : TemplatedControl
 {
+    private const double HighSpeedThreshold = 200;
+    
+    #region Styled properties
+    
     public static readonly StyledProperty<string> AverageReboundVelocityProperty = AvaloniaProperty.Register<VelocityView, string>(
         "AverageReboundVelocity");
     
@@ -57,5 +61,33 @@ public class VelocityView : TemplatedControl
     {
         get => GetValue(TelemetryProperty);
         set => SetValue(TelemetryProperty, value);
+    }
+    
+    #endregion
+
+    private void CalculateStatistics()
+    {
+        var velocityStatistics = Telemetry.CalculateVelocityStatistics(SuspensionType);
+        //TODO: var velocityBands = Telemetry.CalculateVelocityBands(SuspensionType, HighSpeedThreshold);
+        
+        AverageCompressionVelocity = $"{velocityStatistics.AverageCompression:0.00} mm/s";
+        MaximumCompressionVelocity = $"{velocityStatistics.MaxCompression:0.00} mm/s";
+        AverageReboundVelocity = $"{velocityStatistics.AverageRebound:0.00} mm/s";
+        MaximumReboundVelocity = $"{velocityStatistics.MaxRebound:0.00} mm/s";
+    }
+
+    public VelocityView()
+    {  
+        PropertyChanged += (_, e) =>
+        {
+            if (e.NewValue is null) return;
+            
+            switch (e.Property.Name)
+            {
+                case nameof(Telemetry):
+                    CalculateStatistics();
+                    break;
+            }
+        };
     }
 }

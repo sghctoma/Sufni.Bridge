@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MathNet.Numerics;
+using MathNet.Numerics.Distributions;
+using MathNet.Numerics.Statistics;
 using MessagePack;
 
 // ReSharper disable NotAccessedPositionalProperty.Global
@@ -81,6 +83,8 @@ public class Suspension
     public double[] FineVelocityBins { get; set; }
 };
 
+public record HistogramData(List<double> Bins, List<double> Values);
+
 public record TravelStatistics(double Max, double Average, int Bottomouts);
 
 public record VelocityStatistics(
@@ -88,6 +92,10 @@ public record VelocityStatistics(
     double MaxRebound,
     double AverageCompression,
     double MaxCompression);
+
+public record NormalDistributionData(
+    List<double> Y,
+    List<double> Pdf);
 
 public record VelocityBands(
     double LowSpeedCompression,
@@ -127,6 +135,77 @@ public class TelemetryData
     public Suspension Rear { get; set; }
     public Linkage Linkage { get; set; }
     public Airtime[] Airtimes { get; set; }
+    
+    public HistogramData CalculateTravelHistogram(SuspensionType type)
+    {
+        var suspension = type == SuspensionType.Front ? Front : Rear;
+
+        var hist = new double[suspension.TravelBins.Length - 1];
+        var totalCount = 0;
+
+        foreach (var s in suspension.Strokes.Compressions.Concat(suspension.Strokes.Rebounds))
+        {
+            totalCount += s.Stat.Count;
+            foreach (var d in s.DigitizedTravel)
+            {
+                hist[d] += 1;
+            }
+        }
+
+        hist = hist.Select(value => value / totalCount * 100.0).ToArray();
+
+        return new HistogramData(
+            suspension.TravelBins.ToList().GetRange(0, suspension.TravelBins.Length),
+            hist.ToList());
+    }
+    
+    public HistogramData CalculateVelocityHistogram(SuspensionType type)
+    {
+        var suspension = type == SuspensionType.Front ? Front : Rear;
+
+        var hist = new double[suspension.VelocityBins.Length - 1];
+        var totalCount = 0;
+
+        foreach (var s in suspension.Strokes.Compressions.Concat(suspension.Strokes.Rebounds))
+        {
+            totalCount += s.Stat.Count;
+            foreach (var d in s.DigitizedVelocity)
+            {
+                hist[d] += 1;
+            }
+        }
+
+        hist = hist.Select(value => value / totalCount * 100.0).ToArray();
+
+        return new HistogramData(
+            suspension.VelocityBins.ToList().GetRange(0, suspension.VelocityBins.Length),
+            hist.ToList());
+    }
+
+    public NormalDistributionData CalculateNormalDistribution(SuspensionType type)
+    {
+        var suspension = type == SuspensionType.Front ? Front : Rear;
+        var step = suspension.VelocityBins[1] - suspension.VelocityBins[0];
+        var velocity = suspension.Velocity.ToList();
+        
+        var strokeVelocity = new List<double>();
+        foreach (var s in suspension.Strokes.Compressions.Concat(suspension.Strokes.Rebounds))
+        {
+            strokeVelocity.AddRange(velocity.GetRange(s.Start, s.End - s.Start + 1));
+        }
+
+        var strokeVelocityArray = strokeVelocity.ToArray();
+        var mu = strokeVelocity.Mean();
+        var std = strokeVelocity.StandardDeviation();
+
+        var ny = Enumerable.Range(0, 100)
+            .Select(i => strokeVelocityArray.Min() + i * (strokeVelocityArray.Max() - strokeVelocityArray.Min()) / 99)
+            .ToArray();
+
+        var pdf = ny.Select(value => Normal.PDF(mu, std, value) * step * 100).ToList();
+
+        return new NormalDistributionData(ny.ToList(), pdf);
+    }
 
     public TravelStatistics CalculateTravelStatistics(SuspensionType type)
     {
@@ -246,7 +325,9 @@ public class TelemetryData
         foreach (var s in strokes)
         {
             t.Add(s.Stat.MaxTravel / travelMax * 100);
-            v.Add(s.Stat.MaxVelocity);
+            
+            // Use positive values for rebound too, because ScottPlot can't invert axis easily. 
+            v.Add(balanceType == BalanceType.Rebound ?  -s.Stat.MaxVelocity : s.Stat.MaxVelocity);
         }
 
         var  tArray = t.ToArray();

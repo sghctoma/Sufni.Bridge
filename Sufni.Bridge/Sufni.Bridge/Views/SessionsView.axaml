@@ -15,10 +15,6 @@
         <vm:MainViewModel />
     </Design.DataContext>
 
-    <UserControl.Resources>
-        <v:CustomGridLengthConverter x:Key="CustomGridLengthConverter" />
-    </UserControl.Resources>
-
     <Grid RowDefinitions="* auto 40" ColumnDefinitions="*">
 
         <!-- List of Calibrations -->
@@ -51,203 +47,84 @@
                             <ia:EventTriggerBehavior EventName="Expanding">
                                 <InvokeCommandAction Command="{Binding LoadPsstCommand}" />
                             </ia:EventTriggerBehavior>
+                            <ia:EventTriggerBehavior EventName="Expanded">
+                                <InvokeCommandAction Command="{Binding SetTelemetryDataCommand}" />
+                            </ia:EventTriggerBehavior>
                         </i:Interaction.Behaviors>
 
-                        <Grid ColumnDefinitions="auto *" RowDefinitions="auto auto auto auto auto auto 120 auto 40"
+                        <Grid ColumnDefinitions="*" RowDefinitions="auto auto auto auto auto auto auto 120 auto 40"
                               MinWidth="300" HorizontalAlignment="Stretch">
                             
-                            <!-- Front suspension statistics -->
-                            <v:SuspensionStatistics Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
-                                                    IsVisible="{Binding FrontVelocityStatistics, Converter={x:Static ObjectConverters.IsNotNull}}"
-                                                    SuspensionType="Front"
-                                                    TravelAverageString="{Binding FrontTravelAverageString}"
-                                                    TravelMaxString="{Binding FrontTravelMaxString}"
-                                                    AverageReboundVelocity="{Binding  FrontVelocityStatistics.AverageRebound, StringFormat={}{0:0.00} mm/s}"
-                                                    MaximumReboundVelocity="{Binding FrontVelocityStatistics.MaxRebound, StringFormat={}{0:0.00} mm/s}"
-                                                    AverageCompressionVelocity="{Binding FrontVelocityStatistics.AverageCompression, StringFormat={}{0:0.00} mm/s}"
-                                                    MaximumCompressionVelocity="{Binding FrontVelocityStatistics.MaxCompression, StringFormat={}{0:0.00} mm/s}"
-                                                    LowSpeedRebound="{Binding FrontVelocityBands.LowSpeedRebound, StringFormat={}{0:0.00}%}"
-                                                    HighSpeedRebound="{Binding FrontVelocityBands.HighSpeedRebound, StringFormat={}{0:0.00}%}"
-                                                    LowSpeedCompression="{Binding FrontVelocityBands.LowSpeedCompression, StringFormat={}{0:0.00}%}"
-                                                    HighSpeedCompression="{Binding FrontVelocityBands.HighSpeedCompression, StringFormat={}{0:0.00}%}" />
+                            <!-- Front travel -->
+                            <v:TravelView Grid.Row="0" Grid.Column="0"
+                                          IsVisible="{Binding TelemetryData.Front.Present}"
+                                          SuspensionType="Front"
+                                          Telemetry="{Binding TelemetryData}" />
                             
-                            <!-- Front suspension velocity bands -->
-                            <!-- XXX This should be in SuspensionStatistics.axaml,
-                                 but ColumnDefinition binding does not seem to work
-                                 in a templated control -->
-                            <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
-                                  RowDefinitions="auto auto"
-                                  Margin="0,0,0,10"
-                                  IsVisible="{Binding FrontVelocityBands, Converter={x:Static ObjectConverters.IsNotNull}}">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="{Binding FrontVelocityBands.HighSpeedRebound, Converter={StaticResource CustomGridLengthConverter}}" />
-                                    <ColumnDefinition Width="{Binding FrontVelocityBands.LowSpeedRebound, Converter={StaticResource CustomGridLengthConverter}}" />
-                                    <ColumnDefinition Width="{Binding FrontVelocityBands.LowSpeedCompression, Converter={StaticResource CustomGridLengthConverter}}" />
-                                    <ColumnDefinition Width="{Binding FrontVelocityBands.HighSpeedCompression, Converter={StaticResource CustomGridLengthConverter}}" />
-                                </Grid.ColumnDefinitions>
-                                
-                                <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,0,2"
-                                           FontWeight="Black" 
-                                           Text="Front velocity bands" />
-                                
-                                <Border Margin="2" Grid.Row="1" Grid.Column="0"
-                                        CornerRadius="3"
-                                        BorderBrush="#505050" BorderThickness="1" >
-                                    <StackPanel VerticalAlignment="Center">
-                                        <TextBlock FontSize="12" Text="HSR" HorizontalAlignment="Center" />
-                                        <TextBlock FontSize="12" HorizontalAlignment="Center"
-                                                   Text="{Binding FrontVelocityBands.HighSpeedRebound, StringFormat={}{0:0.00}%}" />
-                                    </StackPanel>
-                                </Border>
-                                <Border Margin="2" Grid.Row="1" Grid.Column="1"
-                                        CornerRadius="3"
-                                        BorderBrush="#505050" BorderThickness="1" >
-                                    <StackPanel VerticalAlignment="Center">
-                                        <TextBlock FontSize="12" Text="LSR" HorizontalAlignment="Center"/>
-                                        <TextBlock FontSize="12" HorizontalAlignment="Center"
-                                                   Text="{Binding FrontVelocityBands.LowSpeedRebound, StringFormat={}{0:0.00}%}" />
-                                    </StackPanel>
-                                </Border>
-                                <Border Margin="2" Grid.Row="1" Grid.Column="2"
-                                        CornerRadius="3"
-                                        BorderBrush="#505050" BorderThickness="1" >
-                                    <StackPanel VerticalAlignment="Center">
-                                        <TextBlock FontSize="12" Text="LSC" HorizontalAlignment="Center"/>
-                                        <TextBlock FontSize="12" HorizontalAlignment="Center"
-                                                   Text="{Binding FrontVelocityBands.LowSpeedCompression, StringFormat={}{0:0.00}%}" />
-                                    </StackPanel>
-                                </Border>
-                                <Border Margin="2" Grid.Row="1" Grid.Column="3"
-                                        CornerRadius="3"
-                                        BorderBrush="#505050" BorderThickness="1" >
-                                    <StackPanel VerticalAlignment="Center">
-                                        <TextBlock FontSize="12" Text="HSC" HorizontalAlignment="Center"/>
-                                        <TextBlock FontSize="12" HorizontalAlignment="Center"
-                                                   Text="{Binding FrontVelocityBands.HighSpeedCompression, StringFormat={}{0:0.00}%}" />
-                                    </StackPanel>
-                                </Border>
-                            </Grid>
-
-                            <!-- Rear suspension statistics -->
-                            <v:SuspensionStatistics Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
-                                                    IsVisible="{Binding RearVelocityStatistics, Converter={x:Static ObjectConverters.IsNotNull}}"
-                                                    SuspensionType="Rear"
-                                                    TravelAverageString="{Binding RearTravelAverageString}"
-                                                    TravelMaxString="{Binding RearTravelMaxString}"
-                                                    AverageReboundVelocity="{Binding  RearVelocityStatistics.AverageRebound, StringFormat={}{0:0.00} mm/s}"
-                                                    MaximumReboundVelocity="{Binding RearVelocityStatistics.MaxRebound, StringFormat={}{0:0.00} mm/s}"
-                                                    AverageCompressionVelocity="{Binding RearVelocityStatistics.AverageCompression, StringFormat={}{0:0.00} mm/s}"
-                                                    MaximumCompressionVelocity="{Binding RearVelocityStatistics.MaxCompression, StringFormat={}{0:0.00} mm/s}"
-                                                    LowSpeedRebound="{Binding RearVelocityBands.LowSpeedRebound, StringFormat={}{0:0.00}%}"
-                                                    HighSpeedRebound="{Binding RearVelocityBands.HighSpeedRebound, StringFormat={}{0:0.00}%}"
-                                                    LowSpeedCompression="{Binding RearVelocityBands.LowSpeedCompression, StringFormat={}{0:0.00}%}"
-                                                    HighSpeedCompression="{Binding RearVelocityBands.HighSpeedCompression, StringFormat={}{0:0.00}%}" />
+                            <!-- Rear travel -->
+                            <v:TravelView Grid.Row="1" Grid.Column="0"
+                                          IsVisible="{Binding TelemetryData.Rear.Present}"
+                                          SuspensionType="Rear"
+                                          Telemetry="{Binding TelemetryData}" />
                             
-                            <!-- Rear suspension velocity bands -->
-                            <!-- XXX This should be in SuspensionStatistics.axaml,
-                                 but ColumnDefinition binding does not seem to work
-                                 in a templated control -->
-                            <Grid Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
-                                  RowDefinitions="auto auto"
-                                  Margin="0,0,0,10"
-                                  IsVisible="{Binding RearVelocityBands, Converter={x:Static ObjectConverters.IsNotNull}}">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="{Binding RearVelocityBands.HighSpeedRebound, Converter={StaticResource CustomGridLengthConverter}}" />
-                                    <ColumnDefinition Width="{Binding RearVelocityBands.LowSpeedRebound, Converter={StaticResource CustomGridLengthConverter}}" />
-                                    <ColumnDefinition Width="{Binding RearVelocityBands.LowSpeedCompression, Converter={StaticResource CustomGridLengthConverter}}" />
-                                    <ColumnDefinition Width="{Binding RearVelocityBands.HighSpeedCompression, Converter={StaticResource CustomGridLengthConverter}}" />
-                                </Grid.ColumnDefinitions>
-                                
-                                <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,0,2"
-                                           FontWeight="Black" 
-                                           Text="Rear velocity bands" />
-                                
-                                <Border Margin="2" Grid.Row="1" Grid.Column="0"
-                                        CornerRadius="3"
-                                        BorderBrush="#505050" BorderThickness="1" >
-                                    <StackPanel VerticalAlignment="Center">
-                                        <TextBlock FontSize="12" Text="HSR" HorizontalAlignment="Center" />
-                                        <TextBlock FontSize="12" HorizontalAlignment="Center"
-                                                   Text="{Binding RearVelocityBands.HighSpeedRebound, StringFormat={}{0:0.00}%}" />
-                                    </StackPanel>
-                                </Border>
-                                <Border Margin="2" Grid.Row="1" Grid.Column="1"
-                                        CornerRadius="3"
-                                        BorderBrush="#505050" BorderThickness="1" >
-                                    <StackPanel VerticalAlignment="Center">
-                                        <TextBlock FontSize="12" Text="LSR" HorizontalAlignment="Center"/>
-                                        <TextBlock FontSize="12" HorizontalAlignment="Center"
-                                                   Text="{Binding RearVelocityBands.LowSpeedRebound, StringFormat={}{0:0.00}%}" />
-                                    </StackPanel>
-                                </Border>
-                                <Border Margin="2" Grid.Row="1" Grid.Column="2"
-                                        CornerRadius="3"
-                                        BorderBrush="#505050" BorderThickness="1" >
-                                    <StackPanel VerticalAlignment="Center">
-                                        <TextBlock FontSize="12" Text="LSC" HorizontalAlignment="Center"/>
-                                        <TextBlock FontSize="12" HorizontalAlignment="Center"
-                                                   Text="{Binding RearVelocityBands.LowSpeedCompression, StringFormat={}{0:0.00}%}" />
-                                    </StackPanel>
-                                </Border>
-                                <Border Margin="2" Grid.Row="1" Grid.Column="3"
-                                        CornerRadius="3"
-                                        BorderBrush="#505050" BorderThickness="1" >
-                                    <StackPanel VerticalAlignment="Center">
-                                        <TextBlock FontSize="12" Text="HSC" HorizontalAlignment="Center"/>
-                                        <TextBlock FontSize="12" HorizontalAlignment="Center"
-                                                   Text="{Binding RearVelocityBands.HighSpeedCompression, StringFormat={}{0:0.00}%}" />
-                                    </StackPanel>
-                                </Border>
-                            </Grid>
+                            <!-- Front velocity -->
+                            <v:VelocityView Grid.Row="2" Grid.Column="0"
+                                            IsVisible="{Binding TelemetryData.Front.Present}"
+                                            SuspensionType="Front"
+                                            Telemetry="{Binding TelemetryData}" />
                             
-                            <!-- Balance -->
-                            <Grid  Grid.Column="0" Grid.Row="4" ColumnDefinitions="150 *" RowDefinitions="auto auto auto"
-                                   Margin="0,0,0,10">
-                                
-                                <Grid.IsVisible>
+                            <!-- Rear velocity -->
+                            <v:VelocityView Grid.Row="3" Grid.Column="0"
+                                            IsVisible="{Binding TelemetryData.Rear.Present}"
+                                            SuspensionType="Rear"
+                                            Telemetry="{Binding TelemetryData}" />
+                            
+                            <!-- Compression balance -->
+                            <v:BalanceView Grid.Row="4" Grid.Column="0"
+                                           BalanceType="Compression"
+                                           Telemetry="{Binding TelemetryData}">
+                                <v:BalanceView.IsVisible>
                                     <MultiBinding Converter="{x:Static BoolConverters.And}">
-                                        <Binding Path="CompressionBalanceMsd" Converter="{x:Static ObjectConverters.IsNotNull}" />
-                                        <Binding Path="ReboundBalanceMsd" Converter="{x:Static ObjectConverters.IsNotNull}" />
+                                        <Binding Path="TelemetryData" Converter="{x:Static ObjectConverters.IsNotNull}" />
+                                        <Binding Path="TelemetryData.Front.Present" />
+                                        <Binding Path="TelemetryData.Rear.Present" />
                                     </MultiBinding>
-                                </Grid.IsVisible>
-                                
-                                <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
-                                           FontWeight="Black" Text="Balance" />
-                    
-                                <Label Grid.Row="1" Grid.Column="0"
-                                       VerticalAlignment="Center"
-                                       Content="Compression MSD: " />
-                                <TextBlock Grid.Row="1" Grid.Column="1" 
-                                           HorizontalAlignment="Right" VerticalAlignment="Center" 
-                                           Text="{Binding CompressionBalanceMsd, StringFormat={}{0:+0.00;-#.00}%}" />
-                    
-                                <Label Grid.Row="2" Grid.Column="0" 
-                                       VerticalAlignment="Center" 
-                                       Content="Rebound MSD: " />
-                                <TextBlock Grid.Row="2" Grid.Column="1" 
-                                           HorizontalAlignment="Right" VerticalAlignment="Center" 
-                                           Text="{Binding ReboundBalanceMsd, StringFormat={}{0:+0.00;-#.00}%}" />
-                            </Grid>
+                                </v:BalanceView.IsVisible>
+                            </v:BalanceView>
+                            
+                            <!-- Rebound balance -->
+                            <v:BalanceView Grid.Row="5" Grid.Column="0"
+                                           BalanceType="Rebound"
+                                           Telemetry="{Binding TelemetryData}">
+                                <v:BalanceView.IsVisible>
+                                    <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                        <Binding Path="TelemetryData" Converter="{x:Static ObjectConverters.IsNotNull}" />
+                                        <Binding Path="TelemetryData.Front.Present" />
+                                        <Binding Path="TelemetryData.Rear.Present" />
+                                    </MultiBinding>
+                                </v:BalanceView.IsVisible>
+                            </v:BalanceView>
                             
                             <!-- Description -->
-                            <TextBlock Grid.Row="5" Grid.Column="0"
-                                   FontWeight="Black" VerticalAlignment="Center"
-                                   Text="Description" />
-                            <TextBox Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2"
+                            <TextBlock Grid.Row="6" Grid.Column="0"
+                                       FontWeight="Black" Foreground="#d0d0d0"
+                                       VerticalAlignment="Center" HorizontalAlignment="Center"
+                                       Text="Description" />
+                            <TextBox Grid.Row="7" Grid.Column="0"
                                      Margin="2"
                                      HorizontalAlignment="Stretch"
                                      AcceptsReturn="True" TextWrapping="Wrap"
                                      Text="{Binding Description}" />
                             
                             <!-- Error messages for Calibration instance -->
-                            <v:ErrorMessagesControl Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2"
+                            <v:ErrorMessagesControl Grid.Row="8" Grid.Column="0"
                                                     Margin="0,5, 0, 0"
                                                     ClearErrorsCommand="{Binding ClearErrorsCommand}"
                                                     ErrorMessages="{Binding ErrorMessages}"
                                                     IsVisible="{Binding ErrorMessages.Count}" />
 
                             <!-- Save, Reset and Delete buttons -->
-                            <Grid Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2"
+                            <Grid Grid.Row="9" Grid.Column="0"
                                   Margin="0,5,0,5"
                                   ColumnDefinitions="* auto auto" RowDefinitions="30">
                                 <Button Grid.Row="0" Grid.Column="0"

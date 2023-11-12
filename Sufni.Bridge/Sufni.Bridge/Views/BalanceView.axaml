@@ -1,0 +1,34 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:v="using:Sufni.Bridge.Views">
+    <Design.PreviewWith>
+        <v:BalanceView />
+    </Design.PreviewWith>
+
+    <Style Selector="v|BalanceView">
+        <!-- Set Defaults -->
+        <Setter Property="MeanSignedDeviation" Value="+12%" />
+
+        <!-- Template -->
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid ColumnDefinitions="200 *" RowDefinitions="250 auto auto auto">
+
+                    <!-- Travel histogram -->
+                    <v:BalancePlotView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                                       IsHitTestVisible="False"
+                                       Type="{TemplateBinding BalanceType}"
+                                       Telemetry="{TemplateBinding Telemetry}" />
+
+                    <!-- Mean Signed Deviation -->
+                    <Label Grid.Row="1" Grid.Column="0"
+                           VerticalAlignment="Center"
+                           Content="Mean Signed Deviation: " />
+                    <TextBlock Grid.Row="1" Grid.Column="1"
+                               HorizontalAlignment="Left" VerticalAlignment="Center"
+                               Text="{TemplateBinding MeanSignedDeviation}" />
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+</Styles>

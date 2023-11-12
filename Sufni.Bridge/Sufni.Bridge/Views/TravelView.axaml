@@ -1,0 +1,46 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:v="using:Sufni.Bridge.Views">
+    <Design.PreviewWith>
+        <v:TravelView />
+    </Design.PreviewWith>
+
+    <Style Selector="v|TravelView">
+        
+        <!-- Set Defaults -->
+        <Setter Property="SuspensionType" Value="Front" />
+        
+        <Setter Property="TravelAverageString" Value="53.38 mm (33.1%)" />
+        <Setter Property="TravelMaxString" Value="130.01 mm (80.07%) / 0 bottom outs" />
+        
+        <!-- Template -->
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid ColumnDefinitions="150 *" RowDefinitions="250 auto auto auto">
+                    
+                    <!-- Travel histogram -->
+                    <v:TravelHistogramView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
+                                           IsHitTestVisible="False"
+                                           Type="{TemplateBinding SuspensionType}"
+                                           Telemetry="{TemplateBinding Telemetry}" />
+                    
+                    <!-- Average travel -->
+                    <Label Grid.Row="1" Grid.Column="0"
+                           VerticalAlignment="Center"
+                           Content="Average: " />
+                    <TextBlock Grid.Row="1" Grid.Column="1" 
+                               HorizontalAlignment="Stretch" VerticalAlignment="Center" 
+                               Text="{TemplateBinding TravelAverageString}" />
+                    
+                    <!-- Maximum travel -->
+                    <Label Grid.Row="2" Grid.Column="0" 
+                           VerticalAlignment="Center" 
+                           Content="Maximum: " />
+                    <TextBlock Grid.Row="2" Grid.Column="1" 
+                               HorizontalAlignment="Stretch" VerticalAlignment="Center" 
+                               Text="{TemplateBinding TravelMaxString}" />
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+</Styles>

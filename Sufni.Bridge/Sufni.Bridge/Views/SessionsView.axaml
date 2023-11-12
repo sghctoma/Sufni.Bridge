@@ -107,8 +107,9 @@
                             
                             <!-- Description -->
                             <TextBlock Grid.Row="6" Grid.Column="0"
-                                   FontWeight="Black" VerticalAlignment="Center"
-                                   Text="Description" />
+                                       FontWeight="Black" Foreground="#d0d0d0"
+                                       VerticalAlignment="Center" HorizontalAlignment="Center"
+                                       Text="Description" />
                             <TextBox Grid.Row="7" Grid.Column="0"
                                      Margin="2"
                                      HorizontalAlignment="Stretch"

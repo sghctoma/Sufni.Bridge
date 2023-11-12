@@ -1,8 +1,33 @@
+using System;
+using System.Globalization;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
+using Avalonia.Data;
+using Avalonia.Data.Converters;
 using Sufni.Bridge.Models.Telemetry;
 
 namespace Sufni.Bridge.Views;
+
+public class GridLengthConverter : IValueConverter
+{
+    public static readonly GridLengthConverter Instance = new();
+
+    public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (value is double length)
+        {
+            return new GridLength(length, GridUnitType.Star);
+        }
+
+        return new BindingNotification(new InvalidCastException(), BindingErrorType.Error);
+    }
+
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        throw new NotSupportedException();
+    }
+}
 
 public class VelocityView : TemplatedControl
 {
@@ -62,18 +87,28 @@ public class VelocityView : TemplatedControl
         get => GetValue(TelemetryProperty);
         set => SetValue(TelemetryProperty, value);
     }
+
+    public static readonly StyledProperty<VelocityBands> VelocityBandsProperty = AvaloniaProperty.Register<VelocityView, VelocityBands>(
+        "VelocityBands");
+
+    public VelocityBands VelocityBands
+    {
+        get => GetValue(VelocityBandsProperty);
+        set => SetValue(VelocityBandsProperty, value);
+    }
     
     #endregion
 
     private void CalculateStatistics()
     {
         var velocityStatistics = Telemetry.CalculateVelocityStatistics(SuspensionType);
-        //TODO: var velocityBands = Telemetry.CalculateVelocityBands(SuspensionType, HighSpeedThreshold);
         
         AverageCompressionVelocity = $"{velocityStatistics.AverageCompression:0.00} mm/s";
         MaximumCompressionVelocity = $"{velocityStatistics.MaxCompression:0.00} mm/s";
         AverageReboundVelocity = $"{velocityStatistics.AverageRebound:0.00} mm/s";
         MaximumReboundVelocity = $"{velocityStatistics.MaxRebound:0.00} mm/s";
+
+        VelocityBands = Telemetry.CalculateVelocityBands(SuspensionType, HighSpeedThreshold);
     }
 
     public VelocityView()

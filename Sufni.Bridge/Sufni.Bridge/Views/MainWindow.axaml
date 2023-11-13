@@ -11,18 +11,18 @@
         MaxWidth="500"
         Background="#15191c"
         ExtendClientAreaToDecorationsHint="True"
-        ExtendClientAreaTitleBarHeightHint="30">
+        ExtendClientAreaTitleBarHeightHint="35">
 
     <Panel>
         <!-- Title -->
-        <TextBlock Margin="5,5,5,5" Padding="5" Height="30"
+        <TextBlock Margin="5,5,5,5" Padding="5" Height="35"
                    IsHitTestVisible="False"
                    VerticalAlignment="Top"
                    FontWeight="Black"
                    Text="Sufni Suspension Telemetry" />
         
         <!-- Main view -->
-        <views:MainView Margin="0,30,0,5" />
+        <views:MainView Margin="0,35,0,5" />
     </Panel>
 
 </Window>

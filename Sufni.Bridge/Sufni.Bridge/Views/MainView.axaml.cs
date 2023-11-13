@@ -1,10 +1,5 @@
-using System;
-using System.Globalization;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Data;
-using Avalonia.Data.Converters;
-using Avalonia.Media;
 
 namespace Sufni.Bridge.Views
 {
@@ -19,7 +14,7 @@ namespace Sufni.Bridge.Views
         {
             base.OnSizeChanged(e);
             
-            var rm = BikeSetupsTabItem.Bounds.Width / 2 - 10;
+            var rm = BikeSetupsTabItem.Bounds.Width / 2 - 17;
             if (double.IsNaN(rm)) return;
             MissingSetupNotification.Margin = new Thickness(0, 0, rm, 40);
         }

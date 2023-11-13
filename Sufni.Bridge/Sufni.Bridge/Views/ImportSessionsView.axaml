@@ -6,7 +6,7 @@
              mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
              x:Class="Sufni.Bridge.Views.ImportSessionsView"
              x:DataType="vm:ImportSessionsViewModel"
-             Background="#15191c">
+             Background="#404040">
 
     <Design.DataContext>
         <vm:ImportSessionsViewModel />
@@ -16,7 +16,7 @@
 
         <!-- Datastore selector -->
         <ComboBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
-                  Margin="5,5,2,5"
+                  Margin="5,5,2,2"
                   HorizontalAlignment="Stretch"
                   SelectedItem="{Binding SelectedDataStore}"
                   ItemsSource="{Binding TelemetryDataStores}">
@@ -42,7 +42,8 @@
                  ItemsSource="{Binding TelemetryFiles}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <Border BorderThickness="1" BorderBrush="#505050" CornerRadius="5" Padding="5" Background="#20262b">
+                    <Border BorderThickness="1" CornerRadius="5" Padding="5"
+                            Background="#20262b" BorderBrush="#505050">
                         <Grid ColumnDefinitions="auto auto auto * auto" RowDefinitions="auto auto auto auto auto *"
                               Height="200" MinWidth="300" HorizontalAlignment="Stretch">
                             <TextBlock Grid.Row="0" Grid.Column="0" Margin="2" VerticalAlignment="Center"

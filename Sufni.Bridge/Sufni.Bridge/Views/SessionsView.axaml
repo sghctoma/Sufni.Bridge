@@ -9,7 +9,7 @@
              mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
              x:Class="Sufni.Bridge.Views.SessionsView"
              x:DataType="vm:MainViewModel"
-             Background="#15191c">
+             Background="#404040">
 
     <Design.DataContext>
         <vm:MainViewModel />
@@ -18,7 +18,7 @@
     <Grid RowDefinitions="* auto 40" ColumnDefinitions="*">
 
         <!-- List of Calibrations -->
-        <ListBox Grid.Row="0" Grid.Column="0"
+        <ListBox Grid.Row="0" Grid.Column="0" Margin="0,5,0,0"
                  Background="Transparent"
                  ItemsSource="{Binding Sessions}">
             <ListBox.ItemTemplate>

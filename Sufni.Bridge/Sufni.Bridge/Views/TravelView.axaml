@@ -16,7 +16,7 @@
         <!-- Template -->
         <Setter Property="Template">
             <ControlTemplate>
-                <Grid ColumnDefinitions="150 *" RowDefinitions="250 auto auto auto">
+                <Grid ColumnDefinitions="150 *" RowDefinitions="300 auto auto auto">
                     
                     <!-- Travel histogram -->
                     <v:TravelHistogramView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 

@@ -6,7 +6,8 @@
              xmlns:vm="clr-namespace:Sufni.Bridge.ViewModels"
              mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
              x:Class="Sufni.Bridge.Views.SettingsView"
-             x:DataType="vm:SettingsViewModel">
+             x:DataType="vm:SettingsViewModel"
+             Background="#404040">
 
     <Design.DataContext>
         <vm:SettingsViewModel />

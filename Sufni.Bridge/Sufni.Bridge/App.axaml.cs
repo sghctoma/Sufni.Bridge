@@ -23,6 +23,7 @@ public partial class App : Application
         RegisteredServices.Collection.AddSingleton<IHttpApiService, HttpApiService>();
 #endif
         RegisteredServices.Collection.AddSingleton<ITelemetryDataStoreService, TelemetryDataStoreService>();
+        RegisteredServices.Collection.AddSingleton<IDatabaseService, SqLiteDatabaseService>();
     }
 
     public override void Initialize()

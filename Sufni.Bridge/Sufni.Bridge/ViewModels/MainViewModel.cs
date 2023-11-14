@@ -56,6 +56,7 @@ public partial class MainViewModel : ViewModelBase
     }
 
     private readonly IHttpApiService? httpApiService;
+    private readonly IDatabaseService? db;
 
     #endregion
     
@@ -64,6 +65,7 @@ public partial class MainViewModel : ViewModelBase
     public MainViewModel()
     {
         httpApiService = App.Current?.Services?.GetService<IHttpApiService>();
+        db = App.Current?.Services?.GetService<IDatabaseService>();
         
         SelectPage();
         SettingsPage.PropertyChanged += (_, args) =>

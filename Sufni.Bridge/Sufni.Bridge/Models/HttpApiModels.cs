@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using SQLite;
 
 namespace Sufni.Bridge.Models;
 
@@ -14,52 +15,230 @@ public record Tokens(
     [property: JsonPropertyName("access_token")] string AccessToken,
     [property: JsonPropertyName("refresh_token")] string RefreshToken);
 
-public record Board(
-    [property: JsonPropertyName("id")] string Id,
-    [property: JsonPropertyName("setup_id")] int? SetupId);
+// ReSharper disable once ClassNeverInstantiated.Global
+// It's used in response.Content.ReadFromJsonAsync<Tokens>() calls
+public record PutResponse(
+    [property: JsonPropertyName("id")] int Id);
 
-public record Session(
-    [property: JsonPropertyName("id"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] int? Id,
-    [property: JsonPropertyName("name")] string Name,
-    [property: JsonPropertyName("description")] string Description,
-    [property: JsonPropertyName("setup")] int Setup,
-    [property: JsonPropertyName("timestamp"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] int? Timestamp,
-    [property: JsonPropertyName("track"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] int? Track,
-    [property: JsonPropertyName("data")] string? Data);
+[Table("board")]
+public class Board
+{
+    public Board() { }
     
-public record Linkage(
-    [property: JsonPropertyName("id")] int? Id,
-    [property: JsonPropertyName("name")] string Name,
-    [property: JsonPropertyName("head_angle")] double HeadAngle,
-    [property: JsonPropertyName("front_stroke")] double? FrontStroke,
-    [property: JsonPropertyName("rear_stroke")] double? RearStroke,
-    [property: JsonPropertyName("data")] string? Data);
+    public Board(string id, int? setupId)
+    {
+        Id = id;
+        SetupId = setupId;
+    }
+
+    [JsonPropertyName("id")]
+    [PrimaryKey, AutoIncrement]
+    [Column("id")]
+    public string Id { get; set; }
+
+    [JsonPropertyName("setup_id")]
+    [Column("setup_id")]
+    public int? SetupId { get; set; }
+}
+
+[Table("session")]
+public class Session
+{
+    public Session() { }
+    
+    public Session(int? id, string name, string description, int setup, string? data = null, int? timestamp = null, int? track = null)
+    {
+        Id = id;
+        Name = name;
+        Description = description;
+        Setup = setup;
+        Timestamp = timestamp;
+        Track = track;
+        RawData = data;
+    }
+
+    [JsonPropertyName("id"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [PrimaryKey, AutoIncrement]
+    [Column("id")]
+    public int? Id { get; set; }
+
+    [JsonPropertyName("name")]
+    [Column("name")]
+    public string Name { get; set; }
+
+    [JsonPropertyName("description")]
+    [Column("description")]
+    public string Description { get; set; }
+
+    [JsonPropertyName("setup")]
+    [Column("setup_id")]
+    public int Setup { get; set; }
+
+    [JsonPropertyName("timestamp"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [Column("timestamp")]
+    public int? Timestamp { get; set; }
+
+    [JsonPropertyName("track"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [Column("track_id")]
+    public int? Track { get; set; }
+
+    [JsonPropertyName("data")]
+    [Ignore]
+    public string? RawData { get; set; }
+
+    [JsonIgnore]
+    [Column("data")]
+    public byte[]? ProcessedData { get; set; }
+}
+
+[Table("linkage")]
+public class Linkage
+{
+    public Linkage() { }
+    
+    public Linkage(int? id, string name, double headAngle, double? frontStroke, double? rearStroke, string? data)
+    {
+        Id = id;
+        Name = name;
+        HeadAngle = headAngle;
+        FrontStroke = frontStroke;
+        RearStroke = rearStroke;
+        Data = data;
+    }
+
+    [JsonPropertyName("id")]
+    [PrimaryKey, AutoIncrement]
+    [Column("id")]
+    public int? Id { get; set; }
+
+    [JsonPropertyName("name")]
+    [Column("name")]
+    public string Name { get; set; }
+
+    [JsonPropertyName("head_angle")]
+    [Column("head_angle")]
+    public double HeadAngle { get; set; }
+
+    [JsonPropertyName("front_stroke")]
+    [Column("front_stroke")]
+    public double? FrontStroke { get; set; }
+
+    [JsonPropertyName("rear_stroke")]
+    [Column("rear_stroke")]
+    public double? RearStroke { get; set; }
+
+    [JsonPropertyName("data")]
+    [Column("raw_lr_data")]
+    public string? Data { get; set; }
+}
 
 public record CalibrationMethodProperties(
     [property: JsonPropertyName("inputs")] List<string> Inputs,
     [property: JsonPropertyName("intermediates")] Dictionary<string, string> Intermediates,
     [property: JsonPropertyName("expression")] string Expression);
 
-public record CalibrationMethod(
-    [property: JsonPropertyName("id")] int Id,
-    [property: JsonPropertyName("name")] string Name,
-    [property: JsonPropertyName("description")] string Description,
-    [property: JsonPropertyName("properties")] CalibrationMethodProperties Properties);
+[Table("calibration_method")]
+public class CalibrationMethod
+{
+    public CalibrationMethod() { }
+    
+    public CalibrationMethod(int id, string name, string description, CalibrationMethodProperties properties)
+    {
+        Id = id;
+        Name = name;
+        Description = description;
+        Properties = properties;
+    }
 
-public record Calibration(
-    [property: JsonPropertyName("id")] int? Id,
-    [property: JsonPropertyName("name")] string Name,
-    [property: JsonPropertyName("method_id")] int MethodId,
-    [property: JsonPropertyName("inputs")] Dictionary<string, double> Inputs);
+    [JsonPropertyName("id")]
+    [PrimaryKey, AutoIncrement]
+    [Column("id")]
+    public int Id { get; set; }
 
-public record Setup(
-    [property: JsonPropertyName("id")] int? Id,
-    [property: JsonPropertyName("name")] string Name,
-    [property: JsonPropertyName("linkage_id")] int LinkageId,
-    [property: JsonPropertyName("front_calibration_id")] int? FrontCalibrationId,
-    [property: JsonPropertyName("rear_calibration_id")] int? RearCalibrationId);
+    [JsonPropertyName("name")]
+    [Column("name")]
+    public string Name { get; set; }
 
-// ReSharper disable once ClassNeverInstantiated.Global
-// It's used in response.Content.ReadFromJsonAsync<Tokens>() calls
-public record PutResponse(
-    [property: JsonPropertyName("id")] int Id);
+    [JsonPropertyName("description")]
+    [Column("description")]
+    public string Description { get; set; }
+
+    [JsonPropertyName("properties")]
+    [Ignore]
+    public CalibrationMethodProperties Properties { get; set; }
+    
+    [JsonIgnore]
+    [Column("data")]
+    public string? PropertiesRaw { get; set; }
+}
+
+[Table("calibration")]
+public class Calibration
+{
+    public Calibration() { }
+    
+    public Calibration(int? id, string name, int methodId, Dictionary<string, double> inputs)
+    {
+        Id = id;
+        Name = name;
+        MethodId = methodId;
+        Inputs = inputs;
+    }
+
+    [JsonPropertyName("id")]
+    [PrimaryKey, AutoIncrement]
+    [Column("id")]
+    public int? Id { get; set; }
+
+    [JsonPropertyName("name")]
+    [Column("name")]
+    public string Name { get; set; }
+
+    [JsonPropertyName("method_id")]
+    [Column("method_id")]
+    public int MethodId { get; set; }
+    
+    [JsonPropertyName("inputs")]
+    [Ignore]
+    public Dictionary<string, double> Inputs { get; set; }
+    
+    [JsonIgnore]
+    [Column("inputs")]
+    public string? InputsRaw { get; set; }
+}
+
+[Table("setup")]
+public class Setup
+{
+    public Setup() { }
+    
+    public Setup(int? id, string name, int linkageId, int? frontCalibrationId, int? rearCalibrationId)
+    {
+        Id = id;
+        Name = name;
+        LinkageId = linkageId;
+        FrontCalibrationId = frontCalibrationId;
+        RearCalibrationId = rearCalibrationId;
+    }
+
+    [JsonPropertyName("id")]
+    [PrimaryKey, AutoIncrement]
+    [Column("id")]
+    public int? Id { get; set; }
+
+    [JsonPropertyName("name")]
+    [Column("name")]
+    public string Name { get; set; }
+
+    [JsonPropertyName("linkage_id")]
+    [Column("linkage_id")]
+    public int LinkageId { get; set; }
+
+    [JsonPropertyName("front_calibration_id")]
+    [Column("front_calibration_id")]
+    public int? FrontCalibrationId { get; set; }
+
+    [JsonPropertyName("rear_calibration_id")]
+    [Column("rear_calibration_id")]
+    public int? RearCalibrationId { get; set; }
+}

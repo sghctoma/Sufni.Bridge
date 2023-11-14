@@ -134,9 +134,9 @@ public class HttpApiServiceStub : IHttpApiService
 
     private static readonly List<Session> Sessions = new()
     {
-        new Session(1, "session 1", "Test session #1", 1, 1686998748, null, null),
-        new Session(2, "session 2", "Test session #2", 1, 1682943649, null, null),
-        new Session(2, "session 3", "Test session #3", 1, 1682760595, null, null),
+        new Session(id: 1, name: "session 1", description: "Test session #1", setup: 1, timestamp: 1686998748),
+        new Session(id: 2, name: "session 2", description: "Test session #2", setup: 1, timestamp: 1682943649),
+        new Session(id: 3, name: "session 3", description: "Test session #3", setup: 1, timestamp: 1682760595),
     };
     
     public Task<string> RefreshTokensAsync(string url, string refreshToken)
@@ -173,7 +173,8 @@ public class HttpApiServiceStub : IHttpApiService
     public Task<int> PutLinkageAsync(Linkage linkage)
     {
         var id = linkage.Id ?? (Linkages.Max(l => l.Id) ?? 0) + 1;
-        Linkages.Add(linkage with { Id = id });
+        linkage.Id = id;
+        Linkages.Add(linkage);
         return Task.FromResult(id);
     }
 
@@ -196,7 +197,8 @@ public class HttpApiServiceStub : IHttpApiService
     public Task<int> PutCalibrationAsync(Calibration calibration)
     {
         var id = calibration.Id ?? (Calibrations.Max(c => c.Id) ?? 0) + 1;
-        Calibrations.Add(calibration with { Id = id });
+        calibration.Id = id;
+        Calibrations.Add(calibration);
         return Task.FromResult(id);
     }
 
@@ -214,7 +216,8 @@ public class HttpApiServiceStub : IHttpApiService
     public Task<int> PutSetupAsync(Setup setup)
     {
         var id = setup.Id ?? (Setups.Max(s => s.Id) ?? 0) + 1;
-        Setups.Add(setup with { Id = id });
+        setup.Id = id;
+        Setups.Add(setup);
         return Task.FromResult(id);
     }
 
@@ -244,7 +247,8 @@ public class HttpApiServiceStub : IHttpApiService
     public Task<int> PutSessionAsync(Session session)
     {
         var id = session.Id ?? (Sessions.Max(s => s.Id) ?? 0) + 1;
-        Sessions.Add(session with { Id = id });
+        session.Id = id;
+        Sessions.Add(session);
         return Task.FromResult(id);
     }
 

@@ -262,8 +262,8 @@ public partial class MainViewModel : ViewModelBase
         try
         {
             var linkage = new Linkage(null, "new linkage", 65, 180, 65, "");
-            var id = await httpApiService.PutLinkageAsync(linkage);
-            Linkages.Add(new LinkageViewModel(linkage with { Id = id }));
+            await httpApiService.PutLinkageAsync(linkage);
+            Linkages.Add(new LinkageViewModel(linkage));
         }
         catch (Exception e)
         {
@@ -308,8 +308,8 @@ public partial class MainViewModel : ViewModelBase
             }
             var calibration = new Calibration(null, "new calibration", methodId, inputs);
         
-            var id = await httpApiService.PutCalibrationAsync(calibration);
-            Calibrations.Add(new CalibrationViewModel(calibration with { Id = id }, CalibrationMethods));
+            await httpApiService.PutCalibrationAsync(calibration);
+            Calibrations.Add(new CalibrationViewModel(calibration, CalibrationMethods));
         }
         catch (Exception e)
         {
@@ -355,10 +355,10 @@ public partial class MainViewModel : ViewModelBase
                 null,
                 null);
         
-            var id = await httpApiService.PutSetupAsync(setup);
+            await httpApiService.PutSetupAsync(setup);
 
             var svm = new SetupViewModel(
-                setup with { Id = id },
+                setup,
                 ImportSessionsPage.SelectedDataStore?.BoardId,
                 Linkages,
                 Calibrations);

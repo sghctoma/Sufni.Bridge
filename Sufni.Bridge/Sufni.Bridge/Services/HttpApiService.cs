@@ -92,6 +92,7 @@ internal class HttpApiService : IHttpApiService
         response.EnsureSuccessStatusCode();
         var result = await response.Content.ReadFromJsonAsync<PutResponse>();
         Debug.Assert(result != null);
+        linkage.Id = result.Id;
         return result.Id;
     }
 
@@ -125,6 +126,7 @@ internal class HttpApiService : IHttpApiService
         response.EnsureSuccessStatusCode();
         var result = await response.Content.ReadFromJsonAsync<PutResponse>();
         Debug.Assert(result != null);
+        calibration.Id = result.Id;
         return result.Id;
     }
 
@@ -149,6 +151,7 @@ internal class HttpApiService : IHttpApiService
         response.EnsureSuccessStatusCode();
         var result = await response.Content.ReadFromJsonAsync<PutResponse>();
         Debug.Assert(result != null);
+        setup.Id = result.Id;
         return result.Id;
     }
 
@@ -182,6 +185,7 @@ internal class HttpApiService : IHttpApiService
         response.EnsureSuccessStatusCode();
         var result = await response.Content.ReadFromJsonAsync<PutResponse>();
         Debug.Assert(result != null);
+        session.Id = result.Id;
         return result.Id;
     }
 
@@ -197,11 +201,11 @@ internal class HttpApiService : IHttpApiService
 
         using HttpResponseMessage response = await client.PutAsJsonAsync($"{serverUrl}/api/session",
             new Session(
-                Name: session.Name,
-                Description: session.Description,
-                Setup: setupId,
-                Data: session.Data,
-                Id: null, Timestamp: null, Track: null));
+                name: session.Name,
+                description: session.Description,
+                setup: setupId,
+                data: session.Data,
+                id: null, timestamp: null, track: null));
 
         response.EnsureSuccessStatusCode();
     }

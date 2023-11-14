@@ -97,13 +97,10 @@ public partial class SessionViewModel : ViewModelBase
         try
         {
             var newSession = new Session(
-                session.Id,
-                Name ?? $"session #{session.Id}",
-                Description ?? $"session #{session.Id}",
-                session.Setup,
-                null,
-                null,
-                null);
+                id: session.Id,
+                name: Name ?? $"session #{session.Id}",
+                description: Description ?? $"session #{session.Id}",
+                setup: session.Setup);
             httpApiService.PutSessionAsync(newSession);
             session = newSession;
             IsDirty = false;

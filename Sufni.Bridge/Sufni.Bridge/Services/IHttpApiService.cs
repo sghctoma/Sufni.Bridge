@@ -26,7 +26,7 @@ internal interface IHttpApiService
     public Task DeleteSetupAsync(int id);
     public Task<List<Session>> GetSessionsAsync();
     public Task<TelemetryData> GetSessionPsstAsync(int id);
-    public Task<int> PutSessionAsync(Session setup);
+    public Task<int> PutSessionAsync(Session session);
     public Task DeleteSessionAsync(int id);
     public Task ImportSessionAsync(TelemetryFile session, int setupId);
 }

@@ -12,8 +12,76 @@ namespace Sufni.Bridge.Services;
 public class SqLiteDatabaseService : IDatabaseService
 {
     private Task Initialization { get; }
-
     private readonly SQLiteAsyncConnection connection;
+    
+    private static readonly List<CalibrationMethod> DefaultCalibrationMethods = new()
+    {
+        new(1,
+            "fraction", 
+            "Sample is in fraction of maximum suspension stroke.",
+            new CalibrationMethodProperties(
+                new List<string>(),
+                new Dictionary<string, string>(),
+                "sample * MAX_STROKE")),
+        new(2,
+            "percentage", 
+            "Sample is in percentage of maximum suspension stroke.",
+            new CalibrationMethodProperties(
+                new List<string>(),
+                new Dictionary<string, string>()
+                {
+                    {"factor", "MAX_STROKE / 100.0"}
+                },
+                "sample * factor")),
+        new(3,
+            "linear", 
+            "Sample is linearly distributed within a given range.",
+            new CalibrationMethodProperties(
+                new List<string>()
+                {
+                    "min_measurement",
+                    "max_measurement"
+                },
+                new Dictionary<string, string>()
+                {
+                    {"factor", "MAX_STROKE / (max_measurement - min_measurement)"}
+                },
+                "(sample - min_measurement) * factor")),
+        new(4,
+            "as5600-isosceles-triangle", 
+            "Triangle setup with the sensor between the base and leg.",
+            new CalibrationMethodProperties(
+                new List<string>()
+                {
+                    "arm",
+                    "max"
+                },
+                new Dictionary<string, string>()
+                {
+                    {"start_angle", "acos(max / 2.0 / arm)"},
+                    {"factor", "2.0 * pi / 4096"},
+                    {"dbl_arm", "2.0 * arm"},
+                },
+                "max - (dbl_arm * cos((factor*sample) + start_angle))")),
+        new(5,
+            "as5600-triangle", 
+            "Triangle setup with the sensor between two known sides.",
+            new CalibrationMethodProperties(
+                new List<string>()
+                {
+                    "arm1",
+                    "arm2",
+                    "max"
+                },
+                new Dictionary<string, string>()
+                {
+                    {"start_angle", "acos((arm1**2+arm2**2-max**2)/(2*arm1*arm2))"},
+                    {"factor", "2.0 * pi / 4096"},
+                    {"arms_sqr_sum", "arm1**2 + arm2**2"},
+                    {"dbl_arm1_arm2", "2 * arm1 * arm2"},
+                },
+                "max - sqrt(arms_sqr_sum - dbl_arm1_arm2 * cos(start_angle-(factor*sample)))")),
+    };
     
     public SqLiteDatabaseService()
     {
@@ -33,13 +101,22 @@ public class SqLiteDatabaseService : IDatabaseService
         {
             throw new Exception("Database connection failed!");
         }
-        
-        await connection.CreateTableAsync<Board>();
-        await connection.CreateTableAsync<Linkage>();
-        await connection.CreateTableAsync<CalibrationMethod>();
-        await connection.CreateTableAsync<Calibration>();
-        await connection.CreateTableAsync<Setup>();
-        await connection.CreateTableAsync<Session>();	
+
+        await connection.EnableWriteAheadLoggingAsync();
+        var result = await connection.CreateTablesAsync(CreateFlags.None, new[]
+        {
+            typeof(Board),
+            typeof(Linkage),
+            typeof(CalibrationMethod),
+            typeof(Calibration),
+            typeof(Setup),
+            typeof(Session)
+        });
+
+        if (result.Results[typeof(Board)] == CreateTableResult.Created)
+        {
+            await connection.InsertAllAsync(DefaultCalibrationMethods);
+        }
     }
 
     public async Task<List<Board>> GetBoardsAsync()

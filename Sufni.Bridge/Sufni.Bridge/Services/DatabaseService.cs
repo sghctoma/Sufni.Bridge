@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using SQLite;
 using Sufni.Bridge.Models;
@@ -16,8 +17,13 @@ public class SqLiteDatabaseService : IDatabaseService
     
     public SqLiteDatabaseService()
     {
-        // TODO: get platform-dependent database path
-        connection = new SQLiteAsyncConnection(@"C:\Users\sghctoma\Projects\sst.db");
+        var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "sst");
+        if (!Directory.Exists(dir))
+        {
+            Directory.CreateDirectory(dir);
+        }
+        
+        connection = new SQLiteAsyncConnection(Path.Combine(dir, "sst.db"));
         Initialization = Init();
     }
 

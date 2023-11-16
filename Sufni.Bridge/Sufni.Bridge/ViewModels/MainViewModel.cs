@@ -55,8 +55,8 @@ public partial class MainViewModel : ViewModelBase
         */
     }
 
-    private readonly IHttpApiService? httpApiService;
-    private readonly IDatabaseService? db;
+    //private readonly IHttpApiService? httpApiService;
+    private readonly IDatabaseService? databaseService;
 
     #endregion
     
@@ -64,8 +64,7 @@ public partial class MainViewModel : ViewModelBase
 
     public MainViewModel()
     {
-        httpApiService = App.Current?.Services?.GetService<IHttpApiService>();
-        db = App.Current?.Services?.GetService<IDatabaseService>();
+        databaseService = App.Current?.Services?.GetService<IDatabaseService>();
         
         SelectPage();
         SettingsPage.PropertyChanged += (_, args) =>
@@ -128,11 +127,11 @@ public partial class MainViewModel : ViewModelBase
     
     private async Task LoadLinkagesAsync()
     {
-        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
+        Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
 
         try
         {
-            var linkages = await httpApiService.GetLinkagesAsync();
+            var linkages = await databaseService.GetLinkagesAsync();
 
             foreach (var linkage in linkages)
             {
@@ -146,11 +145,11 @@ public partial class MainViewModel : ViewModelBase
     }
     private async Task LoadCalibrationMethodsAsync()
     {
-        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
+        Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
         
         try
         {
-            var methods = await httpApiService.GetCalibrationMethodsAsync();
+            var methods = await databaseService.GetCalibrationMethodsAsync();
 
             foreach (var method in methods)
             {
@@ -165,11 +164,11 @@ public partial class MainViewModel : ViewModelBase
 
     private async Task LoadCalibrationsAsync()
     {
-        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
+        Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
         
         try
         {
-            var calibrations = await httpApiService.GetCalibrationsAsync();
+            var calibrations = await databaseService.GetCalibrationsAsync();
 
             foreach (var calibration in calibrations)
             {
@@ -184,12 +183,12 @@ public partial class MainViewModel : ViewModelBase
 
     private async Task LoadSetupsAsync()
     {
-        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
+        Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
         
         try
         {
-            var setups = await httpApiService.GetSetupsAsync();
-            var boards = await httpApiService.GetBoardsAsync();
+            var setups = await databaseService.GetSetupsAsync();
+            var boards = await databaseService.GetBoardsAsync();
 
             foreach (var setup in setups)
             {
@@ -220,11 +219,11 @@ public partial class MainViewModel : ViewModelBase
 
     private async Task LoadSessionsAsync()
     {
-        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
+        Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
         
         try
         {
-            var sessions = await httpApiService.GetSessionsAsync();
+            var sessions = await databaseService.GetSessionsAsync();
 
             foreach (var session in sessions)
             {
@@ -259,12 +258,12 @@ public partial class MainViewModel : ViewModelBase
     [RelayCommand]
     private async Task AddLinkage()
     {
-        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
+        Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
 
         try
         {
             var linkage = new Linkage(null, "new linkage", 65, 180, 65, "");
-            await httpApiService.PutLinkageAsync(linkage);
+            await databaseService.PutLinkageAsync(linkage);
             Linkages.Add(new LinkageViewModel(linkage));
         }
         catch (Exception e)
@@ -279,13 +278,13 @@ public partial class MainViewModel : ViewModelBase
     }
     
     [RelayCommand(CanExecute = nameof(CanDeleteLinkage))]
-    private void DeleteLinkage(int id)
+    private async Task DeleteLinkage(int id)
     {
-        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
+        Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
         
         try
         {
-            httpApiService.DeleteLinkageAsync(id);
+            await databaseService.DeleteLinkageAsync(id);
             var toDelete = Linkages.First(l => l.Id == id);
             Linkages.Remove(toDelete);
         }
@@ -298,7 +297,7 @@ public partial class MainViewModel : ViewModelBase
     [RelayCommand]
     private async Task AddCalibration()
     {
-        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
+        Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
 
         try
         {
@@ -310,7 +309,7 @@ public partial class MainViewModel : ViewModelBase
             }
             var calibration = new Calibration(null, "new calibration", methodId, inputs);
         
-            await httpApiService.PutCalibrationAsync(calibration);
+            await databaseService.PutCalibrationAsync(calibration);
             Calibrations.Add(new CalibrationViewModel(calibration, CalibrationMethods));
         }
         catch (Exception e)
@@ -327,13 +326,13 @@ public partial class MainViewModel : ViewModelBase
     }
     
     [RelayCommand(CanExecute = nameof(CanDeleteCalibration))]
-    private void DeleteCalibration(int id)
+    private async Task DeleteCalibration(int id)
     {
-        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
+        Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
         
         try
         {
-            httpApiService.DeleteCalibrationAsync(id);
+            await databaseService.DeleteCalibrationAsync(id);
             var toDelete = Calibrations.First(c => c.Id == id);
             Calibrations.Remove(toDelete);
         }
@@ -346,7 +345,7 @@ public partial class MainViewModel : ViewModelBase
     [RelayCommand]
     private async Task AddSetup()
     {
-        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
+        Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
 
         try
         {
@@ -357,7 +356,10 @@ public partial class MainViewModel : ViewModelBase
                 null,
                 null);
         
-            await httpApiService.PutSetupAsync(setup);
+            await databaseService.PutSetupAsync(setup);
+            await databaseService.PutBoardAsync(new Board(
+                ImportSessionsPage.SelectedDataStore?.BoardId!,
+                setup.Id));
 
             var svm = new SetupViewModel(
                 setup,
@@ -383,14 +385,24 @@ public partial class MainViewModel : ViewModelBase
     }
     
     [RelayCommand]
-    private void DeleteSetup(int id)
+    private async Task DeleteSetup(int id)
     {
-        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
+        Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
         
         try
         {
-            httpApiService.DeleteSetupAsync(id);
             var toDelete = Setups.First(s => s.Id == id);
+
+            // If this setup is associated with a board ID, clear the setup ID from that board.
+            var boards = await databaseService.GetBoardsAsync();
+            var associatedBoard = boards.FirstOrDefault(b => b!.Id == toDelete.BoardId, null);
+            if (associatedBoard is not null)
+            {
+                associatedBoard.SetupId = null;
+                await databaseService.PutBoardAsync(associatedBoard);
+            }
+            
+            await databaseService.DeleteSetupAsync(id);
             Setups.Remove(toDelete);
         }
         catch (Exception e)
@@ -400,13 +412,13 @@ public partial class MainViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private void DeleteSession(int id)
+    private async Task DeleteSession(int id)
     {
-        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
+        Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
         
         try
         {
-            httpApiService.DeleteSessionAsync(id);
+            await databaseService.DeleteSessionAsync(id);
             var toDelete = Sessions.First(s => s.Id == id);
             Sessions.Remove(toDelete);
         }

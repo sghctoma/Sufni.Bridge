@@ -2,6 +2,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
@@ -104,25 +105,32 @@ public partial class SetupViewModel : ViewModelBase
     }
 
     [RelayCommand(CanExecute = nameof(CanSave))]
-    private void Save()
+    private async Task Save()
     {
         Debug.Assert(SelectedLinkage != null, nameof(SelectedLinkage) + " != null");
         Debug.Assert(SelectedLinkage.Id != null, "SelectedLinkage.Id != null");
         Debug.Assert(!(SelectedFrontCalibration == null && SelectedRearCalibration == null), 
             nameof(SelectedFrontCalibration) + " and " + nameof(SelectedRearCalibration) + " can't be both null");
         
-        var httpApiService = App.Current?.Services?.GetService<IHttpApiService>();
-        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
+        var databaseService = App.Current?.Services?.GetService<IDatabaseService>();
+        Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
 
         try
         {
+            // Reflect potential board ID changes in the database.
+            if (originalBoardId != BoardId)
+            {
+                await databaseService.PutBoardAsync(new Board(originalBoardId!, null));
+                await databaseService.PutBoardAsync(new Board(BoardId!, Id));
+            }
+            
             var newSetup = new Setup(
                 Id,
                 Name ?? $"setup #{Id}",
                 SelectedLinkage.Id.Value,
                 SelectedFrontCalibration?.Id,
                 SelectedRearCalibration?.Id);
-            httpApiService.PutSetupAsync(newSetup);
+            await databaseService.PutSetupAsync(newSetup);
             setup = newSetup;
             originalBoardId = BoardId;
             IsDirty = false;
@@ -130,15 +138,6 @@ public partial class SetupViewModel : ViewModelBase
         catch (Exception e)
         {
             ErrorMessages.Add($"Setup could not be saved: {e.Message}");
-        }
-
-        try
-        {
-            httpApiService.PutBoardAsync(new Board(BoardId!, Id));
-        }
-        catch (Exception e)
-        {
-            ErrorMessages.Add($"Could not associate Setup with Board: {e.Message}");
         }
     }
 

@@ -99,10 +99,10 @@ public partial class LinkageViewModel : ViewModelBase
     }
 
     [RelayCommand(CanExecute = nameof(CanSave))]
-    private void Save()
+    private async Task Save()
     {
-        var httpApiService = App.Current?.Services?.GetService<IHttpApiService>();
-        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
+        var databaseService = App.Current?.Services?.GetService<IDatabaseService>();
+        Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
 
         try
         {
@@ -113,7 +113,7 @@ public partial class LinkageViewModel : ViewModelBase
                 FrontStroke,
                 RearStroke,
                 linkageData);
-            httpApiService.PutLinkageAsync(newLinkage);
+            await databaseService.PutLinkageAsync(newLinkage);
             linkage = newLinkage;
             IsDirty = false;
         }

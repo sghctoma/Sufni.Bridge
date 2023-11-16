@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Sufni.Bridge.Models;
+using Sufni.Bridge.Models.Telemetry;
 using Calibration = Sufni.Bridge.Models.Calibration;
 using Linkage = Sufni.Bridge.Models.Linkage;
 
@@ -21,6 +22,7 @@ public interface IDatabaseService
     public Task<int> PutSetupAsync(Setup setup);
     public Task DeleteSetupAsync(int id);
     public Task<List<Session>> GetSessionsAsync();
+    public Task<TelemetryData> GetSessionPsstAsync(int id);
     public Task<int> PutSessionAsync(Session session);
     public Task DeleteSessionAsync(int id);
 }

@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using MessagePack;
 using SQLite;
 using Sufni.Bridge.Models;
+using Sufni.Bridge.Models.Telemetry;
 using Calibration = Sufni.Bridge.Models.Calibration;
 using Linkage = Sufni.Bridge.Models.Linkage;
 
@@ -237,7 +239,21 @@ public class SqLiteDatabaseService : IDatabaseService
     public async Task<List<Session>> GetSessionsAsync()
     {
         await Initialization;
-        return await connection.Table<Session>().ToListAsync();
+        var sessions = await connection.QueryAsync<Session>(
+            "SELECT id, name, setup_id, description, timestamp, track_id FROM session");
+        return sessions;
+    }
+    
+    public async Task<TelemetryData> GetSessionPsstAsync(int id)
+    {
+        await Initialization;
+        var sessions = await connection.QueryAsync<Session>(
+            "SELECT data FROM session WHERE id = ?", id);
+        if (sessions.Count != 1)
+        {
+            throw new InvalidOperationException("Invalid session ID!");
+        }
+        return MessagePackSerializer.Deserialize<TelemetryData>(sessions[0].ProcessedData);
     }
 
     public async Task<int> PutSessionAsync(Session session)

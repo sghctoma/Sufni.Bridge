@@ -2,6 +2,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
@@ -145,12 +146,12 @@ public partial class CalibrationViewModel : ViewModelBase
     }
 
     [RelayCommand(CanExecute = nameof(CanSave))]
-    private void Save()
+    private async Task Save()
     {
         Debug.Assert(SelectedCalibrationMethod != null, nameof(SelectedCalibrationMethod) + " != null");
         
-        var httpApiService = App.Current?.Services?.GetService<IHttpApiService>();
-        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
+        var databaseService = App.Current?.Services?.GetService<IDatabaseService>();
+        Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
 
         try
         {
@@ -159,7 +160,7 @@ public partial class CalibrationViewModel : ViewModelBase
                 Name ?? $"calibration #{Id}",
                 SelectedCalibrationMethod.Id,
                 Inputs.ToDictionary(input => input.Name, input => input.Value));
-            httpApiService.PutCalibrationAsync(newCalibration);
+            await databaseService.PutCalibrationAsync(newCalibration);
             calibration = newCalibration;
             IsDirty = false;
         }

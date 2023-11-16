@@ -78,9 +78,9 @@ public partial class SessionViewModel : ViewModelBase
     [RelayCommand]
     private async Task LoadPsst()
     {
-        var httpApiService = App.Current?.Services?.GetService<IHttpApiService>();
-        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
-        psst = await httpApiService.GetSessionPsstAsync(Id ?? 0);
+        var databaseService = App.Current?.Services?.GetService<IDatabaseService>();
+        Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
+        psst = await databaseService.GetSessionPsstAsync(Id ?? 0);
     }
     
     private bool CanSave()
@@ -89,10 +89,10 @@ public partial class SessionViewModel : ViewModelBase
     }
 
     [RelayCommand(CanExecute = nameof(CanSave))]
-    private void Save()
+    private async Task Save()
     {
-        var httpApiService = App.Current?.Services?.GetService<IHttpApiService>();
-        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
+        var databaseService = App.Current?.Services?.GetService<IDatabaseService>();
+        Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
 
         try
         {
@@ -101,7 +101,7 @@ public partial class SessionViewModel : ViewModelBase
                 name: Name ?? $"session #{session.Id}",
                 description: Description ?? $"session #{session.Id}",
                 setup: session.Setup);
-            httpApiService.PutSessionAsync(newSession);
+            await databaseService.PutSessionAsync(newSession);
             session = newSession;
             IsDirty = false;
         }

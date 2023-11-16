@@ -36,7 +36,15 @@ public partial class MainViewModel : ViewModelBase
 
     partial void OnSelectedIndexChanged(int value)
     {
-        IsImportSessionsPageSelected = value == (int)PageIndices.ImportSessions;
+        if (value == (int)PageIndices.ImportSessions)
+        {
+            IsImportSessionsPageSelected = true;
+            _ = ImportSessionsPage.EvaluateSetupExists();
+        }
+        else
+        {
+            IsImportSessionsPageSelected = false;
+        }
     }
 
     #endregion

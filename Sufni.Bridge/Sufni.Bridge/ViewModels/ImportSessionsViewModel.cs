@@ -102,6 +102,19 @@ public partial class ImportSessionsViewModel : ViewModelBase
 
     #endregion
 
+    #region Public methods
+
+    public async Task EvaluateSetupExists()
+    {
+        Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
+        
+        var boards = await databaseService.GetBoardsAsync();
+        var selectedBoard = boards.FirstOrDefault(b => b?.Id == SelectedDataStore?.BoardId, null);
+        SelectedSetup = selectedBoard?.SetupId;
+    }
+
+    #endregion
+
     #region Commands
 
     [RelayCommand(CanExecute = nameof(CanImportSessions))]

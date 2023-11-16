@@ -13,7 +13,6 @@ namespace Sufni.Bridge.ViewModels;
 public partial class SessionViewModel : ViewModelBase
 {
     private Session session;
-    private TelemetryData? psst;
 
     #region Private methods
 
@@ -70,19 +69,21 @@ public partial class SessionViewModel : ViewModelBase
     #region Commands
 
     [RelayCommand]
-    private void SetTelemetryData()
-    {
-        TelemetryData = psst;
-    }
-
-    [RelayCommand]
     private async Task LoadPsst()
     {
         var databaseService = App.Current?.Services?.GetService<IDatabaseService>();
         Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
-        psst = await databaseService.GetSessionPsstAsync(Id ?? 0);
+        
+        try
+        {
+            TelemetryData = await databaseService.GetSessionPsstAsync(Id ?? 0);
+        }
+        catch (Exception e)
+        {
+            ErrorMessages.Add($"Could not load session data: {e.Message}");
+        }
     }
-    
+
     private bool CanSave()
     {
         return IsDirty;

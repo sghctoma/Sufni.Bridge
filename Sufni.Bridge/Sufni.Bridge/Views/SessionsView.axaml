@@ -44,11 +44,8 @@
                         
                         <!-- Attach command to Expanding event -->
                         <i:Interaction.Behaviors>
-                            <ia:EventTriggerBehavior EventName="Expanding">
-                                <InvokeCommandAction Command="{Binding LoadPsstCommand}" />
-                            </ia:EventTriggerBehavior>
                             <ia:EventTriggerBehavior EventName="Expanded">
-                                <InvokeCommandAction Command="{Binding SetTelemetryDataCommand}" />
+                                <InvokeCommandAction Command="{Binding LoadPsstCommand}" />
                             </ia:EventTriggerBehavior>
                         </i:Interaction.Behaviors>
 

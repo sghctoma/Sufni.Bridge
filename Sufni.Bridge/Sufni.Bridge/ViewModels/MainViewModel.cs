@@ -102,12 +102,8 @@ public partial class MainViewModel : ViewModelBase
             DeleteLinkageCommand.NotifyCanExecuteChanged();
             DeleteCalibrationCommand.NotifyCanExecuteChanged();
         };
-        
-        _ = LoadLinkagesAsync();
-        _ = LoadCalibrationMethodsAsync();
-        _ = LoadCalibrationsAsync();
-        _ = LoadSetupsAsync();
-        _ = LoadSessionsAsync();
+
+        _ = Reload();
     }
 
     #endregion
@@ -249,18 +245,18 @@ public partial class MainViewModel : ViewModelBase
     #region Commands
     
     [RelayCommand]
-    private void Reload()
+    private async Task Reload()
     {
         Linkages.Clear();
         CalibrationMethods.Clear();
         Calibrations.Clear();
         Setups.Clear();
         Sessions.Clear();
-        _ = LoadLinkagesAsync();
-        _ = LoadCalibrationMethodsAsync();
-        _ = LoadCalibrationsAsync();
-        _ = LoadSetupsAsync();
-        _ = LoadSessionsAsync();
+        await LoadLinkagesAsync();
+        await LoadCalibrationMethodsAsync();
+        await LoadCalibrationsAsync();
+        await LoadSetupsAsync();
+        await LoadSessionsAsync();
     }
 
     [RelayCommand]

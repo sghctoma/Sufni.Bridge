@@ -58,7 +58,7 @@
                                       Content="Import" />
                             <Label Grid.Row="3" Grid.Column="0" VerticalAlignment="Center">Name:</Label>
                             <TextBox Grid.Row="3" Grid.Column="1" Margin="2" Grid.ColumnSpan="4"
-                                     Text="{Binding FileName}" />
+                                     Text="{Binding Name}" />
                             <Label Grid.Row="4" Grid.Column="0" VerticalAlignment="Center">Description:</Label>
                             <TextBox Grid.Row="4" Grid.Column="1" Grid.RowSpan="2" Grid.ColumnSpan="4"
                                      Margin="2" AcceptsReturn="True" VerticalAlignment="Stretch" TextWrapping="Wrap"

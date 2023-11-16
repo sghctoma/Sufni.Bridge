@@ -204,7 +204,7 @@ internal class HttpApiService : IHttpApiService
                 name: session.Name,
                 description: session.Description,
                 setup: setupId,
-                data: session.Data,
+                data: session.Base64Data,
                 id: null, timestamp: null, track: null));
 
         response.EnsureSuccessStatusCode();

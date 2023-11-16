@@ -12,6 +12,14 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Avalonia.Desktop" Version="11.0.5" />
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
@@ -20,5 +28,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Sufni.Bridge\Sufni.Bridge.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="lib\gosst.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>gosst.dll</TargetPath>
+    </None>
   </ItemGroup>
 </Project>

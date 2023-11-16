@@ -151,6 +151,15 @@ public class SqLiteDatabaseService : IDatabaseService
         
         return await connection.Table<Linkage>().ToListAsync();
     }
+    
+    public async Task<Linkage> GetLinkageAsync(int id)
+    {
+        await Initialization;
+        
+        return await connection.Table<Linkage>()
+            .Where(l => l.Id == id)
+            .FirstOrDefaultAsync();
+    }
 
     public async Task<int> PutLinkageAsync(Linkage linkage)
     {
@@ -180,10 +189,28 @@ public class SqLiteDatabaseService : IDatabaseService
         return await connection.Table<CalibrationMethod>().ToListAsync();
     }
 
+    public async Task<CalibrationMethod> GetCalibrationMethodAsync(int id)
+    {
+        await Initialization;
+        
+        return await connection.Table<CalibrationMethod>()
+            .Where(c => c.Id == id)
+            .FirstOrDefaultAsync();
+    }
+    
     public async Task<List<Calibration>> GetCalibrationsAsync()
     {
         await Initialization;
         return await connection.Table<Calibration>().ToListAsync();
+    }
+    
+    public async Task<Calibration> GetCalibrationAsync(int id)
+    {
+        await Initialization;
+        
+        return await connection.Table<Calibration>()
+            .Where(c => c.Id == id)
+            .FirstOrDefaultAsync();
     }
 
     public async Task<int> PutCalibrationAsync(Calibration calibration)
@@ -212,6 +239,15 @@ public class SqLiteDatabaseService : IDatabaseService
     {
         await Initialization;
         return await connection.Table<Setup>().ToListAsync();
+    }
+    
+    public async Task<Setup> GetSetupAsync(int id)
+    {
+        await Initialization;
+        
+        return await connection.Table<Setup>()
+            .Where(s => s.Id == id)
+            .FirstOrDefaultAsync();
     }
 
     public async Task<int> PutSetupAsync(Setup setup)

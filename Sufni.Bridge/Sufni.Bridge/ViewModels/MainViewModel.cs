@@ -56,8 +56,8 @@ public partial class MainViewModel : ViewModelBase
     {
         ImportSessions = 0,
         Sessions = 1,
-        Settings = 2,
         /*
+        Settings = 2,
         Linkages = 2,
         Calibrations = 3,
         BikeSetups = 4,
@@ -113,20 +113,13 @@ public partial class MainViewModel : ViewModelBase
 
     private void SelectPage()
     {
-        if (SettingsPage.IsRegistered)
+        if (ImportSessionsPage.SelectedDataStore is not null)
         {
-            if (ImportSessionsPage.SelectedDataStore is not null)
-            {
-                SelectedIndex = (int)PageIndices.ImportSessions;
-            }
-            else
-            {
-                SelectedIndex = (int)PageIndices.Sessions;
-            }
+            SelectedIndex = (int)PageIndices.ImportSessions;
         }
         else
         {
-            SelectedIndex = (int)PageIndices.Settings;
+            SelectedIndex = (int)PageIndices.Sessions;
         }
     }
     

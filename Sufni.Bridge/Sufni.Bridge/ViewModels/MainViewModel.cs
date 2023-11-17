@@ -104,7 +104,7 @@ public partial class MainViewModel : ViewModelBase
             DeleteCalibrationCommand.NotifyCanExecuteChanged();
         };
 
-        _ = Reload();
+        _ = LoadDatabaseContent();
     }
 
     #endregion
@@ -257,12 +257,7 @@ public partial class MainViewModel : ViewModelBase
         }
     }
 
-    #endregion
-
-    #region Commands
-    
-    [RelayCommand]
-    private async Task Reload()
+    private async Task LoadDatabaseContent()
     {
         Linkages.Clear();
         CalibrationMethods.Clear();
@@ -276,6 +271,22 @@ public partial class MainViewModel : ViewModelBase
         await LoadBoardsAsync();
         await LoadSetupsAsync();
         await LoadSessionsAsync();
+    }
+    
+    #endregion
+
+    #region Commands
+
+    private bool CanUploadSessions()
+    {
+        return SettingsPage.IsRegistered;
+    }
+    
+    [RelayCommand(CanExecute = nameof(CanUploadSessions))]
+    private void UploadSessions()
+    {
+        // TODO: implement
+        ErrorMessages.Add("Session upload not yet implemented!");
     }
 
     [RelayCommand]

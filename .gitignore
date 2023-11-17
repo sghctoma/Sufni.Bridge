@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Android native libraries (generated during prebuild event)
+Sufni.Bridge/Sufni.Bridge.Android/lib

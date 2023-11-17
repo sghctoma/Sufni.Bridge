@@ -25,4 +25,22 @@
   <ItemGroup>
     <ProjectReference Include="..\Sufni.Bridge\Sufni.Bridge.csproj" />
   </ItemGroup>
+
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Condition="!Exists('$(ProjectDir)lib/armeabi-v7a/libgosst.so')"
+          Command="go build -C $(SolutionDir)gosst -trimpath -buildmode=c-shared -o $(ProjectDir)lib/armeabi-v7a/libgosst.so lib/gosst-lib/gosst-lib.go"
+          EnvironmentVariables="CGO_ENABLED=1;GOOS=linux;GOARCH=arm;CC=zig cc -target arm-linux-gnueabi;CXX=zig c++ -target arm-linux-gnueabi" />
+    
+    <Exec Condition="!Exists('$(ProjectDir)lib/arm64-v8a/libgosst.so')"
+          Command="go build -C $(SolutionDir)gosst -trimpath -buildmode=c-shared -o $(ProjectDir)lib/arm64-v8a/libgosst.so lib/gosst-lib/gosst-lib.go"
+          EnvironmentVariables="CGO_ENABLED=1;GOOS=linux;GOARCH=arm64;CC=zig cc -target aarch64-linux-gnu;CXX=zig c++ -target aarch64-linux-gnu" />
+    
+    <Exec Condition="!Exists('$(ProjectDir)lib/x86/libgosst.so')"
+          Command="go build -C $(SolutionDir)gosst -trimpath -buildmode=c-shared -o $(ProjectDir)lib/x86/libgosst.so lib/gosst-lib/gosst-lib.go"
+          EnvironmentVariables="CGO_ENABLED=1;GOOS=linux;GOARCH=386;CC=zig cc -target x86-linux-gnu;CXX=zig c++ -target x86-linux-gnu" />
+    
+    <Exec Condition="!Exists('$(ProjectDir)lib/x86_64/libgosst.so')"
+          Command="go build -C $(SolutionDir)gosst -trimpath -buildmode=c-shared -o $(ProjectDir)lib/x86_64/libgosst.so lib/gosst-lib/gosst-lib.go"
+          EnvironmentVariables="CGO_ENABLED=1;GOOS=linux;GOARCH=amd64;CC=zig cc -target x86_64-linux-gnu;CXX=zig c++ -target x86_64-linux-gnu" />
+  </Target>
 </Project>

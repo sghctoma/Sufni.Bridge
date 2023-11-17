@@ -106,7 +106,7 @@
                                 </Button>
                                 <Button Grid.Row="0" Grid.Column="2" VerticalAlignment="Stretch"
                                         Command="{Binding $parent[ListBox].((vm:MainViewModel)DataContext).DeleteCalibrationCommand}"
-                                        CommandParameter="{Binding Id}">
+                                        CommandParameter="{Binding}">
                                     <Image Width="16" Height="16"
                                            Source="{SvgImage /Assets/fa-trash-can.svg}" />
                                 </Button>

@@ -117,20 +117,14 @@ public partial class SetupViewModel : ViewModelBase
 
         try
         {
-            // Reflect potential board ID changes in the database.
-            if (originalBoardId != BoardId)
-            {
-                await databaseService.PutBoardAsync(new Board(originalBoardId!, null));
-                await databaseService.PutBoardAsync(new Board(BoardId!, Id));
-            }
-            
             var newSetup = new Setup(
                 Id,
                 Name ?? $"setup #{Id}",
                 SelectedLinkage.Id.Value,
                 SelectedFrontCalibration?.Id,
                 SelectedRearCalibration?.Id);
-            await databaseService.PutSetupAsync(newSetup);
+            Id = await databaseService.PutSetupAsync(newSetup);
+            
             // If this setup was already associated with another board, clear that association.
             // Do not delete the board though, it might be picked up later.
             if (!string.IsNullOrEmpty(originalBoardId) && originalBoardId != BoardId)

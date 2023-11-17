@@ -113,7 +113,7 @@ public partial class LinkageViewModel : ViewModelBase
                 FrontStroke,
                 RearStroke,
                 linkageData);
-            await databaseService.PutLinkageAsync(newLinkage);
+            Id = await databaseService.PutLinkageAsync(newLinkage);
             linkage = newLinkage;
             IsDirty = false;
         }

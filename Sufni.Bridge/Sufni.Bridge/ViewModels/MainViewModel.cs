@@ -223,13 +223,11 @@ public partial class MainViewModel : ViewModelBase
                     Calibrations);
                 svm.PropertyChanged += (sender, args) =>
                 {
-                    if (sender is not null &&
-                        args.PropertyName == nameof(SetupViewModel.IsDirty) &&
-                        !((SetupViewModel)sender).IsDirty)
-                    {
-                        DeleteCalibrationCommand.NotifyCanExecuteChanged();
-                        DeleteLinkageCommand.NotifyCanExecuteChanged();
-                    }
+                    if (sender is null ||
+                        args.PropertyName != nameof(SetupViewModel.IsDirty) ||
+                        ((SetupViewModel)sender).IsDirty) return;
+                    DeleteCalibrationCommand.NotifyCanExecuteChanged();
+                    DeleteLinkageCommand.NotifyCanExecuteChanged();
                 };
                 Setups.Add(svm);
             }
@@ -281,15 +279,18 @@ public partial class MainViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private async Task AddLinkage()
+    private void AddLinkage()
     {
         Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
 
         try
         {
             var linkage = new Linkage(null, "new linkage", 65, 180, 65, "");
-            await databaseService.PutLinkageAsync(linkage);
-            Linkages.Add(new LinkageViewModel(linkage));
+            var lvm = new LinkageViewModel(linkage)
+            {
+                IsDirty = true
+            };
+            Linkages.Add(lvm);
         }
         catch (Exception e)
         {
@@ -297,21 +298,27 @@ public partial class MainViewModel : ViewModelBase
         }
     }
 
-    private bool CanDeleteLinkage(int id)
+    private bool CanDeleteLinkage(LinkageViewModel? linkage)
     {
-        return !Setups.Any(s => s.SelectedLinkage != null && s.SelectedLinkage.Id == id);
+        return !Setups.Any(s => s.SelectedLinkage != null && s.SelectedLinkage.Id == linkage?.Id);
     }
     
     [RelayCommand(CanExecute = nameof(CanDeleteLinkage))]
-    private async Task DeleteLinkage(int id)
+    private async Task DeleteLinkage(LinkageViewModel linkage)
     {
         Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
         
         try
         {
-            await databaseService.DeleteLinkageAsync(id);
-            var toDelete = Linkages.First(l => l.Id == id);
-            Linkages.Remove(toDelete);
+            // If this linkage was not yet saved into the database, we just need to remove it from Linkages.
+            if (linkage.Id is null)
+            {
+                Linkages.Remove(linkage);
+                return;
+            }
+            
+            await databaseService.DeleteLinkageAsync(linkage.Id.Value);
+            Linkages.Remove(linkage);
         }
         catch (Exception e)
         {
@@ -320,7 +327,7 @@ public partial class MainViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private async Task AddCalibration()
+    private void AddCalibration()
     {
         Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
 
@@ -333,9 +340,12 @@ public partial class MainViewModel : ViewModelBase
                 inputs.Add(input, 0.0);
             }
             var calibration = new Calibration(null, "new calibration", methodId, inputs);
-        
-            await databaseService.PutCalibrationAsync(calibration);
-            Calibrations.Add(new CalibrationViewModel(calibration, CalibrationMethods));
+
+            var cvm = new CalibrationViewModel(calibration, CalibrationMethods)
+            {
+                IsDirty = true
+            };
+            Calibrations.Add(cvm);
         }
         catch (Exception e)
         {
@@ -343,23 +353,29 @@ public partial class MainViewModel : ViewModelBase
         }
     }
     
-    private bool CanDeleteCalibration(int id)
+    private bool CanDeleteCalibration(CalibrationViewModel? calibration)
     {
         return !Setups.Any(s => 
-            (s.SelectedFrontCalibration != null && s.SelectedFrontCalibration.Id == id) ||
-            (s.SelectedRearCalibration != null && s.SelectedRearCalibration.Id == id));
+            (s.SelectedFrontCalibration != null && s.SelectedFrontCalibration.Id == calibration?.Id) ||
+            (s.SelectedRearCalibration != null && s.SelectedRearCalibration.Id == calibration?.Id));
     }
     
     [RelayCommand(CanExecute = nameof(CanDeleteCalibration))]
-    private async Task DeleteCalibration(int id)
+    private async Task DeleteCalibration(CalibrationViewModel calibration)
     {
         Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
         
         try
         {
-            await databaseService.DeleteCalibrationAsync(id);
-            var toDelete = Calibrations.First(c => c.Id == id);
-            Calibrations.Remove(toDelete);
+            // If this calibration was not yet saved into the database, we just need to remove it from Calibrations.
+            if (calibration.Id is null)
+            {
+                Calibrations.Remove(calibration);
+                return;
+            }
+            
+            await databaseService.DeleteCalibrationAsync(calibration.Id.Value);
+            Calibrations.Remove(calibration);
         }
         catch (Exception e)
         {
@@ -368,7 +384,7 @@ public partial class MainViewModel : ViewModelBase
     }
     
     [RelayCommand]
-    private async Task AddSetup()
+    private void AddSetup()
     {
         Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
 
@@ -380,17 +396,6 @@ public partial class MainViewModel : ViewModelBase
                 Linkages[0].Id!.Value,
                 null,
                 null);
-        
-            await databaseService.PutSetupAsync(setup);
-            await databaseService.PutBoardAsync(new Board(
-                ImportSessionsPage.SelectedDataStore?.BoardId!,
-                setup.Id));
-
-            var svm = new SetupViewModel(
-                setup,
-                ImportSessionsPage.SelectedDataStore?.BoardId,
-                Linkages,
-                Calibrations);
 
             // Use the SST datastore's board ID only if it's not already associated to another setup;
             string? newSetupsBoardId = null;
@@ -400,15 +405,18 @@ public partial class MainViewModel : ViewModelBase
             {
                 newSetupsBoardId = datastoreBoardId;
             }
+            
+            var svm = new SetupViewModel(setup, newSetupsBoardId, Linkages, Calibrations)
+            {
+                IsDirty = true
+            };
             svm.PropertyChanged += (sender, args) =>
             {
-                if (sender is not null &&
-                    args.PropertyName == nameof(SetupViewModel.IsDirty) &&
-                    !((SetupViewModel)sender).IsDirty)
-                {
-                    DeleteCalibrationCommand.NotifyCanExecuteChanged();
-                    DeleteLinkageCommand.NotifyCanExecuteChanged();
-                }
+                if (sender is null ||
+                    args.PropertyName != nameof(SetupViewModel.IsDirty) ||
+                    ((SetupViewModel)sender).IsDirty) return;
+                DeleteCalibrationCommand.NotifyCanExecuteChanged();
+                DeleteLinkageCommand.NotifyCanExecuteChanged();
             };
             Setups.Add(svm);
         }
@@ -419,13 +427,18 @@ public partial class MainViewModel : ViewModelBase
     }
     
     [RelayCommand]
-    private async Task DeleteSetup(int id)
+    private async Task DeleteSetup(SetupViewModel setup)
     {
         Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
         
         try
         {
-            var toDelete = Setups.First(s => s.Id == id);
+            // If this setup was not yet saved into the database, we just need to remove it from Setups.
+            if (setup.Id is null)
+            {
+                Setups.Remove(setup);
+                return;
+            }
 
             // If this setup is associated with a board ID, clear that association.
             if (setup.BoardId is not null)
@@ -433,8 +446,8 @@ public partial class MainViewModel : ViewModelBase
                 await databaseService.PutBoardAsync(new Board(setup.BoardId, null));
             }
             
-            await databaseService.DeleteSetupAsync(id);
-            Setups.Remove(toDelete);
+            await databaseService.DeleteSetupAsync(setup.Id.Value);
+            Setups.Remove(setup);
         }
         catch (Exception e)
         {

@@ -101,7 +101,7 @@ public partial class SetupViewModel : ViewModelBase
 
     private bool CanSave()
     {
-        return IsDirty;
+        return IsDirty && !(SelectedFrontCalibration == null && SelectedRearCalibration == null);
     }
 
     [RelayCommand(CanExecute = nameof(CanSave))]

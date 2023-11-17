@@ -28,7 +28,8 @@ public partial class MainViewModel : ViewModelBase
     public ObservableCollection<CalibrationViewModel> Calibrations { get; } = new();
     public ObservableCollection<SetupViewModel> Setups { get; } = new();
     public ObservableCollection<SessionViewModel> Sessions { get; } = new();
-    public ObservableCollection<CalibrationMethod> CalibrationMethods { get; } = new();
+    private ObservableCollection<CalibrationMethod> CalibrationMethods { get; } = new();
+    private ObservableCollection<Board> Boards { get; } = new();
 
     #endregion
 
@@ -184,6 +185,25 @@ public partial class MainViewModel : ViewModelBase
             ErrorMessages.Add($"Could not load Calibrations: {e.Message}");
         }
     }
+    
+    private async Task LoadBoardsAsync()
+    {
+        Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
+        
+        try
+        {
+            var boards = await databaseService.GetBoardsAsync();
+
+            foreach (var board in boards)
+            {
+                Boards.Add(board);
+            }
+        }
+        catch (Exception e)
+        {
+            ErrorMessages.Add($"Could not load Boards: {e.Message}");
+        }
+    }
 
     private async Task LoadSetupsAsync()
     {
@@ -192,11 +212,10 @@ public partial class MainViewModel : ViewModelBase
         try
         {
             var setups = await databaseService.GetSetupsAsync();
-            var boards = await databaseService.GetBoardsAsync();
 
             foreach (var setup in setups)
             {
-                var board = boards.FirstOrDefault(b => b?.SetupId == setup.Id, null);
+                var board = Boards.FirstOrDefault(b => b?.SetupId == setup.Id, null);
                 var svm = new SetupViewModel(
                     setup,
                     board?.Id,
@@ -251,10 +270,12 @@ public partial class MainViewModel : ViewModelBase
         CalibrationMethods.Clear();
         Calibrations.Clear();
         Setups.Clear();
+        Boards.Clear();
         Sessions.Clear();
         await LoadLinkagesAsync();
         await LoadCalibrationMethodsAsync();
         await LoadCalibrationsAsync();
+        await LoadBoardsAsync();
         await LoadSetupsAsync();
         await LoadSessionsAsync();
     }
@@ -370,6 +391,15 @@ public partial class MainViewModel : ViewModelBase
                 ImportSessionsPage.SelectedDataStore?.BoardId,
                 Linkages,
                 Calibrations);
+
+            // Use the SST datastore's board ID only if it's not already associated to another setup;
+            string? newSetupsBoardId = null;
+            var datastoreBoardId = ImportSessionsPage.SelectedDataStore?.BoardId;
+            var datastoreBoard = Boards.FirstOrDefault(b => b?.Id == datastoreBoardId, null);
+            if (datastoreBoard is null || datastoreBoard.SetupId is null)
+            {
+                newSetupsBoardId = datastoreBoardId;
+            }
             svm.PropertyChanged += (sender, args) =>
             {
                 if (sender is not null &&
@@ -397,13 +427,10 @@ public partial class MainViewModel : ViewModelBase
         {
             var toDelete = Setups.First(s => s.Id == id);
 
-            // If this setup is associated with a board ID, clear the setup ID from that board.
-            var boards = await databaseService.GetBoardsAsync();
-            var associatedBoard = boards.FirstOrDefault(b => b!.Id == toDelete.BoardId, null);
-            if (associatedBoard is not null)
+            // If this setup is associated with a board ID, clear that association.
+            if (setup.BoardId is not null)
             {
-                associatedBoard.SetupId = null;
-                await databaseService.PutBoardAsync(associatedBoard);
+                await databaseService.PutBoardAsync(new Board(setup.BoardId, null));
             }
             
             await databaseService.DeleteSetupAsync(id);

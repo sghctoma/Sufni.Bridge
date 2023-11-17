@@ -26,6 +26,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
 
     public ObservableCollection<TelemetryDataStore>? TelemetryDataStores { get; set; }
     public ObservableCollection<TelemetryFile> TelemetryFiles { get; } = new();
+    private readonly ObservableCollection<SessionViewModel> sessions;
 
     [ObservableProperty] private TelemetryDataStore? selectedDataStore;
 
@@ -77,10 +78,18 @@ public partial class ImportSessionsViewModel : ViewModelBase
     
     #region Constructors
 
+    // This is only here for the designer
     public ImportSessionsViewModel()
+    {
+        sessions = new ObservableCollection<SessionViewModel>();
+    }
+    
+    public ImportSessionsViewModel(ObservableCollection<SessionViewModel> sessions)
     {
         databaseService = App.Current?.Services?.GetService<IDatabaseService>();
         telemetryDataStoreService = App.Current?.Services?.GetService<ITelemetryDataStoreService>();
+
+        this.sessions = sessions;
         
         Debug.Assert(databaseService != null, nameof(telemetryDataStoreService) + " != null");
         Debug.Assert(telemetryDataStoreService != null, nameof(telemetryDataStoreService) + " != null");
@@ -185,7 +194,14 @@ public partial class ImportSessionsViewModel : ViewModelBase
                     };
 
                 await databaseService.PutSessionAsync(session);
-                //TODO: refresh session list on the Sessions page
+                
+                var svm = new SessionViewModel(session);
+                var index = 0;
+                while (index < sessions.Count && svm.Timestamp < sessions[index].Timestamp)
+                {
+                    ++index;
+                }
+                sessions.Insert(index, svm);
                 
                 telemetryFile.Imported = true;
             }

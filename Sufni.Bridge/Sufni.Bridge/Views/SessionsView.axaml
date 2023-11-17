@@ -27,7 +27,7 @@
 
                         <!-- Editable name and non-editable timestamp in header -->
                         <Expander.Header>
-                            <Grid ColumnDefinitions="auto * 32" RowDefinitions="*">
+                            <Grid ColumnDefinitions="220 * 32" RowDefinitions="*">
                                 <TextBox Grid.Column="0" BorderBrush="Transparent"
                                          HorizontalAlignment="Stretch"
                                          Text="{Binding Name}" />

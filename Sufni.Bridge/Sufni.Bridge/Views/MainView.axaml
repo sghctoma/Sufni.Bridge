@@ -52,7 +52,7 @@
             <TabItem Name="ImportTabItem"
                      Content="{Binding ImportSessionsPage}">
                 <TabItem.Header>
-                    <Image Source="{SvgImage /Assets/fa-file-import.svg}" Width="20" />
+                    <Image Source="{SvgImage /Assets/fa-file-import.svg}" Width="18" />
                 </TabItem.Header>
             </TabItem>
             <TabItem Name="SessionTabItem">
@@ -63,7 +63,7 @@
             </TabItem>
             <TabItem Name="SettingsTabItem" Content="{Binding SettingsPage}">
                 <TabItem.Header>
-                    <Image Source="{SvgImage /Assets/cog.svg}" Width="24" />
+                    <Image Source="{SvgImage /Assets/cog.svg}" Width="26" />
                 </TabItem.Header>
             </TabItem>
             <TabItem Name="LinkagesTabItem">

@@ -16,7 +16,7 @@ public partial class MainViewModel : ViewModelBase
 {
     #region Observable properties
     
-    [ObservableProperty] private ImportSessionsViewModel importSessionsPage = new();
+    [ObservableProperty] private ImportSessionsViewModel importSessionsPage;
     [ObservableProperty] private SettingsViewModel settingsPage = new();
     [ObservableProperty] private int selectedIndex;
     [ObservableProperty] private bool isImportSessionsPageSelected = true;
@@ -74,6 +74,7 @@ public partial class MainViewModel : ViewModelBase
     public MainViewModel()
     {
         databaseService = App.Current?.Services?.GetService<IDatabaseService>();
+        ImportSessionsPage = new ImportSessionsViewModel(Sessions);
         
         SelectPage();
         SettingsPage.PropertyChanged += (_, args) =>

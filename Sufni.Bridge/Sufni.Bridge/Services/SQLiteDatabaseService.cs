@@ -276,7 +276,7 @@ public class SqLiteDatabaseService : IDatabaseService
     {
         await Initialization;
         var sessions = await connection.QueryAsync<Session>(
-            "SELECT id, name, setup_id, description, timestamp, track_id FROM session");
+            "SELECT id, name, setup_id, description, timestamp, track_id FROM session ORDER BY timestamp DESC");
         return sessions;
     }
     

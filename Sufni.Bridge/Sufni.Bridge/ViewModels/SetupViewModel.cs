@@ -2,6 +2,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
@@ -100,19 +101,19 @@ public partial class SetupViewModel : ViewModelBase
 
     private bool CanSave()
     {
-        return IsDirty;
+        return IsDirty && !(SelectedFrontCalibration == null && SelectedRearCalibration == null);
     }
 
     [RelayCommand(CanExecute = nameof(CanSave))]
-    private void Save()
+    private async Task Save()
     {
         Debug.Assert(SelectedLinkage != null, nameof(SelectedLinkage) + " != null");
         Debug.Assert(SelectedLinkage.Id != null, "SelectedLinkage.Id != null");
         Debug.Assert(!(SelectedFrontCalibration == null && SelectedRearCalibration == null), 
             nameof(SelectedFrontCalibration) + " and " + nameof(SelectedRearCalibration) + " can't be both null");
         
-        var httpApiService = App.Current?.Services?.GetService<IHttpApiService>();
-        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
+        var databaseService = App.Current?.Services?.GetService<IDatabaseService>();
+        Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
 
         try
         {
@@ -122,7 +123,21 @@ public partial class SetupViewModel : ViewModelBase
                 SelectedLinkage.Id.Value,
                 SelectedFrontCalibration?.Id,
                 SelectedRearCalibration?.Id);
-            httpApiService.PutSetupAsync(newSetup);
+            Id = await databaseService.PutSetupAsync(newSetup);
+            
+            // If this setup was already associated with another board, clear that association.
+            // Do not delete the board though, it might be picked up later.
+            if (!string.IsNullOrEmpty(originalBoardId) && originalBoardId != BoardId)
+            {
+                await databaseService.PutBoardAsync(new Board(originalBoardId, null));
+            }
+            
+            // If the board ID changed, associate this setup with the new ID.
+            if (!string.IsNullOrEmpty(BoardId) && originalBoardId != BoardId)
+            {
+                await databaseService.PutBoardAsync(new Board(BoardId!, Id));
+            }
+            
             setup = newSetup;
             originalBoardId = BoardId;
             IsDirty = false;
@@ -130,15 +145,6 @@ public partial class SetupViewModel : ViewModelBase
         catch (Exception e)
         {
             ErrorMessages.Add($"Setup could not be saved: {e.Message}");
-        }
-
-        try
-        {
-            httpApiService.PutBoardAsync(new Board(BoardId!, Id));
-        }
-        catch (Exception e)
-        {
-            ErrorMessages.Add($"Could not associate Setup with Board: {e.Message}");
         }
     }
 

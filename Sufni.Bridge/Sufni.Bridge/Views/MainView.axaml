@@ -50,14 +50,12 @@
                 </ItemsPanelTemplate>
             </TabControl.ItemsPanel>
             <TabItem Name="ImportTabItem"
-                     IsEnabled="{Binding SettingsPage.IsRegistered}"
                      Content="{Binding ImportSessionsPage}">
                 <TabItem.Header>
-                    <Image Source="{SvgImage /Assets/fa-cloud-arrow-up.svg}" Width="22" />
+                    <Image Source="{SvgImage /Assets/fa-file-import.svg}" Width="20" />
                 </TabItem.Header>
             </TabItem>
-            <TabItem Name="SessionTabItem"
-                     IsEnabled="{Binding SettingsPage.IsRegistered}">
+            <TabItem Name="SessionTabItem">
                 <TabItem.Header>
                     <Image Source="{SvgImage /Assets/fa-chart-line.svg}" Width="20" />
                 </TabItem.Header>
@@ -68,20 +66,14 @@
                     <Image Source="{SvgImage /Assets/cog.svg}" Width="24" />
                 </TabItem.Header>
             </TabItem>
-            <TabItem Name="LinkagesTabItem"
-                     IsEnabled="{Binding SettingsPage.IsRegistered}">
+            <TabItem Name="LinkagesTabItem">
                 <TabItem.Header>
                     <Image Source="{SvgImage /Assets/leverage-ratio.svg}" Width="20" />
                 </TabItem.Header>
                 <v:LinkagesView />
             </TabItem>
-            <TabItem Name="CalibrationsTabItem">
-                <TabItem.IsEnabled>
-                    <MultiBinding Converter="{x:Static BoolConverters.And}">
-                        <Binding Path="SettingsPage.IsRegistered" />
-                        <Binding Path="HasCalibrationMethods" />
-                    </MultiBinding>
-                </TabItem.IsEnabled>
+            <TabItem Name="CalibrationsTabItem"
+                     IsEnabled="{Binding HasCalibrationMethods}">
                 <TabItem.Header>
                     <Image Source="{SvgImage /Assets/fa-ruler.svg}" Width="24" />
                 </TabItem.Header>
@@ -90,7 +82,6 @@
             <TabItem Name="BikeSetupsTabItem">
                 <TabItem.IsEnabled>
                     <MultiBinding Converter="{x:Static BoolConverters.And}">
-                        <Binding Path="SettingsPage.IsRegistered" />
                         <Binding Path="HasCalibrations" />
                         <Binding Path="HasLinkages" />
                     </MultiBinding>

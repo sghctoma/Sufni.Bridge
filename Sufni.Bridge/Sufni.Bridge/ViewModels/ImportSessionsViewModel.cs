@@ -8,7 +8,8 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.Diagnostics;
 using System.IO;
-using System.Net.Http;
+using System.Text;
+using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Sufni.Bridge.ViewModels;
@@ -24,7 +25,6 @@ public partial class ImportSessionsViewModel : ViewModelBase
     #region Observable properties
 
     public ObservableCollection<TelemetryDataStore>? TelemetryDataStores { get; set; }
-
     public ObservableCollection<TelemetryFile> TelemetryFiles { get; } = new();
 
     [ObservableProperty] private TelemetryDataStore? selectedDataStore;
@@ -39,7 +39,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
 
     async partial void OnSelectedDataStoreChanged(TelemetryDataStore? value)
     {           
-        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
+        Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
 
         if (value == null)
         {
@@ -49,7 +49,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
 
         try
         {
-            var boards = await httpApiService.GetBoardsAsync();
+            var boards = await databaseService.GetBoardsAsync();
             var selectedBoard = boards.FirstOrDefault(b => b?.Id == value.BoardId, null);
             SelectedSetup = selectedBoard?.SetupId;
         }
@@ -70,7 +70,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
 
     #region Private members
 
-    private readonly IHttpApiService? httpApiService;
+    private readonly IDatabaseService? databaseService;
     private readonly ITelemetryDataStoreService? telemetryDataStoreService;
 
     #endregion Private members
@@ -79,10 +79,10 @@ public partial class ImportSessionsViewModel : ViewModelBase
 
     public ImportSessionsViewModel()
     {
-        httpApiService = App.Current?.Services?.GetService<IHttpApiService>();
+        databaseService = App.Current?.Services?.GetService<IDatabaseService>();
         telemetryDataStoreService = App.Current?.Services?.GetService<ITelemetryDataStoreService>();
         
-        Debug.Assert(httpApiService != null, nameof(telemetryDataStoreService) + " != null");
+        Debug.Assert(databaseService != null, nameof(telemetryDataStoreService) + " != null");
         Debug.Assert(telemetryDataStoreService != null, nameof(telemetryDataStoreService) + " != null");
 
         try
@@ -101,28 +101,103 @@ public partial class ImportSessionsViewModel : ViewModelBase
     }
 
     #endregion
+    
+    #region Public methods
 
+    public async Task EvaluateSetupExists()
+    {
+        Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
+        
+        var boards = await databaseService.GetBoardsAsync();
+        var selectedBoard = boards.FirstOrDefault(b => b?.Id == SelectedDataStore?.BoardId, null);
+        SelectedSetup = selectedBoard?.SetupId;
+    }
+
+    #endregion
+
+    #region Private methods
+
+    private string GetCalibrationsJson(Calibration front, CalibrationMethod fmethod, Calibration rear, CalibrationMethod rmethod)
+    {
+        return JsonSerializer.Serialize(new
+        {
+            front = new
+            {
+                name = front.Name,
+                method = new
+                {
+                    name = fmethod.Name,
+                    inputs = fmethod.Properties.Inputs,
+                    intermediates = fmethod.Properties.Intermediates,
+                    expression = fmethod.Properties.Expression
+                },
+                inputs = front.Inputs
+            },
+            rear = new
+            {
+                name = rear.Name,
+                method = new
+                {
+                    name = rmethod.Name,
+                    inputs = rmethod.Properties.Inputs,
+                    intermediates = rmethod.Properties.Intermediates,
+                    expression = rmethod.Properties.Expression
+                },
+                inputs = rear.Inputs
+            }
+        });
+    }
+
+    #endregion
+    
     #region Commands
 
     [RelayCommand(CanExecute = nameof(CanImportSessions))]
     private async Task ImportSessions()
     {
         Debug.Assert(SelectedSetup != null);
-        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
+        Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
         
         foreach (var telemetryFile in TelemetryFiles.Where(f => f.ShouldBeImported))
         {
             try
             {
-                await httpApiService.ImportSessionAsync(telemetryFile, SelectedSetup.Value);
+                var setup = await databaseService.GetSetupAsync(SelectedSetup!.Value);
+                var linkage = await databaseService.GetLinkageAsync(setup.LinkageId);
+                var fcal = await databaseService.GetCalibrationAsync(setup.FrontCalibrationId ?? 0);
+                var fmethod = await databaseService.GetCalibrationMethodAsync(fcal.MethodId);
+                var rcal = await databaseService.GetCalibrationAsync(setup.RearCalibrationId ?? 0);
+                var rmethod = await databaseService.GetCalibrationMethodAsync(rcal.MethodId);
+
+                var linkageBytes = JsonSerializer.SerializeToUtf8Bytes(linkage);
+                var calibrationsBytes = Encoding.UTF8.GetBytes(GetCalibrationsJson(
+                    fcal, fmethod, rcal, rmethod));
+
+                var psst = telemetryFile.GeneratePsst(linkageBytes, calibrationsBytes);
+                var session = new Session(
+                    id: null,
+                    name: telemetryFile.Name,
+                    description: telemetryFile.Description,
+                    setup: SelectedSetup ?? 0,
+                    timestamp: (int)((DateTimeOffset)telemetryFile.StartTime).ToUnixTimeSeconds())
+                    {
+                        ProcessedData = psst
+                    };
+
+                await databaseService.PutSessionAsync(session);
+                //TODO: refresh session list on the Sessions page
+                
                 telemetryFile.Imported = true;
+            }
+            catch (Exception e)
+            {
+                ErrorMessages.Add($"Could not import {telemetryFile.Name}: {e.Message}");
+            }
+
+            try
+            {
                 File.Move(telemetryFile.FullName,
                     $"{Path.GetDirectoryName(telemetryFile.FullName)}/uploaded/{telemetryFile.FileName}");
-            }
-            catch (HttpRequestException e)
-            {
-                telemetryFile.Imported = false;
-                ErrorMessages.Add($"Could not import {telemetryFile.FileName}: {e.Message}");
             }
             catch (Exception e)
             {

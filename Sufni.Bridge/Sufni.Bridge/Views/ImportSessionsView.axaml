@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:Sufni.Bridge.ViewModels"
+             xmlns:v="clr-namespace:Sufni.Bridge.Views"
              mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
              x:Class="Sufni.Bridge.Views.ImportSessionsView"
              x:DataType="vm:ImportSessionsViewModel"
@@ -12,7 +13,7 @@
         <vm:ImportSessionsViewModel />
     </Design.DataContext>
 
-    <Grid RowDefinitions="40 * 40" ColumnDefinitions="auto * auto">
+    <Grid RowDefinitions="40 * auto 40" ColumnDefinitions="auto * auto">
 
         <!-- Datastore selector -->
         <ComboBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
@@ -57,7 +58,7 @@
                                       Content="Import" />
                             <Label Grid.Row="3" Grid.Column="0" VerticalAlignment="Center">Name:</Label>
                             <TextBox Grid.Row="3" Grid.Column="1" Margin="2" Grid.ColumnSpan="4"
-                                     Text="{Binding FileName}" />
+                                     Text="{Binding Name}" />
                             <Label Grid.Row="4" Grid.Column="0" VerticalAlignment="Center">Description:</Label>
                             <TextBox Grid.Row="4" Grid.Column="1" Grid.RowSpan="2" Grid.ColumnSpan="4"
                                      Margin="2" AcceptsReturn="True" VerticalAlignment="Stretch" TextWrapping="Wrap"
@@ -67,9 +68,14 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
+        
+        <v:ErrorMessagesControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Margin="2, 4"
+                                ClearErrorsCommand="{Binding ClearErrorsCommand}"
+                                ErrorMessages="{Binding ErrorMessages}"
+                                IsVisible="{Binding ErrorMessages.Count}" />
 
         <!-- Import selected SST files -->
-        <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
+        <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3"
                 Margin="5,5,5,5"
                 HorizontalAlignment="Stretch"
                 HorizontalContentAlignment="Center"

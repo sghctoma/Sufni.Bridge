@@ -13,7 +13,6 @@ namespace Sufni.Bridge.ViewModels;
 public partial class SessionViewModel : ViewModelBase
 {
     private Session session;
-    private TelemetryData? psst;
 
     #region Private methods
 
@@ -70,41 +69,40 @@ public partial class SessionViewModel : ViewModelBase
     #region Commands
 
     [RelayCommand]
-    private void SetTelemetryData()
-    {
-        TelemetryData = psst;
-    }
-
-    [RelayCommand]
     private async Task LoadPsst()
     {
-        var httpApiService = App.Current?.Services?.GetService<IHttpApiService>();
-        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
-        psst = await httpApiService.GetSessionPsstAsync(Id ?? 0);
+        var databaseService = App.Current?.Services?.GetService<IDatabaseService>();
+        Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
+        
+        try
+        {
+            TelemetryData = await databaseService.GetSessionPsstAsync(Id ?? 0);
+        }
+        catch (Exception e)
+        {
+            ErrorMessages.Add($"Could not load session data: {e.Message}");
+        }
     }
-    
+
     private bool CanSave()
     {
         return IsDirty;
     }
 
     [RelayCommand(CanExecute = nameof(CanSave))]
-    private void Save()
+    private async Task Save()
     {
-        var httpApiService = App.Current?.Services?.GetService<IHttpApiService>();
-        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
+        var databaseService = App.Current?.Services?.GetService<IDatabaseService>();
+        Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
 
         try
         {
             var newSession = new Session(
-                session.Id,
-                Name ?? $"session #{session.Id}",
-                Description ?? $"session #{session.Id}",
-                session.Setup,
-                null,
-                null,
-                null);
-            httpApiService.PutSessionAsync(newSession);
+                id: session.Id,
+                name: Name ?? $"session #{session.Id}",
+                description: Description ?? $"session #{session.Id}",
+                setup: session.Setup);
+            await databaseService.PutSessionAsync(newSession);
             session = newSession;
             IsDirty = false;
         }

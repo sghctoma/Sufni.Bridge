@@ -53,7 +53,7 @@
                      IsEnabled="{Binding SettingsPage.IsRegistered}"
                      Content="{Binding ImportSessionsPage}">
                 <TabItem.Header>
-                    <Image Source="{SvgImage /Assets/fa-cloud-arrow-up.svg}" Width="22" />
+                    <Image Source="{SvgImage /Assets/fa-file-import.svg}" Width="20" />
                 </TabItem.Header>
             </TabItem>
             <TabItem Name="SessionTabItem"

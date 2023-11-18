@@ -100,8 +100,8 @@
                 Background="#6f312d">
             <Border.IsVisible>
                 <MultiBinding Converter="{x:Static BoolConverters.And}">
+                    <Binding Path="ImportSessionsPage.SelectedDataStore" Converter="{x:Static ObjectConverters.IsNotNull}" />
                     <Binding Path="ImportSessionsPage.SelectedSetup" Converter="{x:Static ObjectConverters.IsNull}" />
-                    <Binding Path="SettingsPage.IsRegistered" />
                     <Binding Path="IsImportSessionsPageSelected" />
                 </MultiBinding>
             </Border.IsVisible>

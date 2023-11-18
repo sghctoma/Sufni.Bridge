@@ -120,41 +120,6 @@ public partial class ImportSessionsViewModel : ViewModelBase
     }
 
     #endregion
-
-    #region Private methods
-
-    private string GetCalibrationsJson(Calibration front, CalibrationMethod fmethod, Calibration rear, CalibrationMethod rmethod)
-    {
-        return JsonSerializer.Serialize(new
-        {
-            front = new
-            {
-                name = front.Name,
-                method = new
-                {
-                    name = fmethod.Name,
-                    inputs = fmethod.Properties.Inputs,
-                    intermediates = fmethod.Properties.Intermediates,
-                    expression = fmethod.Properties.Expression
-                },
-                inputs = front.Inputs
-            },
-            rear = new
-            {
-                name = rear.Name,
-                method = new
-                {
-                    name = rmethod.Name,
-                    inputs = rmethod.Properties.Inputs,
-                    intermediates = rmethod.Properties.Intermediates,
-                    expression = rmethod.Properties.Expression
-                },
-                inputs = rear.Inputs
-            }
-        });
-    }
-
-    #endregion
     
     #region Commands
 
@@ -169,16 +134,14 @@ public partial class ImportSessionsViewModel : ViewModelBase
             try
             {
                 var setup = await databaseService.GetSetupAsync(SelectedSetup!.Value);
-                var linkage = await databaseService.GetLinkageAsync(setup.LinkageId);
+                var linkage = await databaseService.GetLinkageAsync(setup!.LinkageId);
                 var fcal = await databaseService.GetCalibrationAsync(setup.FrontCalibrationId ?? 0);
-                
-                // TODO: Fix one-calibration setups
-                var fmethod = await databaseService.GetCalibrationMethodAsync(fcal.MethodId);
+                var fmethod = fcal is null ? null : await databaseService.GetCalibrationMethodAsync(fcal.MethodId);
                 var rcal = await databaseService.GetCalibrationAsync(setup.RearCalibrationId ?? 0);
-                var rmethod = await databaseService.GetCalibrationMethodAsync(rcal.MethodId);
+                var rmethod = rcal is null ? null : await databaseService.GetCalibrationMethodAsync(rcal.MethodId);
 
                 var linkageBytes = JsonSerializer.SerializeToUtf8Bytes(linkage);
-                var calibrationsBytes = Encoding.UTF8.GetBytes(GetCalibrationsJson(
+                var calibrationsBytes = Encoding.UTF8.GetBytes(Calibration.GetCalibrationsJson(
                     fcal, fmethod, rcal, rmethod));
 
                 var psst = telemetryFile.GeneratePsst(linkageBytes, calibrationsBytes);

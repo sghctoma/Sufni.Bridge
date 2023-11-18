@@ -152,7 +152,7 @@ public class SqLiteDatabaseService : IDatabaseService
         return await connection.Table<Linkage>().ToListAsync();
     }
     
-    public async Task<Linkage> GetLinkageAsync(int id)
+    public async Task<Linkage?> GetLinkageAsync(int id)
     {
         await Initialization;
         
@@ -189,7 +189,7 @@ public class SqLiteDatabaseService : IDatabaseService
         return await connection.Table<CalibrationMethod>().ToListAsync();
     }
 
-    public async Task<CalibrationMethod> GetCalibrationMethodAsync(int id)
+    public async Task<CalibrationMethod?> GetCalibrationMethodAsync(int id)
     {
         await Initialization;
         
@@ -204,7 +204,7 @@ public class SqLiteDatabaseService : IDatabaseService
         return await connection.Table<Calibration>().ToListAsync();
     }
     
-    public async Task<Calibration> GetCalibrationAsync(int id)
+    public async Task<Calibration?> GetCalibrationAsync(int id)
     {
         await Initialization;
         
@@ -241,7 +241,7 @@ public class SqLiteDatabaseService : IDatabaseService
         return await connection.Table<Setup>().ToListAsync();
     }
     
-    public async Task<Setup> GetSetupAsync(int id)
+    public async Task<Setup?> GetSetupAsync(int id)
     {
         await Initialization;
         
@@ -280,16 +280,12 @@ public class SqLiteDatabaseService : IDatabaseService
         return sessions;
     }
     
-    public async Task<TelemetryData> GetSessionPsstAsync(int id)
+    public async Task<TelemetryData?> GetSessionPsstAsync(int id)
     {
         await Initialization;
         var sessions = await connection.QueryAsync<Session>(
             "SELECT data FROM session WHERE id = ?", id);
-        if (sessions.Count != 1)
-        {
-            throw new InvalidOperationException("Invalid session ID!");
-        }
-        return MessagePackSerializer.Deserialize<TelemetryData>(sessions[0].ProcessedData);
+        return sessions.Count == 1 ? MessagePackSerializer.Deserialize<TelemetryData>(sessions[0].ProcessedData) : null;
     }
 
     public async Task<int> PutSessionAsync(Session session)

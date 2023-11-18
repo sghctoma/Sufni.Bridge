@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
@@ -6,15 +7,17 @@ namespace Sufni.Bridge.Services;
 
 public class FilesService : IFilesService
 {
-    private readonly TopLevel target;
+    private TopLevel? target;
 
-    public FilesService(TopLevel target)
+    public void SetTarget(TopLevel? newTarget)
     {
-        this.target = target;
+        target = newTarget;
     }
 
     public async Task<IStorageFile?> OpenLeverageRatioFileAsync()
     {
+        Debug.Assert(target != null, nameof(target) + " != null");
+        
         var files = await target.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions()
         {
             Title = "Open Leverage Ratio file",

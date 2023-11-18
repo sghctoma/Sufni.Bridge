@@ -6,6 +6,7 @@ using Sufni.Bridge.Services;
 using Sufni.Bridge.ViewModels;
 using Sufni.Bridge.Views;
 using System;
+using System.Diagnostics;
 using Avalonia.Controls;
 
 namespace Sufni.Bridge;
@@ -30,36 +31,28 @@ public partial class App : Application
     {
         AvaloniaXamlLoader.Load(this);
     }
-
+    
     public override void OnFrameworkInitializationCompleted()
     {
-        TopLevel? topLevel = null;
+        RegisteredServices.Collection.AddSingleton<IFilesService>(_ => new FilesService());
+        Services = RegisteredServices.Collection.BuildServiceProvider();
+        
+        var fileService = Services.GetService<IFilesService>();
+        Debug.Assert(fileService != null, nameof(fileService) + " != null");
 
         switch (ApplicationLifetime)
         {
             case IClassicDesktopStyleApplicationLifetime desktop:
                 desktop.MainWindow = new MainWindow();
-                topLevel = TopLevel.GetTopLevel(desktop.MainWindow);
+                fileService.SetTarget(TopLevel.GetTopLevel(desktop.MainWindow));
+                desktop.MainWindow.DataContext = new MainViewModel();
                 break;
             case ISingleViewApplicationLifetime singleViewPlatform:
                 singleViewPlatform.MainView = new MainView();
-                topLevel = TopLevel.GetTopLevel(singleViewPlatform.MainView);
-                break;
-        }
-
-        if (topLevel != null)
-        {
-            RegisteredServices.Collection.AddSingleton<IFilesService>(_ => new FilesService(topLevel));
-        }
-
-        Services = RegisteredServices.Collection.BuildServiceProvider();
-
-        switch (ApplicationLifetime)
-        {
-            case IClassicDesktopStyleApplicationLifetime desktop:
-                desktop.MainWindow!.DataContext = new MainViewModel();
-                break;
-            case ISingleViewApplicationLifetime singleViewPlatform:
+                singleViewPlatform.MainView.Loaded += (sender, args) =>
+                {
+                    fileService!.SetTarget(TopLevel.GetTopLevel(singleViewPlatform.MainView));
+                };
                 singleViewPlatform.MainView!.DataContext = new MainViewModel();
                 break;
         }

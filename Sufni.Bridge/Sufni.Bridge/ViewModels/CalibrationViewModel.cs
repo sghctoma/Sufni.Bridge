@@ -13,13 +13,12 @@ namespace Sufni.Bridge.ViewModels;
 
 public partial class CalibrationInputViewModel : ViewModelBase
 {
-    private readonly double originalValue;
-    
     #region Observable properties
     
     [ObservableProperty] private string name;
     [ObservableProperty] private double value;
     [ObservableProperty] private bool isDirty;
+    [ObservableProperty] private double originalValue;
     
     #endregion
 
@@ -27,7 +26,7 @@ public partial class CalibrationInputViewModel : ViewModelBase
 
     public CalibrationInputViewModel(string name)
     {    
-        originalValue = value;
+        OriginalValue = value;
         Name = name;
         Value = 0.0;
         IsDirty = true;
@@ -35,7 +34,7 @@ public partial class CalibrationInputViewModel : ViewModelBase
     
     public CalibrationInputViewModel(string name, double value)
     {    
-        originalValue = value;
+        OriginalValue = value;
         Name = name;
         Value = value;
     }
@@ -47,7 +46,7 @@ public partial class CalibrationInputViewModel : ViewModelBase
     // ReSharper disable once ParameterHidesMember
     partial void OnValueChanged(double value)
     {
-        IsDirty = Math.Abs(value - originalValue) > 0.00001;
+        IsDirty = Math.Abs(value - OriginalValue) > 0.00001;
     }
 
     #endregion
@@ -167,7 +166,13 @@ public partial class CalibrationViewModel : ViewModelBase
                 SelectedCalibrationMethod.Id,
                 Inputs.ToDictionary(input => input.Name, input => input.Value));
             Id = await databaseService.PutCalibrationAsync(newCalibration);
+            
             calibration = newCalibration;
+            foreach (var input in Inputs)
+            {
+                input.OriginalValue = input.Value;
+                input.IsDirty = false;
+            }
             IsDirty = false;
         }
         catch (Exception e)

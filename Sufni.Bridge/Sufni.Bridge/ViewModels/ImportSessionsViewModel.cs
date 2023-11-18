@@ -79,10 +79,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
     #region Constructors
 
     // This is only here for the designer
-    public ImportSessionsViewModel()
-    {
-        sessions = new ObservableCollection<SessionViewModel>();
-    }
+    public ImportSessionsViewModel() : this(new ObservableCollection<SessionViewModel>()) {}
     
     public ImportSessionsViewModel(ObservableCollection<SessionViewModel> sessions)
     {
@@ -174,6 +171,8 @@ public partial class ImportSessionsViewModel : ViewModelBase
                 var setup = await databaseService.GetSetupAsync(SelectedSetup!.Value);
                 var linkage = await databaseService.GetLinkageAsync(setup.LinkageId);
                 var fcal = await databaseService.GetCalibrationAsync(setup.FrontCalibrationId ?? 0);
+                
+                // TODO: Fix one-calibration setups
                 var fmethod = await databaseService.GetCalibrationMethodAsync(fcal.MethodId);
                 var rcal = await databaseService.GetCalibrationAsync(setup.RearCalibrationId ?? 0);
                 var rmethod = await databaseService.GetCalibrationMethodAsync(rcal.MethodId);
@@ -204,20 +203,13 @@ public partial class ImportSessionsViewModel : ViewModelBase
                 sessions.Insert(index, svm);
                 
                 telemetryFile.Imported = true;
-            }
-            catch (Exception e)
-            {
-                ErrorMessages.Add($"Could not import {telemetryFile.Name}: {e.Message}");
-            }
-
-            try
-            {
+                
                 File.Move(telemetryFile.FullName,
                     $"{Path.GetDirectoryName(telemetryFile.FullName)}/uploaded/{telemetryFile.FileName}");
             }
             catch (Exception e)
             {
-                ErrorMessages.Add($"Could not move {telemetryFile.Name} to uploaded: {e.Message}");
+                ErrorMessages.Add($"Could not import {telemetryFile.Name}: {e.Message}");
             }
         }
 

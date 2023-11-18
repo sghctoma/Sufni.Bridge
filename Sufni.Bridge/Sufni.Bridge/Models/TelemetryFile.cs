@@ -32,7 +32,7 @@ public class TelemetryFile
 #pragma warning restore CS0649 // Field is never assigned to, and will always have its default value
     }
 
-    [DllImport("gosst", EntryPoint = "GeneratePsst", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.StdCall)]
+    [DllImport("gosst", EntryPoint = "GeneratePsst", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
     private static extern GeneratePsstReturn GeneratePsstNative(byte[] data, int dataSize, byte[] linkage, int linkageSize,
         byte[] calibrations, int calibrationsSize);
 

@@ -21,6 +21,7 @@ public partial class LinkageViewModel : ViewModelBase
     private void EvaluateDirtiness()
     {
         IsDirty =
+            Id == null ||
             Name != linkage.Name ||
             Math.Abs(HeadAngle - linkage.HeadAngle) > 0.00001 ||
             Math.Abs((FrontStroke ?? 0.0) - (linkage.FrontStroke ?? 0.0)) > 0.00001 ||
@@ -33,51 +34,33 @@ public partial class LinkageViewModel : ViewModelBase
     #region Observable properties
 
     [ObservableProperty] private int? id;
-    [ObservableProperty] private string? name;
-    [ObservableProperty] private double headAngle;
-    [ObservableProperty] private double? frontStroke;
-    [ObservableProperty] private double? rearStroke;
-    [ObservableProperty] private string? linkageDataFile;
+    [ObservableProperty] private bool isDirty;
     
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
     [NotifyCanExecuteChangedFor(nameof(ResetCommand))]
-    private bool isDirty;
+    private string? name;
     
-    #endregion
-
-    #region Property change handlers
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ResetCommand))]
+    private double headAngle;
     
-    // ReSharper disable once UnusedParameterInPartialMethod
-    partial void OnNameChanged(string? value)
-    {
-        EvaluateDirtiness();
-    }
-
-    // ReSharper disable once UnusedParameterInPartialMethod
-    partial void OnHeadAngleChanged(double value)
-    {
-        EvaluateDirtiness();
-    }
-
-    // ReSharper disable once UnusedParameterInPartialMethod
-    partial void OnFrontStrokeChanged(double? value)
-    {
-        EvaluateDirtiness();
-    }
-
-    // ReSharper disable once UnusedParameterInPartialMethod
-    partial void OnRearStrokeChanged(double? value)
-    {
-        EvaluateDirtiness();
-    }
-
-    // ReSharper disable once UnusedParameterInPartialMethod
-    partial void OnLinkageDataFileChanged(string? value)
-    {
-        EvaluateDirtiness();
-    }
-
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ResetCommand))]
+    private double? frontStroke;
+    
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ResetCommand))]
+    private double? rearStroke;
+    
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ResetCommand))]
+    private string? linkageDataFile;
+    
     #endregion
 
     #region Constructors
@@ -95,6 +78,7 @@ public partial class LinkageViewModel : ViewModelBase
 
     private bool CanSave()
     {
+        EvaluateDirtiness();
         return IsDirty;
     }
 
@@ -125,6 +109,7 @@ public partial class LinkageViewModel : ViewModelBase
 
     private bool CanReset()
     {
+        EvaluateDirtiness();
         return IsDirty;
     }
     

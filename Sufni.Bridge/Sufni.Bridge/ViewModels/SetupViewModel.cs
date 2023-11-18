@@ -17,21 +17,37 @@ public partial class SetupViewModel : ViewModelBase
     private string? originalBoardId;
 
     #region Observable properties
+    
     [ObservableProperty] private int? id;
-    [ObservableProperty] private string? name;
+    [ObservableProperty] private bool isDirty;
     
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
     [NotifyCanExecuteChangedFor(nameof(ResetCommand))]
-    private bool isDirty;
-
+    private string? name;
+    
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ResetCommand))]
+    private string? boardId;
+    
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ResetCommand))]
+    private LinkageViewModel? selectedLinkage;
+    
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ResetCommand))]
+    private CalibrationViewModel? selectedFrontCalibration;
+    
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ResetCommand))]
+    private CalibrationViewModel? selectedRearCalibration;
+    
     public ObservableCollection<LinkageViewModel> Linkages { get; }
     public ObservableCollection<CalibrationViewModel> Calibrations { get; }
-
-    [ObservableProperty] private string? boardId;
-    [ObservableProperty] private LinkageViewModel? selectedLinkage;
-    [ObservableProperty] private CalibrationViewModel? selectedFrontCalibration;
-    [ObservableProperty] private CalibrationViewModel? selectedRearCalibration;
     
     #endregion
 
@@ -40,6 +56,7 @@ public partial class SetupViewModel : ViewModelBase
     private void EvaluateDirtiness()
     {
         IsDirty =
+            Id == null ||
             Name != setup.Name ||
             BoardId != originalBoardId ||
             SelectedLinkage == null || SelectedLinkage.Id != setup.LinkageId ||
@@ -48,41 +65,7 @@ public partial class SetupViewModel : ViewModelBase
     }
 
     #endregion
-
-    #region Property change handlers
-
-    // ReSharper disable once UnusedParameterInPartialMethod
-    partial void OnSelectedLinkageChanged(LinkageViewModel? value)
-    {
-        EvaluateDirtiness();
-    }
     
-    // ReSharper disable once UnusedParameterInPartialMethod
-    partial void OnSelectedFrontCalibrationChanged(CalibrationViewModel? value)
-    {
-        EvaluateDirtiness();
-    }
-
-    // ReSharper disable once UnusedParameterInPartialMethod
-    partial void OnSelectedRearCalibrationChanged(CalibrationViewModel? value)
-    {
-        EvaluateDirtiness();
-    }
-
-    // ReSharper disable once UnusedParameterInPartialMethod
-    partial void OnNameChanged(string? value)
-    {
-        EvaluateDirtiness();
-    }
-
-    // ReSharper disable once UnusedParameterInPartialMethod
-    partial void OnBoardIdChanged(string? value)
-    {
-        EvaluateDirtiness();
-    }
-    
-    #endregion
-
     #region Constructors
     
     public SetupViewModel(Setup setup, string? boardId, ObservableCollection<LinkageViewModel> linkages, ObservableCollection<CalibrationViewModel> calibrations)
@@ -101,6 +84,7 @@ public partial class SetupViewModel : ViewModelBase
 
     private bool CanSave()
     {
+        EvaluateDirtiness();
         return IsDirty && !(SelectedFrontCalibration == null && SelectedRearCalibration == null);
     }
 
@@ -150,6 +134,7 @@ public partial class SetupViewModel : ViewModelBase
 
     private bool CanReset()
     {
+        EvaluateDirtiness();
         return IsDirty;
     }
     

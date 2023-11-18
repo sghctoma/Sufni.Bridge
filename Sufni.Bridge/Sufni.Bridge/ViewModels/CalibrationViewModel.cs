@@ -60,16 +60,20 @@ public partial class CalibrationViewModel : ViewModelBase
     #region Observable properties
     
     [ObservableProperty] private int? id;
-    [ObservableProperty] private string? name;
-    [ObservableProperty] private CalibrationMethod? selectedCalibrationMethod;
-
-    public ObservableCollection<CalibrationMethod> CalibrationMethods { get; }
-    public ObservableCollection<CalibrationInputViewModel> Inputs { get; } = new();
-
+    [ObservableProperty] private bool isDirty;
+    
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
     [NotifyCanExecuteChangedFor(nameof(ResetCommand))]
-    private bool isDirty;
+    private string? name;
+    
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ResetCommand))]
+    private CalibrationMethod? selectedCalibrationMethod;
+
+    public ObservableCollection<CalibrationMethod> CalibrationMethods { get; }
+    public ObservableCollection<CalibrationInputViewModel> Inputs { get; } = new();
     
     #endregion
 
@@ -78,6 +82,7 @@ public partial class CalibrationViewModel : ViewModelBase
     private void EvaluateDirtiness()
     {
         IsDirty =
+            Id == null ||
             Name != calibration.Name ||
             SelectedCalibrationMethod == null || SelectedCalibrationMethod.Id != calibration.MethodId ||
             Inputs.Any(i => i.IsDirty);
@@ -86,12 +91,6 @@ public partial class CalibrationViewModel : ViewModelBase
     #endregion
     
     #region Property change handlers
-    
-    // ReSharper disable once UnusedParameterInPartialMethod
-    partial void OnNameChanged(string? value)
-    {
-        EvaluateDirtiness();
-    }
 
     partial void OnSelectedCalibrationMethodChanged(CalibrationMethod? value)
     {
@@ -107,7 +106,11 @@ public partial class CalibrationViewModel : ViewModelBase
             foreach (var input in calibration.Inputs)
             {
                 var ivm = new CalibrationInputViewModel(input.Key, input.Value);
-                ivm.PropertyChanged += (_, _) => EvaluateDirtiness();
+                ivm.PropertyChanged += (_, _) =>
+                {
+                    SaveCommand.NotifyCanExecuteChanged();
+                    ResetCommand.NotifyCanExecuteChanged();
+                };
                 Inputs.Add(ivm);
             }
         }
@@ -116,12 +119,14 @@ public partial class CalibrationViewModel : ViewModelBase
             foreach (var input in value.Properties.Inputs)
             {
                 var ivm = new CalibrationInputViewModel(input);
-                ivm.PropertyChanged += (_, _) => EvaluateDirtiness();
+                ivm.PropertyChanged += (_, _) =>
+                {
+                    SaveCommand.NotifyCanExecuteChanged();
+                    ResetCommand.NotifyCanExecuteChanged();
+                };
                 Inputs.Add(ivm);
             }
         }
-        
-        EvaluateDirtiness();
     }
 
     #endregion
@@ -142,6 +147,7 @@ public partial class CalibrationViewModel : ViewModelBase
 
     private bool CanSave()
     {
+        EvaluateDirtiness();
         return IsDirty;
     }
 
@@ -172,6 +178,7 @@ public partial class CalibrationViewModel : ViewModelBase
 
     private bool CanReset()
     {
+        EvaluateDirtiness();
         return IsDirty;
     }
     

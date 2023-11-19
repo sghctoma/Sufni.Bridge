@@ -13,10 +13,10 @@
         <FluentTheme />
         <StyleInclude Source="/Views/ErrorMessagesControl.axaml" />
         <StyleInclude Source="/Views/NotificationsControl.axaml" />
-        <StyleInclude Source="/Views/SufniPlotView.axaml" />
-        <StyleInclude Source="/Views/TravelView.axaml" />
-        <StyleInclude Source="/Views/VelocityView.axaml" />
-        <StyleInclude Source="/Views/BalanceView.axaml" />
+        <StyleInclude Source="/Views/Plots/SufniPlotView.axaml" />
+        <StyleInclude Source="/Views/Plots/TravelView.axaml" />
+        <StyleInclude Source="/Views/Plots/VelocityView.axaml" />
+        <StyleInclude Source="/Views/Plots/BalanceView.axaml" />
         
         <!-- Global styles for TextBlock -->
         <Style Selector="TextBlock">

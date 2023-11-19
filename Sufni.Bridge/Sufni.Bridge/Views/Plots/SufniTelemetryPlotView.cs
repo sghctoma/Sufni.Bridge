@@ -1,7 +1,7 @@
 using Avalonia;
 using Sufni.Bridge.Models.Telemetry;
 
-namespace Sufni.Bridge.Views;
+namespace Sufni.Bridge.Views.Plots;
 
 public class SufniTelemetryPlotView : SufniPlotView
 {

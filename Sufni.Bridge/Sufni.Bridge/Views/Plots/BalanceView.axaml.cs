@@ -4,7 +4,7 @@ using Avalonia;
 using Avalonia.Controls.Primitives;
 using Sufni.Bridge.Models.Telemetry;
 
-namespace Sufni.Bridge.Views;
+namespace Sufni.Bridge.Views.Plots;
 
 public class BalanceView : TemplatedControl
 {

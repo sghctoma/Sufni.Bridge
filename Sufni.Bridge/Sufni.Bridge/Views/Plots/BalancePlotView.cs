@@ -3,7 +3,7 @@ using System.Linq;
 using Avalonia;
 using Sufni.Bridge.Models.Telemetry;
 
-namespace Sufni.Bridge.Views;
+namespace Sufni.Bridge.Views.Plots;
 
 public class BalancePlotView : SufniTelemetryPlotView
 {

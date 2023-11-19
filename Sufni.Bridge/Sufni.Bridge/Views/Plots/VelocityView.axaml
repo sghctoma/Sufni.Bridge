@@ -1,11 +1,11 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:v="using:Sufni.Bridge.Views">
+        xmlns:plots="clr-namespace:Sufni.Bridge.Views.Plots">
     <Design.PreviewWith>
-        <v:VelocityView />
+        <plots:VelocityView />
     </Design.PreviewWith>
 
-    <Style Selector="v|VelocityView">
+    <Style Selector="plots|VelocityView">
         <!-- Set Defaults -->
 
         <Setter Property="AverageReboundVelocity" Value="-254.2 mm/s" />
@@ -20,7 +20,7 @@
                     <Grid RowDefinitions="38 400 46" ColumnDefinitions="* 100">
                         
                         <!-- Velocity histogram -->
-                        <v:VelocityHistogramView Grid.Row="0" Grid.Column="0" Grid.RowSpan="3"
+                        <plots:VelocityHistogramView Grid.Row="0" Grid.Column="0" Grid.RowSpan="3"
                                                  IsHitTestVisible="False"
                                                  Type="{TemplateBinding SuspensionType}"
                                                  Telemetry="{TemplateBinding Telemetry}" />
@@ -33,7 +33,7 @@
                         
                         <Grid Grid.Row="1" Grid.Column="1">
                             <Grid.Resources>
-                                <v:GridLengthConverter x:Key="GridLengthConverter" />
+                                <plots:GridLengthConverter x:Key="GridLengthConverter" />
                             </Grid.Resources>
 
                             <Grid.RowDefinitions>

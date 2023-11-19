@@ -1,11 +1,11 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:v="using:Sufni.Bridge.Views">
+        xmlns:plots="clr-namespace:Sufni.Bridge.Views.Plots">
     <Design.PreviewWith>
-        <v:TravelView />
+        <plots:TravelView />
     </Design.PreviewWith>
 
-    <Style Selector="v|TravelView">
+    <Style Selector="plots|TravelView">
         
         <!-- Set Defaults -->
         <Setter Property="SuspensionType" Value="Front" />
@@ -19,7 +19,7 @@
                 <Grid ColumnDefinitions="150 *" RowDefinitions="300 auto auto auto">
                     
                     <!-- Travel histogram -->
-                    <v:TravelHistogramView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
+                    <plots:TravelHistogramView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
                                            IsHitTestVisible="False"
                                            Type="{TemplateBinding SuspensionType}"
                                            Telemetry="{TemplateBinding Telemetry}" />

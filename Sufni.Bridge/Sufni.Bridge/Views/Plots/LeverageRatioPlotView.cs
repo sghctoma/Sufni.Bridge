@@ -3,7 +3,7 @@ using Avalonia;
 using ScottPlot;
 using Sufni.Bridge.Models;
 
-namespace Sufni.Bridge.Views;
+namespace Sufni.Bridge.Views.Plots;
 
 public class LeverageRatioPlotView : SufniPlotView
 {

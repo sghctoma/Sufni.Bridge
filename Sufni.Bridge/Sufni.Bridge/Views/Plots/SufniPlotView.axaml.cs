@@ -1,11 +1,9 @@
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using ScottPlot.Avalonia;
-using Sufni.Bridge.Models.Telemetry;
 using Color = ScottPlot.Color;
 
-namespace Sufni.Bridge.Views;
+namespace Sufni.Bridge.Views.Plots;
 
 public class SufniPlotView : TemplatedControl
 {

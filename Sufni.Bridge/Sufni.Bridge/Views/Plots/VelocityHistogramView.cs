@@ -6,10 +6,12 @@ using ScottPlot.Plottables;
 using ScottPlot.TickGenerators;
 using Sufni.Bridge.Models.Telemetry;
 
-namespace Sufni.Bridge.Views;
+namespace Sufni.Bridge.Views.Plots;
 
-public class TravelHistogramView : SufniTelemetryPlotView
+public class VelocityHistogramView : SufniTelemetryPlotView
 {
+    private const double VelocityLimit = 2000.0;
+    
     public static readonly StyledProperty<SuspensionType> TypeProperty = AvaloniaProperty.Register<TravelHistogramView, SuspensionType>(
         "Type");
 
@@ -23,21 +25,20 @@ public class TravelHistogramView : SufniTelemetryPlotView
     {
         base.OnTelemetryChanged(telemetryData);
 
-        Plot!.Plot.Title(Type == SuspensionType.Front ? "Front travel histogram" : "Rear travel histogram");
-        Plot!.Plot.LeftAxis.Label.Text = "Travel (mm)";
+        Plot!.Plot.Title(Type == SuspensionType.Front ? "Front velocity histogram" : "Rear velocity histogram");
+        Plot!.Plot.LeftAxis.Label.Text = "Speed (mm/s)";
         Plot!.Plot.BottomAxis.Label.Text = "Time (%)";
 
-        var data = telemetryData.CalculateTravelHistogram(Type);
-        
+        var data = telemetryData.CalculateVelocityHistogram(Type);
+
         // Bar width is assumed to be 1 in ScottPlot 5, so scale the bins to accomodate this.
         // Also, flip the bin values manually, since there is no way to flip the axis itself.
-        var maxTravel = Type == SuspensionType.Front ? 
-            telemetryData.Linkage.MaxFrontTravel : 
-            telemetryData.Linkage.MaxRearTravel;
+        var min = data.Bins.Min();
+        var max = data.Bins.Max();
         var step = data.Bins[1] - data.Bins[0];
         
         var bars = data.Bins.Zip(data.Values)
-            .Select(tuple => new Bar((maxTravel - tuple.First) / step, tuple.Second))
+            .Select(tuple => new Bar((max - tuple.First + min) / step, tuple.Second))
             .ToList();
         
         BarSeries bs = new()
@@ -53,17 +54,32 @@ public class TravelHistogramView : SufniTelemetryPlotView
         
         Plot!.Plot.AutoScale();
         
-        // Set to 0.1 to hide the border line at 0 values. Otherwise it would
-        // seem that there are actual measure travel data there too.
-        Plot!.Plot.SetAxisLimits(left: 0.1);
+        // Set left axis limit to 0.1 to hide the border line at 0 values. Otherwise
+        // it would seem that there are actual measure travel data there too.
+        // Also set a hardcoded limit for the velocity range.
+        Plot!.Plot.SetAxisLimits(left: 0.1,
+            bottom: (max - VelocityLimit + min) / step,
+            top: (max - -VelocityLimit + min) / step);
         
         // Fix the tick values, since they are scaled and flipped.
-        var ticks = Enumerable.Range(0, ((int)maxTravel + 50 - 1) / 50)
-            .Select(i => i * 50)
-            .TakeWhile(value => value <= maxTravel)
+        const int increment = 500;
+        var ticks = Enumerable.Range(0, (2 * (int)VelocityLimit) / increment + 1)
+            .Select(i => -VelocityLimit + i * increment)
+            .TakeWhile(value => value <= VelocityLimit)
             .ToArray();
+        
         Plot!.Plot.LeftAxis.TickGenerator = new NumericManual(
-            ticks.Select(b => (maxTravel - b) / step).ToArray(),
+            ticks.Select(b => (max - b + min) / step).ToArray(),
             ticks.Select(b => $"{b:0}").ToArray());
+        
+        var normalData = telemetryData.CalculateNormalDistribution(Type);
+        var normal = Plot!.Plot.Add.Scatter(
+            normalData.Pdf.ToArray(),
+            normalData.Y.Select(y => (max - y + min) / step).ToArray());
+        normal.Color = Color.FromHex("#d53e4f");
+        normal.MarkerStyle.IsVisible = false;
+        normal.LineStyle.Width = 3;
+        normal.LineStyle.Pattern = LinePattern.Dot;
+
     }
 }

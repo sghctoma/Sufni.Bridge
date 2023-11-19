@@ -1,11 +1,11 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:v="using:Sufni.Bridge.Views">
+        xmlns:plots="clr-namespace:Sufni.Bridge.Views.Plots">
     <Design.PreviewWith>
-        <v:BalanceView />
+        <plots:BalanceView />
     </Design.PreviewWith>
 
-    <Style Selector="v|BalanceView">
+    <Style Selector="plots|BalanceView">
         <!-- Set Defaults -->
         <Setter Property="MeanSignedDeviation" Value="+12%" />
 
@@ -15,7 +15,7 @@
                 <Grid ColumnDefinitions="200 *" RowDefinitions="250 auto auto auto">
 
                     <!-- Travel histogram -->
-                    <v:BalancePlotView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                    <plots:BalancePlotView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
                                        IsHitTestVisible="False"
                                        Type="{TemplateBinding BalanceType}"
                                        Telemetry="{TemplateBinding Telemetry}" />

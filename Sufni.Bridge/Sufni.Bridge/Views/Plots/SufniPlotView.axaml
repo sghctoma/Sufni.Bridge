@@ -1,12 +1,12 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:controls="using:Sufni.Bridge.Views"
-        xmlns:scottPlot="clr-namespace:ScottPlot.Avalonia;assembly=ScottPlot.Avalonia">
+        xmlns:scottPlot="clr-namespace:ScottPlot.Avalonia;assembly=ScottPlot.Avalonia"
+        xmlns:plots="clr-namespace:Sufni.Bridge.Views.Plots">
     <Design.PreviewWith>
-        <controls:SufniPlotView />
+        <plots:SufniPlotView />
     </Design.PreviewWith>
 
-    <Style Selector=":is(controls|SufniPlotView)">
+    <Style Selector=":is(plots|SufniPlotView)">
         <!-- Set Defaults -->
         <Setter Property="Template">
             <ControlTemplate>

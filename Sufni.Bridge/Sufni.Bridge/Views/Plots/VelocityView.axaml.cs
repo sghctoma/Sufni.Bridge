@@ -7,7 +7,7 @@ using Avalonia.Data;
 using Avalonia.Data.Converters;
 using Sufni.Bridge.Models.Telemetry;
 
-namespace Sufni.Bridge.Views;
+namespace Sufni.Bridge.Views.Plots;
 
 public class GridLengthConverter : IValueConverter
 {

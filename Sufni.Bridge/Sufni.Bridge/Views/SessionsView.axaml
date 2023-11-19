@@ -6,6 +6,7 @@
              xmlns:v="clr-namespace:Sufni.Bridge.Views"
              xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
              xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
+             xmlns:plots="clr-namespace:Sufni.Bridge.Views.Plots"
              mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
              x:Class="Sufni.Bridge.Views.SessionsView"
              x:DataType="vm:MainViewModel"
@@ -53,54 +54,54 @@
                               MinWidth="300" HorizontalAlignment="Stretch">
                             
                             <!-- Front travel -->
-                            <v:TravelView Grid.Row="0" Grid.Column="0"
+                            <plots:TravelView Grid.Row="0" Grid.Column="0"
                                           IsVisible="{Binding TelemetryData.Front.Present}"
                                           SuspensionType="Front"
                                           Telemetry="{Binding TelemetryData}" />
                             
                             <!-- Rear travel -->
-                            <v:TravelView Grid.Row="1" Grid.Column="0"
+                            <plots:TravelView Grid.Row="1" Grid.Column="0"
                                           IsVisible="{Binding TelemetryData.Rear.Present}"
                                           SuspensionType="Rear"
                                           Telemetry="{Binding TelemetryData}" />
                             
                             <!-- Front velocity -->
-                            <v:VelocityView Grid.Row="2" Grid.Column="0"
+                            <plots:VelocityView Grid.Row="2" Grid.Column="0"
                                             IsVisible="{Binding TelemetryData.Front.Present}"
                                             SuspensionType="Front"
                                             Telemetry="{Binding TelemetryData}" />
                             
                             <!-- Rear velocity -->
-                            <v:VelocityView Grid.Row="3" Grid.Column="0"
+                            <plots:VelocityView Grid.Row="3" Grid.Column="0"
                                             IsVisible="{Binding TelemetryData.Rear.Present}"
                                             SuspensionType="Rear"
                                             Telemetry="{Binding TelemetryData}" />
                             
                             <!-- Compression balance -->
-                            <v:BalanceView Grid.Row="4" Grid.Column="0"
+                            <plots:BalanceView Grid.Row="4" Grid.Column="0"
                                            BalanceType="Compression"
                                            Telemetry="{Binding TelemetryData}">
-                                <v:BalanceView.IsVisible>
+                                <plots:BalanceView.IsVisible>
                                     <MultiBinding Converter="{x:Static BoolConverters.And}">
                                         <Binding Path="TelemetryData" Converter="{x:Static ObjectConverters.IsNotNull}" />
                                         <Binding Path="TelemetryData.Front.Present" />
                                         <Binding Path="TelemetryData.Rear.Present" />
                                     </MultiBinding>
-                                </v:BalanceView.IsVisible>
-                            </v:BalanceView>
+                                </plots:BalanceView.IsVisible>
+                            </plots:BalanceView>
                             
                             <!-- Rebound balance -->
-                            <v:BalanceView Grid.Row="5" Grid.Column="0"
+                            <plots:BalanceView Grid.Row="5" Grid.Column="0"
                                            BalanceType="Rebound"
                                            Telemetry="{Binding TelemetryData}">
-                                <v:BalanceView.IsVisible>
+                                <plots:BalanceView.IsVisible>
                                     <MultiBinding Converter="{x:Static BoolConverters.And}">
                                         <Binding Path="TelemetryData" Converter="{x:Static ObjectConverters.IsNotNull}" />
                                         <Binding Path="TelemetryData.Front.Present" />
                                         <Binding Path="TelemetryData.Rear.Present" />
                                     </MultiBinding>
-                                </v:BalanceView.IsVisible>
-                            </v:BalanceView>
+                                </plots:BalanceView.IsVisible>
+                            </plots:BalanceView>
                             
                             <!-- Description -->
                             <TextBlock Grid.Row="6" Grid.Column="0"

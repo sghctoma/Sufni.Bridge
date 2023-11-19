@@ -1,4 +1,5 @@
-﻿using Sufni.Bridge.Models;
+﻿using System;
+using Sufni.Bridge.Models;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http;
@@ -189,6 +190,21 @@ internal class HttpApiService : IHttpApiService
         return result.Id;
     }
 
+    public async Task<int> PutProcessedSessionAsync(string name, string description, byte[] data)
+    {
+        using HttpResponseMessage response = await client.PutAsJsonAsync($"{serverUrl}/api/session/psst",
+            new
+            {
+                name,
+                description,
+                data = Convert.ToBase64String(data)
+            });
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<PutResponse>();
+        Debug.Assert(result != null);
+        return result.Id;
+    }
+ 
     public async Task DeleteSessionAsync(int id)
     {
         using var response = await client.DeleteAsync($"{serverUrl}/api/session/{id}");

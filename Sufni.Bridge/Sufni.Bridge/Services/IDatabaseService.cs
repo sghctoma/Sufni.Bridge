@@ -27,6 +27,7 @@ public interface IDatabaseService
     public Task DeleteSetupAsync(int id);
     public Task<List<Session>> GetSessionsAsync();
     public Task<TelemetryData?> GetSessionPsstAsync(int id);
+    public Task<byte[]?> GetSessionRawPsstAsync(int id);
     public Task<int> PutSessionAsync(Session session);
     public Task DeleteSessionAsync(int id);
 }

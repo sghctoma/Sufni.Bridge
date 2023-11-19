@@ -251,6 +251,11 @@ public class HttpApiServiceStub : IHttpApiService
         Sessions.Add(session);
         return Task.FromResult(id);
     }
+    
+    public Task<int> PutProcessedSessionAsync(string name, string description, byte[] data)
+    {
+        return Task.FromResult(0);
+    }
 
     public Task DeleteSessionAsync(int id)
     {

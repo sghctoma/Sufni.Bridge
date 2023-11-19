@@ -287,6 +287,14 @@ public class SqLiteDatabaseService : IDatabaseService
             "SELECT data FROM session WHERE id = ?", id);
         return sessions.Count == 1 ? MessagePackSerializer.Deserialize<TelemetryData>(sessions[0].ProcessedData) : null;
     }
+    
+    public async Task<byte[]?> GetSessionRawPsstAsync(int id)
+    {
+        await Initialization;
+        var sessions = await connection.QueryAsync<Session>(
+            "SELECT data FROM session WHERE id = ?", id);
+        return sessions.Count == 1 ? sessions[0].ProcessedData : null;
+    }
 
     public async Task<int> PutSessionAsync(Session session)
     {

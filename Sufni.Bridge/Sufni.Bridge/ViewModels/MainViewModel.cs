@@ -64,7 +64,6 @@ public partial class MainViewModel : ViewModelBase
         */
     }
 
-    //private readonly IHttpApiService? httpApiService;
     private readonly IDatabaseService? databaseService;
 
     #endregion
@@ -84,6 +83,7 @@ public partial class MainViewModel : ViewModelBase
                 return;
             }
 
+            UploadSessionsCommand.NotifyCanExecuteChanged();
             SelectPage();
         };
 
@@ -277,10 +277,43 @@ public partial class MainViewModel : ViewModelBase
     }
     
     [RelayCommand(CanExecute = nameof(CanUploadSessions))]
-    private void UploadSessions()
+    private async Task UploadSessions()
     {
-        // TODO: implement
-        ErrorMessages.Add("Session upload not yet implemented!");
+        var httpApiService = App.Current?.Services?.GetService<IHttpApiService>();
+        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
+        Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
+        Debug.Assert(SettingsPage.IsRegistered, "SettingsPage.IsRegistered");
+
+        List<Session> remoteSessions;
+        try
+        {
+            remoteSessions = await httpApiService.GetSessionsAsync();
+        }
+        catch (Exception e)
+        {
+            ErrorMessages.Add($"Remote sessions could not be loaded: {e.Message}");
+            return;
+        }
+        
+        foreach (var svm in Sessions)
+        {
+            try
+            {
+                var timestamp = ((DateTimeOffset)svm.Timestamp!).ToUnixTimeSeconds();
+                if (remoteSessions.Any(s => s.Timestamp == timestamp))
+                {
+                    continue;
+                }
+
+                var psst = await databaseService.GetSessionRawPsstAsync(svm.Id ?? 0);
+                await httpApiService.PutProcessedSessionAsync(svm.Name!, svm.Description!, psst!);
+                Notifications.Insert(0, $"{svm.Name} was successfully imported.");
+            }
+            catch(Exception e)
+            {
+                ErrorMessages.Add($"Session \"{svm.Name}\" could not be uploaded: {e.Message}");
+            }
+        }
     }
 
     [RelayCommand]

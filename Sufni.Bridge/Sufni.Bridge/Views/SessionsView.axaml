@@ -15,7 +15,7 @@
         <vm:MainViewModel />
     </Design.DataContext>
 
-    <Grid RowDefinitions="* auto 40" ColumnDefinitions="*">
+    <Grid RowDefinitions="* auto auto 40" ColumnDefinitions="*">
 
         <!-- List of Calibrations -->
         <ListBox Grid.Row="0" Grid.Column="0" Margin="0,5,0,0"
@@ -147,15 +147,22 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-
+        
+        <!-- Notifications -->
+        <v:NotificationsControl Grid.Row="1" Grid.Column="0" 
+                                Margin="5, 0"
+                                ClearNotificationsCommand="{Binding ClearNotificationsCommand}"
+                                Notifications="{Binding Notifications}"
+                                IsVisible="{Binding Notifications.Count}" />
+        
         <!-- Error messages -->
-        <v:ErrorMessagesControl Grid.Row="1" Grid.Column="0"
+        <v:ErrorMessagesControl Grid.Row="2" Grid.Column="0"
                                 Margin="5, 0"
                                 ClearErrorsCommand="{Binding ClearErrorsCommand}"
                                 ErrorMessages="{Binding ErrorMessages}"
                                 IsVisible="{Binding ErrorMessages.Count}" />
 
-        <Grid Grid.Row="2" Grid.Column="0"
+        <Grid Grid.Row="3" Grid.Column="0"
               ColumnDefinitions="* auto" RowDefinitions="40">
             <!-- Upload Sessions -->
             <Button Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"

@@ -12,19 +12,6 @@ public class SufniPlotView : TemplatedControl
     protected AvaPlot? Plot;
     protected Color FrontColor = Color.FromHex("#3288bd");
     protected Color RearColor = Color.FromHex("#66c2a5");
-
-    #region Styled properties
-    
-    public static readonly StyledProperty<TelemetryData> TelemetryProperty =
-        AvaloniaProperty.Register<SufniPlotView, TelemetryData>(nameof(Telemetry));
-    
-    public TelemetryData Telemetry
-    {
-        get => GetValue(TelemetryProperty);
-        set => SetValue(TelemetryProperty, value);
-    }
-    
-    #endregion
     
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
@@ -81,25 +68,4 @@ public class SufniPlotView : TemplatedControl
         plot.YAxis.MajorTickWidth = 0;
         plot.YAxis.MinorTickWidth = 0;
     }
-    
-    public SufniPlotView()
-    {
-        PropertyChanged += (_, e) =>
-        {
-            if (e.NewValue is null || Plot is null) return;
-            var plot = Plot.Plot;
-            
-            switch (e.Property.Name)
-            {
-                case nameof(Telemetry):
-                    plot.Clear();
-                    OnTelemetryChanged((TelemetryData)e.NewValue);
-                    break;
-            }
-
-            Plot.Refresh();
-        };
-    }
-
-    protected virtual void OnTelemetryChanged(TelemetryData telemetryData) { }
 }

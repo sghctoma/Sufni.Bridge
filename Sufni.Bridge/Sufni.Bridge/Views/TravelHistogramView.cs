@@ -8,7 +8,7 @@ using Sufni.Bridge.Models.Telemetry;
 
 namespace Sufni.Bridge.Views;
 
-public class TravelHistogramView : SufniPlotView
+public class TravelHistogramView : SufniTelemetryPlotView
 {
     public static readonly StyledProperty<SuspensionType> TypeProperty = AvaloniaProperty.Register<TravelHistogramView, SuspensionType>(
         "Type");

@@ -124,7 +124,9 @@ public partial class SetupViewModel : ViewModelBase
             
             setup = newSetup;
             originalBoardId = BoardId;
-            IsDirty = false;
+            
+            SaveCommand.NotifyCanExecuteChanged();
+            ResetCommand.NotifyCanExecuteChanged();
         }
         catch (Exception e)
         {

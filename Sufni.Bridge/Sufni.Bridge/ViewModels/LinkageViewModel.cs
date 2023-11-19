@@ -14,7 +14,6 @@ namespace Sufni.Bridge.ViewModels;
 public partial class LinkageViewModel : ViewModelBase
 {
     private Linkage linkage;
-    private string? linkageData;
 
     #region Private methods
 
@@ -25,8 +24,8 @@ public partial class LinkageViewModel : ViewModelBase
             Name != linkage.Name ||
             Math.Abs(HeadAngle - linkage.HeadAngle) > 0.00001 ||
             Math.Abs((FrontStroke ?? 0.0) - (linkage.FrontStroke ?? 0.0)) > 0.00001 ||
-            Math.Abs((RearStroke ?? 0.0) - (linkage.RearStroke ?? 0.0)) > 0.00001 ||
-            LinkageDataFile != null;
+            Math.Abs((RearStroke ?? 0.0) - (linkage.RearStroke ?? 0.0)) > 0.00001 || 
+            LeverageRatioData == null || !LeverageRatioData.Equals(linkage.LeverageRatioData);
     }
 
     #endregion
@@ -55,11 +54,11 @@ public partial class LinkageViewModel : ViewModelBase
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
     [NotifyCanExecuteChangedFor(nameof(ResetCommand))]
     private double? rearStroke;
-    
+
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
     [NotifyCanExecuteChangedFor(nameof(ResetCommand))]
-    private string? linkageDataFile;
+    private LeverageRatioData? leverageRatioData;
     
     #endregion
 
@@ -69,12 +68,21 @@ public partial class LinkageViewModel : ViewModelBase
     {
         this.linkage = linkage;
         Id = linkage.Id;
+        LeverageRatioData = linkage.LeverageRatioData;
         Reset();
     }
 
     #endregion
 
     #region Commands
+    
+    [RelayCommand]
+    private void SetLeverageRatioData()
+    {
+        // Trigger LeverageRatioData change, so the plot will pick the data up.
+        LeverageRatioData = null;
+        LeverageRatioData = linkage.LeverageRatioData;
+    }
 
     private bool CanSave()
     {
@@ -96,10 +104,12 @@ public partial class LinkageViewModel : ViewModelBase
                 HeadAngle,
                 FrontStroke,
                 RearStroke,
-                linkageData);
+                LeverageRatioData!.ToString());
             Id = await databaseService.PutLinkageAsync(newLinkage);
             linkage = newLinkage;
-            IsDirty = false;
+            
+            SaveCommand.NotifyCanExecuteChanged();
+            ResetCommand.NotifyCanExecuteChanged();
         }
         catch (Exception e)
         {
@@ -120,7 +130,7 @@ public partial class LinkageViewModel : ViewModelBase
         HeadAngle = linkage.HeadAngle;
         FrontStroke = linkage.FrontStroke;
         RearStroke = linkage.RearStroke;
-        LinkageDataFile = null;
+        LeverageRatioData = linkage.LeverageRatioData;
     }
 
     [RelayCommand]
@@ -136,10 +146,9 @@ public partial class LinkageViewModel : ViewModelBase
         {
             if ((await file.GetBasicPropertiesAsync()).Size <= 1024 * 1024 * 1)
             {
-                LinkageDataFile = file.Name;
                 await using var readStream = await file.OpenReadAsync();
                 using var reader = new StreamReader(readStream);
-                linkageData = await reader.ReadToEndAsync(token);
+                LeverageRatioData = Linkage.LeverageFromCsv(reader);
             }
             else
             {

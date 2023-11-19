@@ -8,7 +8,7 @@ using Sufni.Bridge.Models.Telemetry;
 
 namespace Sufni.Bridge.Views;
 
-public class VelocityHistogramView : SufniPlotView
+public class VelocityHistogramView : SufniTelemetryPlotView
 {
     private const double VelocityLimit = 2000.0;
     

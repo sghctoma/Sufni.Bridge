@@ -42,7 +42,7 @@
                             </Grid>
                         </Expander.Header>
                         
-                        <!-- Attach command to Expanding event -->
+                        <!-- Attach command to Expanded event -->
                         <i:Interaction.Behaviors>
                             <ia:EventTriggerBehavior EventName="Expanded">
                                 <InvokeCommandAction Command="{Binding LoadPsstCommand}" />

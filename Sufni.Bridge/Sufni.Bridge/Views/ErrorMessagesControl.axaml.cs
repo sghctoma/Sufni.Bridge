@@ -11,7 +11,7 @@ public class ErrorMessagesControl : TemplatedControl
         "ErrorMessages", new Collection<string>{"test error 1", "test error 2", "test error 3"});
 
     public static readonly StyledProperty<IRelayCommand> ClearErrorsCommandProperty = AvaloniaProperty.Register<ErrorMessagesControl, IRelayCommand>(
-        "DeleteCommand");
+        "ClearErrorsCommand");
 
     public IRelayCommand ClearErrorsCommand
     {

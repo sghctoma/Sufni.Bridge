@@ -12,6 +12,7 @@
     <Application.Styles>
         <FluentTheme />
         <StyleInclude Source="/Views/ErrorMessagesControl.axaml" />
+        <StyleInclude Source="/Views/NotificationsControl.axaml" />
         <StyleInclude Source="/Views/SufniPlotView.axaml" />
         <StyleInclude Source="/Views/TravelView.axaml" />
         <StyleInclude Source="/Views/VelocityView.axaml" />

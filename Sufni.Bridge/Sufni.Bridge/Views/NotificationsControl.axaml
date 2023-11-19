@@ -1,0 +1,52 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="using:Sufni.Bridge.Views"
+        xmlns:system="clr-namespace:System;assembly=System.Runtime">
+    <Design.PreviewWith>
+        <controls:NotificationsControl />
+    </Design.PreviewWith>
+
+    <Style Selector="controls|NotificationsControl">
+        <!-- Set Defaults -->
+        <Setter Property="MaxHeight" Value="100" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Background="DarkKhaki"
+                        BorderThickness="2" BorderBrush="Khaki"
+                        MaxHeight="{TemplateBinding MaxHeight}"
+                        Padding="5"
+                        CornerRadius="5">
+                    <Grid ColumnDefinitions="*" RowDefinitions="auto *">
+                        <Button Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Top"
+                                HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                                CornerRadius="2" Padding="0" Width="50" Height="20"
+                                Content="close"
+                                Background="Khaki" Foreground="#0d0d0d"
+                                Command="{TemplateBinding ClearNotificationsCommand}" />
+                        <ListBox Grid.Row="1" Background="Transparent"
+                                 ItemsSource="{TemplateBinding Notifications}">
+                            <ListBox.Styles>
+                                <Style Selector="ListBoxItem">
+                                    <Setter Property="Padding" Value="0,2, 0, 0" />
+                                </Style>
+                                <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
+                                    <Setter Property="Background" Value="Transparent" />
+                                </Style>
+                                <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
+                                    <Setter Property="Background" Value="#19000000" />
+                                </Style>
+                            </ListBox.Styles>
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding (system:String)}"
+                                               Foreground="#0d0d0d"
+                                               TextWrapping="Wrap" />
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </Grid>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+</Styles>

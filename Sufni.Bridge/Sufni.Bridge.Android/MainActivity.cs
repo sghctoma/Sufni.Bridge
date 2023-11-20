@@ -9,7 +9,7 @@ using Sufni.Bridge.Services;
 namespace Sufni.Bridge.Android
 {
     [Activity(
-        Label = "Sufni.Bridge.Android",
+        Label = "Sufni Telemetry",
         Theme = "@style/MyTheme.NoActionBar",
         Icon = "@drawable/icon",
         MainLauncher = true,

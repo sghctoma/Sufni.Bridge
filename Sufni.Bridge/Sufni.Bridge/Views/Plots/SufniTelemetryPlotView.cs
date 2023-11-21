@@ -1,4 +1,5 @@
 using Avalonia;
+using ScottPlot;
 using Sufni.Bridge.Models.Telemetry;
 
 namespace Sufni.Bridge.Views.Plots;
@@ -36,6 +37,60 @@ public class SufniTelemetryPlotView : SufniPlotView
             Plot.Refresh();
         };
     }
+
+    protected enum LabelLinePosition
+    {
+        Below,
+        Above
+    }
+
+    protected void AddLabel(string content, double x, double y, int xoffset, int yoffset, Alignment alignment = Alignment.LowerLeft)
+    {
+        Text text = new()
+        {
+            Font =
+            {
+                Color = Color.FromHex("#fefefe"),
+                Size = 13
+            },
+            Content = content,
+            Alignment = alignment,
+            XOffset = xoffset,
+            YOffset = yoffset,
+            Position = new Coordinates(x, y)
+        };
+        Plot!.Plot.Add.Plottable(text);
+    }
     
+    protected void AddLabelWithHorizontalLine(string content, double position, LabelLinePosition linePosition)
+    {
+        var yoffset = linePosition switch
+        {
+            LabelLinePosition.Above => -5,
+            LabelLinePosition.Below => 5,
+            _ => 0
+        };
+
+        Text text = new()
+        {
+            Font =
+            {
+                Color = Color.FromHex("#fefefe"),
+                Size = 13
+            },
+            Content = content,
+            Alignment = linePosition == LabelLinePosition.Above ? Alignment.UpperRight : Alignment.LowerRight,
+            XOffset = -10,
+            YOffset = yoffset,
+            Position = new Coordinates(Plot!.Plot.GetAxisLimits().Right, position)
+        };
+        Plot!.Plot.Add.Plottable(text);
+
+        var line = Plot!.Plot.Add.Crosshair(0, position);
+        line.VerticalLineIsVisible = false;
+        line.LineStyle.Pattern = LinePattern.Dot;
+        line.LineStyle.Color = Color.FromHex("#dddddd");
+    }
+
     protected virtual void OnTelemetryChanged(TelemetryData telemetryData) { }
 }

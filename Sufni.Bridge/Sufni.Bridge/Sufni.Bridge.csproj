@@ -42,16 +42,8 @@
       <DependentUpon>SufniPlotView.axaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Views\Plots\BalanceView.axaml.cs">
-      <DependentUpon>BalanceView.axaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Update="Views\Plots\VelocityView.axaml.cs">
       <DependentUpon>VelocityView.axaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="Views\Plots\TravelView.axaml.cs">
-      <DependentUpon>TravelView.axaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

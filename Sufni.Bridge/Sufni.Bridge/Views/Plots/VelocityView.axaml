@@ -6,32 +6,26 @@
     </Design.PreviewWith>
 
     <Style Selector="plots|VelocityView">
-        <!-- Set Defaults -->
-
-        <Setter Property="AverageReboundVelocity" Value="-254.2 mm/s" />
-        <Setter Property="MaximumReboundVelocity" Value="-1527 mm/s" />
-        <Setter Property="AverageCompressionVelocity" Value="262.2 mm/s" />
-        <Setter Property="MaximumCompressionVelocity" Value="3451.5 mm/s" />
-
+        
         <!-- Template -->
         <Setter Property="Template">
             <ControlTemplate>
                 <StackPanel Orientation="Vertical">
-                    <Grid RowDefinitions="38 400 46" ColumnDefinitions="* 100">
+                    <Grid RowDefinitions="38 400 46" ColumnDefinitions="* 72">
                         
                         <!-- Velocity histogram -->
                         <plots:VelocityHistogramView Grid.Row="0" Grid.Column="0" Grid.RowSpan="3"
                                                  IsHitTestVisible="False"
-                                                 Type="{TemplateBinding SuspensionType}"
+                                                 SuspensionType="{TemplateBinding SuspensionType}"
                                                  Telemetry="{TemplateBinding Telemetry}" />
 
                         <!-- Velocity bands -->
-                        <TextBlock Grid.Row="0" Grid.Column="1"
+                        <TextBlock Grid.Row="0" Grid.Column="1" Margin="0,0,12,0"
                                    FontWeight="Black" Foreground="#d0d0d0"
                                    HorizontalAlignment="Center" VerticalAlignment="Center"
-                                   Text="Speed zones" />
+                                   Text="Zones" />
                         
-                        <Grid Grid.Row="1" Grid.Column="1">
+                        <Grid Grid.Row="1" Grid.Column="1" Margin="0,0,12,0">
                             <Grid.Resources>
                                 <plots:GridLengthConverter x:Key="GridLengthConverter" />
                             </Grid.Resources>
@@ -64,57 +58,34 @@
                             </Grid.Styles>
 
                             <Border Grid.Row="0" Background="#303030" BorderThickness="1,1,1,1">
-                                <TextBlock
-                                    Text="{Binding Path=VelocityBands.HighSpeedRebound, RelativeSource={RelativeSource TemplatedParent}, StringFormat={}HSR: {0:0.00} %}" />
+                                <TextBlock TextAlignment="Center">
+                                    <Run Text="HSR:" />
+                                    <LineBreak />
+                                    <Run Text="{Binding Path=VelocityBands.HighSpeedRebound, RelativeSource={RelativeSource TemplatedParent}, StringFormat={}{0:0.00} %}" />
+                                </TextBlock>
                             </Border>
                             <Border Grid.Row="1" Background="#282828">
-                                <TextBlock
-                                    Text="{Binding Path=VelocityBands.LowSpeedRebound, RelativeSource={RelativeSource TemplatedParent}, StringFormat={}LSR: {0:0.00} %}" />
+                                <TextBlock TextAlignment="Center">
+                                    <Run Text="LSR:" />
+                                    <LineBreak />
+                                    <Run Text="{Binding Path=VelocityBands.LowSpeedRebound, RelativeSource={RelativeSource TemplatedParent}, StringFormat={}{0:0.00} %}" />
+                                </TextBlock>
                             </Border>
                             <Border Grid.Row="2" Background="#282828">
-                                <TextBlock
-                                    Text="{Binding Path=VelocityBands.LowSpeedCompression, RelativeSource={RelativeSource TemplatedParent}, StringFormat={}LSC: {0:0.00} %}" />
+                                <TextBlock TextAlignment="Center">
+                                    <Run Text="LSC:" />
+                                    <LineBreak />
+                                    <Run Text="{Binding Path=VelocityBands.LowSpeedCompression, RelativeSource={RelativeSource TemplatedParent}, StringFormat={}{0:0.00} %}" />
+                                </TextBlock>
                             </Border>
                             <Border Grid.Row="3" Background="#303030">
-                                <TextBlock
-                                    Text="{Binding Path=VelocityBands.HighSpeedCompression, RelativeSource={RelativeSource TemplatedParent}, StringFormat={}HSC: {0:0.00} %}" />
+                                <TextBlock TextAlignment="Center">
+                                    <Run Text="HSC:" />
+                                    <LineBreak />
+                                    <Run Text="{Binding Path=VelocityBands.HighSpeedCompression, RelativeSource={RelativeSource TemplatedParent}, StringFormat={}{0:0.00} %}" />
+                                </TextBlock>
                             </Border>
                         </Grid>
-                    </Grid>
-
-                    <Grid ColumnDefinitions="150 * *" RowDefinitions="auto auto auto">
-                        
-                        <!-- Statistics table headers -->
-                        <Label Grid.Row="0" Grid.Column="1"
-                               FontWeight="500"
-                               VerticalAlignment="Center"
-                               Content="Rebound" />
-                        <Label Grid.Row="0" Grid.Column="2"
-                               FontWeight="500"
-                               VerticalAlignment="Center"
-                               Content="Compression" />
-                        <Label Grid.Row="1" Grid.Column="0"
-                               FontWeight="500"
-                               VerticalAlignment="Center"
-                               Content="Average" />
-                        <Label Grid.Row="2" Grid.Column="0"
-                               FontWeight="500"
-                               VerticalAlignment="Center"
-                               Content="Maximum" />
-
-                        <!-- Statistics table values -->
-                        <TextBlock Grid.Row="1" Grid.Column="1"
-                                   HorizontalAlignment="Stretch" VerticalAlignment="Center"
-                                   Text="{TemplateBinding AverageReboundVelocity}" />
-                        <TextBlock Grid.Row="1" Grid.Column="2"
-                                   HorizontalAlignment="Stretch" VerticalAlignment="Center"
-                                   Text="{TemplateBinding AverageCompressionVelocity}" />
-                        <TextBlock Grid.Row="2" Grid.Column="1"
-                                   HorizontalAlignment="Stretch" VerticalAlignment="Center"
-                                   Text="{TemplateBinding MaximumReboundVelocity}" />
-                        <TextBlock Grid.Row="2" Grid.Column="2"
-                                   HorizontalAlignment="Stretch" VerticalAlignment="Center"
-                                   Text="{TemplateBinding MaximumCompressionVelocity}" />
                     </Grid>
                 </StackPanel>
             </ControlTemplate>

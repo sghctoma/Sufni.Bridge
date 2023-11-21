@@ -50,58 +50,64 @@
                             </ia:EventTriggerBehavior>
                         </i:Interaction.Behaviors>
 
-                        <Grid ColumnDefinitions="*" RowDefinitions="auto auto auto auto auto auto auto 120 auto 40"
+                        <Grid ColumnDefinitions="*" RowDefinitions="300 300 auto auto 250 250 auto 120 auto 40"
                               MinWidth="300" HorizontalAlignment="Stretch">
                             
                             <!-- Front travel -->
-                            <plots:TravelView Grid.Row="0" Grid.Column="0"
-                                          IsVisible="{Binding TelemetryData.Front.Present}"
-                                          SuspensionType="Front"
-                                          Telemetry="{Binding TelemetryData}" />
+                            <plots:TravelHistogramView Grid.Row="0" Grid.Column="0"
+                                                       IsVisible="{Binding TelemetryData.Front.Present}"
+                                                       IsHitTestVisible="False"
+                                                       SuspensionType="Front"
+                                                       Telemetry="{Binding TelemetryData}" />
                             
                             <!-- Rear travel -->
-                            <plots:TravelView Grid.Row="1" Grid.Column="0"
-                                          IsVisible="{Binding TelemetryData.Rear.Present}"
-                                          SuspensionType="Rear"
-                                          Telemetry="{Binding TelemetryData}" />
+                            <plots:TravelHistogramView Grid.Row="1" Grid.Column="0"
+                                                       IsVisible="{Binding TelemetryData.Rear.Present}"
+                                                       IsHitTestVisible="False"
+                                                       SuspensionType="Rear"
+                                                       Telemetry="{Binding TelemetryData}" />
                             
                             <!-- Front velocity -->
                             <plots:VelocityView Grid.Row="2" Grid.Column="0"
-                                            IsVisible="{Binding TelemetryData.Front.Present}"
-                                            SuspensionType="Front"
-                                            Telemetry="{Binding TelemetryData}" />
+                                                IsVisible="{Binding TelemetryData.Front.Present}"
+                                                IsHitTestVisible="False"
+                                                SuspensionType="Front"
+                                                Telemetry="{Binding TelemetryData}" />
                             
                             <!-- Rear velocity -->
                             <plots:VelocityView Grid.Row="3" Grid.Column="0"
-                                            IsVisible="{Binding TelemetryData.Rear.Present}"
-                                            SuspensionType="Rear"
-                                            Telemetry="{Binding TelemetryData}" />
+                                                IsVisible="{Binding TelemetryData.Rear.Present}"
+                                                IsHitTestVisible="False"
+                                                SuspensionType="Rear"
+                                                Telemetry="{Binding TelemetryData}" />
                             
                             <!-- Compression balance -->
-                            <plots:BalanceView Grid.Row="4" Grid.Column="0"
-                                           BalanceType="Compression"
-                                           Telemetry="{Binding TelemetryData}">
-                                <plots:BalanceView.IsVisible>
+                            <plots:BalancePlotView Grid.Row="4" Grid.Column="0"
+                                                   IsHitTestVisible="False"
+                                                   BalanceType="Compression"
+                                                   Telemetry="{Binding TelemetryData}">
+                                <plots:BalancePlotView.IsVisible>
                                     <MultiBinding Converter="{x:Static BoolConverters.And}">
                                         <Binding Path="TelemetryData" Converter="{x:Static ObjectConverters.IsNotNull}" />
                                         <Binding Path="TelemetryData.Front.Present" />
                                         <Binding Path="TelemetryData.Rear.Present" />
                                     </MultiBinding>
-                                </plots:BalanceView.IsVisible>
-                            </plots:BalanceView>
+                                </plots:BalancePlotView.IsVisible>
+                            </plots:BalancePlotView>
                             
                             <!-- Rebound balance -->
-                            <plots:BalanceView Grid.Row="5" Grid.Column="0"
-                                           BalanceType="Rebound"
-                                           Telemetry="{Binding TelemetryData}">
-                                <plots:BalanceView.IsVisible>
+                            <plots:BalancePlotView Grid.Row="5" Grid.Column="0"
+                                                   IsHitTestVisible="False"
+                                                   BalanceType="Rebound"
+                                                   Telemetry="{Binding TelemetryData}">
+                                <plots:BalancePlotView.IsVisible>
                                     <MultiBinding Converter="{x:Static BoolConverters.And}">
                                         <Binding Path="TelemetryData" Converter="{x:Static ObjectConverters.IsNotNull}" />
                                         <Binding Path="TelemetryData.Front.Present" />
                                         <Binding Path="TelemetryData.Rear.Present" />
                                     </MultiBinding>
-                                </plots:BalanceView.IsVisible>
-                            </plots:BalanceView>
+                                </plots:BalancePlotView.IsVisible>
+                            </plots:BalancePlotView>
                             
                             <!-- Description -->
                             <TextBlock Grid.Row="6" Grid.Column="0"

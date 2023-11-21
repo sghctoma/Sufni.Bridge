@@ -1,30 +1,49 @@
 using System;
 using System.Linq;
 using Avalonia;
+using ScottPlot;
 using Sufni.Bridge.Models.Telemetry;
 
 namespace Sufni.Bridge.Views.Plots;
 
 public class BalancePlotView : SufniTelemetryPlotView
 {
-    public static readonly StyledProperty<BalanceType> TypeProperty = AvaloniaProperty.Register<BalanceView, BalanceType>(
-        "Type");
+    public static readonly StyledProperty<BalanceType> BalanceTypeProperty = AvaloniaProperty.Register<BalancePlotView, BalanceType>(
+        "BalanceType");
 
-    public BalanceType Type
+    public BalanceType BalanceType
     {
-        get => GetValue(TypeProperty);
-        set => SetValue(TypeProperty, value);
+        get => GetValue(BalanceTypeProperty);
+        set => SetValue(BalanceTypeProperty, value);
+    }
+    
+    private void AddStatistics()
+    {
+        var balance = Telemetry.CalculateBalance(BalanceType);
+
+        var maxVelocity = Math.Max(
+            balance.FrontVelocity.Max(),
+            balance.RearVelocity.Max());
+        
+        var maxTravel = Math.Max(
+            balance.FrontTravel.Max(),
+            balance.RearTravel.Max());
+            
+        var msd = balance.MeanSignedDeviation / maxVelocity * 100.0;
+        var msdString = $"MSD: {msd:+0.00;-#.00} %";
+
+        AddLabel(msdString, maxTravel, 0, -10, 5, Alignment.LowerRight);
     }
     
     protected override void OnTelemetryChanged(TelemetryData telemetryData)
     {
         base.OnTelemetryChanged(telemetryData);
 
-        Plot!.Plot.Title(Type == BalanceType.Compression ? "Compression balance" : "Rebound balance");
+        Plot!.Plot.Title(BalanceType == BalanceType.Compression ? "Compression balance" : "Rebound balance");
         Plot!.Plot.BottomAxis.Label.Text = "Travel (%)";
         Plot!.Plot.LeftAxis.Label.Text = "Velocity (mm/s)";
 
-        var balance = telemetryData.CalculateBalance(Type);
+        var balance = telemetryData.CalculateBalance(BalanceType);
 
         var maxTravel = Math.Max(balance.FrontTravel.Max(), balance.RearTravel.Max());
         var maxVelocity = Math.Max(balance.FrontVelocity.Max(), balance.RearVelocity.Max());
@@ -49,5 +68,7 @@ public class BalancePlotView : SufniTelemetryPlotView
         rearTrend.MarkerStyle.IsVisible = false;
         rearTrend.LineStyle.Color = RearColor;
         rearTrend.LineStyle.Width = 2;
+        
+        AddStatistics();
     }
 }

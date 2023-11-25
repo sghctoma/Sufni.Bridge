@@ -25,10 +25,15 @@ public class VelocityHistogramView : SufniTelemetryPlotView
     {
         var statistics = Telemetry.CalculateVelocityStatistics(SuspensionType);
         
-        var maxReboundVelString = $"max. rebound. vel.: {statistics.MaxRebound:0.00} mm/s";
+        /*var maxReboundVelString = $"max. rebound. vel.: {statistics.MaxRebound:0.00} mm/s";
         var avgReboundVelString = $"avg. rebound. vel.: {statistics.AverageRebound:0.00} mm/s";
         var avgCompVelString = $"avg. comp. vel.: {statistics.AverageCompression:0.00} mm/s";
-        var maxCompVelString = $"max. comp. vel.: {statistics.MaxCompression:0.00} mm/s";
+        var maxCompVelString = $"max. comp. vel.: {statistics.MaxCompression:0.00} mm/s";*/
+        
+        var maxReboundVelString = $"{statistics.MaxRebound:0.00} mm/s";
+        var avgReboundVelString = $"{statistics.AverageRebound:0.00} mm/s";
+        var avgCompVelString = $"{statistics.AverageCompression:0.00} mm/s";
+        var maxCompVelString = $"{statistics.MaxCompression:0.00} mm/s";
         
         // If max rebound is lower than -VelocityLimit (which is the hardcoded axis limit),
         // we draw the the label at -VelocityLimit, and omit the line.

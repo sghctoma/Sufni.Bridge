@@ -1,6 +1,7 @@
 using System.Linq;
 using Avalonia;
 using ScottPlot;
+using ScottPlot.LayoutEngines;
 using Sufni.Bridge.Models;
 
 namespace Sufni.Bridge.Views.Plots;
@@ -22,6 +23,7 @@ public class LeverageRatioPlotView : SufniPlotView
 
     private void OnLevarageRatioDataChanged(LeverageRatioData data)
     {
+        Plot!.Plot.LayoutEngine = new FixedPadding(new PixelPadding(50, 3, 40, 10));
         Plot!.Plot.BottomAxis.Label.Text = "Rear Wheel Travel (mm)";
         Plot!.Plot.LeftAxis.Label.Text = "Leverage Ratio";
 

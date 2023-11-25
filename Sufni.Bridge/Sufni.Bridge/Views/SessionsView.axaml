@@ -19,141 +19,143 @@
     <Grid RowDefinitions="* auto auto 40" ColumnDefinitions="*">
 
         <!-- List of Calibrations -->
-        <ListBox Grid.Row="0" Grid.Column="0" Margin="0,5,0,0"
-                 Background="Transparent"
-                 ItemsSource="{Binding Sessions}">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <Expander CornerRadius="5" Padding="5" HorizontalAlignment="Stretch">
+        <ScrollViewer Grid.Row="0" Grid.Column="0" Margin="0,5,0,0">
+            <ItemsControl Classes="main" ItemsSource="{Binding Sessions}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Expander CornerRadius="5" Padding="5" HorizontalAlignment="Stretch">
 
-                        <!-- Editable name and non-editable timestamp in header -->
-                        <Expander.Header>
-                            <Grid ColumnDefinitions="auto * 32" RowDefinitions="*">
-                                <TextBox Grid.Column="0" BorderBrush="Transparent"
+                            <!-- Editable name and non-editable timestamp in header -->
+                            <Expander.Header>
+                                <Grid ColumnDefinitions="auto * 32" RowDefinitions="*">
+                                    <TextBox Grid.Column="0" BorderBrush="Transparent"
+                                             HorizontalAlignment="Stretch"
+                                             Text="{Binding Name}" />
+                                    <TextBlock Grid.Column="1"
+                                               VerticalAlignment="Center" HorizontalAlignment="Right"
+                                               Text="{Binding Timestamp}" />
+                                    <Image Grid.Column="2"
+                                           IsVisible="{Binding IsDirty}"
+                                           Height="20"
+                                           HorizontalAlignment="Right"
+                                           Source="{SvgImage /Assets/fa-circle-exclamation.svg}" />
+                                </Grid>
+                            </Expander.Header>
+
+                            <!-- Attach command to Expanded event -->
+                            <i:Interaction.Behaviors>
+                                <ia:EventTriggerBehavior EventName="Expanded">
+                                    <InvokeCommandAction Command="{Binding LoadPsstCommand}" />
+                                </ia:EventTriggerBehavior>
+                            </i:Interaction.Behaviors>
+
+                            <Grid ColumnDefinitions="*" RowDefinitions="300 300 auto auto 250 250 auto 120 auto 40"
+                                  MinWidth="300" HorizontalAlignment="Stretch">
+
+                                <!-- Front travel -->
+                                <plots:TravelHistogramView Grid.Row="0" Grid.Column="0"
+                                                           IsVisible="{Binding TelemetryData.Front.Present}"
+                                                           IsHitTestVisible="False"
+                                                           SuspensionType="Front"
+                                                           Telemetry="{Binding TelemetryData}" />
+
+                                <!-- Rear travel -->
+                                <plots:TravelHistogramView Grid.Row="1" Grid.Column="0"
+                                                           IsVisible="{Binding TelemetryData.Rear.Present}"
+                                                           IsHitTestVisible="False"
+                                                           SuspensionType="Rear"
+                                                           Telemetry="{Binding TelemetryData}" />
+
+                                <!-- Front velocity -->
+                                <plots:VelocityView Grid.Row="2" Grid.Column="0"
+                                                    IsVisible="{Binding TelemetryData.Front.Present}"
+                                                    IsHitTestVisible="False"
+                                                    SuspensionType="Front"
+                                                    Telemetry="{Binding TelemetryData}" />
+
+                                <!-- Rear velocity -->
+                                <plots:VelocityView Grid.Row="3" Grid.Column="0"
+                                                    IsVisible="{Binding TelemetryData.Rear.Present}"
+                                                    IsHitTestVisible="False"
+                                                    SuspensionType="Rear"
+                                                    Telemetry="{Binding TelemetryData}" />
+
+                                <!-- Compression balance -->
+                                <plots:BalancePlotView Grid.Row="4" Grid.Column="0"
+                                                       IsHitTestVisible="False"
+                                                       BalanceType="Compression"
+                                                       Telemetry="{Binding TelemetryData}">
+                                    <plots:BalancePlotView.IsVisible>
+                                        <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                            <Binding Path="TelemetryData"
+                                                     Converter="{x:Static ObjectConverters.IsNotNull}" />
+                                            <Binding Path="TelemetryData.Front.Present" />
+                                            <Binding Path="TelemetryData.Rear.Present" />
+                                        </MultiBinding>
+                                    </plots:BalancePlotView.IsVisible>
+                                </plots:BalancePlotView>
+
+                                <!-- Rebound balance -->
+                                <plots:BalancePlotView Grid.Row="5" Grid.Column="0"
+                                                       IsHitTestVisible="False"
+                                                       BalanceType="Rebound"
+                                                       Telemetry="{Binding TelemetryData}">
+                                    <plots:BalancePlotView.IsVisible>
+                                        <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                            <Binding Path="TelemetryData"
+                                                     Converter="{x:Static ObjectConverters.IsNotNull}" />
+                                            <Binding Path="TelemetryData.Front.Present" />
+                                            <Binding Path="TelemetryData.Rear.Present" />
+                                        </MultiBinding>
+                                    </plots:BalancePlotView.IsVisible>
+                                </plots:BalancePlotView>
+
+                                <!-- Description -->
+                                <TextBlock Grid.Row="6" Grid.Column="0"
+                                           FontWeight="Black" Foreground="#d0d0d0"
+                                           VerticalAlignment="Center" HorizontalAlignment="Center"
+                                           Text="Description" />
+                                <TextBox Grid.Row="7" Grid.Column="0"
+                                         Margin="2"
                                          HorizontalAlignment="Stretch"
-                                         Text="{Binding Name}" />
-                                <TextBlock Grid.Column="1"
-                                           VerticalAlignment="Center" HorizontalAlignment="Right"
-                                           Text="{Binding Timestamp}" />
-                                <Image Grid.Column="2"
-                                       IsVisible="{Binding IsDirty}"
-                                       Height="20"
-                                       HorizontalAlignment="Right"
-                                       Source="{SvgImage /Assets/fa-circle-exclamation.svg}" />
-                            </Grid>
-                        </Expander.Header>
-                        
-                        <!-- Attach command to Expanded event -->
-                        <i:Interaction.Behaviors>
-                            <ia:EventTriggerBehavior EventName="Expanded">
-                                <InvokeCommandAction Command="{Binding LoadPsstCommand}" />
-                            </ia:EventTriggerBehavior>
-                        </i:Interaction.Behaviors>
+                                         AcceptsReturn="True" TextWrapping="Wrap"
+                                         Text="{Binding Description}" />
 
-                        <Grid ColumnDefinitions="*" RowDefinitions="300 300 auto auto 250 250 auto 120 auto 40"
-                              MinWidth="300" HorizontalAlignment="Stretch">
-                            
-                            <!-- Front travel -->
-                            <plots:TravelHistogramView Grid.Row="0" Grid.Column="0"
-                                                       IsVisible="{Binding TelemetryData.Front.Present}"
-                                                       IsHitTestVisible="False"
-                                                       SuspensionType="Front"
-                                                       Telemetry="{Binding TelemetryData}" />
-                            
-                            <!-- Rear travel -->
-                            <plots:TravelHistogramView Grid.Row="1" Grid.Column="0"
-                                                       IsVisible="{Binding TelemetryData.Rear.Present}"
-                                                       IsHitTestVisible="False"
-                                                       SuspensionType="Rear"
-                                                       Telemetry="{Binding TelemetryData}" />
-                            
-                            <!-- Front velocity -->
-                            <plots:VelocityView Grid.Row="2" Grid.Column="0"
-                                                IsVisible="{Binding TelemetryData.Front.Present}"
-                                                IsHitTestVisible="False"
-                                                SuspensionType="Front"
-                                                Telemetry="{Binding TelemetryData}" />
-                            
-                            <!-- Rear velocity -->
-                            <plots:VelocityView Grid.Row="3" Grid.Column="0"
-                                                IsVisible="{Binding TelemetryData.Rear.Present}"
-                                                IsHitTestVisible="False"
-                                                SuspensionType="Rear"
-                                                Telemetry="{Binding TelemetryData}" />
-                            
-                            <!-- Compression balance -->
-                            <plots:BalancePlotView Grid.Row="4" Grid.Column="0"
-                                                   IsHitTestVisible="False"
-                                                   BalanceType="Compression"
-                                                   Telemetry="{Binding TelemetryData}">
-                                <plots:BalancePlotView.IsVisible>
-                                    <MultiBinding Converter="{x:Static BoolConverters.And}">
-                                        <Binding Path="TelemetryData" Converter="{x:Static ObjectConverters.IsNotNull}" />
-                                        <Binding Path="TelemetryData.Front.Present" />
-                                        <Binding Path="TelemetryData.Rear.Present" />
-                                    </MultiBinding>
-                                </plots:BalancePlotView.IsVisible>
-                            </plots:BalancePlotView>
-                            
-                            <!-- Rebound balance -->
-                            <plots:BalancePlotView Grid.Row="5" Grid.Column="0"
-                                                   IsHitTestVisible="False"
-                                                   BalanceType="Rebound"
-                                                   Telemetry="{Binding TelemetryData}">
-                                <plots:BalancePlotView.IsVisible>
-                                    <MultiBinding Converter="{x:Static BoolConverters.And}">
-                                        <Binding Path="TelemetryData" Converter="{x:Static ObjectConverters.IsNotNull}" />
-                                        <Binding Path="TelemetryData.Front.Present" />
-                                        <Binding Path="TelemetryData.Rear.Present" />
-                                    </MultiBinding>
-                                </plots:BalancePlotView.IsVisible>
-                            </plots:BalancePlotView>
-                            
-                            <!-- Description -->
-                            <TextBlock Grid.Row="6" Grid.Column="0"
-                                       FontWeight="Black" Foreground="#d0d0d0"
-                                       VerticalAlignment="Center" HorizontalAlignment="Center"
-                                       Text="Description" />
-                            <TextBox Grid.Row="7" Grid.Column="0"
-                                     Margin="2"
-                                     HorizontalAlignment="Stretch"
-                                     AcceptsReturn="True" TextWrapping="Wrap"
-                                     Text="{Binding Description}" />
-                            
-                            <!-- Error messages for Calibration instance -->
-                            <v:ErrorMessagesControl Grid.Row="8" Grid.Column="0"
-                                                    Margin="0,5, 0, 0"
-                                                    ClearErrorsCommand="{Binding ClearErrorsCommand}"
-                                                    ErrorMessages="{Binding ErrorMessages}"
-                                                    IsVisible="{Binding ErrorMessages.Count}" />
+                                <!-- Error messages for Calibration instance -->
+                                <v:ErrorMessagesControl Grid.Row="8" Grid.Column="0"
+                                                        Margin="0,5, 0, 0"
+                                                        ClearErrorsCommand="{Binding ClearErrorsCommand}"
+                                                        ErrorMessages="{Binding ErrorMessages}"
+                                                        IsVisible="{Binding ErrorMessages.Count}" />
 
-                            <!-- Save, Reset and Delete buttons -->
-                            <Grid Grid.Row="9" Grid.Column="0"
-                                  Margin="0,5,0,5"
-                                  ColumnDefinitions="* auto auto" RowDefinitions="30">
-                                <Button Grid.Row="0" Grid.Column="0"
-                                        Command="{Binding SaveCommand}"
-                                        HorizontalAlignment="Stretch"
-                                        VerticalAlignment="Stretch"
-                                        HorizontalContentAlignment="Center"
-                                        Content="Save" />
-                                <Button Grid.Row="0" Grid.Column="1" VerticalAlignment="Stretch"
-                                        Command="{Binding ResetCommand}">
-                                    <Image Width="16" Height="16"
-                                           Source="{SvgImage /Assets/fa-rotate-left.svg}" />
-                                </Button>
-                                <Button Grid.Row="0" Grid.Column="2" VerticalAlignment="Stretch"
-                                        Command="{Binding $parent[ListBox].((vm:MainViewModel)DataContext).DeleteSessionCommand}"
-                                        CommandParameter="{Binding Id}">
-                                    <Image Width="16" Height="16"
-                                           Source="{SvgImage /Assets/fa-trash-can.svg}" />
-                                </Button>
+                                <!-- Save, Reset and Delete buttons -->
+                                <Grid Grid.Row="9" Grid.Column="0"
+                                      Margin="0,5,0,5"
+                                      ColumnDefinitions="* auto auto" RowDefinitions="30">
+                                    <Button Grid.Row="0" Grid.Column="0"
+                                            Command="{Binding SaveCommand}"
+                                            HorizontalAlignment="Stretch"
+                                            VerticalAlignment="Stretch"
+                                            HorizontalContentAlignment="Center"
+                                            Content="Save" />
+                                    <Button Grid.Row="0" Grid.Column="1" VerticalAlignment="Stretch"
+                                            Command="{Binding ResetCommand}">
+                                        <Image Width="16" Height="16"
+                                               Source="{SvgImage /Assets/fa-rotate-left.svg}" />
+                                    </Button>
+                                    <Button Grid.Row="0" Grid.Column="2" VerticalAlignment="Stretch"
+                                            Command="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).DeleteSessionCommand}"
+                                            CommandParameter="{Binding Id}">
+                                        <Image Width="16" Height="16"
+                                               Source="{SvgImage /Assets/fa-trash-can.svg}" />
+                                    </Button>
+                                </Grid>
                             </Grid>
-                        </Grid>
-                    </Expander>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+                        </Expander>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
         
         <!-- Notifications -->
         <v:NotificationsControl Grid.Row="1" Grid.Column="0" 

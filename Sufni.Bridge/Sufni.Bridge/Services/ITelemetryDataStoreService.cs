@@ -5,5 +5,5 @@ namespace Sufni.Bridge.Services;
 
 public interface ITelemetryDataStoreService
 {
-    public IEnumerable<TelemetryDataStore> GetTelemetryDataStores();
+    public IEnumerable<ITelemetryDataStore> GetTelemetryDataStores();
 }

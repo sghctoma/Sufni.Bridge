@@ -7,7 +7,7 @@ namespace Sufni.Bridge.Services;
 
 internal class TelemetryDataStoreService : ITelemetryDataStoreService
 {
-    public IEnumerable<TelemetryDataStore> GetTelemetryDataStores()
+    public IEnumerable<ITelemetryDataStore> GetTelemetryDataStores()
     {
         return DriveInfo.GetDrives()
             .Where(drive => drive is
@@ -17,7 +17,7 @@ internal class TelemetryDataStoreService : ITelemetryDataStoreService
                 //DriveType: DriveType.Removable,
                 //DriveFormat: "FAT32"
             } && File.Exists($"{drive.RootDirectory}/.boardid"))
-            .Select(d => new TelemetryDataStore(d.VolumeLabel, d.RootDirectory))
+            .Select(d => new MassStorageTelemetryDataStore(d.VolumeLabel, d.RootDirectory))
             .ToList();
     }
 }

@@ -263,7 +263,7 @@ public class HttpApiServiceStub : IHttpApiService
         return Task.CompletedTask;
     }
     
-    public Task ImportSessionAsync(TelemetryFile session, int setupId)
+    public Task ImportSessionAsync(ITelemetryFile session, int setupId)
     {
         return Task.CompletedTask;
     }

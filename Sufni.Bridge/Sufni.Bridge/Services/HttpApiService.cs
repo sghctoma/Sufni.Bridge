@@ -211,7 +211,7 @@ internal class HttpApiService : IHttpApiService
         response.EnsureSuccessStatusCode();
     }
 
-    public async Task ImportSessionAsync(TelemetryFile session, int setupId)
+    public async Task ImportSessionAsync(ITelemetryFile session, int setupId)
     {
         if (!session.ShouldBeImported) return;
 

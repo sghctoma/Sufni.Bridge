@@ -7,7 +7,6 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Diagnostics;
-using System.IO;
 using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,11 +23,11 @@ public partial class ImportSessionsViewModel : ViewModelBase
 
     #region Observable properties
 
-    public ObservableCollection<TelemetryDataStore>? TelemetryDataStores { get; set; }
-    public ObservableCollection<TelemetryFile> TelemetryFiles { get; } = new();
+    public ObservableCollection<ITelemetryDataStore>? TelemetryDataStores { get; set; }
+    public ObservableCollection<ITelemetryFile> TelemetryFiles { get; } = new();
     private readonly ObservableCollection<SessionViewModel> sessions;
 
-    [ObservableProperty] private TelemetryDataStore? selectedDataStore;
+    [ObservableProperty] private ITelemetryDataStore? selectedDataStore;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(ImportSessionsCommand))]
@@ -38,7 +37,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
 
     #region Property change handlers
 
-    async partial void OnSelectedDataStoreChanged(TelemetryDataStore? value)
+    async partial void OnSelectedDataStoreChanged(ITelemetryDataStore? value)
     {           
         Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
 
@@ -94,7 +93,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
         try
         {
             var ds = telemetryDataStoreService.GetTelemetryDataStores();
-            TelemetryDataStores = new ObservableCollection<TelemetryDataStore>(ds);
+            TelemetryDataStores = new ObservableCollection<ITelemetryDataStore>(ds);
             if (TelemetryDataStores.Count > 0)
             {
                 SelectedDataStore = TelemetryDataStores[0];
@@ -165,10 +164,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
                 }
                 sessions.Insert(index, svm);
                 
-                telemetryFile.Imported = true;
-                
-                File.Move(telemetryFile.FullName,
-                    $"{Path.GetDirectoryName(telemetryFile.FullName)}/uploaded/{telemetryFile.FileName}");
+                telemetryFile.OnImported();
             }
             catch (Exception e)
             {

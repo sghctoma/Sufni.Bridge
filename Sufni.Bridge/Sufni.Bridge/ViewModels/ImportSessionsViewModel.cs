@@ -71,7 +71,6 @@ public partial class ImportSessionsViewModel : ViewModelBase
     #region Private members
 
     private readonly IDatabaseService? databaseService;
-    private readonly ITelemetryDataStoreService? telemetryDataStoreService;
 
     #endregion Private members
     
@@ -83,7 +82,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
     public ImportSessionsViewModel(ObservableCollection<SessionViewModel> sessions)
     {
         databaseService = App.Current?.Services?.GetService<IDatabaseService>();
-        telemetryDataStoreService = App.Current?.Services?.GetService<ITelemetryDataStoreService>();
+        var telemetryDataStoreService = App.Current?.Services?.GetService<ITelemetryDataStoreService>();
 
         this.sessions = sessions;
         
@@ -92,8 +91,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
 
         try
         {
-            var ds = telemetryDataStoreService.GetTelemetryDataStores();
-            TelemetryDataStores = new ObservableCollection<ITelemetryDataStore>(ds);
+            TelemetryDataStores = telemetryDataStoreService.DataStores;
             if (TelemetryDataStores.Count > 0)
             {
                 SelectedDataStore = TelemetryDataStores[0];
@@ -185,31 +183,5 @@ public partial class ImportSessionsViewModel : ViewModelBase
         return SelectedSetup != null;
     }
     
-    [RelayCommand]
-    private void ReloadTelemetryDataStores()
-    {
-        Debug.Assert(TelemetryDataStores != null, nameof(TelemetryDataStores) + " != null");
-        Debug.Assert(telemetryDataStoreService != null, nameof(telemetryDataStoreService) + " != null");
-
-        try
-        {
-            TelemetryDataStores.Clear();
-            var ds = telemetryDataStoreService.GetTelemetryDataStores();
-            foreach (var store in ds)
-            {
-                TelemetryDataStores.Add(store);
-            }
-
-            if (TelemetryDataStores.Count > 0)
-            {
-                SelectedDataStore = TelemetryDataStores[0];
-            }
-        }
-        catch (Exception e)
-        {
-            ErrorMessages.Add($"Could not reload data stores: {e.Message}");
-        }
-    }
-
     #endregion Commands
 }

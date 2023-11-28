@@ -16,8 +16,8 @@
     <Grid RowDefinitions="40 * auto 40" ColumnDefinitions="auto * auto">
 
         <!-- Datastore selector -->
-        <ComboBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
-                  Margin="5,5,2,2"
+        <ComboBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
+                  Margin="5,5,5,2"
                   HorizontalAlignment="Stretch"
                   SelectedItem="{Binding SelectedDataStore}"
                   ItemsSource="{Binding TelemetryDataStores}">
@@ -27,15 +27,6 @@
                 </DataTemplate>
             </ComboBox.ItemTemplate>
         </ComboBox>
-
-        <!-- Reload SST data stores -->
-        <Button Grid.Row="0" Grid.Column="2"
-                Margin="2,5,5,5"
-                HorizontalAlignment="Stretch"
-                HorizontalContentAlignment="Center"
-                Command="{Binding ReloadTelemetryDataStoresCommand}">
-            <Image Source="{SvgImage /Assets/fa-sync-alt.svg}" />
-        </Button>
 
         <!-- List of SST files in selected datastore -->
         <ScrollViewer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">

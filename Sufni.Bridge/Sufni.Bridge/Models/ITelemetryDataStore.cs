@@ -21,6 +21,6 @@ internal class TelemetryDataStoreComparer : IEqualityComparer<ITelemetryDataStor
 public interface ITelemetryDataStore
 {
     public string Name { get; }
-    public IEnumerable<ITelemetryFile> Files { get; }
-    public string BoardId { get; }
+    public IList<ITelemetryFile> Files { get; }
+    public string? BoardId { get; }
 }

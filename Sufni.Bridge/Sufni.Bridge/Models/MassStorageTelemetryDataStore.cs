@@ -6,16 +6,16 @@ namespace Sufni.Bridge.Models;
 
 public class MassStorageTelemetryDataStore : ITelemetryDataStore
 {
-    public string Name { get; set; }
-    public IEnumerable<ITelemetryFile> Files { get; }
-    public string BoardId { get; }
+    public string Name { get; }
+    public IList<ITelemetryFile> Files { get; }
+    public string? BoardId { get; }
 
     public MassStorageTelemetryDataStore(string name, DirectoryInfo path)
     {
         Name = name;
         BoardId = File.ReadAllText($"{path.FullName}/.boardid");
         Files = path.GetFiles("*.SST")
-            .Select(f => new MassStorageTelemetryFile(f))
+            .Select(f => (ITelemetryFile)new MassStorageTelemetryFile(f))
             .OrderBy(f => f.StartTime)
             .ToList();
 

@@ -40,7 +40,7 @@ public class MassStorageTelemetryFile : ITelemetryFile
         var duration = TimeSpan.FromSeconds((double)count / sampleRate);
         ShouldBeImported = duration.TotalSeconds >= 5;
         StartTime = DateTimeOffset.FromUnixTimeSeconds(timestamp).DateTime;
-        Duration = duration.ToString("hh\\:mm\\:ss");
+        Duration = duration.ToString(@"hh\:mm\:ss");
         Name = fileInfo.Name;
         Description = $"Imported from {fileInfo.Name}";
     }

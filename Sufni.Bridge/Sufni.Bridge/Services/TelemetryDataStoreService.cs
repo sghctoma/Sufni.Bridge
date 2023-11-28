@@ -2,12 +2,15 @@
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
+using Tmds.MDns;
 using Timer = System.Timers.Timer;
 
 namespace Sufni.Bridge.Services;
 
 internal class TelemetryDataStoreService : ITelemetryDataStoreService
 {
+    private const string ServiceType = "_gosst._tcp";
     private static readonly object DataStoreLock = new();
     public ObservableCollection<ITelemetryDataStore> DataStores { get; } = new();
     
@@ -42,8 +45,40 @@ internal class TelemetryDataStoreService : ITelemetryDataStoreService
         }
     }
 
+    private void RemoveNetworkDataStore(ServiceAnnouncementEventArgs e)
+    {
+        var ipAddress = e.Announcement.Addresses[0];
+        var port = e.Announcement.Port;
+        var name = $"gosst://{ipAddress}:{port}";
+
+        lock (DataStoreLock)
+        {
+            var toRemove = DataStores.First(x => x.Name == name);
+            DataStores.Remove(toRemove);
+        }
+    }
+    
+    private async Task AddNetworkDataStore(ServiceAnnouncementEventArgs e)
+    {
+        var ipAddress = e.Announcement.Addresses[0];
+        var port = e.Announcement.Port;
+
+        var ds = new NetworkTelemetryDataStore(ipAddress, port);
+        await ds.Initialization;
+        
+        lock (DataStoreLock)
+        {
+            DataStores.Add(ds); 
+        }
+    }
+    
     public TelemetryDataStoreService()
     {
+        var serviceBrowser = new ServiceBrowser();
+        serviceBrowser.ServiceAdded += async (_, e) => await AddNetworkDataStore(e);
+        serviceBrowser.ServiceRemoved += (_, e) => RemoveNetworkDataStore(e);
+        serviceBrowser.StartBrowse(ServiceType);
+        
         GetMassStorageDatastores();
         var timer = new Timer(1000);
         timer.AutoReset = true;

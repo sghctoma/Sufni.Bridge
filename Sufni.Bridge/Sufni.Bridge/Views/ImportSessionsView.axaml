@@ -4,6 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:Sufni.Bridge.ViewModels"
              xmlns:v="clr-namespace:Sufni.Bridge.Views"
+             xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
+             xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
              mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
              x:Class="Sufni.Bridge.Views.ImportSessionsView"
              x:DataType="vm:ImportSessionsViewModel"
@@ -13,8 +15,8 @@
         <vm:ImportSessionsViewModel />
     </Design.DataContext>
 
-    <Grid RowDefinitions="40 * auto 40" ColumnDefinitions="auto * auto">
-
+    <Grid RowDefinitions="40 * auto auto 40" ColumnDefinitions="auto * auto">
+        
         <!-- Datastore selector -->
         <ComboBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
                   Margin="5,5,5,2"
@@ -26,7 +28,21 @@
                     <TextBlock Text="{Binding Name}" />
                 </DataTemplate>
             </ComboBox.ItemTemplate>
+            
+            <!-- Attach command to Expanded event -->
+            <i:Interaction.Behaviors>
+                <ia:EventTriggerBehavior EventName="DropDownOpened">
+                    <InvokeCommandAction Command="{Binding ClearNewDataStoresAvailableCommand}" />
+                </ia:EventTriggerBehavior>
+            </i:Interaction.Behaviors>
         </ComboBox>
+        
+        <Image Grid.Row="0" Grid.Column="1"
+               Height="20"
+               IsVisible="{Binding NewDataStoresAvailable}"
+               Margin="0,2,40,0"
+               HorizontalAlignment="Right"
+               Source="{SvgImage /Assets/fa-circle-exclamation.svg}" />
 
         <!-- List of SST files in selected datastore -->
         <ScrollViewer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">
@@ -65,13 +81,20 @@
             </ItemsControl>
         </ScrollViewer>
         
-        <v:ErrorMessagesControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Margin="2, 4"
+        <!-- Notifications -->
+        <v:NotificationsControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Margin="2, 4"
+                                ClearNotificationsCommand="{Binding ClearNotificationsCommand}"
+                                Notifications="{Binding Notifications}"
+                                IsVisible="{Binding Notifications.Count}" />
+        
+        <!-- Error messages -->
+        <v:ErrorMessagesControl Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Margin="2, 4"
                                 ClearErrorsCommand="{Binding ClearErrorsCommand}"
                                 ErrorMessages="{Binding ErrorMessages}"
                                 IsVisible="{Binding ErrorMessages.Count}" />
 
         <!-- Import selected SST files -->
-        <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3"
+        <Button Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3"
                 Margin="5,5,5,5"
                 HorizontalAlignment="Stretch"
                 HorizontalContentAlignment="Center"

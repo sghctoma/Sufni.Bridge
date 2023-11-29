@@ -210,19 +210,4 @@ internal class HttpApiService : IHttpApiService
         using var response = await client.DeleteAsync($"{serverUrl}/api/session/{id}");
         response.EnsureSuccessStatusCode();
     }
-
-    public async Task ImportSessionAsync(ITelemetryFile session, int setupId)
-    {
-        if (!session.ShouldBeImported) return;
-
-        using HttpResponseMessage response = await client.PutAsJsonAsync($"{serverUrl}/api/session",
-            new Session(
-                name: session.Name,
-                description: session.Description,
-                setup: setupId,
-                data: session.Base64Data,
-                id: null, timestamp: null, track: null));
-
-        response.EnsureSuccessStatusCode();
-    }
 }

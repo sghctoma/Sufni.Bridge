@@ -4,11 +4,13 @@ using CommunityToolkit.Mvvm.Input;
 using Sufni.Bridge.Models;
 using Sufni.Bridge.Services;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
+using Avalonia.Threading;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Sufni.Bridge.ViewModels;
@@ -28,6 +30,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
     private readonly ObservableCollection<SessionViewModel> sessions;
 
     [ObservableProperty] private ITelemetryDataStore? selectedDataStore;
+    [ObservableProperty] private bool newDataStoresAvailable;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(ImportSessionsCommand))]
@@ -38,7 +41,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
     #region Property change handlers
 
     async partial void OnSelectedDataStoreChanged(ITelemetryDataStore? value)
-    {           
+    {
         Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
 
         if (value == null)
@@ -47,11 +50,15 @@ public partial class ImportSessionsViewModel : ViewModelBase
             return;
         }
 
+        // Need to clear the DataStoresAvailable flag so that the notification does not show
+        // up when the first datastore appears and auto-selected.
+        ClearNewDataStoresAvailable();
+        
         try
         {
             var boards = await databaseService.GetBoardsAsync();
             var selectedBoard = boards.FirstOrDefault(b => b?.Id == value.BoardId, null);
-            SelectedSetup = selectedBoard?.SetupId;
+            Dispatcher.UIThread.Invoke(new Action(() => SelectedSetup = selectedBoard?.SetupId));
         }
         catch(Exception e)
         {
@@ -88,18 +95,34 @@ public partial class ImportSessionsViewModel : ViewModelBase
         
         Debug.Assert(databaseService != null, nameof(telemetryDataStoreService) + " != null");
         Debug.Assert(telemetryDataStoreService != null, nameof(telemetryDataStoreService) + " != null");
-
-        try
+        
+        TelemetryDataStores = telemetryDataStoreService.DataStores;
+        TelemetryDataStores.CollectionChanged += (_, e) =>
         {
-            TelemetryDataStores = telemetryDataStoreService.DataStores;
-            if (TelemetryDataStores.Count > 0)
+            var comparer = new TelemetryDataStoreComparer();
+            var removed = (ITelemetryDataStore)e.OldItems?[0]!;
+            switch (e.Action)
             {
-                SelectedDataStore = TelemetryDataStores[0];
+                case NotifyCollectionChangedAction.Add:
+                    NewDataStoresAvailable = true;
+                    SelectedDataStore ??= TelemetryDataStores[0];
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    if (TelemetryDataStores.Count == 0 || !comparer.Equals(SelectedDataStore, removed)) return;
+                    // XXX: The files from the correct datastore show up, but the ComboBox won't show the datastore
+                    //      as selected. Probably has something to do with this fix, since it only handle adds:
+                    //      https://github.com/AvaloniaUI/Avalonia/pull/4593/commits/8dfc65d17be00b7f7c96c294dabe7616916951b2
+                    SelectedDataStore = TelemetryDataStores[^1];
+                    break;
+                case NotifyCollectionChangedAction.Replace:
+                case NotifyCollectionChangedAction.Move:
+                case NotifyCollectionChangedAction.Reset:
+                    return;
             }
-        }
-        catch (Exception e)
+        };
+        if (TelemetryDataStores.Count > 0)
         {
-            ErrorMessages.Add($"Could not load data stores: {e.Message}");
+            SelectedDataStore = TelemetryDataStores[0];
         }
     }
 
@@ -141,7 +164,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
                 var calibrationsBytes = Encoding.UTF8.GetBytes(Calibration.GetCalibrationsJson(
                     fcal, fmethod, rcal, rmethod));
 
-                var psst = telemetryFile.GeneratePsst(linkageBytes, calibrationsBytes);
+                var psst = await telemetryFile.GeneratePsstAsync(linkageBytes, calibrationsBytes);
                 var session = new Session(
                     id: null,
                     name: telemetryFile.Name,
@@ -163,6 +186,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
                 sessions.Insert(index, svm);
                 
                 telemetryFile.OnImported();
+                Notifications.Insert(0, $"{svm.Name} was successfully imported.");
             }
             catch (Exception e)
             {
@@ -181,6 +205,12 @@ public partial class ImportSessionsViewModel : ViewModelBase
     private bool CanImportSessions()
     {
         return SelectedSetup != null;
+    }
+
+    [RelayCommand]
+    private void ClearNewDataStoresAvailable()
+    {
+        NewDataStoresAvailable = false;
     }
     
     #endregion Commands

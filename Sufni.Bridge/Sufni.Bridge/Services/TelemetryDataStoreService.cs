@@ -26,10 +26,11 @@ internal class TelemetryDataStoreService : ITelemetryDataStoreService
             } && File.Exists($"{drive.RootDirectory}/.boardid"))
             .Select(d => new MassStorageTelemetryDataStore(d.VolumeLabel, d.RootDirectory))
             .ToArray();
-        var added = drives.Except(DataStores, new TelemetryDataStoreComparer());
+        var added = drives.Except(DataStores, new TelemetryDataStoreComparer()).ToArray();
         var removed = DataStores
             .Where(ds => ds is MassStorageTelemetryDataStore)
-            .Except(drives, new TelemetryDataStoreComparer());
+            .Except(drives, new TelemetryDataStoreComparer())
+            .ToArray();
             
         lock (DataStoreLock)
         {

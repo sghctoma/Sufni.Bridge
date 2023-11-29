@@ -262,9 +262,4 @@ public class HttpApiServiceStub : IHttpApiService
         Sessions.RemoveAll(s => s.Id == id);
         return Task.CompletedTask;
     }
-    
-    public Task ImportSessionAsync(ITelemetryFile session, int setupId)
-    {
-        return Task.CompletedTask;
-    }
 }

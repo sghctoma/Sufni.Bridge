@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 
 namespace Sufni.Bridge.Models;
 
@@ -16,7 +17,6 @@ public class MassStorageTelemetryFile : ITelemetryFile
     public string Description { get; set; }
     public DateTime StartTime { get; init; }
     public string Duration { get; init; }
-    public string Base64Data => Convert.ToBase64String(File.ReadAllBytes(fileInfo.FullName));
     
     public MassStorageTelemetryFile(FileInfo fileInfo)
     {
@@ -45,9 +45,9 @@ public class MassStorageTelemetryFile : ITelemetryFile
         Description = $"Imported from {fileInfo.Name}";
     }
     
-    public byte[] GeneratePsst(byte[] linkage, byte[] calibrations)
+    public async Task<byte[]> GeneratePsstAsync(byte[] linkage, byte[] calibrations)
     {
-        var rawData = File.ReadAllBytes(fileInfo.FullName);
+        var rawData = await File.ReadAllBytesAsync(fileInfo.FullName);
         var psst = ITelemetryFile.GeneratePsstNative(
             rawData, rawData.Length, 
             linkage, linkage.Length,

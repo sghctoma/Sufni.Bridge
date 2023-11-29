@@ -29,5 +29,4 @@ internal interface IHttpApiService
     public Task<int> PutSessionAsync(Session session);
     public Task<int> PutProcessedSessionAsync(string name, string description, byte[] data);
     public Task DeleteSessionAsync(int id);
-    public Task ImportSessionAsync(ITelemetryFile session, int setupId);
 }

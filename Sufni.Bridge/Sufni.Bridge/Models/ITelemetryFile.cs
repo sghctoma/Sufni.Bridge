@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 
 namespace Sufni.Bridge.Models;
 
@@ -12,9 +13,8 @@ public interface ITelemetryFile
     public string Description { get; set; }
     public DateTime StartTime { get; init; }
     public string Duration { get; init; }
-    public string Base64Data { get; }
 
-    public byte[] GeneratePsst(byte[] linkage, byte[] calibrations);
+    public Task<byte[]> GeneratePsstAsync(byte[] linkage, byte[] calibrations);
     public void OnImported();
     
     #region Native interop

@@ -41,11 +41,9 @@ public class NetworkTelemetryDataStore : ITelemetryDataStore
         var buffer = new byte[size];
         await client.ReceiveAsync(buffer);
         
-        // Send file received signal
+        // Send file received signal. Server will close connection after receiving this.
         await client.SendAsync(new byte[] { 0x05, 0x00, 0x00, 0x00 });
         
-        client.Shutdown(SocketShutdown.Both);
-
         return buffer;
     }
     
@@ -56,7 +54,7 @@ public class NetworkTelemetryDataStore : ITelemetryDataStore
         using var memoryStream = new MemoryStream(directoryInfo);
         using var reader = new BinaryReader(memoryStream);
         var boardId = reader.ReadBytes(8);
-        BoardId = Convert.ToHexString(boardId);
+        BoardId = Convert.ToHexString(boardId).ToLower();
         var sampleRate = reader.ReadUInt16();
 
         for (var i = 0; i < recordCount; i++)

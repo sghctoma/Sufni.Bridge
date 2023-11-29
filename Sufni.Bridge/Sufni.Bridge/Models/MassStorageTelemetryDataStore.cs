@@ -13,7 +13,7 @@ public class MassStorageTelemetryDataStore : ITelemetryDataStore
     public MassStorageTelemetryDataStore(string name, DirectoryInfo path)
     {
         Name = name;
-        BoardId = File.ReadAllText($"{path.FullName}/.boardid");
+        BoardId = File.ReadAllText($"{path.FullName}/.boardid").ToLower();
         Files = path.GetFiles("*.SST")
             .Select(f => (ITelemetryFile)new MassStorageTelemetryFile(f))
             .OrderBy(f => f.StartTime)

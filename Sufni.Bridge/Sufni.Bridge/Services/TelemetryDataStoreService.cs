@@ -20,11 +20,10 @@ internal class TelemetryDataStoreService : ITelemetryDataStoreService
             .Where(drive => drive is
             {
                 IsReady: true,
-                // TODO: commented these out for testing in Android emulator, should uncomment them later.
-                //DriveType: DriveType.Removable,
-                //DriveFormat: "FAT32"
+                DriveType: DriveType.Removable,
+                DriveFormat: "FAT32"
             } && File.Exists($"{drive.RootDirectory}/.boardid"))
-            .Select(d => new MassStorageTelemetryDataStore(d.VolumeLabel, d.RootDirectory))
+            .Select(d => new MassStorageTelemetryDataStore($"{d.VolumeLabel} ({d.RootDirectory.Name})", d.RootDirectory))
             .ToArray();
         var added = drives.Except(DataStores, new TelemetryDataStoreComparer()).ToArray();
         var removed = DataStores

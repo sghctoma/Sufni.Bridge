@@ -23,6 +23,7 @@ public partial class MainViewModel : ViewModelBase
     [ObservableProperty] private bool hasLinkages;
     [ObservableProperty] private bool hasCalibrationMethods;
     [ObservableProperty] private bool hasCalibrations;
+    [ObservableProperty] private bool sessionUploadInProgress;
 
     public ObservableCollection<LinkageViewModel> Linkages { get; } = new();
     public ObservableCollection<CalibrationViewModel> Calibrations { get; } = new();
@@ -284,6 +285,8 @@ public partial class MainViewModel : ViewModelBase
         Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
         Debug.Assert(SettingsPage.IsRegistered, "SettingsPage.IsRegistered");
 
+        SessionUploadInProgress = true;
+        
         List<Session> remoteSessions;
         try
         {
@@ -314,6 +317,8 @@ public partial class MainViewModel : ViewModelBase
                 ErrorMessages.Add($"Session \"{svm.Name}\" could not be uploaded: {e.Message}");
             }
         }
+
+        SessionUploadInProgress = false;
     }
 
     [RelayCommand]

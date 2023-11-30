@@ -7,6 +7,7 @@
              xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
              xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
              xmlns:plots="clr-namespace:Sufni.Bridge.Views.Plots"
+             xmlns:progRing="clr-namespace:AvaloniaProgressRing;assembly=AvaloniaProgressRing"
              mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
              x:Class="Sufni.Bridge.Views.SessionsView"
              x:DataType="vm:MainViewModel"
@@ -158,15 +159,13 @@
         </ScrollViewer>
         
         <!-- Notifications -->
-        <v:NotificationsControl Grid.Row="1" Grid.Column="0" 
-                                Margin="5, 0"
+        <v:NotificationsControl Grid.Row="1" Grid.Column="0" Margin="5, 0" ZIndex="10"
                                 ClearNotificationsCommand="{Binding ClearNotificationsCommand}"
                                 Notifications="{Binding Notifications}"
                                 IsVisible="{Binding Notifications.Count}" />
         
         <!-- Error messages -->
-        <v:ErrorMessagesControl Grid.Row="2" Grid.Column="0"
-                                Margin="5, 0"
+        <v:ErrorMessagesControl Grid.Row="2" Grid.Column="0" Margin="5, 0" ZIndex="10"
                                 ClearErrorsCommand="{Binding ClearErrorsCommand}"
                                 ErrorMessages="{Binding ErrorMessages}"
                                 IsVisible="{Binding ErrorMessages.Count}" />
@@ -182,5 +181,15 @@
                 <Image Height="22" Source="{SvgImage /Assets/fa-cloud-arrow-up.svg}" />
             </Button>
         </Grid>
+        
+        <!-- Progress ring --> 
+        <Panel Grid.Row="0" Grid.Column="0" Grid.RowSpan="4"
+               Background="#0d0d0d" Opacity="0.7"
+               IsVisible="{Binding SessionUploadInProgress}">
+            <progRing:ProgressRing Width="40" Height="40" Foreground="#0078D7"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   IsActive="{Binding SessionUploadInProgress}" />
+        </Panel>
     </Grid>
 </UserControl>

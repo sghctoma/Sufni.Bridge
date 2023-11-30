@@ -31,6 +31,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
 
     [ObservableProperty] private ITelemetryDataStore? selectedDataStore;
     [ObservableProperty] private bool newDataStoresAvailable;
+    [ObservableProperty] private bool importInProgress;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(ImportSessionsCommand))]
@@ -148,6 +149,8 @@ public partial class ImportSessionsViewModel : ViewModelBase
     {
         Debug.Assert(SelectedSetup != null);
         Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
+
+        ImportInProgress = true;
         
         foreach (var telemetryFile in TelemetryFiles.Where(f => f.ShouldBeImported))
         {
@@ -200,6 +203,8 @@ public partial class ImportSessionsViewModel : ViewModelBase
         {
             TelemetryFiles.Add(file);
         }
+
+        ImportInProgress = false;
     }
 
     private bool CanImportSessions()

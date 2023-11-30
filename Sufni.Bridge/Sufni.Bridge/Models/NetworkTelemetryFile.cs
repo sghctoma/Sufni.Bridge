@@ -1,6 +1,5 @@
 using System;
 using System.Net;
-using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
@@ -18,48 +17,11 @@ public class NetworkTelemetryFile : ITelemetryFile
 
     private readonly IPEndPoint ipEndPoint;
     
-    private async Task<byte[]> ReadContent()
-    {
-        using Socket client = new(ipEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-        await client.ConnectAsync(ipEndPoint);
-        
-        // Get identifier as little-endian byte array
-        var idString = FileName[..5].TrimStart('0');
-        var idUint = uint.Parse(idString);
-        var id = BitConverter.GetBytes(idUint);
-        if (!BitConverter.IsLittleEndian)
-        {
-            Array.Reverse(id);
-        }
-        
-        // Request file
-        await client.SendAsync(new byte[]
-        {
-            0x03, 0x00, 0x00, 0x00,    // 3: file request command
-            id[0], id[1], id[2], id[3] // file id
-        }, SocketFlags.None);
-        
-        // Receive size
-        var sizeBuffer = new byte[8];
-        await client.ReceiveAsync(sizeBuffer);
-        var size = BitConverter.ToUInt64(sizeBuffer);
-        
-        // Send header OK signal
-        await client.SendAsync(new byte[] { 0x04, 0x00, 0x00, 0x00 });
-        
-        // Receive data
-        var buffer = new byte[size];
-        await client.ReceiveAsync(buffer);
-        
-        // Send file received signal. Server will close connection after receiving this.
-        await client.SendAsync(new byte[] { 0x05, 0x00, 0x00, 0x00 });
-        
-        return buffer;
-    } 
-    
     public async Task<byte[]> GeneratePsstAsync(byte[] linkage, byte[] calibrations)
     {
-        var rawData = await ReadContent();
+        var idString = FileName[..5].TrimStart('0');
+        var idUint = int.Parse(idString);
+        var rawData = await SstTcpClient.GetFile(ipEndPoint, idUint);
         var psst = ITelemetryFile.GeneratePsstNative(
             rawData, rawData.Length, 
             linkage, linkage.Length,

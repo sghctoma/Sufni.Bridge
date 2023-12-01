@@ -20,8 +20,8 @@
 
         <!-- List of Linkages -->
         <ScrollViewer Grid.Row="0" Grid.Column="0" Margin="0,5,0,0">
-            <ItemsControl Classes="main" ItemsSource="{Binding Linkages}">
-                <ItemsControl.ItemTemplate>
+            <ItemsRepeater Classes="main" ItemsSource="{Binding Linkages}">
+                <ItemsRepeater.ItemTemplate>
                     <DataTemplate>
                         <Expander CornerRadius="5" Padding="5" HorizontalAlignment="Stretch">
 
@@ -130,8 +130,8 @@
                             </Grid>
                         </Expander>
                     </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+                </ItemsRepeater.ItemTemplate>
+            </ItemsRepeater>
         </ScrollViewer>
 
         <!-- Error messages -->

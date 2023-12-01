@@ -47,8 +47,8 @@
 
         <!-- List of SST files in selected datastore -->
         <ScrollViewer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">
-            <ItemsControl Classes="main" ItemsSource="{Binding TelemetryFiles}">
-                <ItemsControl.ItemTemplate>
+            <ItemsRepeater Classes="main" ItemsSource="{Binding TelemetryFiles}">
+                <ItemsRepeater.ItemTemplate>
                     <DataTemplate>
                         <Border BorderThickness="1" CornerRadius="5" Padding="5"
                                 Background="#20262b" BorderBrush="#505050">
@@ -78,8 +78,8 @@
                             </Grid>
                         </Border>
                     </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+                </ItemsRepeater.ItemTemplate>
+            </ItemsRepeater>
         </ScrollViewer>
         
         <!-- Notifications -->

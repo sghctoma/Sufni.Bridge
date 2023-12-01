@@ -48,6 +48,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
         if (value == null)
         {
             TelemetryFiles.Clear();
+            SelectedSetup = null;
             return;
         }
 
@@ -59,7 +60,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
         {
             var boards = await databaseService.GetBoardsAsync();
             var selectedBoard = boards.FirstOrDefault(b => b?.Id == value.BoardId, null);
-            Dispatcher.UIThread.Invoke(new Action(() => SelectedSetup = selectedBoard?.SetupId));
+            SelectedSetup = selectedBoard?.SetupId;
         }
         catch(Exception e)
         {
@@ -67,8 +68,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
         }
         
         TelemetryFiles.Clear();
-        var files = value.Files;
-        foreach (var file in files)
+        foreach (var file in value.Files)
         {
             TelemetryFiles.Add(file);
         }
@@ -105,15 +105,21 @@ public partial class ImportSessionsViewModel : ViewModelBase
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    NewDataStoresAvailable = true;
-                    SelectedDataStore ??= TelemetryDataStores[0];
+                    Dispatcher.UIThread.Invoke(() =>
+                    {
+                        NewDataStoresAvailable = true;
+                        SelectedDataStore ??= TelemetryDataStores[0];
+                    });
                     break;
                 case NotifyCollectionChangedAction.Remove:
-                    if (TelemetryDataStores.Count == 0 || !comparer.Equals(SelectedDataStore, removed)) return;
-                    // XXX: The files from the correct datastore show up, but the ComboBox won't show the datastore
-                    //      as selected. Probably has something to do with this fix, since it only handle adds:
-                    //      https://github.com/AvaloniaUI/Avalonia/pull/4593/commits/8dfc65d17be00b7f7c96c294dabe7616916951b2
-                    SelectedDataStore = TelemetryDataStores[^1];
+                    Dispatcher.UIThread.Invoke(() =>
+                    {
+                        if (TelemetryDataStores.Count == 0 || !comparer.Equals(SelectedDataStore, removed)) return;
+                        // XXX: The files from the correct datastore show up, but the ComboBox won't show the datastore
+                        //      as selected. Probably has something to do with this fix, since it only handle adds:
+                        //      https://github.com/AvaloniaUI/Avalonia/pull/4593/commits/8dfc65d17be00b7f7c96c294dabe7616916951b2
+                        SelectedDataStore = TelemetryDataStores[^1];
+                    });
                     break;
                 case NotifyCollectionChangedAction.Replace:
                 case NotifyCollectionChangedAction.Move:

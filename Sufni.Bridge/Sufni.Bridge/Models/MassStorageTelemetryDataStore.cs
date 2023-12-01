@@ -10,9 +10,13 @@ public class MassStorageTelemetryDataStore : ITelemetryDataStore
     public IList<ITelemetryFile> Files { get; }
     public string? BoardId { get; }
 
-    public MassStorageTelemetryDataStore(string name, DirectoryInfo path)
+    public DriveInfo DriveInfo { get; }
+
+    public MassStorageTelemetryDataStore(DriveInfo driveInfo)
     {
-        Name = name;
+        DriveInfo = driveInfo;
+        var path = driveInfo.RootDirectory;
+        Name = $"{driveInfo.VolumeLabel} ({driveInfo.RootDirectory.Name})";
         BoardId = File.ReadAllText($"{path.FullName}/.boardid").ToLower();
         Files = path.GetFiles("*.SST")
             .Select(f => (ITelemetryFile)new MassStorageTelemetryFile(f))

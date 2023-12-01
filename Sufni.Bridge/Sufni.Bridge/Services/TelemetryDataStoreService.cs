@@ -1,4 +1,5 @@
-﻿using Sufni.Bridge.Models;
+﻿using System.Collections.Generic;
+using Sufni.Bridge.Models;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -8,6 +9,25 @@ using Timer = System.Timers.Timer;
 
 namespace Sufni.Bridge.Services;
 
+internal class DriveInfoComparer : IEqualityComparer<DriveInfo>
+{
+    public bool Equals(DriveInfo? ds1, DriveInfo? ds2)
+    {
+        if (ReferenceEquals(ds1, ds2))
+            return true;
+
+        if (ds1 is null || ds2 is null)
+            return false;
+        
+        if (!ds1.IsReady || !ds2.IsReady)
+            return false;
+
+        return ds1.VolumeLabel == ds2.VolumeLabel;
+    }
+
+    public int GetHashCode(DriveInfo ds) => ds.IsReady ? ds.VolumeLabel.GetHashCode() : 0;
+}
+
 internal class TelemetryDataStoreService : ITelemetryDataStoreService
 {
     private const string ServiceType = "_gosst._tcp";
@@ -16,32 +36,33 @@ internal class TelemetryDataStoreService : ITelemetryDataStoreService
     
     private void GetMassStorageDatastores()
     {
-        var drives = DriveInfo.GetDrives()
+        var comparer = new DriveInfoComparer();
+        var current = DriveInfo.GetDrives()
             .Where(drive => drive is
             {
                 IsReady: true,
                 DriveType: DriveType.Removable,
-                DriveFormat: "FAT32"
+                DriveFormat: "FAT32",
             } && File.Exists($"{drive.RootDirectory}/.boardid"))
-            .Select(d => new MassStorageTelemetryDataStore($"{d.VolumeLabel} ({d.RootDirectory.Name})", d.RootDirectory))
             .ToArray();
-        var added = drives.Except(DataStores, new TelemetryDataStoreComparer()).ToArray();
-        var removed = DataStores
+        var known = DataStores
             .Where(ds => ds is MassStorageTelemetryDataStore)
-            .Except(drives, new TelemetryDataStoreComparer())
+            .Select(ds => ((MassStorageTelemetryDataStore)ds).DriveInfo)
             .ToArray();
-            
-        lock (DataStoreLock)
+        var added = current.Except(known, comparer).ToArray();
+        var removed = known.Except(current, comparer).ToArray();
+        
+        foreach (var drive in added)
         {
-            foreach (var drive in added)
-            {
-                DataStores.Add(drive);
-            }
+            DataStores.Add(new MassStorageTelemetryDataStore(drive));
+        }
 
-            foreach (var drive in removed)
-            {
-                DataStores.Remove(drive);
-            }
+        foreach (var drive in removed)
+        {
+            var toRemove = DataStores
+                .First(ds => ds is MassStorageTelemetryDataStore msds && 
+                             comparer.Equals(msds.DriveInfo, drive));
+            DataStores.Remove(toRemove);
         }
     }
 
@@ -82,7 +103,13 @@ internal class TelemetryDataStoreService : ITelemetryDataStoreService
         GetMassStorageDatastores();
         var timer = new Timer(1000);
         timer.AutoReset = true;
-        timer.Elapsed += (_, _) => GetMassStorageDatastores();
+        timer.Elapsed += (_, _) =>
+        {
+            lock (DataStoreLock)
+            {
+                GetMassStorageDatastores();
+            }
+        };
         timer.Enabled = true;
     }
 }

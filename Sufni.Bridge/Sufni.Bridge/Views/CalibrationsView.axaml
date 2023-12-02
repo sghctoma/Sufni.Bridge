@@ -13,10 +13,28 @@
         <vm:MainViewModel />
     </Design.DataContext>
 
-    <Grid RowDefinitions="* auto 40" ColumnDefinitions="*">
+    <Grid RowDefinitions="40 * auto 40" ColumnDefinitions="*">
+        
+        <!-- Search box -->
+        <TextBox Grid.Row="0" Grid.Column="0" Margin="6,5,6,0"
+                 Watermark="Search ..."
+                 Text="{Binding CalibrationSearchText}"/>
+        <Button Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right"
+                Width="30" Margin="6,5,15,0" 
+                Background="Transparent"
+                Command="{Binding ClearSearchTextCommand}"
+                CommandParameter="calibration">
+            <Button.Styles>
+                <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                    <Setter Property="Background" Value="Transparent" />
+                    <Setter Property="Opacity" Value="0.7" />
+                </Style>
+            </Button.Styles>
+            <Image Source="{SvgImage /Assets/fa-xmark.svg}" />
+        </Button>
 
         <!-- List of Calibrations -->
-        <ScrollViewer Grid.Row="0" Grid.Column="0" Margin="0,5,0,0">
+        <ScrollViewer Grid.Row="1" Grid.Column="0" Margin="0,5,0,0">
             <ItemsRepeater Classes="main" ItemsSource="{Binding Calibrations}">
                 <ItemsRepeater.ItemTemplate>
                     <DataTemplate>
@@ -118,13 +136,13 @@
         </ScrollViewer>
 
         <!-- Error messages -->
-        <v:ErrorMessagesControl Grid.Row="1" Grid.Column="0"
+        <v:ErrorMessagesControl Grid.Row="2" Grid.Column="0"
                                 Margin="5, 0"
                                 ClearErrorsCommand="{Binding ClearErrorsCommand}"
                                 ErrorMessages="{Binding ErrorMessages}"
                                 IsVisible="{Binding ErrorMessages.Count}" />
 
-        <Grid Grid.Row="2" Grid.Column="0"
+        <Grid Grid.Row="3" Grid.Column="0"
               ColumnDefinitions="* auto" RowDefinitions="40">
 
             <!-- Reload Calibrations -->

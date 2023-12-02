@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
 using Avalonia.Threading;
+using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Sufni.Bridge.ViewModels;
@@ -27,7 +28,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
 
     public ObservableCollection<ITelemetryDataStore>? TelemetryDataStores { get; set; }
     public ObservableCollection<ITelemetryFile> TelemetryFiles { get; } = new();
-    private readonly ObservableCollection<SessionViewModel> sessions;
+    private readonly SourceCache<SessionViewModel, Guid> sessions;
 
     [ObservableProperty] private ITelemetryDataStore? selectedDataStore;
     [ObservableProperty] private bool newDataStoresAvailable;
@@ -86,9 +87,9 @@ public partial class ImportSessionsViewModel : ViewModelBase
     #region Constructors
 
     // This is only here for the designer
-    public ImportSessionsViewModel() : this(new ObservableCollection<SessionViewModel>()) {}
+    public ImportSessionsViewModel() : this(new SourceCache<SessionViewModel, Guid>(m => m.Guid)) {}
     
-    public ImportSessionsViewModel(ObservableCollection<SessionViewModel> sessions)
+    public ImportSessionsViewModel(SourceCache<SessionViewModel, Guid> sessions)
     {
         databaseService = App.Current?.Services?.GetService<IDatabaseService>();
         var telemetryDataStoreService = App.Current?.Services?.GetService<ITelemetryDataStoreService>();
@@ -189,12 +190,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
                 await databaseService.PutSessionAsync(session);
                 
                 var svm = new SessionViewModel(session);
-                var index = 0;
-                while (index < sessions.Count && svm.Timestamp < sessions[index].Timestamp)
-                {
-                    ++index;
-                }
-                sessions.Insert(index, svm);
+                sessions.AddOrUpdate(svm);
                 
                 telemetryFile.OnImported();
                 Notifications.Insert(0, $"{svm.Name} was successfully imported.");

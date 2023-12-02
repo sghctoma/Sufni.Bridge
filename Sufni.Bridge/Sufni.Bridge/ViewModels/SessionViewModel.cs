@@ -13,6 +13,7 @@ namespace Sufni.Bridge.ViewModels;
 public partial class SessionViewModel : ViewModelBase
 {
     private Session session;
+    public Guid Guid { get; } = Guid.NewGuid();
 
     #region Private methods
 

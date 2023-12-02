@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using Sufni.Bridge.Models;
 using Sufni.Bridge.Services;
@@ -15,6 +16,7 @@ public partial class SetupViewModel : ViewModelBase
 {
     private Setup setup;
     private string? originalBoardId;
+    public Guid Guid { get; } = Guid.NewGuid();
 
     #region Observable properties
     
@@ -45,9 +47,12 @@ public partial class SetupViewModel : ViewModelBase
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
     [NotifyCanExecuteChangedFor(nameof(ResetCommand))]
     private CalibrationViewModel? selectedRearCalibration;
+
+    public ReadOnlyObservableCollection<LinkageViewModel> Linkages => linkages;
+    private readonly ReadOnlyObservableCollection<LinkageViewModel> linkages;
     
-    public ObservableCollection<LinkageViewModel> Linkages { get; }
-    public ObservableCollection<CalibrationViewModel> Calibrations { get; }
+    public ReadOnlyObservableCollection<CalibrationViewModel> Calibrations => calibrations;
+    private readonly ReadOnlyObservableCollection<CalibrationViewModel> calibrations;
     
     #endregion
 
@@ -68,13 +73,24 @@ public partial class SetupViewModel : ViewModelBase
     
     #region Constructors
     
-    public SetupViewModel(Setup setup, string? boardId, ObservableCollection<LinkageViewModel> linkages, ObservableCollection<CalibrationViewModel> calibrations)
+    public SetupViewModel(Setup setup, string? boardId,
+        SourceCache<LinkageViewModel, Guid> linkagesSourceCache,
+        SourceCache<CalibrationViewModel, Guid> calibrationsSourceCache)
     {
         this.setup = setup;
         Id = setup.Id;
         BoardId = originalBoardId = boardId;
-        Linkages = linkages;
-        Calibrations = calibrations;
+        
+        linkagesSourceCache.Connect()
+            .Bind(out linkages)
+            .DisposeMany()
+            .Subscribe();
+        
+        calibrationsSourceCache.Connect()
+            .Bind(out calibrations)
+            .DisposeMany()
+            .Subscribe();
+        
         Reset();
     }
 

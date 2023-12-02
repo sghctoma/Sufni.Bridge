@@ -6,6 +6,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DynamicData;
+using DynamicData.Binding;
 using Microsoft.Extensions.DependencyInjection;
 using Sufni.Bridge.Models;
 using Sufni.Bridge.Services;
@@ -24,11 +26,27 @@ public partial class MainViewModel : ViewModelBase
     [ObservableProperty] private bool hasCalibrationMethods;
     [ObservableProperty] private bool hasCalibrations;
     [ObservableProperty] private bool sessionUploadInProgress;
+    [ObservableProperty] private string? setupSearchText;
+    [ObservableProperty] private string? linkageSearchText;
+    [ObservableProperty] private string? calibrationSearchText;
+    [ObservableProperty] private string? sessionSearchText;
 
-    public ObservableCollection<LinkageViewModel> Linkages { get; } = new();
-    public ObservableCollection<CalibrationViewModel> Calibrations { get; } = new();
-    public ObservableCollection<SetupViewModel> Setups { get; } = new();
-    public ObservableCollection<SessionViewModel> Sessions { get; } = new();
+    private readonly SourceCache<LinkageViewModel, Guid> linkagesSource = new(x => x.Guid);
+    public ReadOnlyObservableCollection<LinkageViewModel> Linkages => linkages;
+    private readonly ReadOnlyObservableCollection<LinkageViewModel> linkages;
+    
+    private readonly SourceCache<CalibrationViewModel, Guid> calibrationsSource = new(x => x.Guid);
+    public ReadOnlyObservableCollection<CalibrationViewModel> Calibrations => calibrations;
+    private readonly ReadOnlyObservableCollection<CalibrationViewModel> calibrations;
+    
+    private readonly SourceCache<SetupViewModel, Guid> setupsSource = new(x => x.Guid);
+    public ReadOnlyObservableCollection<SetupViewModel> Setups => setups;
+    private readonly ReadOnlyObservableCollection<SetupViewModel> setups;
+    
+    private readonly SourceCache<SessionViewModel, Guid> sessionsSourceCache = new(x => x.Guid);
+    public ReadOnlyObservableCollection<SessionViewModel> Sessions => sessions;
+    private readonly ReadOnlyObservableCollection<SessionViewModel> sessions;
+    
     private ObservableCollection<CalibrationMethod> CalibrationMethods { get; } = new();
     private ObservableCollection<Board> Boards { get; } = new();
 
@@ -47,6 +65,30 @@ public partial class MainViewModel : ViewModelBase
         {
             IsImportSessionsPageSelected = false;
         }
+    }
+
+    // ReSharper disable once UnusedParameterInPartialMethod
+    partial void OnSessionSearchTextChanged(string? value)
+    {
+        sessionsSourceCache.Refresh();
+    }
+
+    // ReSharper disable once UnusedParameterInPartialMethod
+    partial void OnLinkageSearchTextChanged(string? value)
+    {
+        linkagesSource.Refresh();
+    }
+
+    // ReSharper disable once UnusedParameterInPartialMethod
+    partial void OnCalibrationSearchTextChanged(string? value)
+    {
+        calibrationsSource.Refresh();
+    }
+
+    // ReSharper disable once UnusedParameterInPartialMethod
+    partial void OnSetupSearchTextChanged(string? value)
+    {
+        setupsSource.Refresh();
     }
 
     #endregion
@@ -74,7 +116,45 @@ public partial class MainViewModel : ViewModelBase
     public MainViewModel()
     {
         databaseService = App.Current?.Services?.GetService<IDatabaseService>();
-        ImportSessionsPage = new ImportSessionsViewModel(Sessions);
+        ImportSessionsPage = new ImportSessionsViewModel(sessionsSourceCache);
+
+        calibrationsSource.CountChanged.Subscribe(_ => { HasCalibrations = calibrationsSource.Count != 0; });
+        linkagesSource.CountChanged.Subscribe(_ => { HasLinkages = linkagesSource.Count != 0; });
+        setupsSource.CountChanged.Subscribe(_ =>
+        {
+            DeleteLinkageCommand.NotifyCanExecuteChanged();
+            DeleteCalibrationCommand.NotifyCanExecuteChanged();
+        });
+
+        sessionsSourceCache.Connect()
+            .Filter(svm => string.IsNullOrEmpty(SessionSearchText) || 
+                           (svm.Name is not null && svm.Name!.Contains(SessionSearchText, StringComparison.CurrentCultureIgnoreCase)) ||
+                           (svm.Description is not null && svm.Description!.Contains(SessionSearchText, StringComparison.CurrentCultureIgnoreCase)))
+            .Sort(SortExpressionComparer<SessionViewModel>.Descending(svm => svm.Timestamp!))
+            .Bind(out sessions)
+            .DisposeMany()
+            .Subscribe();
+        
+        linkagesSource.Connect()
+            .Filter(lvm => string.IsNullOrEmpty(LinkageSearchText) ||
+                           (lvm.Name is not null && lvm.Name.Contains(LinkageSearchText, StringComparison.CurrentCultureIgnoreCase)))
+            .Bind(out linkages)
+            .DisposeMany()
+            .Subscribe();
+        
+        calibrationsSource.Connect()
+            .Filter(cvm => string.IsNullOrEmpty(CalibrationSearchText) ||
+                           (cvm.Name is not null && cvm.Name.Contains(CalibrationSearchText, StringComparison.CurrentCultureIgnoreCase)))
+            .Bind(out calibrations)
+            .DisposeMany()
+            .Subscribe();
+        
+        setupsSource.Connect()
+            .Filter(svm => string.IsNullOrEmpty(SetupSearchText) ||
+                           (svm.Name is not null && svm.Name.Contains(SetupSearchText, StringComparison.CurrentCultureIgnoreCase)))
+            .Bind(out setups)
+            .DisposeMany()
+            .Subscribe();
         
         SelectPage();
         SettingsPage.PropertyChanged += (_, args) =>
@@ -87,23 +167,10 @@ public partial class MainViewModel : ViewModelBase
             UploadSessionsCommand.NotifyCanExecuteChanged();
             SelectPage();
         };
-
-        Linkages.CollectionChanged += (_, _) =>
-        {
-            HasLinkages = Linkages.Count != 0;
-        };
+        
         CalibrationMethods.CollectionChanged += (_, _) =>
         {
             HasCalibrationMethods = CalibrationMethods.Count != 0;
-        };
-        Calibrations.CollectionChanged += (_, _) =>
-        {
-            HasCalibrations = Calibrations.Count != 0;
-        };
-        Setups.CollectionChanged += (_, _) =>
-        {
-            DeleteLinkageCommand.NotifyCanExecuteChanged();
-            DeleteCalibrationCommand.NotifyCanExecuteChanged();
         };
 
         _ = LoadDatabaseContent();
@@ -131,11 +198,10 @@ public partial class MainViewModel : ViewModelBase
 
         try
         {
-            var linkages = await databaseService.GetLinkagesAsync();
-
-            foreach (var linkage in linkages)
+            var linkagesList = await databaseService.GetLinkagesAsync();
+            foreach (var linkage in linkagesList)
             {
-                Linkages.Add(new LinkageViewModel(linkage));
+                linkagesSource.AddOrUpdate(new LinkageViewModel(linkage));
             }
         }
         catch (Exception e)
@@ -168,11 +234,10 @@ public partial class MainViewModel : ViewModelBase
         
         try
         {
-            var calibrations = await databaseService.GetCalibrationsAsync();
-
-            foreach (var calibration in calibrations)
+            var calibrationsList = await databaseService.GetCalibrationsAsync();
+            foreach (var calibration in calibrationsList)
             {
-                Calibrations.Add(new CalibrationViewModel(calibration, CalibrationMethods));
+                calibrationsSource.AddOrUpdate(new CalibrationViewModel(calibration, CalibrationMethods));
             }
         }
         catch (Exception e)
@@ -206,16 +271,15 @@ public partial class MainViewModel : ViewModelBase
         
         try
         {
-            var setups = await databaseService.GetSetupsAsync();
-
-            foreach (var setup in setups)
+            var setupList = await databaseService.GetSetupsAsync();
+            foreach (var setup in setupList)
             {
                 var board = Boards.FirstOrDefault(b => b?.SetupId == setup.Id, null);
                 var svm = new SetupViewModel(
                     setup,
                     board?.Id,
-                    Linkages,
-                    Calibrations);
+                    linkagesSource,
+                    calibrationsSource);
                 svm.PropertyChanged += (sender, args) =>
                 {
                     if (sender is null ||
@@ -224,7 +288,7 @@ public partial class MainViewModel : ViewModelBase
                     DeleteCalibrationCommand.NotifyCanExecuteChanged();
                     DeleteLinkageCommand.NotifyCanExecuteChanged();
                 };
-                Setups.Add(svm);
+                setupsSource.AddOrUpdate(svm);
             }
         }
         catch (Exception e)
@@ -239,11 +303,10 @@ public partial class MainViewModel : ViewModelBase
         
         try
         {
-            var sessions = await databaseService.GetSessionsAsync();
-
-            foreach (var session in sessions)
+            var sessionList = await databaseService.GetSessionsAsync();
+            foreach (var session in sessionList)
             {
-                Sessions.Add(new SessionViewModel(session));
+                sessionsSourceCache.AddOrUpdate(new SessionViewModel(session));
             }
         }
         catch (Exception e)
@@ -254,12 +317,12 @@ public partial class MainViewModel : ViewModelBase
 
     private async Task LoadDatabaseContent()
     {
-        Linkages.Clear();
+        linkagesSource.Clear();
         CalibrationMethods.Clear();
-        Calibrations.Clear();
-        Setups.Clear();
+        calibrationsSource.Clear();
+        setupsSource.Clear();
         Boards.Clear();
-        Sessions.Clear();
+        sessionsSourceCache.Clear();
         await LoadLinkagesAsync();
         await LoadCalibrationMethodsAsync();
         await LoadCalibrationsAsync();
@@ -333,7 +396,7 @@ public partial class MainViewModel : ViewModelBase
             {
                 IsDirty = true
             };
-            Linkages.Add(lvm);
+            linkagesSource.AddOrUpdate(lvm);
         }
         catch (Exception e)
         {
@@ -356,12 +419,12 @@ public partial class MainViewModel : ViewModelBase
             // If this linkage was not yet saved into the database, we just need to remove it from Linkages.
             if (linkage.Id is null)
             {
-                Linkages.Remove(linkage);
+                linkagesSource.Remove(linkage);
                 return;
             }
             
             await databaseService.DeleteLinkageAsync(linkage.Id.Value);
-            Linkages.Remove(linkage);
+            linkagesSource.Remove(linkage);
         }
         catch (Exception e)
         {
@@ -388,7 +451,7 @@ public partial class MainViewModel : ViewModelBase
             {
                 IsDirty = true
             };
-            Calibrations.Add(cvm);
+            calibrationsSource.AddOrUpdate(cvm);
         }
         catch (Exception e)
         {
@@ -413,12 +476,12 @@ public partial class MainViewModel : ViewModelBase
             // If this calibration was not yet saved into the database, we just need to remove it from Calibrations.
             if (calibration.Id is null)
             {
-                Calibrations.Remove(calibration);
+                calibrationsSource.Remove(calibration);
                 return;
             }
             
             await databaseService.DeleteCalibrationAsync(calibration.Id.Value);
-            Calibrations.Remove(calibration);
+            calibrationsSource.Remove(calibration);
         }
         catch (Exception e)
         {
@@ -449,7 +512,7 @@ public partial class MainViewModel : ViewModelBase
                 newSetupsBoardId = datastoreBoardId;
             }
             
-            var svm = new SetupViewModel(setup, newSetupsBoardId, Linkages, Calibrations)
+            var svm = new SetupViewModel(setup, newSetupsBoardId, linkagesSource, calibrationsSource)
             {
                 IsDirty = true
             };
@@ -461,7 +524,7 @@ public partial class MainViewModel : ViewModelBase
                 DeleteCalibrationCommand.NotifyCanExecuteChanged();
                 DeleteLinkageCommand.NotifyCanExecuteChanged();
             };
-            Setups.Add(svm);
+            setupsSource.AddOrUpdate(svm);
         }
         catch (Exception e)
         {
@@ -479,7 +542,7 @@ public partial class MainViewModel : ViewModelBase
             // If this setup was not yet saved into the database, we just need to remove it from Setups.
             if (setup.Id is null)
             {
-                Setups.Remove(setup);
+                setupsSource.Remove(setup);
                 return;
             }
 
@@ -490,7 +553,7 @@ public partial class MainViewModel : ViewModelBase
             }
             
             await databaseService.DeleteSetupAsync(setup.Id.Value);
-            Setups.Remove(setup);
+            setupsSource.Remove(setup);
         }
         catch (Exception e)
         {
@@ -507,11 +570,31 @@ public partial class MainViewModel : ViewModelBase
         {
             await databaseService.DeleteSessionAsync(id);
             var toDelete = Sessions.First(s => s.Id == id);
-            Sessions.Remove(toDelete);
+            sessionsSourceCache.Remove(toDelete);
         }
         catch (Exception e)
         {
             ErrorMessages.Add($"Could not delete Session: {e.Message}");
+        }
+    }
+
+    [RelayCommand]
+    private void ClearSearchText(string which)
+    {
+        switch (which)
+        {
+            case "linkage": 
+                LinkageSearchText = "";
+                break;
+            case "calibration":
+                CalibrationSearchText = "";
+                break;
+            case "setup":
+                SetupSearchText = "";
+                break;
+            case "session":
+                SessionSearchText = "";
+                break;
         }
     }
     

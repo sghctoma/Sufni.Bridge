@@ -14,6 +14,7 @@ namespace Sufni.Bridge.ViewModels;
 public partial class LinkageViewModel : ViewModelBase
 {
     private Linkage linkage;
+    public Guid Guid { get; } = Guid.NewGuid();
 
     #region Private methods
 

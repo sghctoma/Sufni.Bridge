@@ -55,6 +55,7 @@ public partial class CalibrationInputViewModel : ViewModelBase
 public partial class CalibrationViewModel : ViewModelBase
 {
     private Calibration calibration;
+    public Guid Guid { get; } = Guid.NewGuid();
     
     #region Observable properties
     

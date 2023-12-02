@@ -68,7 +68,8 @@ public partial class ImportSessionsViewModel : ViewModelBase
         }
         
         TelemetryFiles.Clear();
-        foreach (var file in value.Files)
+        var files = await value.GetFiles();
+        foreach (var file in files)
         {
             TelemetryFiles.Add(file);
         }
@@ -154,8 +155,9 @@ public partial class ImportSessionsViewModel : ViewModelBase
     private async Task ImportSessions()
     {
         Debug.Assert(SelectedSetup != null);
+        Debug.Assert(SelectedDataStore != null);
         Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
-
+        
         ImportInProgress = true;
         
         foreach (var telemetryFile in TelemetryFiles.Where(f => f.ShouldBeImported))
@@ -202,10 +204,10 @@ public partial class ImportSessionsViewModel : ViewModelBase
                 ErrorMessages.Add($"Could not import {telemetryFile.Name}: {e.Message}");
             }
         }
-
-        var newTelemetryFiles = TelemetryFiles.Where(f => !f.Imported).ToList();
+        
+        var files = await SelectedDataStore.GetFiles();
         TelemetryFiles.Clear();
-        foreach (var file in newTelemetryFiles)
+        foreach (var file in files)
         {
             TelemetryFiles.Add(file);
         }

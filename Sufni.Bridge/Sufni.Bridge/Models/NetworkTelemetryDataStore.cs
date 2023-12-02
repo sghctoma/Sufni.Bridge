@@ -10,13 +10,11 @@ namespace Sufni.Bridge.Models;
 public class NetworkTelemetryDataStore : ITelemetryDataStore
 {
     public string Name { get; }
-    public IList<ITelemetryFile> Files { get; } = new List<ITelemetryFile>();
     public string? BoardId { get; private set; }
-    public Task Initialization { get; }
-
     private readonly IPEndPoint ipEndPoint;
+    public readonly Task Initialization;
     
-    private async Task ProcessDirectoryInfo()
+    public async Task<List<ITelemetryFile>> GetFiles()
     {
         var directoryInfo = await SstTcpClient.GetFile(ipEndPoint, 0);
         var recordCount = directoryInfo.Length / 25; // 9 characters + size (long) + timestamp (long)
@@ -26,14 +24,17 @@ public class NetworkTelemetryDataStore : ITelemetryDataStore
         BoardId = Convert.ToHexString(boardId).ToLower();
         var sampleRate = reader.ReadUInt16();
 
+        var files = new List<ITelemetryFile>();
         for (var i = 0; i < recordCount; i++)
         {
             var name = Encoding.ASCII.GetString(reader.ReadBytes(9));
             var size = reader.ReadUInt64();
             var timestamp = reader.ReadUInt64();
 
-            Files.Add(new NetworkTelemetryFile(ipEndPoint, sampleRate, name, size, timestamp));
+            files.Add(new NetworkTelemetryFile(ipEndPoint, sampleRate, name, size, timestamp));
         }
+
+        return files;
     }
     
     public NetworkTelemetryDataStore(IPAddress address, int port)
@@ -41,6 +42,7 @@ public class NetworkTelemetryDataStore : ITelemetryDataStore
         ipEndPoint = new IPEndPoint(address, port);
         Name = $"gosst://{ipEndPoint.Address}:{ipEndPoint.Port}";
 
-        Initialization = ProcessDirectoryInfo();
+        // We need this to set BoardId
+        Initialization = GetFiles();
     }
 }

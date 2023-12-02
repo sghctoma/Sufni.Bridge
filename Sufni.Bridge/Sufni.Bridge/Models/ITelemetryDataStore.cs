@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Sufni.Bridge.Models;
 
@@ -21,6 +22,6 @@ internal class TelemetryDataStoreComparer : IEqualityComparer<ITelemetryDataStor
 public interface ITelemetryDataStore
 {
     public string Name { get; }
-    public IList<ITelemetryFile> Files { get; }
     public string? BoardId { get; }
+    public Task<List<ITelemetryFile>> GetFiles();
 }

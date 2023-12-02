@@ -1,29 +1,32 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Sufni.Bridge.Models;
 
 public class MassStorageTelemetryDataStore : ITelemetryDataStore
 {
     public string Name { get; }
-    public IList<ITelemetryFile> Files { get; }
     public string? BoardId { get; }
-
     public DriveInfo DriveInfo { get; }
 
-    public MassStorageTelemetryDataStore(DriveInfo driveInfo)
+    public Task<List<ITelemetryFile>> GetFiles()
     {
-        DriveInfo = driveInfo;
-        var path = driveInfo.RootDirectory;
-        Name = $"{driveInfo.VolumeLabel} ({driveInfo.RootDirectory.Name})";
-        BoardId = File.ReadAllText($"{path.FullName}/.boardid").ToLower();
-        Files = path.GetFiles("*.SST")
+        var files = DriveInfo.RootDirectory.GetFiles("*.SST")
             .Select(f => (ITelemetryFile)new MassStorageTelemetryFile(f))
             .OrderBy(f => f.StartTime)
             .ToList();
+        return Task.FromResult(files);
+    }
+    
+    public MassStorageTelemetryDataStore(DriveInfo driveInfo)
+    {
+        DriveInfo = driveInfo;
+        Name = $"{driveInfo.VolumeLabel} ({DriveInfo.RootDirectory.Name})";
+        BoardId = File.ReadAllText($"{DriveInfo.RootDirectory.FullName}/.boardid").ToLower();
 
-        if (!Directory.Exists($"{path.FullName}/uploaded"))
-            Directory.CreateDirectory($"{path.FullName}/uploaded");
+        if (!Directory.Exists($"{DriveInfo.RootDirectory.FullName}/uploaded"))
+            Directory.CreateDirectory($"{DriveInfo.RootDirectory.FullName}/uploaded");
     }
 }

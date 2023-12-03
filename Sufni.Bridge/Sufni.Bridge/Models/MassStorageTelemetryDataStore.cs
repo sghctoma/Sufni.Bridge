@@ -15,7 +15,7 @@ public class MassStorageTelemetryDataStore : ITelemetryDataStore
     {
         var files = DriveInfo.RootDirectory.GetFiles("*.SST")
             .Select(f => (ITelemetryFile)new MassStorageTelemetryFile(f))
-            .OrderBy(f => f.StartTime)
+            .OrderByDescending(f => f.StartTime)
             .ToList();
         return Task.FromResult(files);
     }

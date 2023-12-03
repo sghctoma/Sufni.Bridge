@@ -50,33 +50,36 @@
             <ItemsRepeater Classes="main" ItemsSource="{Binding TelemetryFiles}">
                 <ItemsRepeater.ItemTemplate>
                     <DataTemplate>
-                        <Border BorderThickness="1" CornerRadius="5" Padding="5"
-                                Background="#20262b" BorderBrush="#505050">
-                            <Grid ColumnDefinitions="auto auto auto *" RowDefinitions="auto auto auto auto auto *"
-                                  Height="200" MinWidth="300" HorizontalAlignment="Stretch">
-
-                                <TextBlock Grid.Row="0" Grid.Column="0" Margin="2" VerticalAlignment="Center"
-                                           FontWeight="Black" Text="{Binding FileName}" />
-                                <TextBlock Grid.Row="0" Grid.Column="1" Margin="2" VerticalAlignment="Center"
-                                           FontSize="12"
-                                           Text="{Binding StartTime}" />
-                                <TextBlock Grid.Row="0" Grid.Column="2" Margin="2" VerticalAlignment="Center"
-                                           FontSize="12"
-                                           Text="{Binding Duration, StringFormat=({0})}" />
-                                <CheckBox Grid.Row="0" Grid.Column="3" Margin="2"
-                                          HorizontalAlignment="Right"
-                                          IsChecked="{Binding ShouldBeImported}"
-                                          Content="Import" />
-                                <Label Grid.Row="3" Grid.Column="0" VerticalAlignment="Center">Name:</Label>
-                                <TextBox Grid.Row="3" Grid.Column="1" Margin="2" Grid.ColumnSpan="3"
+                        <Expander HorizontalAlignment="Stretch"
+                                  IsExpanded="{Binding ShouldBeImported, Mode=OneWay}">
+                            <Expander.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <CheckBox HorizontalAlignment="Left"
+                                              IsChecked="{Binding ShouldBeImported}"
+                                              Content="" />
+                                    <TextBlock Margin="2" VerticalAlignment="Center"
+                                               FontWeight="Black" Text="{Binding FileName}" />
+                                    <TextBlock Margin="2" VerticalAlignment="Center"
+                                               FontSize="12"
+                                               Text="{Binding StartTime}" />
+                                    <TextBlock Margin="2" VerticalAlignment="Center"
+                                               FontSize="12"
+                                               Text="{Binding Duration, StringFormat=({0})}" />
+                                </StackPanel>
+                            </Expander.Header>
+                            <Grid ColumnDefinitions="auto *" RowDefinitions="auto auto auto *"
+                                  Height="150" HorizontalAlignment="Stretch">
+                                
+                                <Label Grid.Row="1" Grid.Column="0" VerticalAlignment="Center">Name:</Label>
+                                <TextBox Grid.Row="1" Grid.Column="1" Margin="2"
                                          Text="{Binding Name}" />
-                                <Label Grid.Row="4" Grid.Column="0" VerticalAlignment="Center">Description:</Label>
-                                <TextBox Grid.Row="4" Grid.Column="1" Grid.RowSpan="2" Grid.ColumnSpan="3"
+                                <Label Grid.Row="2" Grid.Column="0" VerticalAlignment="Center">Description:</Label>
+                                <TextBox Grid.Row="2" Grid.Column="1" Grid.RowSpan="2"
                                          Margin="2" AcceptsReturn="True" VerticalAlignment="Stretch"
                                          TextWrapping="Wrap"
                                          Text="{Binding Description}" />
                             </Grid>
-                        </Border>
+                        </Expander>
                     </DataTemplate>
                 </ItemsRepeater.ItemTemplate>
             </ItemsRepeater>

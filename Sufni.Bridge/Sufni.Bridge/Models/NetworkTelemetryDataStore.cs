@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,7 +35,7 @@ public class NetworkTelemetryDataStore : ITelemetryDataStore
             files.Add(new NetworkTelemetryFile(ipEndPoint, sampleRate, name, size, timestamp));
         }
 
-        return files;
+        return files.OrderByDescending(f => f.StartTime).ToList();
     }
     
     public NetworkTelemetryDataStore(IPAddress address, int port)

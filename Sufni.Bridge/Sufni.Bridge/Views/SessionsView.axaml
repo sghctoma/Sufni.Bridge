@@ -17,25 +17,89 @@
         <vm:MainViewModel />
     </Design.DataContext>
 
-    <Grid RowDefinitions="40 * auto auto 40" ColumnDefinitions="*">
+    <Grid RowDefinitions="auto * auto auto 40" ColumnDefinitions="*">
 
-        <!-- Search box -->
-        <TextBox Grid.Row="0" Grid.Column="0" Margin="6,5,6,0"
-                 Watermark="Search ..."
-                 Text="{Binding SessionSearchText}"/>
-        <Button Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right"
-                Width="30" Margin="6,5,15,0" 
-                Background="Transparent"
-                Command="{Binding ClearSearchTextCommand}"
-                CommandParameter="session">
-            <Button.Styles>
-                <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-                    <Setter Property="Background" Value="Transparent" />
-                    <Setter Property="Opacity" Value="0.7" />
-                </Style>
-            </Button.Styles>
-            <Image Source="{SvgImage /Assets/fa-xmark.svg}" />
-        </Button>
+        <!-- Filter -->
+        <Grid Grid.Row="0" Grid.Column="0" Margin="6,5,6,0"
+              RowDefinitions="35 auto auto" ColumnDefinitions="33 * auto">
+            
+             
+            <!-- Date picker opener button -->
+            <Button Grid.Row="0" Grid.Column="0" Height="33"
+                    HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                    Command="{Binding ToggleDateFilterCommand}">
+                <Image Height="14" Source="{SvgImage /Assets/fa-filter.svg}" />
+            </Button>
+            
+            <!-- Search box -->
+            <TextBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2"
+                     Watermark="Search ..."
+                     Text="{Binding SessionSearchText}"/>
+            <Button Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right"
+                    Width="30"
+                    Background="Transparent"
+                    Command="{Binding ClearSearchTextCommand}"
+                    CommandParameter="session">
+                <Button.Styles>
+                    <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                        <Setter Property="Background" Value="Transparent" />
+                        <Setter Property="Opacity" Value="0.7" />
+                    </Style>
+                </Button.Styles>
+                <Image Source="{SvgImage /Assets/fa-xmark.svg}" />
+            </Button>
+            
+            <!-- Date pickers -->
+            <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,1,1,0"
+                  ColumnDefinitions="auto * 33" RowDefinitions="auto auto"
+                  Background="#20262b"
+                  IsVisible="{Binding DateFilterVisible}">
+                
+                <!-- From -->
+                <Label Grid.Row="0" Grid.Column="0"
+                       VerticalAlignment="Center" Margin="5,5,5,0"
+                       Content="From: "/>
+                <CalendarDatePicker Grid.Row="0" Grid.Column="1" Margin="5,5,0,5"
+                            HorizontalAlignment="Stretch"
+                            SelectedDate="{Binding DateFilterFrom}"
+                            DisplayDateEnd="{Binding DateFilterTo}"/>
+                <Button Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right"
+                        Width="30"
+                        Background="Transparent"
+                        Command="{Binding ClearDateFilterCommand}"
+                        CommandParameter="from">
+                    <Button.Styles>
+                        <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                            <Setter Property="Background" Value="Transparent" />
+                            <Setter Property="Opacity" Value="0.7" />
+                        </Style>
+                    </Button.Styles>
+                    <Image Source="{SvgImage /Assets/fa-xmark.svg}" />
+                </Button>
+                
+                <!-- To -->
+                <Label Grid.Row="1" Grid.Column="0"
+                       VerticalAlignment="Center" Margin="5,0,0,5"
+                       Content="To: "/>
+                <CalendarDatePicker Grid.Row="1" Grid.Column="1"  Margin="5,0,0,5"
+                            HorizontalAlignment="Stretch"
+                            SelectedDate="{Binding DateFilterTo}"
+                            DisplayDateStart="{Binding DateFilterFrom}"/>
+                <Button Grid.Row="1" Grid.Column="2" HorizontalAlignment="Right"
+                        Width="30"
+                        Background="Transparent"
+                        Command="{Binding ClearDateFilterCommand}"
+                        CommandParameter="to">
+                    <Button.Styles>
+                        <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                            <Setter Property="Background" Value="Transparent" />
+                            <Setter Property="Opacity" Value="0.7" />
+                        </Style>
+                    </Button.Styles>
+                    <Image Source="{SvgImage /Assets/fa-xmark.svg}" />
+                </Button>
+            </Grid>
+        </Grid>
 
         <!-- List of Calibrations -->
         <ScrollViewer Grid.Row="1" Grid.Column="0" Margin="0,5,0,0">

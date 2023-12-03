@@ -117,6 +117,15 @@
         <Style Selector="ItemsRepeater.main > Border">
             <Setter Property="Margin" Value="6,2, 6, 1" />
         </Style>
+        
+        <!-- Global styles for CalendarDatePicker -->
+        <Style Selector="CalendarDatePicker">
+            <Setter Property="Foreground" Value="#a0a0a0" />
+            <Setter Property="BorderBrush" Value="#505050" />
+        </Style>
+        <Style Selector="CalendarDatePicker:pointerover /template/ Border">
+            <Setter Property="BorderBrush" Value="#505050" />
+        </Style>
     </Application.Styles>
     
     <Application.Resources>

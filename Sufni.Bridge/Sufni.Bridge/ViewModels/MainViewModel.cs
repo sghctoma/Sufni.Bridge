@@ -26,10 +26,15 @@ public partial class MainViewModel : ViewModelBase
     [ObservableProperty] private bool hasCalibrationMethods;
     [ObservableProperty] private bool hasCalibrations;
     [ObservableProperty] private bool sessionUploadInProgress;
+    
     [ObservableProperty] private string? setupSearchText;
     [ObservableProperty] private string? linkageSearchText;
     [ObservableProperty] private string? calibrationSearchText;
     [ObservableProperty] private string? sessionSearchText;
+
+    [ObservableProperty] private DateTime? dateFilterFrom;
+    [ObservableProperty] private DateTime? dateFilterTo;
+    [ObservableProperty] private bool dateFilterVisible;
 
     private readonly SourceCache<LinkageViewModel, Guid> linkagesSource = new(x => x.Guid);
     public ReadOnlyObservableCollection<LinkageViewModel> Linkages => linkages;
@@ -73,6 +78,18 @@ public partial class MainViewModel : ViewModelBase
         sessionsSourceCache.Refresh();
     }
 
+    // ReSharper disable once UnusedParameterInPartialMethod
+    partial void OnDateFilterFromChanged(DateTime? value)
+    {
+        sessionsSourceCache.Refresh();
+    }
+
+    // ReSharper disable once UnusedParameterInPartialMethod
+    partial void OnDateFilterToChanged(DateTime? value)
+    {
+        sessionsSourceCache.Refresh();
+    }
+    
     // ReSharper disable once UnusedParameterInPartialMethod
     partial void OnLinkageSearchTextChanged(string? value)
     {
@@ -130,6 +147,8 @@ public partial class MainViewModel : ViewModelBase
             .Filter(svm => string.IsNullOrEmpty(SessionSearchText) || 
                            (svm.Name is not null && svm.Name!.Contains(SessionSearchText, StringComparison.CurrentCultureIgnoreCase)) ||
                            (svm.Description is not null && svm.Description!.Contains(SessionSearchText, StringComparison.CurrentCultureIgnoreCase)))
+            .Filter(svm => (DateFilterFrom is null || svm.Timestamp >= DateFilterFrom) &&
+                           (DateFilterTo is null || svm.Timestamp <= DateFilterTo))
             .Sort(SortExpressionComparer<SessionViewModel>.Descending(svm => svm.Timestamp!))
             .Bind(out sessions)
             .DisposeMany()
@@ -596,6 +615,26 @@ public partial class MainViewModel : ViewModelBase
                 SessionSearchText = "";
                 break;
         }
+    }
+    
+    [RelayCommand]
+    private void ClearDateFilter(string which)
+    {
+        switch (which)
+        {
+            case "from": 
+                DateFilterFrom = null;
+                break;
+            case "to":
+                DateFilterTo = null;
+                break;
+        }
+    }
+
+    [RelayCommand]
+    private void ToggleDateFilter()
+    {
+        DateFilterVisible = !DateFilterVisible;
     }
     
     #endregion

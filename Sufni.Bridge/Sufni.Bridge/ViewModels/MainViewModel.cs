@@ -392,7 +392,7 @@ public partial class MainViewModel : ViewModelBase
 
                 var psst = await databaseService.GetSessionRawPsstAsync(svm.Id ?? 0);
                 await httpApiService.PutProcessedSessionAsync(svm.Name!, svm.Description!, psst!);
-                Notifications.Insert(0, $"{svm.Name} was successfully imported.");
+                Notifications.Insert(0, $"{svm.Name} was successfully uploaded.");
             }
             catch(Exception e)
             {

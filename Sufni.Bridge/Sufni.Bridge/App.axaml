@@ -58,6 +58,15 @@
             <Setter Property="Background" Value="#2c3032" />
         </Style>
         
+        <!-- Global styles for Buttons embedded in TextBoxes -->
+        <Style Selector="Button.embedded /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="Button.embedded:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Opacity" Value="0.8" />
+        </Style>
+        
         <!-- Global styles for NumericUpDown -->
         <Style Selector="NumericUpDown">
             <Setter Property="Background" Value="#20262b" />
@@ -125,6 +134,12 @@
         </Style>
         <Style Selector="CalendarDatePicker:pointerover /template/ Border">
             <Setter Property="BorderBrush" Value="#505050" />
+        </Style>
+        <Style Selector="CalendarDatePicker Button">
+            <Setter Property="FontSize" Value="14" />
+        </Style>
+        <Style Selector="CalendarDayButton">
+            <Setter Property="FontSize" Value="14" />
         </Style>
     </Application.Styles>
     

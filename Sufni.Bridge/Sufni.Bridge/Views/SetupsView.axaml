@@ -19,17 +19,11 @@
         <TextBox Grid.Row="0" Grid.Column="0" Margin="6,5,6,0"
                  Watermark="Search ..."
                  Text="{Binding SetupSearchText}"/>
-        <Button Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right"
+        <Button Classes="embedded" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right"
                 Width="30" Margin="6,5,15,0" 
-                Background="Transparent"
+                IsVisible="{Binding SetupSearchText, Converter={x:Static ObjectConverters.IsNotNull}}"
                 Command="{Binding ClearSearchTextCommand}"
                 CommandParameter="setup">
-            <Button.Styles>
-                <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-                    <Setter Property="Background" Value="Transparent" />
-                    <Setter Property="Opacity" Value="0.7" />
-                </Style>
-            </Button.Styles>
             <Image Source="{SvgImage /Assets/fa-xmark.svg}" />
         </Button>
         

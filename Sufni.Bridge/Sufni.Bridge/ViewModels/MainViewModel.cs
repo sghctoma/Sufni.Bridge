@@ -603,16 +603,16 @@ public partial class MainViewModel : ViewModelBase
         switch (which)
         {
             case "linkage": 
-                LinkageSearchText = "";
+                LinkageSearchText = null;
                 break;
             case "calibration":
-                CalibrationSearchText = "";
+                CalibrationSearchText = null;
                 break;
             case "setup":
-                SetupSearchText = "";
+                SetupSearchText = null;
                 break;
             case "session":
-                SessionSearchText = "";
+                SessionSearchText = null;
                 break;
         }
     }

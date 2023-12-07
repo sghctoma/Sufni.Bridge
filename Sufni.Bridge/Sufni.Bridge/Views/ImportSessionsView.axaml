@@ -32,7 +32,7 @@
             
             <!-- Attach command to Expanded event -->
             <i:Interaction.Behaviors>
-                <ia:EventTriggerBehavior EventName="DropDownOpened">
+                <ia:EventTriggerBehavior EventName="GotFocus">
                     <InvokeCommandAction Command="{Binding ClearNewDataStoresAvailableCommand}" />
                 </ia:EventTriggerBehavior>
             </i:Interaction.Behaviors>

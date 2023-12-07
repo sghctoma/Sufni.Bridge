@@ -8,7 +8,9 @@ now, the application has a limited functionality compared to the
 [web-based dashboard](https://github.com/sghctoma/sst/wiki/03-Dashboard), but
 it does not require an internet connection.
 
-![application window](pics/sufni.bridge.gif)
+<div style="text-align: center">
+<img src="pics/sufni.bridge.gif" alt="Sufni.Bridge application window" />
+</div>
 
 Important limitations:
 

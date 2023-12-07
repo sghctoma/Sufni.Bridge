@@ -8,7 +8,7 @@
     
     <!-- Do not target net8.0-ios if we are building on Linux (There is no "ios" workload on Linux: https://github.com/dotnet/runtime/issues/85505) -->
     <PropertyGroup Condition="'!$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))'">
-        <TargetFrameworks>net8.0-windows;net8.0-android;net8.0-ios;net8.0</TargetFrameworks>
+        <TargetFrameworks>net8.0-windows;net8.0-android;net8.0-ios;net8.0-macos;net8.0</TargetFrameworks>
     </PropertyGroup>
     <PropertyGroup Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))'">
         <TargetFrameworks>net8.0-windows;net8.0-android;net8.0</TargetFrameworks>
@@ -33,6 +33,10 @@
         <Compile Include="SecureStorage.ios.cs" />
     </ItemGroup>
     
+    <ItemGroup Condition="'$(TargetFramework)' == 'net8.0-macos'">
+        <Compile Include="SecureStorage.ios.cs" />
+    </ItemGroup>
+
     <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
         <PackageReference Include="Ace4896.DBus.Services.Secrets" Version="1.2.1" />
         <Compile Include="SecureStorage.linux.cs" />

@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Sufni.Bridge.Extensions;
 
 namespace Sufni.Bridge.Models;
 
@@ -14,7 +16,7 @@ public class MassStorageTelemetryDataStore : ITelemetryDataStore
     public Task<List<ITelemetryFile>> GetFiles()
     {
         var files = DriveInfo.RootDirectory.GetFiles("*.SST")
-            .Select(f => (ITelemetryFile)new MassStorageTelemetryFile(f))
+            .TrySelect<FileInfo, ITelemetryFile, FormatException>(f => new MassStorageTelemetryFile(f), null)
             .OrderByDescending(f => f.StartTime)
             .ToList();
         return Task.FromResult(files);

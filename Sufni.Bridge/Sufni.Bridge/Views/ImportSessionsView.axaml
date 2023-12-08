@@ -20,7 +20,8 @@
         
         <!-- Datastore selector -->
         <ComboBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
-                  Margin="5,5,5,2"
+                  Height="35"
+                  Margin="6,5,6,0"
                   HorizontalAlignment="Stretch"
                   SelectedItem="{Binding SelectedDataStore}"
                   ItemsSource="{Binding TelemetryDataStores}">
@@ -32,7 +33,7 @@
             
             <!-- Attach command to Expanded event -->
             <i:Interaction.Behaviors>
-                <ia:EventTriggerBehavior EventName="DropDownOpened">
+                <ia:EventTriggerBehavior EventName="GotFocus">
                     <InvokeCommandAction Command="{Binding ClearNewDataStoresAvailableCommand}" />
                 </ia:EventTriggerBehavior>
             </i:Interaction.Behaviors>
@@ -46,7 +47,7 @@
                Source="{SvgImage /Assets/fa-circle-exclamation.svg}" />
 
         <!-- List of SST files in selected datastore -->
-        <ScrollViewer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">
+        <ScrollViewer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,5,0,0">
             <ItemsRepeater Classes="main" ItemsSource="{Binding TelemetryFiles}">
                 <ItemsRepeater.ItemTemplate>
                     <DataTemplate>
@@ -99,7 +100,7 @@
 
         <!-- Import selected SST files -->
         <Button Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3"
-                Margin="5,5,5,5"
+                Margin="5,7,5,3"
                 HorizontalAlignment="Stretch"
                 HorizontalContentAlignment="Center"
                 Content="{Binding ImportLabel}"

@@ -20,7 +20,7 @@
     <Grid RowDefinitions="auto * auto auto 40" ColumnDefinitions="*">
 
         <!-- Filter -->
-        <Grid Grid.Row="0" Grid.Column="0" Margin="7,5,6,0"
+        <Grid Grid.Row="0" Grid.Column="0" Margin="6,5,6,0"
               RowDefinitions="35 auto" ColumnDefinitions="*">
  
             <!-- Search box -->

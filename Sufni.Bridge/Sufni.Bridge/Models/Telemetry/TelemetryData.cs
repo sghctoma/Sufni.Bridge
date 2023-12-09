@@ -14,27 +14,6 @@ using MessagePack;
 namespace Sufni.Bridge.Models.Telemetry;
 
 [MessagePackObject(keyAsPropertyName: true)]
-public class Linkage
-{
-    public string Name { get; set; }
-    public double HeadAngle { get; set; }
-    public double MaxFrontStroke { get; set; }
-    public double MaxRearStroke { get; set; }
-    public double MaxFrontTravel { get; set; }
-    public double MaxRearTravel { get; set; }
-    public double[][] LeverageRatio { get; set; }
-    public double[] ShockWheelCoeffs { get; set; }
-};
-
-[MessagePackObject(keyAsPropertyName: true)]
-public class Calibration
-{
-    public string Name { get; set; }
-    public int MethodId { get; set; }
-    public Dictionary<string, double> Inputs { get; set; }
-};
-
-[MessagePackObject(keyAsPropertyName: true)]
 public class StrokeStat
 {
     public double SumTravel { get; set; }

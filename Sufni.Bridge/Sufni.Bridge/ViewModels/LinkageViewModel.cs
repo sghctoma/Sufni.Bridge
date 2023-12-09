@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
-using Sufni.Bridge.Models;
+using Sufni.Bridge.Models.Telemetry;
 using Sufni.Bridge.Services;
 
 namespace Sufni.Bridge.ViewModels;
@@ -24,8 +24,8 @@ public partial class LinkageViewModel : ViewModelBase
             Id == null ||
             Name != linkage.Name ||
             Math.Abs(HeadAngle - linkage.HeadAngle) > 0.00001 ||
-            Math.Abs((FrontStroke ?? 0.0) - (linkage.FrontStroke ?? 0.0)) > 0.00001 ||
-            Math.Abs((RearStroke ?? 0.0) - (linkage.RearStroke ?? 0.0)) > 0.00001 || 
+            Math.Abs((FrontStroke ?? 0.0) - (linkage.MaxFrontStroke ?? 0.0)) > 0.00001 ||
+            Math.Abs((RearStroke ?? 0.0) - (linkage.MaxRearStroke ?? 0.0)) > 0.00001 || 
             LeverageRatioData == null || !LeverageRatioData.Equals(linkage.LeverageRatioData);
     }
 
@@ -129,8 +129,8 @@ public partial class LinkageViewModel : ViewModelBase
     {
         Name = linkage.Name;
         HeadAngle = linkage.HeadAngle;
-        FrontStroke = linkage.FrontStroke;
-        RearStroke = linkage.RearStroke;
+        FrontStroke = linkage.MaxFrontStroke;
+        RearStroke = linkage.MaxRearStroke;
         LeverageRatioData = linkage.LeverageRatioData;
     }
 
@@ -149,7 +149,7 @@ public partial class LinkageViewModel : ViewModelBase
             {
                 await using var readStream = await file.OpenReadAsync();
                 using var reader = new StreamReader(readStream);
-                LeverageRatioData = Linkage.LeverageFromCsv(reader);
+                LeverageRatioData = new LeverageRatioData(reader);
             }
             else
             {

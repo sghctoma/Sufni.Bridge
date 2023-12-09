@@ -13,6 +13,7 @@ using System.Text.Json;
 using Avalonia.Threading;
 using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
+using Sufni.Bridge.Models.Telemetry;
 
 namespace Sufni.Bridge.ViewModels;
 

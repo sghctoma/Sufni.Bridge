@@ -6,8 +6,6 @@ using MessagePack;
 using SQLite;
 using Sufni.Bridge.Models;
 using Sufni.Bridge.Models.Telemetry;
-using Calibration = Sufni.Bridge.Models.Calibration;
-using Linkage = Sufni.Bridge.Models.Linkage;
 
 namespace Sufni.Bridge.Services;
 

@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using MessagePack;
 using SQLite;
 
-namespace Sufni.Bridge.Models;
+namespace Sufni.Bridge.Models.Telemetry;
 
 [Table("calibration")]
+[MessagePackObject(keyAsPropertyName: true)]
 public class Calibration
 {
     // Just to satisfy sql-net-pcl's parameterless constructor requirement
@@ -25,6 +27,7 @@ public class Calibration
     [JsonPropertyName("id")]
     [PrimaryKey, AutoIncrement]
     [Column("id")]
+    [IgnoreMember]
     public int? Id { get; set; }
 
     [JsonPropertyName("name")]
@@ -41,6 +44,7 @@ public class Calibration
 
     [JsonIgnore]
     [Column("inputs")]
+    [IgnoreMember]
     public string? InputsRaw
     {
         get => JsonSerializer.Serialize(Inputs);

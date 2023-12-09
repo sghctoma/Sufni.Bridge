@@ -5,7 +5,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using SQLite;
 
-namespace Sufni.Bridge.Models;
+namespace Sufni.Bridge.Models.Telemetry;
 
 public record CalibrationMethodProperties(
     [property: JsonPropertyName("inputs")] List<string> Inputs,

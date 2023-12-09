@@ -8,8 +8,6 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using MessagePack;
 using Sufni.Bridge.Models.Telemetry;
-using Calibration = Sufni.Bridge.Models.Calibration;
-using Linkage = Sufni.Bridge.Models.Linkage;
 
 namespace Sufni.Bridge.Services;
 

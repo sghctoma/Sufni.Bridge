@@ -3,6 +3,7 @@ using Avalonia;
 using ScottPlot;
 using ScottPlot.LayoutEngines;
 using Sufni.Bridge.Models;
+using Sufni.Bridge.Models.Telemetry;
 
 namespace Sufni.Bridge.Views.Plots;
 

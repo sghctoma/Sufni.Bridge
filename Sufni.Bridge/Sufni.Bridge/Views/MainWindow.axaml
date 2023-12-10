@@ -5,7 +5,7 @@
         xmlns:views="clr-namespace:Sufni.Bridge.Views"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="Sufni.Bridge.Views.MainWindow"
-        Icon="/Assets/sufni-bridge.ico"
+        Icon="/Assets/sufni-icon.png"
         Title="Sufni.Bridge"
         Width="500" Height="700"
         MaxWidth="500"

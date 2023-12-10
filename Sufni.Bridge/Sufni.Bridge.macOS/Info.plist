@@ -2,23 +2,23 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CFBundleName</key>
-	<string>Sufni.Bridge</string>
+	<key>CFBundleIconFile</key>
+	<string>Sufni.Bridge.icns</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.sghctoma.Sufni-Bridge</string>
-	<key>CFBundleShortVersionString</key>
-	<string>1.0</string>
+	<key>CFBundleName</key>
+	<string>Sufni.Bridge</string>
 	<key>CFBundleVersion</key>
-	<string>1</string>
-	<key>CFBundleDevelopmentRegion</key>
-	<string>en</string>
+	<string>0.1.0</string>
+	<key>CFBundleShortVersionString</key>
+	<string>0.1.0</string>
+	<key>CFBundleExecutable</key>
+	<string>Sufni.Bridge</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
-	<key>CFBundleSignature</key>
-	<string>????</string>
-	<key>NSHumanReadableCopyright</key>
-	<string>${AuthorCopyright:HtmlEncode}</string>
+	<key>NSHighResolutionCapable</key>
+	<true/>
 </dict>
 </plist>

@@ -5,7 +5,10 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using SQLite;
 
-namespace Sufni.Bridge.Models;
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable UnusedMember.Global
+
+namespace Sufni.Bridge.Models.Telemetry;
 
 public record CalibrationMethodProperties(
     [property: JsonPropertyName("inputs")] List<string> Inputs,
@@ -38,6 +41,7 @@ public class CalibrationMethod
 
     [JsonPropertyName("description")]
     [Column("description")]
+
     public string Description { get; set; } = null!;
 
     [JsonPropertyName("properties")]
@@ -46,7 +50,6 @@ public class CalibrationMethod
 
     [JsonIgnore]
     [Column("data")]
-    // ReSharper disable once UnusedMember.Global
     public string? PropertiesRaw
     {
         get => JsonSerializer.Serialize(Properties);

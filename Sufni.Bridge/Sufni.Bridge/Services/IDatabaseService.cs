@@ -2,8 +2,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Sufni.Bridge.Models;
 using Sufni.Bridge.Models.Telemetry;
-using Calibration = Sufni.Bridge.Models.Calibration;
-using Linkage = Sufni.Bridge.Models.Linkage;
 
 namespace Sufni.Bridge.Services;
 

@@ -8,8 +8,6 @@ using System.Collections.Specialized;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Diagnostics;
-using System.Text;
-using System.Text.Json;
 using Avalonia.Threading;
 using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
@@ -165,18 +163,34 @@ public partial class ImportSessionsViewModel : ViewModelBase
         {
             try
             {
+                // Get Linkage
                 var setup = await databaseService.GetSetupAsync(SelectedSetup!.Value);
                 var linkage = await databaseService.GetLinkageAsync(setup!.LinkageId);
+                if (linkage is null)
+                {
+                    throw new Exception("Linkage is missing");
+                }
+                
+                // Get front Calibration
                 var fcal = await databaseService.GetCalibrationAsync(setup.FrontCalibrationId ?? 0);
                 var fmethod = fcal is null ? null : await databaseService.GetCalibrationMethodAsync(fcal.MethodId);
+                if (fcal is not null && fmethod == null)
+                {
+                    throw new Exception("Front calibration method is missing.");
+                }
+                
+                // Get rear Calibration
                 var rcal = await databaseService.GetCalibrationAsync(setup.RearCalibrationId ?? 0);
                 var rmethod = rcal is null ? null : await databaseService.GetCalibrationMethodAsync(rcal.MethodId);
-
-                var linkageBytes = JsonSerializer.SerializeToUtf8Bytes(linkage);
-                var calibrationsBytes = Encoding.UTF8.GetBytes(Calibration.GetCalibrationsJson(
-                    fcal, fmethod, rcal, rmethod));
-
-                var psst = await telemetryFile.GeneratePsstAsync(linkageBytes, calibrationsBytes);
+                if (rcal is not null && rmethod == null)
+                {
+                    throw new Exception("Rear calibration method is missing.");
+                }
+                
+                fcal?.Prepare(fmethod!, linkage.MaxFrontStroke!.Value, linkage.MaxFrontTravel);
+                rcal?.Prepare(rmethod!, linkage.MaxRearStroke!.Value, linkage.MaxRearTravel);
+                var psst = await telemetryFile.GeneratePsstAsync(linkage, fcal, rcal);
+                
                 var session = new Session(
                     id: null,
                     name: telemetryFile.Name,

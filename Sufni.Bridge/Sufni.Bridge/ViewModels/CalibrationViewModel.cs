@@ -7,6 +7,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using Sufni.Bridge.Models;
+using Sufni.Bridge.Models.Telemetry;
 using Sufni.Bridge.Services;
 
 namespace Sufni.Bridge.ViewModels;

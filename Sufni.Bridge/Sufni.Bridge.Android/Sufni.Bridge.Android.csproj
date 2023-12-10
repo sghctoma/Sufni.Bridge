@@ -25,24 +25,4 @@
   <ItemGroup>
     <ProjectReference Include="..\Sufni.Bridge\Sufni.Bridge.csproj" />
   </ItemGroup>
-
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <!-- PATH environment variable must contain the directory of Android NDK's clang/clang++ for these commands to work! -->
-    
-    <Exec Condition="!Exists('$(ProjectDir)lib/armeabi-v7a/libgosst.so')"
-          Command="go build -C $(SolutionDir)gosst -trimpath -buildmode=c-shared -o $(ProjectDir)lib/armeabi-v7a/libgosst.so lib/gosst-lib/gosst-lib.go"
-          EnvironmentVariables="CGO_ENABLED=1;GOOS=android;GOARCH=arm;CC=armv7a-linux-androideabi24-clang;CXX=armv7a-linux-androideabi24-clang++" />
-    
-    <Exec Condition="!Exists('$(ProjectDir)lib/arm64-v8a/libgosst.so')"
-          Command="go build -C $(SolutionDir)gosst -trimpath -buildmode=c-shared -o $(ProjectDir)lib/arm64-v8a/libgosst.so lib/gosst-lib/gosst-lib.go"
-          EnvironmentVariables="CGO_ENABLED=1;GOOS=android;GOARCH=arm64;CC=aarch64-linux-android24-clang;CXX=aarch64-linux-android24-clang++" />
-    
-    <Exec Condition="!Exists('$(ProjectDir)lib/x86/libgosst.so')"
-          Command="go build -C $(SolutionDir)gosst -trimpath -buildmode=c-shared -o $(ProjectDir)lib/x86/libgosst.so lib/gosst-lib/gosst-lib.go"
-          EnvironmentVariables="CGO_ENABLED=1;GOOS=android;GOARCH=386;CC=i686-linux-android24-clang;CXX=i686-linux-android24-clang++" />
-    
-    <Exec Condition="!Exists('$(ProjectDir)lib/x86_64/libgosst.so')"
-          Command="go build -C $(SolutionDir)gosst -trimpath -buildmode=c-shared -o $(ProjectDir)lib/x86_64/libgosst.so lib/gosst-lib/gosst-lib.go"
-          EnvironmentVariables="CGO_ENABLED=1;GOOS=android;GOARCH=amd64;CC=x86_64-linux-android24-clang;CXX=x86_64-linux-android24-clang++" />
-  </Target>
 </Project>

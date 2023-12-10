@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using Sufni.Bridge.Models.Telemetry;
 
 namespace Sufni.Bridge.Models;
 
@@ -61,6 +62,15 @@ public class MassStorageTelemetryFile : ITelemetryFile
         Marshal.Copy(psst.DataPointer, psstBytes, 0, psst.DataSize);
 
         return psstBytes;
+    }
+    
+    {
+        var rawData = await File.ReadAllBytesAsync(fileInfo.FullName);
+        var rawTelemetryData = new RawTelemetryData(rawData);
+        var telemetryData = new TelemetryData(fileInfo.Name,
+            rawTelemetryData.Version, rawTelemetryData.SampleRate, rawTelemetryData.Timestamp,
+            frontCal, rearCal, linkage);
+        return telemetryData.ProcessRecording(rawTelemetryData.Front, rawTelemetryData.Rear);
     }
     
     public void OnImported()

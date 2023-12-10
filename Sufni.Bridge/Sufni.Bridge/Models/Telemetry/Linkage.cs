@@ -6,12 +6,14 @@ using System.Linq;
 using System.Text.Json.Serialization;
 using CsvHelper;
 using CsvHelper.Configuration;
+using MathNet.Numerics;
 using MessagePack;
 using SQLite;
 
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable UnusedMember.Global
 // The code itself does not call some getters / setters explicitly,
 // but they are used by sql-net-pcl and/or JsonSerializer/JsonDeserializer.
 
@@ -21,6 +23,11 @@ namespace Sufni.Bridge.Models.Telemetry;
 [MessagePackObject(keyAsPropertyName: true)]
 public class Linkage
 {
+    private LeverageRatioData? leverageRatioData;
+    private double? maxFrontTravel;
+    private double? maxRearTravel;
+    private double[]? shockWheelCoeffs;
+    
     // Just to satisfy sql-net-pcl's parameterless constructor requirement
     // Uninitialized non-nullable property warnings are suppressed with null! initializer.
     public Linkage() { }
@@ -61,14 +68,52 @@ public class Linkage
     [Column("raw_lr_data")]
     [IgnoreMember]
     public string? RawData { get; set; }
+
+    [Ignore]
+    [JsonIgnore]
+    public double MaxFrontTravel
+    {
+        get
+        {
+            maxFrontTravel ??= Math.Sin(HeadAngle * Math.PI / 180.0) * MaxFrontStroke ?? 0;
+            return maxFrontTravel.Value;
+        }
+        init => maxFrontTravel = value;
+    }
+
+    [Ignore]
+    [JsonIgnore]
+    public double MaxRearTravel
+    {
+        get
+        {
+            maxRearTravel ??= Polynomial.Evaluate(MaxRearStroke ?? 0);
+            return maxRearTravel.Value;
+        }
+        init => maxRearTravel = value;
+    }
+
+    [Ignore]
+    [JsonIgnore]
+    public double[] ShockWheelCoeffs
+    {
+        get
+        {
+            shockWheelCoeffs ??= Fit.Polynomial(LeverageRatioData?.ShockTravel.ToArray(), 
+                LeverageRatioData?.WheelTravel.ToArray(), 3);
+            return shockWheelCoeffs;
+
+        }
+        init => shockWheelCoeffs = value;
+    }
     
-    [Ignore] [JsonIgnore] public double MaxFrontTravel { get; set; }
-    [Ignore] [JsonIgnore] public double MaxRearTravel { get; set; }
-    [Ignore] [JsonIgnore] public double[]? ShockWheelCoeffs { get; set; }
+    [Ignore]
+    [JsonIgnore]
+    [IgnoreMember]
+    public Polynomial Polynomial => new(ShockWheelCoeffs);
+
     [Ignore] [JsonIgnore] public double[][]? LeverageRatio { get; set; }
     
-    private LeverageRatioData? leverageRatioData;
-
     [Ignore] [JsonIgnore] [IgnoreMember] public LeverageRatioData? LeverageRatioData 
     {
         get
@@ -95,9 +140,11 @@ public class LeverageRatioData
 {
     public List<double> WheelTravel { get; init; }
     public List<double> LeverageRatio { get; init; }
+    public List<double> ShockTravel { get; init; }
     
     private void ProcessWheelLeverageRatio(IReader reader)
     {
+        var shock = 0.0;
         while (reader.Read())
         {
             var wheel = reader.GetField<double>("Wheel_T");
@@ -105,12 +152,13 @@ public class LeverageRatioData
             
             WheelTravel.Add(wheel);
             LeverageRatio.Add(leverage);
+            ShockTravel.Add(shock);
+            shock += 1.0 / leverage;
         }
     }
 
-    private void ProcessShockTravelLeverageRatio(IReader reader)
+    private void ProcessWheelTravelShockTravel(IReader reader)
     {
-        var shockTravel = new List<double>();
         var idx = 0;
 
         while (reader.Read())
@@ -121,17 +169,17 @@ public class LeverageRatioData
             
             if (idx > 0)
             {
-                var sdiff = shock - shockTravel[idx - 1];
+                var sdiff = shock - ShockTravel[idx - 1];
                 var wdiff = wheel - WheelTravel[idx - 1];
                 lr = wdiff / sdiff;
                 LeverageRatio[idx - 1] = lr;
             }
 
-            shockTravel.Add(shock);
+            ShockTravel.Add(shock);
             WheelTravel.Add(wheel);
-            idx++;
-
             LeverageRatio.Add(lr);
+
+            idx++;
         }
     }
     
@@ -139,6 +187,7 @@ public class LeverageRatioData
     {
         WheelTravel = new List<double>();
         LeverageRatio = new List<double>();
+        ShockTravel = new List<double>();
         
         var config = new CsvConfiguration(CultureInfo.InvariantCulture)
         {
@@ -161,7 +210,7 @@ public class LeverageRatioData
 
         if (csvReader.HeaderRecord!.Contains("Shock_T"))
         {
-            ProcessShockTravelLeverageRatio(csvReader);
+            ProcessWheelTravelShockTravel(csvReader);
         }
     }
 
@@ -169,6 +218,7 @@ public class LeverageRatioData
     {
         WheelTravel = new List<double>(data.Length);
         LeverageRatio = new List<double>(data.Length);
+        ShockTravel = new List<double>(data.Length);
         
         foreach (var d in data)
         {

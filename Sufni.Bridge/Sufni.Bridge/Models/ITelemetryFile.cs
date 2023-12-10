@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using Sufni.Bridge.Models.Telemetry;
 
 namespace Sufni.Bridge.Models;
 

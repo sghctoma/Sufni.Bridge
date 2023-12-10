@@ -2,6 +2,7 @@ using System;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using Sufni.Bridge.Models.Telemetry;
 
 namespace Sufni.Bridge.Models;
 
@@ -16,6 +17,18 @@ public class NetworkTelemetryFile : ITelemetryFile
     public string Duration { get; init; }
 
     private readonly IPEndPoint ipEndPoint;
+    
+    public async Task<byte[]> GeneratePsstAsync(Linkage linkage, Calibration? frontCal, Calibration? rearCal)
+    {
+        var idString = FileName[..5].TrimStart('0');
+        var idUint = int.Parse(idString);
+        var rawData = await SstTcpClient.GetFile(ipEndPoint, idUint);
+        var rawTelemetryData = new RawTelemetryData(rawData);
+        var telemetryData = new TelemetryData(FileName,
+            rawTelemetryData.Version, rawTelemetryData.SampleRate, rawTelemetryData.Timestamp,
+            frontCal, rearCal, linkage);
+        return telemetryData.ProcessRecording(rawTelemetryData.Front, rawTelemetryData.Rear);
+    }
     
     public async Task<byte[]> GeneratePsstAsync(byte[] linkage, byte[] calibrations)
     {

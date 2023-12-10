@@ -6,41 +6,14 @@ using MathNet.Numerics.Distributions;
 using MathNet.Numerics.Statistics;
 using MessagePack;
 
+// ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable NotAccessedPositionalProperty.Global
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable PropertyCanBeMadeInitOnly.Global
 #pragma warning disable CS8618
 
 namespace Sufni.Bridge.Models.Telemetry;
-
-[MessagePackObject(keyAsPropertyName: true)]
-public class StrokeStat
-{
-    public double SumTravel { get; set; }
-    public double MaxTravel { get; set; }
-    public double SumVelocity { get; set; }
-    public double MaxVelocity { get; set; }
-    public int Bottomouts { get; set; }
-    public int Count { get; set; }
-};
-
-[MessagePackObject(keyAsPropertyName: true)]
-public class Stroke
-{
-    public int Start { get; set; }
-    public int End { get; set; }
-    public StrokeStat Stat { get; set; }
-    public int[] DigitizedTravel { get; set; }
-    public int[] DigitizedVelocity { get; set; }
-    public int[] FineDigitizedVelocity { get; set; }
-};
-
-[MessagePackObject(keyAsPropertyName: true)]
-public class Strokes
-{
-    public Stroke[] Compressions { get; set; }
-    public Stroke[] Rebounds { get; set; }
-};
 
 [MessagePackObject(keyAsPropertyName: true)]
 public class Airtime
@@ -53,7 +26,7 @@ public class Airtime
 public class Suspension
 {
     public bool Present { get; set; }
-    public Calibration Calibration { get; set; }
+    public Calibration? Calibration { get; set; }
     public double[] Travel { get; set; }
     public double[] Velocity { get; set; }
     public Strokes Strokes { get; set; }
@@ -106,6 +79,8 @@ public record BalanceData(
 [MessagePackObject(keyAsPropertyName: true)]
 public class TelemetryData
 {
+    #region Public properties
+
     public string Name { get; set; }
     public int Version { get; set; }
     public int SampleRate { get; set; }
@@ -114,7 +89,289 @@ public class TelemetryData
     public Suspension Rear { get; set; }
     public Linkage Linkage { get; set; }
     public Airtime[] Airtimes { get; set; }
+
+    #endregion
+
+    #region Constructors
+
+    public TelemetryData() { }
+
+    public TelemetryData(string name, int version, int sampleRate, int timestamp,
+        Calibration? frontCal, Calibration? rearCal, Linkage linkage)
+    {
+        Name = name;
+        Version = version;
+        SampleRate = sampleRate;
+        Timestamp = timestamp;
+        Linkage = linkage;
+
+        Front = new Suspension
+        {
+            Calibration = frontCal,
+            Strokes = new Strokes()
+        };
+
+        Rear = new Suspension
+        {
+            Calibration = rearCal,
+            Strokes = new Strokes()
+        };
+    }
+
+    #endregion
     
+    #region Private helpers for ProcessRecording
+
+    private static double[] Linspace(double min, double max, int num)
+    {
+        var step = (max - min) / (num - 1);
+        var bins = new double[num];
+        
+        for (var i = 0; i < num; i++)
+        {
+            bins[i] = min + step * i;
+        }
+
+        return bins;
+    }
+    
+    private static int[] Digitize(double[] data, double[] bins)
+    {
+        var inds = new int[data.Length];
+        for (var k = 0; k < data.Length; k++)
+        {
+            var i = Array.BinarySearch(bins, data[k]);
+            if (i < 0) i = ~i;
+            // If current value is not exactly a bin boundary, we subtract 1 to make
+            // the digitized slice indexed from 0 instead of 1. We do the same if a
+            // value would exceed existing bins.
+            if (data[k] >= bins[^1] || Math.Abs(data[k] - bins[i]) > 0.0001)
+            {
+                i -= 1;
+            }
+            inds[k] = i;
+        }
+        return inds;
+    }
+
+    private void CalculateAirTimes()
+    {
+        var airtimes  = new List<Airtime>();
+
+        if (Front.Present && Rear.Present)
+        {
+            foreach (var f in Front.Strokes.Idlings)
+            {
+                if (!f.AirCandidate) continue;
+                foreach (var r in Rear.Strokes.Idlings)
+                {
+                    if (!r.AirCandidate || !f.Overlaps(r)) continue;
+                    f.AirCandidate = false;
+                    r.AirCandidate = false;
+
+                    var at = new Airtime
+                    {
+                        Start = Math.Min(f.Start, r.Start) / (double)SampleRate,
+                        End = Math.Min(f.End, r.End) / (double)SampleRate
+                    };
+                    airtimes.Add(at);
+                    break;
+                }
+            }
+
+            var maxMean = (Linkage.MaxFrontTravel + Linkage.MaxRearTravel) / 2.0;
+
+            foreach (var f in Front.Strokes.Idlings)
+            {
+                if (!f.AirCandidate) continue;
+                var fMean = Front.Travel[f.Start..(f.End + 1)].Mean();
+                var rMean = Rear.Travel[f.Start..(f.End + 1)].Mean();
+
+                if (!((fMean + rMean) / 2 <= maxMean * Parameters.AirtimeTravelMeanThresholdRatio)) continue;
+                var at = new Airtime
+                {
+                    Start = f.Start / (double)SampleRate,
+                    End = f.End / (double)SampleRate
+                };
+                airtimes.Add(at);
+            }
+
+            foreach (var r in Rear.Strokes.Idlings)
+            {
+                if (!r.AirCandidate) continue;
+                var fMean = Front.Travel[r.Start..(r.End + 1)].Mean();
+                var rMean = Rear.Travel[r.Start..(r.End + 1)].Mean();
+
+                if (!((fMean + rMean) / 2 <= maxMean * Parameters.AirtimeTravelMeanThresholdRatio)) continue;
+                var at = new Airtime
+                {
+                    Start = r.Start / (double)SampleRate,
+                    End = r.End / (double)SampleRate
+                };
+                airtimes.Add(at);
+            }
+        }
+        else if (Front.Present)
+        {
+            foreach (var f in Front.Strokes.Idlings)
+            {
+                if (!f.AirCandidate) continue;
+                var at = new Airtime
+                {
+                    Start = f.Start / (double)SampleRate,
+                    End = f.End / (double)SampleRate
+                };
+                airtimes.Add(at);
+            }
+        }
+        else if (Rear.Present)
+        {
+            foreach (var r in Rear.Strokes.Idlings)
+            {
+                if (!r.AirCandidate) continue;
+                var at = new Airtime
+                {
+                    Start = r.Start / (double)SampleRate,
+                    End = r.End / (double)SampleRate
+                };
+                airtimes.Add(at);
+            }
+        }
+
+        Airtimes = airtimes.ToArray();
+    }
+
+    private static (double[], int[]) DigitizeVelocity(double[] v, double step)
+    {
+        // Subtracting half bin ensures that 0 will be at the middle of one bin
+        var mn = (Math.Floor(v.Min() / step) - 0.5) * step;
+        // Adding 1.5 bins ensures that all values will fit in bins, and that the last bin fits the step boundary.
+        var mx = (Math.Floor(v.Max() / step) + 1.5) * step;
+        var bins = Linspace(mn, mx, (int)((mx - mn) / step) + 1);
+        var data = Digitize(v, bins);
+        return (bins, data);
+    }
+    
+    #endregion
+    
+    #region PSST conversion
+
+    public byte[] ProcessRecording(ushort[] front, ushort[] rear)
+    {
+        // Evaluate front and rear input arrays
+        var fc = front.Length;
+        var rc = rear.Length;
+        Front.Present = fc != 0;
+        Rear.Present = rc != 0;
+        if (!Front.Present && !Rear.Present)
+        {
+            throw new Exception("Front and rear record arrays are empty!");
+        }
+        if (Front.Present && Rear.Present && fc != rc)
+        {
+            throw new Exception("Front and rear record counts are not equal!");
+        }
+        
+        // Create time array
+        var recordCount = Math.Max(fc, rc);
+        var time = new double[recordCount];
+        for (var i = 0; i < time.Length; i++)
+        {
+            time[i] = 1.0 / SampleRate * i;
+        }
+
+        // Create Savitzky-Golay filter to get smoothed velocity data
+        var filter = new SavitzkyGolay(51, 1, 3);
+
+        if (Front.Present)
+        {
+            Front.Travel = new double[fc];
+            var frontCoeff = Math.Sin(Linkage.HeadAngle * Math.PI / 180.0);
+
+            for (var i = 0; i < front.Length; i++)
+            {
+                // Front travel might under/overshoot because of erroneous data
+                // acquisition. Errors might occur mid-ride (e.g. broken electrical
+                // connection due to vibration), so we don't error out, just cap
+                // travel. Errors like these will be obvious on the graphs, and
+                // the affected regions can be filtered by hand.
+                var travel = Front.Calibration!.Evaluate(front[i]);
+                var x = travel * frontCoeff;
+                x = Math.Max(0, x);
+                x = Math.Min(x, Linkage.MaxFrontTravel);
+                Front.Travel[i] = x;
+            }
+
+            var tbins = Linspace(0, Linkage.MaxFrontTravel, Parameters.TravelHistBins + 1);
+            var dt = Digitize(Front.Travel, tbins);
+            Front.TravelBins = tbins;
+
+            var v = filter.Process(Front.Travel, time);
+            Front.Velocity = v;
+            var (vbins, dv) = DigitizeVelocity(v, Parameters.VelocityHistStep);
+            Front.VelocityBins = vbins;
+            var (vbinsFine, dvFine) = DigitizeVelocity(v, Parameters.VelocityHistStepFine);
+            Front.FineVelocityBins = vbinsFine;
+
+            var strokes = Strokes.FilterStrokes(v, Front.Travel, Linkage.MaxFrontTravel, SampleRate);
+            Front.Strokes.Categorize(strokes);
+            if (Front.Strokes.Compressions.Length == 0 && Front.Strokes.Rebounds.Length == 0)
+            {
+                Front.Present = false;
+            } else
+            {
+                Front.Strokes.Digitize(dt, dv, dvFine);
+            }
+        }
+        
+        if (Rear.Present)
+        {
+            Rear.Travel = new double[rc];
+
+            for (var i = 0; i < rear.Length; i++)
+            {
+                // Rear travel might also overshoot the max because of
+                //  a) inaccurately measured leverage ratio
+                //  b) inaccuracies introduced by polynomial fitting
+                // So we just cap it at calculated maximum.
+                var travel = Rear.Calibration!.Evaluate(rear[i]);
+                var x = Linkage.Polynomial.Evaluate(travel);
+                x = Math.Max(0, x);
+                x = Math.Min(x, Linkage.MaxRearTravel);
+                Rear.Travel[i] = x;
+            }
+            
+            var tbins = Linspace(0, Linkage.MaxRearTravel, Parameters.TravelHistBins + 1);
+            var dt = Digitize(Rear.Travel, tbins);
+            Rear.TravelBins = tbins;
+
+            var v = filter.Process(Rear.Travel, time);
+            Rear.Velocity = v;
+            var (vbins, dv) = DigitizeVelocity(v, Parameters.VelocityHistStep);
+            Rear.VelocityBins = vbins;
+            var (vbinsFine, dvFine) = DigitizeVelocity(v, Parameters.VelocityHistStepFine);
+            Rear.FineVelocityBins = vbinsFine;
+
+            var strokes = Strokes.FilterStrokes(v, Rear.Travel, Linkage.MaxRearTravel, SampleRate);
+            Rear.Strokes.Categorize(strokes);
+            if (Rear.Strokes.Compressions.Length == 0 && Rear.Strokes.Rebounds.Length == 0)
+            {
+                Rear.Present = false;
+            } else
+            {
+                Rear.Strokes.Digitize(dt, dv, dvFine);
+            }
+        }
+        
+        CalculateAirTimes();
+
+        return MessagePackSerializer.Serialize(this);
+    }
+
+    #endregion
+
+    #region Data calculations
+
     public HistogramData CalculateTravelHistogram(SuspensionType type)
     {
         var suspension = type == SuspensionType.Front ? Front : Rear;
@@ -340,4 +597,6 @@ public class TelemetryData
             rearTravelVelocity.Item1.Select(t => rearPoly(t)).ToList(),
             msd);
     }
+    
+    #endregion
 };

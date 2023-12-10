@@ -87,7 +87,7 @@
                     </MultiBinding>
                 </TabItem.IsEnabled>
                 <TabItem.Header>
-                    <Image Source="{SvgImage /Assets/fa-biking.svg}" Width="24" />
+                    <Image Source="{SvgImage /Assets/fa-person-mountainbiking.svg}" Width="24" />
                 </TabItem.Header>
                 <v:SetupsView />
             </TabItem>

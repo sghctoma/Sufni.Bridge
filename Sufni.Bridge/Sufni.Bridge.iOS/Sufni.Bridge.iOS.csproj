@@ -5,8 +5,8 @@
     <SupportedOSPlatformVersion>13.0</SupportedOSPlatformVersion>
     <Nullable>enable</Nullable>
     <CodesignKey>Apple Development: sghctoma@gmail.com (ZQF5R92YHE)</CodesignKey>
-    <RuntimeIdentifier>iossimulator-x64</RuntimeIdentifier>
-    <!--RuntimeIdentifier>ios-arm64</RuntimeIdentifier-->
+    <!--RuntimeIdentifier>iossimulator-x64</RuntimeIdentifier-->
+    <RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
   </PropertyGroup>
   
   <ItemGroup>
@@ -15,5 +15,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Sufni.Bridge\Sufni.Bridge.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ImageAsset Remove="Assets.xcassets\AppIcon.appiconset\icon_512x512@2x.png" />
   </ItemGroup>
 </Project>

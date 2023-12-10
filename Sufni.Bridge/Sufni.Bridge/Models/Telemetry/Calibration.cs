@@ -104,48 +104,4 @@ public class Calibration
             return double.NaN;
         }
     }
-    
-    public static string GetCalibrationsJson(Calibration? front, CalibrationMethod? fmethod, Calibration? rear, CalibrationMethod? rmethod)
-    {
-        if (front is null && rear is null)
-        {
-            throw new Exception("At least one calibration must be presen!");
-        }
-        if (front is not null && fmethod is null)
-        {
-            throw new Exception("Front calibration is present, but calibration method is unknown.");
-        }
-        if (rear is not null && rmethod is null)
-        {
-            throw new Exception("Rear calibration is present, but calibration method is unknown.");
-        }
-        
-        return JsonSerializer.Serialize(new
-        {
-            front = front is null ? null : new
-            {
-                name = front.Name,
-                method = new
-                {
-                    name = fmethod!.Name,
-                    inputs = fmethod.Properties.Inputs,
-                    intermediates = fmethod.Properties.Intermediates,
-                    expression = fmethod.Properties.Expression
-                },
-                inputs = front.Inputs
-            },
-            rear = rear is null ? null : new
-            {
-                name = rear.Name,
-                method = new
-                {
-                    name = rmethod!.Name,
-                    inputs = rmethod.Properties.Inputs,
-                    intermediates = rmethod.Properties.Intermediates,
-                    expression = rmethod.Properties.Expression
-                },
-                inputs = rear.Inputs
-            }
-        });
-    }
 }

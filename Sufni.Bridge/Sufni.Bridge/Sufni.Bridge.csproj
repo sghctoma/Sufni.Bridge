@@ -16,24 +16,24 @@
     </ItemGroup>
 
    <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.0.5" />
-    <PackageReference Include="Avalonia.Controls.ItemsRepeater" Version="11.0.5" />
-    <PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0.6" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.5" />
-    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.5" />
+    <PackageReference Include="Avalonia" Version="11.0.6" />
+    <PackageReference Include="Avalonia.Controls.ItemsRepeater" Version="11.0.6" />
+    <PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0.7" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.6" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.6" />
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.5" />
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.6" />
     <PackageReference Include="Avalonia.Xaml.Behaviors" Version="11.0.5" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
     <PackageReference Include="CsvHelper" Version="30.0.1" />
     <PackageReference Include="Deadpikle.AvaloniaProgressRing" Version="0.10.3" />
-    <PackageReference Include="DynamicData" Version="8.1.1" />
+    <PackageReference Include="DynamicData" Version="8.3.27" />
     <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
     <PackageReference Include="MessagePack" Version="2.5.140" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="NCalcSync" Version="3.9.0" />
-    <PackageReference Include="ScottPlot" Version="5.0.9-beta" />
-    <PackageReference Include="ScottPlot.Avalonia" Version="5.0.9-beta" />
+    <PackageReference Include="ScottPlot" Version="5.0.10-beta" />
+    <PackageReference Include="ScottPlot.Avalonia" Version="5.0.10-beta" />
     <PackageReference Include="sqlite-net-pcl" Version="1.9.141-beta" />
     <PackageReference Include="Tmds.MDns" Version="0.8.0" />
   </ItemGroup>

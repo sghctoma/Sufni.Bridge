@@ -6,7 +6,8 @@
     <Nullable>enable</Nullable>
     <CodesignKey>Apple Development: sghctoma@gmail.com (ZQF5R92YHE)</CodesignKey>
     <!--RuntimeIdentifier>iossimulator-x64</RuntimeIdentifier-->
-    <RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
+    <!--RuntimeIdentifier>ios-arm64</RuntimeIdentifier-->
+    <UseInterpreter>true</UseInterpreter>
   </PropertyGroup>
   
   <ItemGroup>

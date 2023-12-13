@@ -35,7 +35,7 @@
             <ItemsRepeater Classes="main" ItemsSource="{Binding Linkages}">
                 <ItemsRepeater.ItemTemplate>
                     <DataTemplate>
-                        <Expander CornerRadius="5" Padding="5" HorizontalAlignment="Stretch">
+                        <Expander CornerRadius="5" Padding="5" HorizontalAlignment="Stretch" Expanded="Expander_OnExpanded">
 
                             <!-- Editable name and dirty indicator in header -->
                             <Expander.Header>

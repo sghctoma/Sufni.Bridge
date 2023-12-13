@@ -92,7 +92,7 @@
             <ItemsRepeater Classes="main" ItemsSource="{Binding Sessions}">
                 <ItemsRepeater.ItemTemplate>
                     <DataTemplate>
-                        <Expander CornerRadius="5" Padding="5" HorizontalAlignment="Stretch">
+                        <Expander CornerRadius="5" Padding="5" HorizontalAlignment="Stretch" Expanded="Expander_OnExpanded">
 
                             <!-- Editable name and non-editable timestamp in header -->
                             <Expander.Header>

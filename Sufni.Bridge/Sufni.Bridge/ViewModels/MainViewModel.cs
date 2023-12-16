@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Avalonia;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DynamicData;
@@ -18,7 +19,8 @@ namespace Sufni.Bridge.ViewModels;
 public partial class MainViewModel : ViewModelBase
 {
     #region Observable properties
-    
+
+    [ObservableProperty] private Thickness? safeAreaPadding;
     [ObservableProperty] private ImportSessionsViewModel importSessionsPage;
     [ObservableProperty] private SettingsViewModel settingsPage = new();
     [ObservableProperty] private int selectedIndex;
@@ -133,6 +135,7 @@ public partial class MainViewModel : ViewModelBase
 
     public MainViewModel()
     {
+        SafeAreaPadding = App.Current?.SafeAreaPadding;
         databaseService = App.Current?.Services?.GetService<IDatabaseService>();
         ImportSessionsPage = new ImportSessionsViewModel(sessionsSourceCache);
 

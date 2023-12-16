@@ -15,6 +15,7 @@ public partial class App : Application
 {
     public new static App? Current => Application.Current as App;
     public IServiceProvider? Services { get; private set; }
+    public Thickness SafeAreaPadding;
 
     public App()
     {
@@ -49,11 +50,18 @@ public partial class App : Application
                 break;
             case ISingleViewApplicationLifetime singleViewPlatform:
                 singleViewPlatform.MainView = new MainView();
-                singleViewPlatform.MainView.Loaded += (sender, args) =>
+                singleViewPlatform.MainView.Loaded += (_, _) =>
                 {
-                    fileService!.SetTarget(TopLevel.GetTopLevel(singleViewPlatform.MainView));
+                    var topLevel = TopLevel.GetTopLevel(singleViewPlatform.MainView);
+
+#pragma warning disable CS0618 // Type or member is obsolete
+                    topLevel!.InsetsManager!.DisplayEdgeToEdge = true;
+                    SafeAreaPadding = topLevel!.InsetsManager!.SafeAreaPadding;
+#pragma warning restore CS0618 // Type or member is obsolete
+                    
+                    fileService.SetTarget(topLevel);
+                    singleViewPlatform.MainView!.DataContext = new MainViewModel();
                 };
-                singleViewPlatform.MainView!.DataContext = new MainViewModel();
                 break;
         }
 

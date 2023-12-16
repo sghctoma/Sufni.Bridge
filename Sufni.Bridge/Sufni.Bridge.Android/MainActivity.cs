@@ -4,6 +4,7 @@ using Avalonia;
 using Avalonia.Android;
 using Microsoft.Extensions.DependencyInjection;
 using SecureStorage;
+using ServiceDiscovery;
 using Sufni.Bridge.Services;
 
 namespace Sufni.Bridge.Android
@@ -19,6 +20,7 @@ namespace Sufni.Bridge.Android
         protected override AppBuilder CustomizeAppBuilder(AppBuilder builder)
         {
             RegisteredServices.Collection.AddSingleton<ISecureStorage, SecureStorage.SecureStorage>();
+            RegisteredServices.Collection.AddSingleton<IServiceDiscovery, ServiceDiscovery.ServiceDiscovery>();
             
             return base.CustomizeAppBuilder(builder)
                 .UseAndroid()

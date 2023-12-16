@@ -40,6 +40,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\SecureStorage\SecureStorage.csproj" />
+    <ProjectReference Include="..\..\ServiceDiscovery\ServiceDiscovery.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sufni.Bridge.Linux", "Sufni
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sufni.Bridge.macOS", "Sufni.Bridge\Sufni.Bridge.macOS\Sufni.Bridge.macOS.csproj", "{FDB96D09-FB0B-4A0D-BE40-75812847B8BE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceDiscovery", "ServiceDiscovery\ServiceDiscovery.csproj", "{A5806A95-7EEC-4DDB-AA25-BC5146AD90B6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +61,10 @@ Global
 		{FDB96D09-FB0B-4A0D-BE40-75812847B8BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FDB96D09-FB0B-4A0D-BE40-75812847B8BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FDB96D09-FB0B-4A0D-BE40-75812847B8BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5806A95-7EEC-4DDB-AA25-BC5146AD90B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5806A95-7EEC-4DDB-AA25-BC5146AD90B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5806A95-7EEC-4DDB-AA25-BC5146AD90B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5806A95-7EEC-4DDB-AA25-BC5146AD90B6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

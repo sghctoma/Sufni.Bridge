@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using SecureStorage;
 using System;
+using ServiceDiscovery;
 using Sufni.Bridge.Services;
 
 namespace Sufni.Bridge.Windows
@@ -19,6 +20,7 @@ namespace Sufni.Bridge.Windows
         public static AppBuilder BuildAvaloniaApp()
         {
             RegisteredServices.Collection.AddSingleton<ISecureStorage, SecureStorage.SecureStorage>();
+            RegisteredServices.Collection.AddSingleton<IServiceDiscovery, ServiceDiscovery.ServiceDiscovery>();
             return AppBuilder.Configure<App>()
                 .UsePlatformDetect()
                 .WithInterFont()

@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 using Sufni.Bridge.Models;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Tmds.MDns;
+using Microsoft.Extensions.DependencyInjection;
+using ServiceDiscovery;
 using Timer = System.Timers.Timer;
 
 namespace Sufni.Bridge.Services;
@@ -68,7 +70,7 @@ internal class TelemetryDataStoreService : ITelemetryDataStoreService
 
     private void RemoveNetworkDataStore(ServiceAnnouncementEventArgs e)
     {
-        var ipAddress = e.Announcement.Addresses[0];
+        var ipAddress = e.Announcement.Address;
         var port = e.Announcement.Port;
         var name = $"gosst://{ipAddress}:{port}";
 
@@ -81,7 +83,7 @@ internal class TelemetryDataStoreService : ITelemetryDataStoreService
     
     private async Task AddNetworkDataStore(ServiceAnnouncementEventArgs e)
     {
-        var ipAddress = e.Announcement.Addresses[0];
+        var ipAddress = e.Announcement.Address;
         var port = e.Announcement.Port;
 
         var ds = new NetworkTelemetryDataStore(ipAddress, port);
@@ -95,10 +97,12 @@ internal class TelemetryDataStoreService : ITelemetryDataStoreService
     
     public TelemetryDataStoreService()
     {
-        var serviceBrowser = new ServiceBrowser();
-        serviceBrowser.ServiceAdded += async (_, e) => await AddNetworkDataStore(e);
-        serviceBrowser.ServiceRemoved += (_, e) => RemoveNetworkDataStore(e);
-        serviceBrowser.StartBrowse(ServiceType);
+        var serviceDiscovery = App.Current?.Services?.GetService<IServiceDiscovery>();
+        Debug.Assert(serviceDiscovery != null, nameof(serviceDiscovery) + " != null");
+        
+        serviceDiscovery.ServiceAdded += async (_, e) => await AddNetworkDataStore(e);
+        serviceDiscovery.ServiceRemoved += (_, e) => RemoveNetworkDataStore(e);
+        serviceDiscovery.StartBrowse(ServiceType);
         
         GetMassStorageDatastores();
         var timer = new Timer(1000);

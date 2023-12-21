@@ -11,8 +11,8 @@ public interface ITelemetryFile
     public bool ShouldBeImported { get; set; }
     public bool Imported { get; set; }
     public string Description { get; set; }
-    public DateTime StartTime { get; init; }
-    public string Duration { get; init; }
+    public DateTime StartTime { get; }
+    public string Duration { get; }
 
     public Task<byte[]> GeneratePsstAsync(Linkage linkage, Calibration? frontCal, Calibration? rearCal);
     public void OnImported();

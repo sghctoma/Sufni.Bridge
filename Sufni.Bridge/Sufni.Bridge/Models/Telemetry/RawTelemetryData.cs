@@ -18,10 +18,9 @@ public class RawTelemetryData
     public int Timestamp { get; }
     public ushort[] Front { get; }
     public ushort[] Rear { get; }
-    
-    public RawTelemetryData(byte[] sstData)
+
+    public RawTelemetryData(Stream stream)
     {
-        using var stream = new MemoryStream(sstData);
         using var reader = new BinaryReader(stream);
 
         Magic = reader.ReadBytes(3);
@@ -35,7 +34,7 @@ public class RawTelemetryData
             throw new Exception("Data is not SST format");
         }
 
-        var count = (sstData.Length - 16) / 4;
+        var count = ((int)stream.Length - 16) / 4;
         var records = new List<Record>(count);
         
         for (var i = 0; i < count; i++)
@@ -90,5 +89,9 @@ public class RawTelemetryData
 
         Front = front.ToArray();
         Rear = rear.ToArray();
+    }
+
+    public RawTelemetryData(byte[] sstData) : this(new MemoryStream(sstData))
+    {
     }
 }

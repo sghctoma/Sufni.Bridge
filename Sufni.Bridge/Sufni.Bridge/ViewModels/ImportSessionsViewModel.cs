@@ -150,6 +150,19 @@ public partial class ImportSessionsViewModel : ViewModelBase
     
     #region Commands
 
+    [RelayCommand]
+    private async Task OpenDataStore()
+    {
+        var filesService = App.Current?.Services?.GetService<IFilesService>();
+        Debug.Assert(filesService != null, nameof(filesService) + " != null");
+        Debug.Assert(TelemetryDataStores != null, nameof(TelemetryDataStores) + " != null");
+
+        var folder = await filesService.OpenDataStoreFolderAsync();
+        if (folder is null) return;
+
+        TelemetryDataStores.Add(new StorageProviderTelemetryDataStore(folder));
+    }
+
     [RelayCommand(CanExecute = nameof(CanImportSessions))]
     private async Task ImportSessions()
     {

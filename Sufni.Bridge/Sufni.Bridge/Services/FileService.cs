@@ -26,4 +26,17 @@ public class FilesService : IFilesService
 
         return files.Count == 1 ? files[0] : null;
     }
+
+    public async Task<IStorageFolder?> OpenDataStoreFolderAsync()
+    {
+        Debug.Assert(target != null, nameof(target) + " != null");
+
+        var folders = await target.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions()
+        {
+            Title = "Open SST data store",
+            AllowMultiple = false,
+        });
+
+        return folders.Count == 1 ? folders[0] : null;
+    }
 }

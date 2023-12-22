@@ -39,7 +39,6 @@
         
     </UserControl.Styles>
 
-    <Border Padding="{Binding SafeAreaPadding}">
     <Panel>
         
         <!-- Menu tab -->
@@ -121,6 +120,5 @@
         </Border>
         
     </Panel>
-    </Border>
 
 </UserControl>

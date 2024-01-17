@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
+using Adletec.Sonic;
 using MessagePack;
-using NCalc;
 using SQLite;
 
 namespace Sufni.Bridge.Models.Telemetry;
@@ -13,7 +15,8 @@ namespace Sufni.Bridge.Models.Telemetry;
 [MessagePackObject(keyAsPropertyName: true)]
 public class Calibration
 {
-    private Expression? expression;
+    private Func<Dictionary<string, double>, double>? evaluatorDelegate;
+    private readonly Dictionary<string, double> evaluatorEnvironment = new();
     
     // Just to satisfy sql-net-pcl's parameterless constructor requirement
     // Uninitialized non-nullable property warnings are suppressed with null! initializer.
@@ -61,43 +64,40 @@ public class Calibration
 
     public void Prepare(CalibrationMethod method, double maxStroke, double maxTravel)
     {
-        expression = new Expression(method.Properties.Expression, EvaluateOptions.IgnoreCase);
+        var expression = Regex.Replace(method.Properties.Expression, @"\s+", "");
+        var evaluator = Evaluator.Create()
+            .UseCulture(CultureInfo.InvariantCulture)
+            .AddConstant("MAX_STROKE", maxStroke)
+            .AddConstant("MAX_TRAVEL", maxTravel)
+            .Build();
+        evaluatorDelegate = evaluator.CreateDelegate(expression);
         
         // Set calibration variables (a.k.a. inputs)
         foreach (var input in Inputs)
         {
-            expression.Parameters[input.Key] = input.Value;
+            evaluatorEnvironment[input.Key] = input.Value;
         }
-
-        // Set standard variables
-        expression.Parameters["MAX_STROKE"] = maxStroke;
-        expression.Parameters["MAX_TRAVEL"] = maxTravel;
-        expression.Parameters["pi"] = Math.PI;
         
         // Calculate intermediates
         foreach (var intermediate in method.Properties.Intermediates)
         {
-            var exp = new Expression(intermediate.Value, EvaluateOptions.IgnoreCase)
-            {
-                Parameters = expression.Parameters
-            };
-
-            expression.Parameters[intermediate.Key] = (double)exp.Evaluate();
+            var exp = Regex.Replace(intermediate.Value, @"\s+", "");
+            evaluatorEnvironment[intermediate.Key] = evaluator.Evaluate(exp, evaluatorEnvironment);
         }
     }
 
     public double Evaluate(double sample)
     {
-        if (expression is null)
+        if (evaluatorDelegate is null)
         {
             return double.NaN;
         }
-        
-        expression.Parameters["sample"] = sample;
+
+        evaluatorEnvironment["sample"] = sample;
 
         try
         {
-            return (double)expression.Evaluate();
+            return evaluatorDelegate(evaluatorEnvironment);
         }
         catch (Exception)
         {

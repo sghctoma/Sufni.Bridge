@@ -16,11 +16,7 @@
     </ItemGroup>
 
    <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.1.999-cibuild0043113-beta" />
-    <PackageReference Include="Avalonia.Controls.ItemsRepeater" Version="11.1.999-cibuild0043113-beta" />
-    <PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0.9" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.1.999-cibuild0043113-beta" />
-    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.1.999-cibuild0043113-beta" />
+    <PackageReference Include="Adletec.Sonic" Version="1.4.1" />
     <PackageReference Include="Avalonia" Version="11.0.7" />
     <PackageReference Include="Avalonia.Controls.ItemsRepeater" Version="11.0.7" />
     <PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0.10" />
@@ -36,7 +32,6 @@
     <PackageReference Include="MathNet.Numerics" Version="6.0.0-beta1" />
     <PackageReference Include="MessagePack" Version="2.6.100-alpha" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
-    <PackageReference Include="NCalcSync" Version="3.9.0" />
     <PackageReference Include="ScottPlot" Version="5.0.10-beta" />
     <PackageReference Include="ScottPlot.Avalonia" Version="5.0.10-beta" />
     <PackageReference Include="sqlite-net-pcl" Version="1.9.141-beta" />

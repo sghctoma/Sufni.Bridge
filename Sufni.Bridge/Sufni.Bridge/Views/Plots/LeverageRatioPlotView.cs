@@ -1,8 +1,6 @@
 using System.Linq;
 using Avalonia;
 using ScottPlot;
-using ScottPlot.LayoutEngines;
-using Sufni.Bridge.Models;
 using Sufni.Bridge.Models.Telemetry;
 
 namespace Sufni.Bridge.Views.Plots;
@@ -24,9 +22,10 @@ public class LeverageRatioPlotView : SufniPlotView
 
     private void OnLevarageRatioDataChanged(LeverageRatioData data)
     {
-        Plot!.Plot.LayoutEngine = new FixedPadding(new PixelPadding(50, 3, 40, 10));
-        Plot!.Plot.BottomAxis.Label.Text = "Rear Wheel Travel (mm)";
-        Plot!.Plot.LeftAxis.Label.Text = "Leverage Ratio";
+        Plot!.Plot.Layout.Fixed(new PixelPadding(60, 3, 40, 10));
+        Plot!.Plot.Axes.Bottom.Label.Text = "Rear Wheel Travel (mm)";
+        Plot!.Plot.Axes.Left.Label.Text = "Leverage Ratio";
+        Plot!.Plot.Axes.Left.Label.OffsetX = -10;
 
         if (data.WheelTravel.Count == 0)
         {
@@ -38,7 +37,7 @@ public class LeverageRatioPlotView : SufniPlotView
         lr.LineStyle.Color = Color.FromHex("#ffffbf");
         lr.LineStyle.Width = 2;
         
-        Plot!.Plot.SetAxisLimits(data.WheelTravel.Min(), data.WheelTravel.Max(),
+        Plot!.Plot.Axes.SetLimits(data.WheelTravel.Min(), data.WheelTravel.Max(),
             data.LeverageRatio.Min(), data.LeverageRatio.Max());
     }
     

@@ -11,7 +11,7 @@
         <Setter Property="Template">
             <ControlTemplate>
                 <StackPanel Orientation="Vertical">
-                    <Grid RowDefinitions="38 400 46" ColumnDefinitions="* 72">
+                    <Grid RowDefinitions="39 400 39" ColumnDefinitions="* 72">
                         
                         <!-- Velocity histogram -->
                         <plots:VelocityHistogramView Grid.Row="0" Grid.Column="0" Grid.RowSpan="3"
@@ -20,7 +20,7 @@
                                                  Telemetry="{TemplateBinding Telemetry}" />
 
                         <!-- Velocity bands -->
-                        <TextBlock Grid.Row="0" Grid.Column="1" Margin="0,0,12,0"
+                        <TextBlock Grid.Row="0" Grid.Column="1" Margin="0,3,10,0"
                                    FontWeight="Black" Foreground="#d0d0d0"
                                    HorizontalAlignment="Center" VerticalAlignment="Center"
                                    Text="Zones" />

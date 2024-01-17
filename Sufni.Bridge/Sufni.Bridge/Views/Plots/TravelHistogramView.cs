@@ -1,8 +1,6 @@
-using System.Collections.Generic;
 using System.Linq;
 using Avalonia;
 using ScottPlot;
-using ScottPlot.Plottables;
 using ScottPlot.TickGenerators;
 using Sufni.Bridge.Models.Telemetry;
 
@@ -19,7 +17,7 @@ public class TravelHistogramView : SufniTelemetryPlotView
         set => SetValue(SuspensionTypeProperty, value);
     }
 
-    private void AddStatistics(double maxTravel, double step)
+    private void AddStatistics(double maxTravel)
     {
         var statistics = Telemetry.CalculateTravelStatistics(SuspensionType);
         
@@ -29,57 +27,59 @@ public class TravelHistogramView : SufniTelemetryPlotView
         var avgString = $"{statistics.Average:F2} mm ({avgPercentage:F2}%)";
         var maxString = $"{statistics.Max:F2} mm ({maxPercentage:F2}%) / {statistics.Bottomouts} bottom outs";
 
-        AddLabelWithHorizontalLine(avgString, (maxTravel - statistics.Average) / step, LabelLinePosition.Above);
-        AddLabelWithHorizontalLine(maxString, (maxTravel - statistics.Max) / step, LabelLinePosition.Below);
+        AddLabelWithHorizontalLine(avgString, maxTravel - statistics.Average, LabelLinePosition.Above);
+        AddLabelWithHorizontalLine(maxString, maxTravel - statistics.Max, LabelLinePosition.Below);
     }
     
     protected override void OnTelemetryChanged(TelemetryData telemetryData)
     {
         base.OnTelemetryChanged(telemetryData);
 
-        Plot!.Plot.Title(SuspensionType == SuspensionType.Front ? "Front travel histogram" : "Rear travel histogram");
-        Plot!.Plot.LeftAxis.Label.Text = "Travel (mm)";
-        Plot!.Plot.BottomAxis.Label.Text = "Time (%)";
+        Plot!.Plot.Axes.Title.Label.Text = SuspensionType == SuspensionType.Front
+            ? "Front travel histogram"
+            : "Rear travel histogram";
+        Plot!.Plot.Layout.Fixed(new PixelPadding(60, 10, 40, 40));
+        Plot!.Plot.Axes.Left.Label.Text = "Travel (mm)";
+        Plot!.Plot.Axes.Bottom.Label.Text = "Time (%)";
 
         var data = telemetryData.CalculateTravelHistogram(SuspensionType);
         
-        // Bar width is assumed to be 1 in ScottPlot 5, so scale the bins to accomodate this.
-        // Also, flip the bin values manually, since there is no way to flip the axis itself.
         var maxTravel = SuspensionType == SuspensionType.Front ? 
             telemetryData.Linkage.MaxFrontTravel : 
             telemetryData.Linkage.MaxRearTravel;
         var step = data.Bins[1] - data.Bins[0];
-        
+
+        var color = SuspensionType == SuspensionType.Front ? FrontColor : RearColor;
         var bars = data.Bins.Zip(data.Values)
-            .Select(tuple => new Bar((maxTravel - tuple.First) / step, tuple.Second))
+            .Select(tuple => new Bar
+            {
+                Position = maxTravel - tuple.First, // Flip bin values, since there is no way to flip the axis itself.
+                Value = tuple.Second,
+                FillColor = color.WithOpacity(),
+                BorderColor = color,
+                BorderLineWidth = 1.5f,
+                Orientation = Orientation.Horizontal,
+                Size = step * 0.65f,
+            })
             .ToList();
+
+        var barplot = Plot!.Plot.Add.Bars(bars);
+        barplot.Color = color.WithOpacity(); // NOTE: needed, because PlottableAdder.Bars overwrites FillColor.
+        Plot!.Plot.Axes.AutoScale();
         
-        BarSeries bs = new()
-        {
-            Bars = bars,
-            Color = (SuspensionType == SuspensionType.Front ? FrontColor : RearColor).WithOpacity()
-        };
-        var histogram = Plot!.Plot.Add.Bar(new List<BarSeries> { bs });
-        histogram.Orientation = Orientation.Horizontal;
-        histogram.LineStyle.Width = 2.0f;
-        histogram.LineStyle.Color = SuspensionType == SuspensionType.Front ? FrontColor : RearColor;
-        histogram.Padding = 0.15;
-        
-        Plot!.Plot.AutoScale();
-        
-        // Set to 0.01 to hide the border line at 0 values. Otherwise it would
+        // Set to 0.05 to hide the border line at 0 values. Otherwise it would
         // seem that there are actual measure travel data there too.
-        Plot!.Plot.SetAxisLimits(left: 0.05);
+        Plot!.Plot.Axes.SetLimits(left: 0.05);
         
-        // Fix the tick values, since they are scaled and flipped.
+        // Fix the tick values, since they are flipped.
         var ticks = Enumerable.Range(0, ((int)maxTravel + 50 - 1) / 50)
             .Select(i => i * 50)
             .TakeWhile(value => value <= maxTravel)
             .ToArray();
-        Plot!.Plot.LeftAxis.TickGenerator = new NumericManual(
-            ticks.Select(b => (maxTravel - b) / step).ToArray(),
+        Plot!.Plot.Axes.Left.TickGenerator = new NumericManual(
+            ticks.Select(b => maxTravel - b).ToArray(),
             ticks.Select(b => $"{b:0}").ToArray());
         
-        AddStatistics(maxTravel, step);
+        AddStatistics(maxTravel);
     }
 }

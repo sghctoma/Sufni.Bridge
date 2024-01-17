@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
+using ScottPlot;
 using ScottPlot.Avalonia;
 using Color = ScottPlot.Color;
 
@@ -39,31 +40,32 @@ public class SufniPlotView : TemplatedControl
         plot.Style.ColorGrids(Color.FromHex("#505558"), Color.FromHex("#505558"));
         plot.Style.ColorAxes(Color.FromHex("#505558"));
         
-        plot.TitlePanel.Label.Font.Size = 14;
-        plot.TitlePanel.Label.Font.Color = Color.FromHex("#D0D0D0");
+        plot.Axes.Title.Label.FontSize = 14;
+        plot.Axes.Title.Label.OffsetY = 20;
+        plot.Axes.Title.Label.ForeColor = Color.FromHex("#D0D0D0");
         
-        plot.LeftAxis.Label.Font.Color = Color.FromHex("#D0D0D0");
-        plot.LeftAxis.MajorTickColor = Color.FromHex("#D0D0D0");
-        plot.LeftAxis.Label.Font.Bold = false;
-        plot.LeftAxis.Label.Font.Size = 14;
-
-        plot.XAxis.TickFont.Bold = true;
-        plot.XAxis.TickFont.Size = 12;
-        plot.XAxis.MajorTickLength = 0;
-        plot.XAxis.MinorTickLength = 0;
-        plot.XAxis.MajorTickWidth = 0;
-        plot.XAxis.MinorTickWidth = 0;
+        plot.Axes.Left.Label.ForeColor = Color.FromHex("#D0D0D0");
+        plot.Axes.Left.Label.Bold = false;
+        plot.Axes.Left.Label.FontSize = 14;
+       
+        plot.Axes.Left.TickLabelStyle.ForeColor = Color.FromHex("#D0D0D0");
+        plot.Axes.Left.TickLabelStyle.Bold = true;
+        plot.Axes.Left.TickLabelStyle.FontSize = 12;
+        plot.Axes.Left.MajorTickStyle.Length = 0;
+        plot.Axes.Left.MinorTickStyle.Length = 0;
+        plot.Axes.Left.MajorTickStyle.Width = 0;
+        plot.Axes.Left.MinorTickStyle.Width = 0;
         
-        plot.BottomAxis.Label.Font.Color = Color.FromHex("#D0D0D0");
-        plot.BottomAxis.MajorTickColor = Color.FromHex("#D0D0D0");
-        plot.BottomAxis.Label.Font.Bold = false;
-        plot.BottomAxis.Label.Font.Size = 14;
+        plot.Axes.Bottom.Label.ForeColor = Color.FromHex("#D0D0D0");
+        plot.Axes.Bottom.Label.Bold = false;
+        plot.Axes.Bottom.Label.FontSize = 14;
         
-        plot.YAxis.TickFont.Bold = true;
-        plot.YAxis.TickFont.Size = 12;
-        plot.YAxis.MajorTickLength = 0;
-        plot.YAxis.MinorTickLength = 0;
-        plot.YAxis.MajorTickWidth = 0;
-        plot.YAxis.MinorTickWidth = 0;
+        plot.Axes.Bottom.TickLabelStyle.ForeColor = Color.FromHex("#D0D0D0");
+        plot.Axes.Bottom.TickLabelStyle.Bold = true;
+        plot.Axes.Bottom.TickLabelStyle.FontSize = 12;
+        plot.Axes.Bottom.MajorTickStyle.Length = 0;
+        plot.Axes.Bottom.MinorTickStyle.Length = 0;
+        plot.Axes.Bottom.MajorTickStyle.Width = 0;
+        plot.Axes.Bottom.MinorTickStyle.Width = 0;
     }
 }

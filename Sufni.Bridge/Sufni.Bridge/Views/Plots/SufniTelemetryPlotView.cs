@@ -46,49 +46,33 @@ public class SufniTelemetryPlotView : SufniPlotView
 
     protected void AddLabel(string content, double x, double y, int xoffset, int yoffset, Alignment alignment = Alignment.LowerLeft)
     {
-        Text text = new()
-        {
-            Font =
-            {
-                Color = Color.FromHex("#fefefe"),
-                Size = 13
-            },
-            Content = content,
-            Alignment = alignment,
-            XOffset = xoffset,
-            YOffset = yoffset,
-            Position = new Coordinates(x, y)
-        };
-        Plot!.Plot.Add.Plottable(text);
+        var text = Plot!.Plot.Add.Text(content, x, y);
+        text.Label.ForeColor = Color.FromHex("#fefefe");
+        text.Label.FontSize = 13;
+        text.Label.Alignment = alignment;
+        text.Label.OffsetX = xoffset;
+        text.Label.OffsetY = yoffset;
     }
     
     protected void AddLabelWithHorizontalLine(string content, double position, LabelLinePosition linePosition)
     {
         var yoffset = linePosition switch
         {
-            LabelLinePosition.Above => -5,
-            LabelLinePosition.Below => 5,
+            LabelLinePosition.Above => 5,
+            LabelLinePosition.Below => -5,
             _ => 0
         };
-
-        Text text = new()
-        {
-            Font =
-            {
-                Color = Color.FromHex("#fefefe"),
-                Size = 13
-            },
-            Content = content,
-            Alignment = linePosition == LabelLinePosition.Above ? Alignment.UpperRight : Alignment.LowerRight,
-            XOffset = -10,
-            YOffset = yoffset,
-            Position = new Coordinates(Plot!.Plot.GetAxisLimits().Right, position)
-        };
-        Plot!.Plot.Add.Plottable(text);
+        
+        var text = Plot!.Plot.Add.Text(content, Plot!.Plot.Axes.GetLimits().Right, position);
+        text.Label.ForeColor = Color.FromHex("#fefefe");
+        text.Label.FontSize = 13;
+        text.Label.Alignment = linePosition == LabelLinePosition.Above ? Alignment.UpperRight : Alignment.LowerRight;
+        text.Label.OffsetX = -10;
+        text.Label.OffsetY = yoffset;
 
         var line = Plot!.Plot.Add.Crosshair(0, position);
         line.VerticalLineIsVisible = false;
-        line.LineStyle.Pattern = LinePattern.Dot;
+        line.LineStyle.Pattern = LinePattern.Dotted;
         line.LineStyle.Color = Color.FromHex("#dddddd");
     }
 

@@ -87,7 +87,7 @@
             </Grid>
         </Grid>
 
-        <!-- List of Calibrations -->
+        <!-- List of Sessions -->
         <ScrollViewer Grid.Row="1" Grid.Column="0" Margin="0,5,0,0">
             <ItemsRepeater Classes="main" ItemsSource="{Binding Sessions}">
                 <ItemsRepeater.ItemTemplate>
@@ -181,6 +181,7 @@
 
                                 <!-- Description -->
                                 <TextBlock Grid.Row="6" Grid.Column="0"
+                                           Padding="0,10,0,8"
                                            FontWeight="Black" Foreground="#d0d0d0"
                                            VerticalAlignment="Center" HorizontalAlignment="Center"
                                            Text="Description" />

@@ -35,6 +35,7 @@
     <PackageReference Include="DynamicData" Version="8.3.27" />
     <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
     <PackageReference Include="MessagePack" Version="2.5.140" />
+    <PackageReference Include="MessagePack" Version="2.6.100-alpha" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="NCalcSync" Version="3.9.0" />
     <PackageReference Include="ScottPlot" Version="5.0.10-beta" />

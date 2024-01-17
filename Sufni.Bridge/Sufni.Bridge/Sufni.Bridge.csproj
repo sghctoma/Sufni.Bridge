@@ -23,6 +23,7 @@
     <PackageReference Include="Avalonia.Fonts.Inter" Version="11.1.999-cibuild0043113-beta" />
     <PackageReference Include="Avalonia" Version="11.0.7" />
     <PackageReference Include="Avalonia.Controls.ItemsRepeater" Version="11.0.7" />
+    <PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0.10" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.7" />
     <PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.7" />
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->

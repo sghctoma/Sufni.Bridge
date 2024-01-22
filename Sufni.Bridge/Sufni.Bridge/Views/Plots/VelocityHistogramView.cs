@@ -108,8 +108,7 @@ public class VelocityHistogramView : SufniTelemetryPlotView
             })
             .ToList();
         
-        var barplot = Plot!.Plot.Add.Bars(bars);
-        barplot.Color = color.WithOpacity(); // NOTE: needed, because PlottableAdder.Bars overwrites FillColor.
+        Plot!.Plot.Add.Bars(bars);
         Plot!.Plot.Axes.AutoScale();
         
         // Set left axis limit to 0.1 to hide the border line at 0 values. Otherwise

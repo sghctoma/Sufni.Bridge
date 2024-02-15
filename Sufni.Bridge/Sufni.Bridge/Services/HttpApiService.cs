@@ -7,8 +7,6 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using MessagePack;
-using Sufni.Bridge.Models.Telemetry;
 
 namespace Sufni.Bridge.Services;
 
@@ -64,107 +62,6 @@ internal class HttpApiService : IHttpApiService
         _ = await client.DeleteAsync($"{serverUrl}/auth/logout");
         client.DefaultRequestHeaders.Authorization = null;
     }
-
-    public async Task<List<Board>> GetBoardsAsync()
-    {
-        using var response = await client.GetAsync($"{serverUrl}/api/board");
-        response.EnsureSuccessStatusCode() ;
-        var boards = await response.Content.ReadFromJsonAsync<List<Board>>();
-        Debug.Assert(boards != null);
-        return boards;
-    }
-
-    public async Task PutBoardAsync(Board board)
-    {
-        using HttpResponseMessage response = await client.PutAsJsonAsync($"{serverUrl}/api/board", board);
-        response.EnsureSuccessStatusCode();
-        var result = await response.Content.ReadFromJsonAsync<PutResponse>();
-        Debug.Assert(result != null);
-    }
-    
-    public async Task<List<Linkage>> GetLinkagesAsync()
-    {
-        using var response = await client.GetAsync($"{serverUrl}/api/linkage");
-        response.EnsureSuccessStatusCode();
-        var linkages = await response.Content.ReadFromJsonAsync<List<Linkage>>();
-        Debug.Assert(linkages != null);
-        return linkages;
-    }
-    
-    public async Task<Guid> PutLinkageAsync(Linkage linkage)
-    {
-        using HttpResponseMessage response = await client.PutAsJsonAsync($"{serverUrl}/api/linkage", linkage);
-        response.EnsureSuccessStatusCode();
-        var result = await response.Content.ReadFromJsonAsync<PutResponse>();
-        Debug.Assert(result != null);
-        linkage.Id = result.Id;
-        return result.Id;
-    }
-
-    public async Task DeleteLinkageAsync(Guid id)
-    {
-        using var response = await client.DeleteAsync($"{serverUrl}/api/linkage/{id}");
-        response.EnsureSuccessStatusCode();
-    }
-    
-    public async Task<List<CalibrationMethod>> GetCalibrationMethodsAsync()
-    {
-        using var response = await client.GetAsync($"{serverUrl}/api/calibration-method");
-        response.EnsureSuccessStatusCode();
-        var methods = await response.Content.ReadFromJsonAsync<List<CalibrationMethod>>();
-        Debug.Assert(methods != null);
-        return methods;
-    }
-
-    public async Task<List<Calibration>> GetCalibrationsAsync()
-    {
-        using var response = await client.GetAsync($"{serverUrl}/api/calibration");
-        response.EnsureSuccessStatusCode() ;
-        var calibrations = await response.Content.ReadFromJsonAsync<List<Calibration>>();
-        Debug.Assert(calibrations != null);
-        return calibrations;
-    }
-    
-    public async Task<Guid> PutCalibrationAsync(Calibration calibration)
-    {
-        using HttpResponseMessage response = await client.PutAsJsonAsync($"{serverUrl}/api/calibration", calibration);
-        response.EnsureSuccessStatusCode();
-        var result = await response.Content.ReadFromJsonAsync<PutResponse>();
-        Debug.Assert(result != null);
-        calibration.Id = result.Id;
-        return result.Id;
-    }
-
-    public async Task DeleteCalibrationAsync(Guid id)
-    {
-        using var response = await client.DeleteAsync($"{serverUrl}/api/calibration/{id}");
-        response.EnsureSuccessStatusCode();
-    }
-
-    public async Task<List<Setup>> GetSetupsAsync()
-    {
-        using var response = await client.GetAsync($"{serverUrl}/api/setup");
-        response.EnsureSuccessStatusCode() ;
-        var setups = await response.Content.ReadFromJsonAsync<List<Setup>>();
-        Debug.Assert(setups != null);
-        return setups;
-    }
-    
-    public async Task<Guid> PutSetupAsync(Setup setup)
-    {
-        using HttpResponseMessage response = await client.PutAsJsonAsync($"{serverUrl}/api/setup", setup);
-        response.EnsureSuccessStatusCode();
-        var result = await response.Content.ReadFromJsonAsync<PutResponse>();
-        Debug.Assert(result != null);
-        setup.Id = result.Id;
-        return result.Id;
-    }
-
-    public async Task DeleteSetupAsync(Guid id)
-    {
-        using var response = await client.DeleteAsync($"{serverUrl}/api/setup/{id}");
-        response.EnsureSuccessStatusCode();
-    }
     
     public async Task<List<Session>> GetSessionsAsync()
     {
@@ -173,25 +70,6 @@ internal class HttpApiService : IHttpApiService
         var sessions = await response.Content.ReadFromJsonAsync<List<Session>>();
         Debug.Assert(sessions != null);
         return sessions;
-    }
-
-    public async Task<TelemetryData> GetSessionPsstAsync(Guid id)
-    {
-        using var response = await client.GetAsync($"{serverUrl}/api/session/{id}/psst");
-        response.EnsureSuccessStatusCode() ;
-        var psst = await response.Content.ReadAsByteArrayAsync();
-        Debug.Assert(psst != null);
-        return MessagePackSerializer.Deserialize<TelemetryData>(psst);
-    }
-    
-    public async Task<Guid> PutSessionAsync(Session session)
-    {
-        using HttpResponseMessage response = await client.PutAsJsonAsync($"{serverUrl}/api/session", session);
-        response.EnsureSuccessStatusCode();
-        var result = await response.Content.ReadFromJsonAsync<PutResponse>();
-        Debug.Assert(result != null);
-        session.Id = result.Id;
-        return result.Id;
     }
 
     public async Task<Guid> PutProcessedSessionAsync(string name, string description, byte[] data)
@@ -208,13 +86,7 @@ internal class HttpApiService : IHttpApiService
         Debug.Assert(result != null);
         return result.Id;
     }
- 
-    public async Task DeleteSessionAsync(Guid id)
-    {
-        using var response = await client.DeleteAsync($"{serverUrl}/api/session/{id}");
-        response.EnsureSuccessStatusCode();
-    }
-
+    
     public async Task<SynchronizationData> PullSyncAsync(int since = 0)
     {
         using var response = await client.GetAsync($"{serverUrl}/api/sync/pull?since={since}");

@@ -1,3 +1,4 @@
+using System;
 using System.Text.Json.Serialization;
 using SQLite;
 
@@ -10,7 +11,7 @@ public class Board : Synchronizable
     // Uninitialized non-nullable property warnings are suppressed with null! initializer.
     public Board() { }
 
-    public Board(string id, int? setupId)
+    public Board(string id, Guid? setupId)
     {
         Id = id;
         SetupId = setupId;
@@ -23,5 +24,5 @@ public class Board : Synchronizable
 
     [JsonPropertyName("setup_id")]
     [Column("setup_id")]
-    public int? SetupId { get; set; }
+    public Guid? SetupId { get; set; }
 }

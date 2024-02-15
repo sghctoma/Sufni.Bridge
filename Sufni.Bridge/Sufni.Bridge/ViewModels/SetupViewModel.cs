@@ -20,7 +20,7 @@ public partial class SetupViewModel : ViewModelBase
 
     #region Observable properties
     
-    [ObservableProperty] private int? id;
+    [ObservableProperty] private Guid? id;
     [ObservableProperty] private bool isDirty;
     
     [ObservableProperty]

@@ -1,3 +1,4 @@
+using System;
 using System.Text.Json.Serialization;
 using SQLite;
 
@@ -10,7 +11,7 @@ public class Session : Synchronizable
     // Uninitialized non-nullable property warnings are suppressed with null! initializer.
     public Session() { }
     
-    public Session(int? id, string name, string description, int setup, string? data = null, int? timestamp = null, int? track = null)
+    public Session(Guid? id, string name, string description, Guid setup, string? data = null, int? timestamp = null, Guid? track = null)
     {
         Id = id;
         Name = name;
@@ -22,9 +23,9 @@ public class Session : Synchronizable
     }
 
     [JsonPropertyName("id"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [PrimaryKey, AutoIncrement]
+    [PrimaryKey]
     [Column("id")]
-    public int? Id { get; set; }
+    public Guid? Id { get; set; } = Guid.NewGuid();
 
     [JsonPropertyName("name")]
     [Column("name")]
@@ -36,7 +37,7 @@ public class Session : Synchronizable
 
     [JsonPropertyName("setup")]
     [Column("setup_id")]
-    public int Setup { get; set; }
+    public Guid Setup { get; set; }
 
     [JsonPropertyName("timestamp"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [Column("timestamp")]
@@ -44,7 +45,7 @@ public class Session : Synchronizable
 
     [JsonPropertyName("track"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [Column("track_id")]
-    public int? Track { get; set; }
+    public Guid? Track { get; set; }
 
     [JsonPropertyName("data")]
     [Ignore]

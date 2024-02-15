@@ -28,7 +28,7 @@ public partial class SessionViewModel : ViewModelBase
 
     #region Observable properties
 
-    [ObservableProperty] private int? id;
+    [ObservableProperty] private Guid? id;
     [ObservableProperty] private string? name;
     [ObservableProperty] private string? description;
     [ObservableProperty] private DateTime? timestamp;
@@ -77,7 +77,7 @@ public partial class SessionViewModel : ViewModelBase
         
         try
         {
-            TelemetryData = await databaseService.GetSessionPsstAsync(Id ?? 0);
+            TelemetryData = await databaseService.GetSessionPsstAsync(Id);
         }
         catch (Exception e)
         {

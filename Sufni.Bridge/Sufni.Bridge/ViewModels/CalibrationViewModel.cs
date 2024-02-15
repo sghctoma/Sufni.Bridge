@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
-using Sufni.Bridge.Models;
 using Sufni.Bridge.Models.Telemetry;
 using Sufni.Bridge.Services;
 
@@ -60,7 +59,7 @@ public partial class CalibrationViewModel : ViewModelBase
     
     #region Observable properties
     
-    [ObservableProperty] private int? id;
+    [ObservableProperty] private Guid? id;
     [ObservableProperty] private bool isDirty;
     
     [ObservableProperty]

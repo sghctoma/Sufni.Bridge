@@ -393,7 +393,7 @@ public partial class MainViewModel : ViewModelBase
                     continue;
                 }
 
-                var psst = await databaseService.GetSessionRawPsstAsync(svm.Id ?? 0);
+                var psst = await databaseService.GetSessionRawPsstAsync(svm.Id);
                 await httpApiService.PutProcessedSessionAsync(svm.Name!, svm.Description!, psst!);
                 Notifications.Insert(0, $"{svm.Name} was successfully uploaded.");
             }
@@ -584,7 +584,7 @@ public partial class MainViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private async Task DeleteSession(int id)
+    private async Task DeleteSession(Guid id)
     {
         Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
         

@@ -91,7 +91,7 @@ internal class HttpApiService : IHttpApiService
         return linkages;
     }
     
-    public async Task<int> PutLinkageAsync(Linkage linkage)
+    public async Task<Guid> PutLinkageAsync(Linkage linkage)
     {
         using HttpResponseMessage response = await client.PutAsJsonAsync($"{serverUrl}/api/linkage", linkage);
         response.EnsureSuccessStatusCode();
@@ -101,7 +101,7 @@ internal class HttpApiService : IHttpApiService
         return result.Id;
     }
 
-    public async Task DeleteLinkageAsync(int id)
+    public async Task DeleteLinkageAsync(Guid id)
     {
         using var response = await client.DeleteAsync($"{serverUrl}/api/linkage/{id}");
         response.EnsureSuccessStatusCode();
@@ -125,7 +125,7 @@ internal class HttpApiService : IHttpApiService
         return calibrations;
     }
     
-    public async Task<int> PutCalibrationAsync(Calibration calibration)
+    public async Task<Guid> PutCalibrationAsync(Calibration calibration)
     {
         using HttpResponseMessage response = await client.PutAsJsonAsync($"{serverUrl}/api/calibration", calibration);
         response.EnsureSuccessStatusCode();
@@ -135,7 +135,7 @@ internal class HttpApiService : IHttpApiService
         return result.Id;
     }
 
-    public async Task DeleteCalibrationAsync(int id)
+    public async Task DeleteCalibrationAsync(Guid id)
     {
         using var response = await client.DeleteAsync($"{serverUrl}/api/calibration/{id}");
         response.EnsureSuccessStatusCode();
@@ -150,7 +150,7 @@ internal class HttpApiService : IHttpApiService
         return setups;
     }
     
-    public async Task<int> PutSetupAsync(Setup setup)
+    public async Task<Guid> PutSetupAsync(Setup setup)
     {
         using HttpResponseMessage response = await client.PutAsJsonAsync($"{serverUrl}/api/setup", setup);
         response.EnsureSuccessStatusCode();
@@ -160,7 +160,7 @@ internal class HttpApiService : IHttpApiService
         return result.Id;
     }
 
-    public async Task DeleteSetupAsync(int id)
+    public async Task DeleteSetupAsync(Guid id)
     {
         using var response = await client.DeleteAsync($"{serverUrl}/api/setup/{id}");
         response.EnsureSuccessStatusCode();
@@ -175,7 +175,7 @@ internal class HttpApiService : IHttpApiService
         return sessions;
     }
 
-    public async Task<TelemetryData> GetSessionPsstAsync(int id)
+    public async Task<TelemetryData> GetSessionPsstAsync(Guid id)
     {
         using var response = await client.GetAsync($"{serverUrl}/api/session/{id}/psst");
         response.EnsureSuccessStatusCode() ;
@@ -184,7 +184,7 @@ internal class HttpApiService : IHttpApiService
         return MessagePackSerializer.Deserialize<TelemetryData>(psst);
     }
     
-    public async Task<int> PutSessionAsync(Session session)
+    public async Task<Guid> PutSessionAsync(Session session)
     {
         using HttpResponseMessage response = await client.PutAsJsonAsync($"{serverUrl}/api/session", session);
         response.EnsureSuccessStatusCode();
@@ -194,7 +194,7 @@ internal class HttpApiService : IHttpApiService
         return result.Id;
     }
 
-    public async Task<int> PutProcessedSessionAsync(string name, string description, byte[] data)
+    public async Task<Guid> PutProcessedSessionAsync(string name, string description, byte[] data)
     {
         using HttpResponseMessage response = await client.PutAsJsonAsync($"{serverUrl}/api/session/psst",
             new
@@ -209,7 +209,7 @@ internal class HttpApiService : IHttpApiService
         return result.Id;
     }
  
-    public async Task DeleteSessionAsync(int id)
+    public async Task DeleteSessionAsync(Guid id)
     {
         using var response = await client.DeleteAsync($"{serverUrl}/api/session/{id}");
         response.EnsureSuccessStatusCode();

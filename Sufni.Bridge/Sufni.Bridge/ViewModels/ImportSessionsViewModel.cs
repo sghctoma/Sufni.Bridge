@@ -34,7 +34,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(ImportSessionsCommand))]
-    private int? selectedSetup;
+    private Guid? selectedSetup;
     
     #endregion Observable properties
 
@@ -185,7 +185,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
                 }
                 
                 // Get front Calibration
-                var fcal = await databaseService.GetCalibrationAsync(setup.FrontCalibrationId ?? 0);
+                var fcal = await databaseService.GetCalibrationAsync(setup.FrontCalibrationId);
                 var fmethod = fcal is null ? null : await databaseService.GetCalibrationMethodAsync(fcal.MethodId);
                 if (fcal is not null && fmethod == null)
                 {
@@ -193,7 +193,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
                 }
                 
                 // Get rear Calibration
-                var rcal = await databaseService.GetCalibrationAsync(setup.RearCalibrationId ?? 0);
+                var rcal = await databaseService.GetCalibrationAsync(setup.RearCalibrationId);
                 var rmethod = rcal is null ? null : await databaseService.GetCalibrationMethodAsync(rcal.MethodId);
                 if (rcal is not null && rmethod == null)
                 {
@@ -208,7 +208,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
                     id: null,
                     name: telemetryFile.Name,
                     description: telemetryFile.Description,
-                    setup: SelectedSetup ?? 0,
+                    setup: SelectedSetup!.Value,
                     timestamp: (int)((DateTimeOffset)telemetryFile.StartTime).ToUnixTimeSeconds())
                     {
                         ProcessedData = psst

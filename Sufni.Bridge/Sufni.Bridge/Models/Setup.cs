@@ -1,3 +1,4 @@
+using System;
 using System.Text.Json.Serialization;
 using SQLite;
 
@@ -12,7 +13,7 @@ public class Setup : Synchronizable
     {
     }
 
-    public Setup(int? id, string name, int linkageId, int? frontCalibrationId, int? rearCalibrationId)
+    public Setup(Guid? id, string name, Guid linkageId, Guid? frontCalibrationId, Guid? rearCalibrationId)
     {
         Id = id;
         Name = name;
@@ -22,9 +23,9 @@ public class Setup : Synchronizable
     }
 
     [JsonPropertyName("id")]
-    [PrimaryKey, AutoIncrement]
+    [PrimaryKey]
     [Column("id")]
-    public int? Id { get; set; }
+    public Guid? Id { get; set; } = Guid.NewGuid();
 
     [JsonPropertyName("name")]
     [Column("name")]
@@ -32,13 +33,13 @@ public class Setup : Synchronizable
 
     [JsonPropertyName("linkage_id")]
     [Column("linkage_id")]
-    public int LinkageId { get; set; }
+    public Guid LinkageId { get; set; }
 
     [JsonPropertyName("front_calibration_id")]
     [Column("front_calibration_id")]
-    public int? FrontCalibrationId { get; set; }
+    public Guid? FrontCalibrationId { get; set; }
 
     [JsonPropertyName("rear_calibration_id")]
     [Column("rear_calibration_id")]
-    public int? RearCalibrationId { get; set; }
+    public Guid? RearCalibrationId { get; set; }
 }

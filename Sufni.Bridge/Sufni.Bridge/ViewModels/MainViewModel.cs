@@ -467,7 +467,7 @@ public partial class MainViewModel : ViewModelBase
             {
                 inputs.Add(input, 0.0);
             }
-            var calibration = new Calibration(null, "new calibration", methodId, inputs);
+            var calibration = new Calibration(null, "new calibration", methodId!.Value, inputs);
 
             var cvm = new CalibrationViewModel(calibration, CalibrationMethods)
             {

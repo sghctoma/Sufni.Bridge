@@ -28,4 +28,6 @@ internal interface IHttpApiService
     public Task<Guid> PutSessionAsync(Session session);
     public Task<Guid> PutProcessedSessionAsync(string name, string description, byte[] data);
     public Task DeleteSessionAsync(Guid id);
+    public Task<SynchronizationData> PullSyncAsync(int since = 0);
+    public Task PushSyncAsync(SynchronizationData syncData);
 }

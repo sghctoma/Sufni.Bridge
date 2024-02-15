@@ -214,4 +214,19 @@ internal class HttpApiService : IHttpApiService
         using var response = await client.DeleteAsync($"{serverUrl}/api/session/{id}");
         response.EnsureSuccessStatusCode();
     }
+
+    public async Task<SynchronizationData> PullSyncAsync(int since = 0)
+    {
+        using var response = await client.GetAsync($"{serverUrl}/api/sync/pull?since={since}");
+        response.EnsureSuccessStatusCode();
+        var entities = await response.Content.ReadFromJsonAsync<SynchronizationData>();
+        Debug.Assert(entities != null);
+        return entities;
+    }
+
+    public async Task PushSyncAsync(SynchronizationData syncData)
+    {
+        using var response = await client.PutAsJsonAsync($"{serverUrl}/api/sync/push", syncData);
+        response.EnsureSuccessStatusCode();
+    }
 }

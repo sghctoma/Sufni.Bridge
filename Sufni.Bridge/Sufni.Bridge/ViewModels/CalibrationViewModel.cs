@@ -164,7 +164,7 @@ public partial class CalibrationViewModel : ViewModelBase
             var newCalibration = new Calibration(
                 Id,
                 Name ?? $"calibration #{Id}",
-                SelectedCalibrationMethod.Id,
+                SelectedCalibrationMethod.Id!.Value,
                 Inputs.ToDictionary(input => input.Name, input => input.Value));
             Id = await databaseService.PutCalibrationAsync(newCalibration);
             

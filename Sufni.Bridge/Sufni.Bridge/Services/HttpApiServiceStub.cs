@@ -273,4 +273,14 @@ public class HttpApiServiceStub : IHttpApiService
         Sessions.RemoveAll(s => s.Id == id);
         return Task.CompletedTask;
     }
+    
+    public async Task<SynchronizationData> PullSyncAsync(int since = 0)
+    {
+        return new SynchronizationData();
+    }
+
+    public async Task PushSyncAsync(SynchronizationData syncData)
+    {
+        
+    }
 }

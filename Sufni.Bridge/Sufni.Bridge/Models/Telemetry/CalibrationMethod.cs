@@ -33,7 +33,7 @@ public class CalibrationMethod : Synchronizable
     [JsonPropertyName("id")]
     [PrimaryKey]
     [Column("id")]
-    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid? Id { get; set; } = Guid.NewGuid();
 
     [JsonPropertyName("name")]
     [Column("name")]

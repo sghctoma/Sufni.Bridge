@@ -110,10 +110,11 @@ public class SqLiteDatabaseService : IDatabaseService
             typeof(CalibrationMethod),
             typeof(Calibration),
             typeof(Setup),
-            typeof(Session)
+            typeof(Session),
+            typeof(Synchronization)
         });
 
-        if (result.Results[typeof(Board)] == CreateTableResult.Created)
+        if (result.Results[typeof(CalibrationMethod)] == CreateTableResult.Created)
         {
             var timestamp = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
             foreach (var calibrationMethod in DefaultCalibrationMethods)
@@ -122,6 +123,10 @@ public class SqLiteDatabaseService : IDatabaseService
             }
             await connection.InsertAllAsync(DefaultCalibrationMethods);
         }
+        if (result.Results[typeof(Synchronization)] == CreateTableResult.Created)
+        {
+            await connection.QueryAsync<Synchronization>("INSERT INTO sync VALUES (0)");
+        }
     }
 
     public async Task<List<Board>> GetBoardsAsync()
@@ -129,6 +134,15 @@ public class SqLiteDatabaseService : IDatabaseService
         await Initialization;
         
         return await connection.Table<Board>().Where(b => b.Deleted == null).ToListAsync();
+    }
+    
+    public async Task<List<Board>> GetChangedBoardsAsync(int since)
+    {
+        await Initialization;
+        
+        return await connection.Table<Board>()
+            .Where(b => b.Updated >= since || (b.Deleted != null && b.Deleted >= since))
+            .ToListAsync();
     }
 
     public async Task PutBoardAsync(Board board)
@@ -149,13 +163,35 @@ public class SqLiteDatabaseService : IDatabaseService
         }
     }
 
+    public async Task DeleteBoardAsync(string id)
+    {
+        await Initialization;
+        var board = await connection.Table<Board>()
+            .Where(b => b.Id == id)
+            .FirstOrDefaultAsync();
+        if (board is not null)
+        {
+            board.Deleted = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
+            await connection.UpdateAsync(board);
+        }
+    }
+    
     public async Task<List<Linkage>> GetLinkagesAsync()
     {
         await Initialization;
         
         return await connection.Table<Linkage>().Where(t => t.Deleted == null).ToListAsync();
     }
-    
+
+    public async Task<List<Linkage>> GetChangedLinkagesAsync(int since)
+    {
+        await Initialization;
+        
+        return await connection.Table<Linkage>()
+            .Where(l => l.Updated >= since || (l.Deleted != null && l.Deleted >= since))
+            .ToListAsync();
+    }
+
     public async Task<Linkage?> GetLinkageAsync(Guid? id)
     {
         await Initialization;
@@ -169,14 +205,17 @@ public class SqLiteDatabaseService : IDatabaseService
     {
         await Initialization;
         
+        var existing = await connection.Table<Linkage>()
+            .Where(l => l.Id == linkage.Id && l.Deleted == null)
+            .FirstOrDefaultAsync() is not null;
         linkage.Updated = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
-        if (linkage.Id is not null)
+        if (existing)
         {
             await connection.UpdateAsync(linkage);
         }
         else
         {
-            linkage.Id = Guid.NewGuid();
+            linkage.Id ??= Guid.NewGuid();
             await connection.InsertAsync(linkage);
         }
 
@@ -202,6 +241,15 @@ public class SqLiteDatabaseService : IDatabaseService
         return await connection.Table<CalibrationMethod>().Where(c => c.Deleted == null).ToListAsync();
     }
 
+    public async Task<List<CalibrationMethod>> GetChangedCalibrationMethodsAsync(int since)
+    {
+        await Initialization;
+        
+        return await connection.Table<CalibrationMethod>()
+            .Where(c => c.Updated >= since || (c.Deleted != null && c.Deleted >= since))
+            .ToListAsync();
+    }
+
     public async Task<CalibrationMethod?> GetCalibrationMethodAsync(Guid? id)
     {
         await Initialization;
@@ -211,12 +259,55 @@ public class SqLiteDatabaseService : IDatabaseService
             .FirstOrDefaultAsync();
     }
     
+    public async Task<Guid?> PutCalibrationMethodAsync(CalibrationMethod calibrationMethod)
+    {
+        await Initialization;
+
+        var existing = await connection.Table<CalibrationMethod>()
+            .Where(c => c.Id == calibrationMethod.Id && c.Deleted == null)
+            .FirstOrDefaultAsync() is not null;
+        calibrationMethod.Updated = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
+        if (existing)
+        {
+            await connection.UpdateAsync(calibrationMethod);
+        }
+        else
+        {
+            calibrationMethod.Id ??= Guid.NewGuid();
+            await connection.InsertAsync(calibrationMethod);
+        }
+
+        return calibrationMethod.Id ?? null;
+    }
+
+    public async Task DeleteCalibrationMethodAsync(Guid? id)
+    {
+        await Initialization;
+        var calibrationMethod = await connection.Table<CalibrationMethod>()
+            .Where(c => c.Id == id)
+            .FirstOrDefaultAsync();
+        if (calibrationMethod is not null)
+        {
+            calibrationMethod.Deleted = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
+            await connection.UpdateAsync(calibrationMethod);
+        }
+    }
+    
     public async Task<List<Calibration>> GetCalibrationsAsync()
     {
         await Initialization;
         return await connection.Table<Calibration>().Where(c => c.Deleted == null).ToListAsync();
     }
     
+    public async Task<List<Calibration>> GetChangedCalibrationsAsync(int since)
+    {
+        await Initialization;
+        
+        return await connection.Table<Calibration>()
+            .Where(c => c.Updated >= since || (c.Deleted != null && c.Deleted >= since))
+            .ToListAsync();
+    }
+
     public async Task<Calibration?> GetCalibrationAsync(Guid? id)
     {
         await Initialization;
@@ -230,14 +321,17 @@ public class SqLiteDatabaseService : IDatabaseService
     {
         await Initialization;
 
+        var existing = await connection.Table<Calibration>()
+            .Where(c => c.Id == calibration.Id && c.Deleted == null)
+            .FirstOrDefaultAsync() is not null;
         calibration.Updated = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
-        if (calibration.Id is not null)
+        if (existing)
         {
             await connection.UpdateAsync(calibration);
         }
         else
         {
-            calibration.Id = Guid.NewGuid();
+            calibration.Id ??= Guid.NewGuid();
             await connection.InsertAsync(calibration);
         }
 
@@ -263,6 +357,15 @@ public class SqLiteDatabaseService : IDatabaseService
         return await connection.Table<Setup>().Where(s => s.Deleted == null).ToListAsync();
     }
     
+    public async Task<List<Setup>> GetChangedSetupsAsync(int since)
+    {
+        await Initialization;
+        
+        return await connection.Table<Setup>()
+            .Where(s => s.Updated >= since || (s.Deleted != null && s.Deleted >= since))
+            .ToListAsync();
+    }
+
     public async Task<Setup?> GetSetupAsync(Guid? id)
     {
         await Initialization;
@@ -276,14 +379,17 @@ public class SqLiteDatabaseService : IDatabaseService
     {
         await Initialization;
 
+        var existing = await connection.Table<Setup>()
+            .Where(s => s.Id == setup.Id && s.Deleted == null)
+            .FirstOrDefaultAsync() is not null;
         setup.Updated = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
-        if (setup.Id is not null)
+        if (existing)
         {
             await connection.UpdateAsync(setup);
         }
         else
         {
-            setup.Id = Guid.NewGuid();
+            setup.Id ??= Guid.NewGuid();
             await connection.InsertAsync(setup);
         }
 
@@ -311,6 +417,15 @@ public class SqLiteDatabaseService : IDatabaseService
         return sessions;
     }
     
+    public async Task<List<Session>> GetChangedSessionsAsync(int since)
+    {
+        await Initialization;
+        
+        return await connection.Table<Session>()
+            .Where(s => s.Updated >= since || (s.Deleted != null && s.Deleted >= since))
+            .ToListAsync();
+    }
+
     public async Task<TelemetryData?> GetSessionPsstAsync(Guid? id)
     {
         await Initialization;
@@ -331,14 +446,17 @@ public class SqLiteDatabaseService : IDatabaseService
     {
         await Initialization;
 
+        var existing = await connection.Table<Session>()
+            .Where(s => s.Id == session.Id && s.Deleted == null)
+            .FirstOrDefaultAsync() is not null;
         session.Updated = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
-        if (session.Id is not null)
+        if (existing)
         {
             await connection.UpdateAsync(session);
         }
         else
         {
-            session.Id = Guid.NewGuid();
+            session.Id ??= Guid.NewGuid();
             await connection.InsertAsync(session);
         }
 
@@ -356,5 +474,21 @@ public class SqLiteDatabaseService : IDatabaseService
             session.Deleted = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
             await connection.UpdateAsync(session);
         }
+    }
+
+    public async Task<int> GetLastSyncTimeAsync()
+    {
+        await Initialization;
+
+        var s = await connection.Table<Synchronization>().FirstOrDefaultAsync();
+        return s?.LastSyncTime ?? 0;
+    }
+    
+    public async Task UpdateLastSyncTimeAsync()
+    {
+        await Initialization;
+
+        await connection.QueryAsync<Synchronization>("UPDATE sync SET last_sync_time = ?", 
+            (int)DateTimeOffset.Now.ToUnixTimeSeconds());
     }
 }

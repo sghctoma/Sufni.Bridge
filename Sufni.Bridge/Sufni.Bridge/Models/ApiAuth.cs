@@ -12,8 +12,3 @@ public record User(
 public record Tokens(
     [property: JsonPropertyName("access_token")] string AccessToken,
     [property: JsonPropertyName("refresh_token")] string RefreshToken);
-
-// ReSharper disable once ClassNeverInstantiated.Global
-// It's used in response.Content.ReadFromJsonAsync<Tokens>() calls
-public record PutResponse(
-    [property: JsonPropertyName("id")] int Id);

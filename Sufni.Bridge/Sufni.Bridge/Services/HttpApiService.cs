@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using MessagePack;
 using Sufni.Bridge.Models.Telemetry;
@@ -19,6 +20,11 @@ internal class HttpApiService : IHttpApiService
     private readonly HttpClient client = new();
     
     #endregion
+    
+    // ReSharper disable once ClassNeverInstantiated.Local
+    // It's used in response.Content.ReadFromJsonAsync<Tokens>() calls
+    private record PutResponse(
+        [property: JsonPropertyName("id")] Guid Id);
     
     public async Task<string> RefreshTokensAsync(string url, string refreshToken)
     {

@@ -13,7 +13,7 @@ namespace Sufni.Bridge.Models.Telemetry;
 
 [Table("calibration")]
 [MessagePackObject(keyAsPropertyName: true)]
-public class Calibration
+public class Calibration : Synchronizable
 {
     private Func<Dictionary<string, double>, double>? evaluatorDelegate;
     private readonly Dictionary<string, double> evaluatorEnvironment = new();

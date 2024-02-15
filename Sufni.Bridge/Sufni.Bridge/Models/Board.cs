@@ -4,7 +4,7 @@ using SQLite;
 namespace Sufni.Bridge.Models;
 
 [Table("board")]
-public class Board
+public class Board : Synchronizable
 {
     // Just to satisfy sql-net-pcl's parameterless constructor requirement
     // Uninitialized non-nullable property warnings are suppressed with null! initializer.

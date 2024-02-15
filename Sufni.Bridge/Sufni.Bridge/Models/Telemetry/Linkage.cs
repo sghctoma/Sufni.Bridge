@@ -21,7 +21,7 @@ namespace Sufni.Bridge.Models.Telemetry;
 
 [Table("linkage")]
 [MessagePackObject(keyAsPropertyName: true)]
-public class Linkage
+public class Linkage : Synchronizable
 {
     private LeverageRatioData? leverageRatioData;
     private double? maxFrontTravel;

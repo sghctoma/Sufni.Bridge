@@ -115,6 +115,11 @@ public class SqLiteDatabaseService : IDatabaseService
 
         if (result.Results[typeof(Board)] == CreateTableResult.Created)
         {
+            var timestamp = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
+            foreach (var calibrationMethod in DefaultCalibrationMethods)
+            {
+                calibrationMethod.Updated = timestamp;
+            }
             await connection.InsertAllAsync(DefaultCalibrationMethods);
         }
     }
@@ -123,15 +128,16 @@ public class SqLiteDatabaseService : IDatabaseService
     {
         await Initialization;
         
-        return await connection.Table<Board>().ToListAsync();
+        return await connection.Table<Board>().Where(b => b.Deleted == null).ToListAsync();
     }
 
     public async Task PutBoardAsync(Board board)
     {
         await Initialization;
 
+        board.Updated = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
         var existing = await connection.Table<Board>()
-            .Where(b => b.Id == board.Id)
+            .Where(b => b.Id == board.Id && b.Deleted == null)
             .FirstOrDefaultAsync() is not null;
         if (existing)
         {
@@ -147,7 +153,7 @@ public class SqLiteDatabaseService : IDatabaseService
     {
         await Initialization;
         
-        return await connection.Table<Linkage>().ToListAsync();
+        return await connection.Table<Linkage>().Where(t => t.Deleted == null).ToListAsync();
     }
     
     public async Task<Linkage?> GetLinkageAsync(int id)
@@ -155,7 +161,7 @@ public class SqLiteDatabaseService : IDatabaseService
         await Initialization;
         
         return await connection.Table<Linkage>()
-            .Where(l => l.Id == id)
+            .Where(l => l.Id == id && l.Deleted == null)
             .FirstOrDefaultAsync();
     }
 
@@ -163,6 +169,7 @@ public class SqLiteDatabaseService : IDatabaseService
     {
         await Initialization;
         
+        linkage.Updated = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
         if (linkage.Id is not null)
         {
             await connection.UpdateAsync(linkage);
@@ -178,13 +185,20 @@ public class SqLiteDatabaseService : IDatabaseService
     public async Task DeleteLinkageAsync(int id)
     {
         await Initialization;
-        await connection.DeleteAsync<Linkage>(id);
+        var linkage = await connection.Table<Linkage>()
+            .Where(l => l.Id == id)
+            .FirstOrDefaultAsync();
+        if (linkage is not null)
+        {
+            linkage.Deleted = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
+            await connection.UpdateAsync(linkage);
+        }
     }
 
     public async Task<List<CalibrationMethod>> GetCalibrationMethodsAsync()
     {
         await Initialization;
-        return await connection.Table<CalibrationMethod>().ToListAsync();
+        return await connection.Table<CalibrationMethod>().Where(c => c.Deleted == null).ToListAsync();
     }
 
     public async Task<CalibrationMethod?> GetCalibrationMethodAsync(int id)
@@ -192,14 +206,14 @@ public class SqLiteDatabaseService : IDatabaseService
         await Initialization;
         
         return await connection.Table<CalibrationMethod>()
-            .Where(c => c.Id == id)
+            .Where(c => c.Id == id && c.Deleted == null)
             .FirstOrDefaultAsync();
     }
     
     public async Task<List<Calibration>> GetCalibrationsAsync()
     {
         await Initialization;
-        return await connection.Table<Calibration>().ToListAsync();
+        return await connection.Table<Calibration>().Where(c => c.Deleted == null).ToListAsync();
     }
     
     public async Task<Calibration?> GetCalibrationAsync(int id)
@@ -207,7 +221,7 @@ public class SqLiteDatabaseService : IDatabaseService
         await Initialization;
         
         return await connection.Table<Calibration>()
-            .Where(c => c.Id == id)
+            .Where(c => c.Id == id && c.Deleted == null)
             .FirstOrDefaultAsync();
     }
 
@@ -215,6 +229,7 @@ public class SqLiteDatabaseService : IDatabaseService
     {
         await Initialization;
 
+        calibration.Updated = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
         if (calibration.Id is not null)
         {
             await connection.UpdateAsync(calibration);
@@ -230,13 +245,20 @@ public class SqLiteDatabaseService : IDatabaseService
     public async Task DeleteCalibrationAsync(int id)
     {
         await Initialization;
-        await connection.DeleteAsync<Calibration>(id);
+        var calibration = await connection.Table<Calibration>()
+            .Where(c => c.Id == id)
+            .FirstOrDefaultAsync();
+        if (calibration is not null)
+        {
+            calibration.Deleted = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
+            await connection.UpdateAsync(calibration);
+        }
     }
 
     public async Task<List<Setup>> GetSetupsAsync()
     {
         await Initialization;
-        return await connection.Table<Setup>().ToListAsync();
+        return await connection.Table<Setup>().Where(s => s.Deleted == null).ToListAsync();
     }
     
     public async Task<Setup?> GetSetupAsync(int id)
@@ -244,7 +266,7 @@ public class SqLiteDatabaseService : IDatabaseService
         await Initialization;
         
         return await connection.Table<Setup>()
-            .Where(s => s.Id == id)
+            .Where(s => s.Id == id && s.Deleted == null)
             .FirstOrDefaultAsync();
     }
 
@@ -252,6 +274,7 @@ public class SqLiteDatabaseService : IDatabaseService
     {
         await Initialization;
 
+        setup.Updated = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
         if (setup.Id is not null)
         {
             await connection.UpdateAsync(setup);
@@ -267,14 +290,21 @@ public class SqLiteDatabaseService : IDatabaseService
     public async Task DeleteSetupAsync(int id)
     {
         await Initialization;
-        await connection.DeleteAsync<Setup>(id);
+        var setup = await connection.Table<Setup>()
+            .Where(s => s.Id == id)
+            .FirstOrDefaultAsync();
+        if (setup is not null)
+        {
+            setup.Deleted = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
+            await connection.UpdateAsync(setup);
+        }
     }
 
     public async Task<List<Session>> GetSessionsAsync()
     {
         await Initialization;
         var sessions = await connection.QueryAsync<Session>(
-            "SELECT id, name, setup_id, description, timestamp, track_id FROM session ORDER BY timestamp DESC");
+            "SELECT id, name, setup_id, description, timestamp, track_id FROM session WHERE deleted IS null ORDER BY timestamp DESC");
         return sessions;
     }
     
@@ -282,7 +312,7 @@ public class SqLiteDatabaseService : IDatabaseService
     {
         await Initialization;
         var sessions = await connection.QueryAsync<Session>(
-            "SELECT data FROM session WHERE id = ?", id);
+            "SELECT data FROM session WHERE deleted IS null AND id = ?", id);
         return sessions.Count == 1 ? MessagePackSerializer.Deserialize<TelemetryData>(sessions[0].ProcessedData) : null;
     }
     
@@ -290,7 +320,7 @@ public class SqLiteDatabaseService : IDatabaseService
     {
         await Initialization;
         var sessions = await connection.QueryAsync<Session>(
-            "SELECT data FROM session WHERE id = ?", id);
+            "SELECT data FROM session WHERE deleted IS null AND id = ?", id);
         return sessions.Count == 1 ? sessions[0].ProcessedData : null;
     }
 
@@ -298,6 +328,7 @@ public class SqLiteDatabaseService : IDatabaseService
     {
         await Initialization;
 
+        session.Updated = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
         if (session.Id is not null)
         {
             await connection.UpdateAsync(session);
@@ -313,6 +344,13 @@ public class SqLiteDatabaseService : IDatabaseService
     public async Task DeleteSessionAsync(int id)
     {
         await Initialization;
-        await connection.DeleteAsync<Session>(id);
+        var session = await connection.Table<Session>()
+            .Where(s => s.Id == id)
+            .FirstOrDefaultAsync();
+        if (session is not null)
+        {
+            session.Deleted = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
+            await connection.UpdateAsync(session);
+        }
     }
 }

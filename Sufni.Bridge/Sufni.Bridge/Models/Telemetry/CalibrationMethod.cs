@@ -16,7 +16,7 @@ public record CalibrationMethodProperties(
     [property: JsonPropertyName("expression")] string Expression);
 
 [Table("calibration_method")]
-public class CalibrationMethod
+public class CalibrationMethod : Synchronizable
 {
     // Just to satisfy sql-net-pcl's parameterless constructor requirement
     // Uninitialized non-nullable property warnings are suppressed with null! initializer.

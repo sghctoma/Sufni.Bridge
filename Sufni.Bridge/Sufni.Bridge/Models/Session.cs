@@ -4,7 +4,7 @@ using SQLite;
 namespace Sufni.Bridge.Models;
 
 [Table("session")]
-public class Session
+public class Session : Synchronizable
 {
     // Just to satisfy sql-net-pcl's parameterless constructor requirement
     // Uninitialized non-nullable property warnings are suppressed with null! initializer.

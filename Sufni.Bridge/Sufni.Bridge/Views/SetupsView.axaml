@@ -13,7 +13,7 @@
         <vm:MainViewModel />
     </Design.DataContext>
 
-    <Grid RowDefinitions="40 * auto 40" ColumnDefinitions="*">
+    <Grid RowDefinitions="40 * auto auto 40" ColumnDefinitions="*">
 
         <!-- Search box -->
         <TextBox Grid.Row="0" Grid.Column="0" Margin="6,5,6,0"
@@ -144,31 +144,38 @@
             </ItemsRepeater>
         </ScrollViewer>
 
+        <!-- Notifications -->
+        <v:NotificationsControl Grid.Row="2" Grid.Column="0"
+                                Margin="5, 0"
+                                ClearNotificationsCommand="{Binding ClearNotificationsCommand}"
+                                Notifications="{Binding Notifications}"
+                                IsVisible="{Binding Notifications.Count}" />
+        
         <!-- Error messages -->
-        <v:ErrorMessagesControl Grid.Row="2" Grid.Column="0"
+        <v:ErrorMessagesControl Grid.Row="3" Grid.Column="0"
                                 Margin="5, 0"
                                 ClearErrorsCommand="{Binding ClearErrorsCommand}"
                                 ErrorMessages="{Binding ErrorMessages}"
                                 IsVisible="{Binding ErrorMessages.Count}" />
 
-        <Grid Grid.Row="3" Grid.Column="0"
+        <Grid Grid.Row="4" Grid.Column="0"
               ColumnDefinitions="* auto" RowDefinitions="40">
 
-            <!-- Reload Linkages -->
-            <!--Button Grid.Row="0" Grid.Column="0"
-                    Margin="5,7,1,3"
-                    HorizontalAlignment="Stretch"
-                    HorizontalContentAlignment="Center"
-                    Command="{Binding ReloadCommand}">
-                <Image Source="{SvgImage /Assets/fa-sync-alt.svg}" />
-            </Button-->
-
             <!-- Add new Linkage -->
-            <Button Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+            <Button Grid.Row="0" Grid.Column="0"
                     HorizontalAlignment="Stretch"
-                    Margin="5,7,5,3"
+                    Margin="5,7,1,3"
                     Command="{Binding AddSetupCommand}">
                 <Image Source="{SvgImage /Assets/fa-plus.svg}" />
+            </Button>
+            
+            <!-- Sync -->
+            <Button Grid.Row="0" Grid.Column="1"
+                    Margin="1,7,5,3"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    Command="{Binding SyncCommand}">
+                <Image Source="{SvgImage /Assets/fa-sync-alt.svg}" />
             </Button>
         </Grid>
     </Grid>

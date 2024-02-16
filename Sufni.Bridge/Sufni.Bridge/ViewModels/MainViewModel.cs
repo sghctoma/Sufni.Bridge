@@ -353,6 +353,15 @@ public partial class MainViewModel : ViewModelBase
         await LoadSetupsAsync();
         await LoadSessionsAsync();
     }
+
+    private async Task ReloadAfterSync()
+    {
+        await LoadLinkagesAsync();
+        await LoadCalibrationMethodsAsync();
+        await LoadCalibrationsAsync();
+        await LoadBoardsAsync();
+        await LoadSetupsAsync();
+    }
     
     #endregion
 
@@ -641,5 +650,94 @@ public partial class MainViewModel : ViewModelBase
         DateFilterVisible = !DateFilterVisible;
     }
     
+    [RelayCommand]
+    private async Task Sync()
+    {
+        var httpApiService = App.Current?.Services?.GetService<IHttpApiService>();
+        Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
+        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
+
+        try
+        {
+            var lastSyncTime = await databaseService.GetLastSyncTimeAsync();
+            var changes = new SynchronizationData
+            {
+                Boards = await databaseService.GetChangedBoardsAsync(lastSyncTime),
+                CalibrationMethods = await databaseService.GetChangedCalibrationMethodsAsync(lastSyncTime),
+                Calibrations = await databaseService.GetChangedCalibrationsAsync(lastSyncTime),
+                Linkages = await databaseService.GetChangedLinkagesAsync(lastSyncTime),
+                Setups = await databaseService.GetChangedSetupsAsync(lastSyncTime),
+            };
+            await httpApiService.PushSyncAsync(changes);
+            
+            var syncData = await httpApiService.PullSyncAsync();
+            foreach (var board in syncData.Boards)
+            {
+                if (board.Deleted.HasValue)
+                {
+                    await databaseService.DeleteBoardAsync(board.Id);
+                }
+                else
+                {
+                    await databaseService.PutBoardAsync(board);
+                }
+            }
+            foreach (var calibrationMethod in syncData.CalibrationMethods)
+            {
+                if (calibrationMethod.Deleted.HasValue)
+                {
+                    await databaseService.DeleteCalibrationMethodAsync(calibrationMethod.Id);
+                }
+                else
+                {
+                    await databaseService.PutCalibrationMethodAsync(calibrationMethod);
+                }
+            }
+            foreach (var calibration in syncData.Calibrations)
+            {
+                if (calibration.Deleted.HasValue)
+                {
+                    await databaseService.DeleteCalibrationAsync(calibration.Id);
+                }
+                else
+                {
+                    await databaseService.PutCalibrationAsync(calibration);
+                }
+            }
+            foreach (var linkage in syncData.Linkages)
+            {
+                if (linkage.Deleted.HasValue)
+                {
+                    await databaseService.DeleteLinkageAsync(linkage.Id);
+                }
+                else
+                {
+                    await databaseService.PutLinkageAsync(linkage);
+                }
+            }
+            foreach (var setup in syncData.Setups)
+            {
+                if (setup.Deleted.HasValue)
+                {
+                    await databaseService.DeleteSetupAsync(setup.Id);
+                }
+                else
+                {
+                    await databaseService.PutSetupAsync(setup);
+                }
+            }
+
+            await databaseService.UpdateLastSyncTimeAsync();
+            await ReloadAfterSync();
+            
+            Notifications.Add("Sync successful");
+            ErrorMessages.Clear();
+        }
+        catch(Exception e)
+        {
+            ErrorMessages.Add($"Could not sync: {e.Message}");
+        }
+    }
+
     #endregion
 }

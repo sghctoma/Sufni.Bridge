@@ -55,11 +55,11 @@ public partial class CalibrationInputViewModel : ViewModelBase
 public partial class CalibrationViewModel : ViewModelBase
 {
     private Calibration calibration;
-    public Guid Guid { get; } = Guid.NewGuid();
-    
+    public bool IsInDatabase;
+
     #region Observable properties
     
-    [ObservableProperty] private Guid? id;
+    [ObservableProperty] private Guid id;
     [ObservableProperty] private bool isDirty;
     
     [ObservableProperty]
@@ -82,7 +82,7 @@ public partial class CalibrationViewModel : ViewModelBase
     private void EvaluateDirtiness()
     {
         IsDirty =
-            Id == null ||
+            !IsInDatabase ||
             Name != calibration.Name ||
             SelectedCalibrationMethod == null || SelectedCalibrationMethod.Id != calibration.MethodId ||
             Inputs.Any(i => i.IsDirty);
@@ -133,9 +133,10 @@ public partial class CalibrationViewModel : ViewModelBase
 
     #region Constructors
 
-    public CalibrationViewModel(Calibration calibration, ObservableCollection<CalibrationMethod> calibrationMethods)
+    public CalibrationViewModel(Calibration calibration, ObservableCollection<CalibrationMethod> calibrationMethods, bool fromDatabase)
     {
         this.calibration = calibration;
+        IsInDatabase = fromDatabase;
         Id = calibration.Id;
         CalibrationMethods = calibrationMethods;
         Reset();
@@ -164,7 +165,7 @@ public partial class CalibrationViewModel : ViewModelBase
             var newCalibration = new Calibration(
                 Id,
                 Name ?? $"calibration #{Id}",
-                SelectedCalibrationMethod.Id!.Value,
+                SelectedCalibrationMethod.Id,
                 Inputs.ToDictionary(input => input.Name, input => input.Value));
             Id = await databaseService.PutCalibrationAsync(newCalibration);
             
@@ -175,6 +176,7 @@ public partial class CalibrationViewModel : ViewModelBase
                 input.IsDirty = false;
             }
             IsDirty = false;
+            IsInDatabase = true;
         }
         catch (Exception e)
         {

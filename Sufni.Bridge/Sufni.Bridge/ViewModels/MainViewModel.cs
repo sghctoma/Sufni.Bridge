@@ -39,19 +39,19 @@ public partial class MainViewModel : ViewModelBase
     [ObservableProperty] private DateTime? dateFilterTo;
     [ObservableProperty] private bool dateFilterVisible;
 
-    private readonly SourceCache<LinkageViewModel, Guid> linkagesSource = new(x => x.Guid);
+    private readonly SourceCache<LinkageViewModel, Guid> linkagesSource = new(x => x.Id);
     public ReadOnlyObservableCollection<LinkageViewModel> Linkages => linkages;
     private readonly ReadOnlyObservableCollection<LinkageViewModel> linkages;
     
-    private readonly SourceCache<CalibrationViewModel, Guid> calibrationsSource = new(x => x.Guid);
+    private readonly SourceCache<CalibrationViewModel, Guid> calibrationsSource = new(x => x.Id);
     public ReadOnlyObservableCollection<CalibrationViewModel> Calibrations => calibrations;
     private readonly ReadOnlyObservableCollection<CalibrationViewModel> calibrations;
     
-    private readonly SourceCache<SetupViewModel, Guid> setupsSource = new(x => x.Guid);
+    private readonly SourceCache<SetupViewModel, Guid> setupsSource = new(x => x.Id);
     public ReadOnlyObservableCollection<SetupViewModel> Setups => setups;
     private readonly ReadOnlyObservableCollection<SetupViewModel> setups;
     
-    private readonly SourceCache<SessionViewModel, Guid> sessionsSourceCache = new(x => x.Guid);
+    private readonly SourceCache<SessionViewModel, Guid> sessionsSourceCache = new(x => x.Id);
     public ReadOnlyObservableCollection<SessionViewModel> Sessions => sessions;
     private readonly ReadOnlyObservableCollection<SessionViewModel> sessions;
     
@@ -223,7 +223,7 @@ public partial class MainViewModel : ViewModelBase
             var linkagesList = await databaseService.GetLinkagesAsync();
             foreach (var linkage in linkagesList)
             {
-                linkagesSource.AddOrUpdate(new LinkageViewModel(linkage));
+                linkagesSource.AddOrUpdate(new LinkageViewModel(linkage, true));
             }
         }
         catch (Exception e)
@@ -259,7 +259,7 @@ public partial class MainViewModel : ViewModelBase
             var calibrationsList = await databaseService.GetCalibrationsAsync();
             foreach (var calibration in calibrationsList)
             {
-                calibrationsSource.AddOrUpdate(new CalibrationViewModel(calibration, CalibrationMethods));
+                calibrationsSource.AddOrUpdate(new CalibrationViewModel(calibration, CalibrationMethods, true));
             }
         }
         catch (Exception e)
@@ -300,6 +300,7 @@ public partial class MainViewModel : ViewModelBase
                 var svm = new SetupViewModel(
                     setup,
                     board?.Id,
+                    true,
                     linkagesSource,
                     calibrationsSource);
                 svm.PropertyChanged += (sender, args) =>
@@ -328,7 +329,7 @@ public partial class MainViewModel : ViewModelBase
             var sessionList = await databaseService.GetSessionsAsync();
             foreach (var session in sessionList)
             {
-                sessionsSourceCache.AddOrUpdate(new SessionViewModel(session));
+                sessionsSourceCache.AddOrUpdate(new SessionViewModel(session, true));
             }
         }
         catch (Exception e)
@@ -413,8 +414,8 @@ public partial class MainViewModel : ViewModelBase
 
         try
         {
-            var linkage = new Linkage(null, "new linkage", 65, 180, 65, "");
-            var lvm = new LinkageViewModel(linkage)
+            var linkage = new Linkage(Guid.NewGuid(), "new linkage", 65, 180, 65, "");
+            var lvm = new LinkageViewModel(linkage, false)
             {
                 IsDirty = true
             };
@@ -439,13 +440,13 @@ public partial class MainViewModel : ViewModelBase
         try
         {
             // If this linkage was not yet saved into the database, we just need to remove it from Linkages.
-            if (linkage.Id is null)
+            if (!linkage.IsInDatabase)
             {
                 linkagesSource.Remove(linkage);
                 return;
             }
             
-            await databaseService.DeleteLinkageAsync(linkage.Id.Value);
+            await databaseService.DeleteLinkageAsync(linkage.Id);
             linkagesSource.Remove(linkage);
         }
         catch (Exception e)
@@ -467,9 +468,9 @@ public partial class MainViewModel : ViewModelBase
             {
                 inputs.Add(input, 0.0);
             }
-            var calibration = new Calibration(null, "new calibration", methodId!.Value, inputs);
+            var calibration = new Calibration(Guid.NewGuid(), "new calibration", methodId, inputs);
 
-            var cvm = new CalibrationViewModel(calibration, CalibrationMethods)
+            var cvm = new CalibrationViewModel(calibration, CalibrationMethods, false)
             {
                 IsDirty = true
             };
@@ -496,13 +497,13 @@ public partial class MainViewModel : ViewModelBase
         try
         {
             // If this calibration was not yet saved into the database, we just need to remove it from Calibrations.
-            if (calibration.Id is null)
+            if (!calibration.IsInDatabase)
             {
                 calibrationsSource.Remove(calibration);
                 return;
             }
             
-            await databaseService.DeleteCalibrationAsync(calibration.Id.Value);
+            await databaseService.DeleteCalibrationAsync(calibration.Id);
             calibrationsSource.Remove(calibration);
         }
         catch (Exception e)
@@ -519,9 +520,9 @@ public partial class MainViewModel : ViewModelBase
         try
         {
             var setup = new Setup(
-                null,
+                Guid.NewGuid(),
                 "new setup",
-                Linkages[0].Id!.Value,
+                Linkages[0].Id,
                 null,
                 null);
 
@@ -534,7 +535,7 @@ public partial class MainViewModel : ViewModelBase
                 newSetupsBoardId = datastoreBoardId;
             }
             
-            var svm = new SetupViewModel(setup, newSetupsBoardId, linkagesSource, calibrationsSource)
+            var svm = new SetupViewModel(setup, newSetupsBoardId, false, linkagesSource, calibrationsSource)
             {
                 IsDirty = true
             };
@@ -562,7 +563,7 @@ public partial class MainViewModel : ViewModelBase
         try
         {
             // If this setup was not yet saved into the database, we just need to remove it from Setups.
-            if (setup.Id is null)
+            if (!setup.IsInDatabase)
             {
                 setupsSource.Remove(setup);
                 return;
@@ -574,7 +575,7 @@ public partial class MainViewModel : ViewModelBase
                 await databaseService.PutBoardAsync(new Board(setup.BoardId, null));
             }
             
-            await databaseService.DeleteSetupAsync(setup.Id.Value);
+            await databaseService.DeleteSetupAsync(setup.Id);
             setupsSource.Remove(setup);
         }
         catch (Exception e)

@@ -16,11 +16,11 @@ public partial class SetupViewModel : ViewModelBase
 {
     private Setup setup;
     private string? originalBoardId;
-    public Guid Guid { get; } = Guid.NewGuid();
+    public bool IsInDatabase;
 
     #region Observable properties
     
-    [ObservableProperty] private Guid? id;
+    [ObservableProperty] private Guid id;
     [ObservableProperty] private bool isDirty;
     
     [ObservableProperty]
@@ -61,7 +61,7 @@ public partial class SetupViewModel : ViewModelBase
     private void EvaluateDirtiness()
     {
         IsDirty =
-            Id == null ||
+            !IsInDatabase ||
             Name != setup.Name ||
             BoardId != originalBoardId ||
             SelectedLinkage == null || SelectedLinkage.Id != setup.LinkageId ||
@@ -73,11 +73,12 @@ public partial class SetupViewModel : ViewModelBase
     
     #region Constructors
     
-    public SetupViewModel(Setup setup, string? boardId,
+    public SetupViewModel(Setup setup, string? boardId, bool fromDatabase,
         SourceCache<LinkageViewModel, Guid> linkagesSourceCache,
         SourceCache<CalibrationViewModel, Guid> calibrationsSourceCache)
     {
         this.setup = setup;
+        IsInDatabase = fromDatabase;
         Id = setup.Id;
         BoardId = originalBoardId = boardId;
         
@@ -108,7 +109,6 @@ public partial class SetupViewModel : ViewModelBase
     private async Task Save()
     {
         Debug.Assert(SelectedLinkage != null, nameof(SelectedLinkage) + " != null");
-        Debug.Assert(SelectedLinkage.Id != null, "SelectedLinkage.Id != null");
         Debug.Assert(!(SelectedFrontCalibration == null && SelectedRearCalibration == null), 
             nameof(SelectedFrontCalibration) + " and " + nameof(SelectedRearCalibration) + " can't be both null");
         
@@ -120,10 +120,11 @@ public partial class SetupViewModel : ViewModelBase
             var newSetup = new Setup(
                 Id,
                 Name ?? $"setup #{Id}",
-                SelectedLinkage.Id.Value,
+                SelectedLinkage.Id,
                 SelectedFrontCalibration?.Id,
                 SelectedRearCalibration?.Id);
             Id = await databaseService.PutSetupAsync(newSetup);
+            IsInDatabase = true;
             
             // If this setup was already associated with another board, clear that association.
             // Do not delete the board though, it might be picked up later.

@@ -32,7 +32,7 @@ public class Linkage : Synchronizable
     // Uninitialized non-nullable property warnings are suppressed with null! initializer.
     public Linkage() { }
     
-    public Linkage(Guid? id, string name, double headAngle, double? maxFrontStroke, double? maxRearStroke, string? rawData)
+    public Linkage(Guid id, string name, double headAngle, double? maxFrontStroke, double? maxRearStroke, string? rawData)
     {
         Id = id;
         Name = name;
@@ -46,7 +46,7 @@ public class Linkage : Synchronizable
     [PrimaryKey]
     [Column("id")]
     [IgnoreMember]
-    public Guid? Id { get; set; } = Guid.NewGuid();
+    public Guid Id { get; set; } = Guid.NewGuid();
 
     [JsonPropertyName("name")]
     [Column("name")]

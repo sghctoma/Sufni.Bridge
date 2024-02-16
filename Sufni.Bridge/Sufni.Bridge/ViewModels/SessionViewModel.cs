@@ -13,13 +13,14 @@ namespace Sufni.Bridge.ViewModels;
 public partial class SessionViewModel : ViewModelBase
 {
     private Session session;
-    public Guid Guid { get; } = Guid.NewGuid();
+    public bool IsInDatabase;
 
     #region Private methods
 
     private void EvaluateDirtiness()
     {
         IsDirty =
+            !IsInDatabase ||
             Name != session.Name ||
             Description != session.Description;
     }
@@ -28,7 +29,7 @@ public partial class SessionViewModel : ViewModelBase
 
     #region Observable properties
 
-    [ObservableProperty] private Guid? id;
+    [ObservableProperty] private Guid id;
     [ObservableProperty] private string? name;
     [ObservableProperty] private string? description;
     [ObservableProperty] private DateTime? timestamp;
@@ -59,9 +60,10 @@ public partial class SessionViewModel : ViewModelBase
 
     #region Constructors
 
-    public SessionViewModel(Session session)
+    public SessionViewModel(Session session, bool fromDatabase)
     {
         this.session = session;
+        IsInDatabase = fromDatabase;
         Reset();
     }
 
@@ -106,6 +108,7 @@ public partial class SessionViewModel : ViewModelBase
             await databaseService.PutSessionAsync(newSession);
             session = newSession;
             IsDirty = false;
+            IsInDatabase = true;
         }
         catch (Exception e)
         {

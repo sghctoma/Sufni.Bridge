@@ -13,7 +13,7 @@ public class Setup : Synchronizable
     {
     }
 
-    public Setup(Guid? id, string name, Guid linkageId, Guid? frontCalibrationId, Guid? rearCalibrationId)
+    public Setup(Guid id, string name, Guid linkageId, Guid? frontCalibrationId, Guid? rearCalibrationId)
     {
         Id = id;
         Name = name;
@@ -25,7 +25,7 @@ public class Setup : Synchronizable
     [JsonPropertyName("id")]
     [PrimaryKey]
     [Column("id")]
-    public Guid? Id { get; set; } = Guid.NewGuid();
+    public Guid Id { get; set; } = Guid.NewGuid();
 
     [JsonPropertyName("name")]
     [Column("name")]

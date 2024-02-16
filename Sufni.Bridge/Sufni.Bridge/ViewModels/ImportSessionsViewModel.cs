@@ -85,7 +85,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
     #region Constructors
 
     // This is only here for the designer
-    public ImportSessionsViewModel() : this(new SourceCache<SessionViewModel, Guid>(m => m.Guid)) {}
+    public ImportSessionsViewModel() : this(new SourceCache<SessionViewModel, Guid>(m => m.Id)) {}
     
     public ImportSessionsViewModel(SourceCache<SessionViewModel, Guid> sessions)
     {
@@ -185,7 +185,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
                 }
                 
                 // Get front Calibration
-                var fcal = await databaseService.GetCalibrationAsync(setup.FrontCalibrationId);
+                var fcal = await databaseService.GetCalibrationAsync(setup.FrontCalibrationId ?? Guid.Empty);
                 var fmethod = fcal is null ? null : await databaseService.GetCalibrationMethodAsync(fcal.MethodId);
                 if (fcal is not null && fmethod == null)
                 {
@@ -193,7 +193,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
                 }
                 
                 // Get rear Calibration
-                var rcal = await databaseService.GetCalibrationAsync(setup.RearCalibrationId);
+                var rcal = await databaseService.GetCalibrationAsync(setup.RearCalibrationId ?? Guid.Empty);
                 var rmethod = rcal is null ? null : await databaseService.GetCalibrationMethodAsync(rcal.MethodId);
                 if (rcal is not null && rmethod == null)
                 {
@@ -205,7 +205,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
                 var psst = await telemetryFile.GeneratePsstAsync(linkage, fcal, rcal);
                 
                 var session = new Session(
-                    id: null,
+                    id: Guid.NewGuid(),
                     name: telemetryFile.Name,
                     description: telemetryFile.Description,
                     setup: SelectedSetup!.Value,
@@ -216,7 +216,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
 
                 await databaseService.PutSessionAsync(session);
                 
-                var svm = new SessionViewModel(session);
+                var svm = new SessionViewModel(session, true);
                 sessions.AddOrUpdate(svm);
                 
                 telemetryFile.OnImported();

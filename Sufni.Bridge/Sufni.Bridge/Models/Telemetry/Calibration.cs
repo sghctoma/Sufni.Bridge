@@ -22,7 +22,7 @@ public class Calibration : Synchronizable
     // Uninitialized non-nullable property warnings are suppressed with null! initializer.
     public Calibration() { }
     
-    public Calibration(Guid? id, string name, Guid methodId, Dictionary<string, double> inputs)
+    public Calibration(Guid id, string name, Guid methodId, Dictionary<string, double> inputs)
     {
         Id = id;
         Name = name;
@@ -34,7 +34,7 @@ public class Calibration : Synchronizable
     [PrimaryKey]
     [Column("id")]
     [IgnoreMember]
-    public Guid? Id { get; set; } = Guid.NewGuid();
+    public Guid Id { get; set; } = Guid.NewGuid();
 
     [JsonPropertyName("name")]
     [Column("name")]

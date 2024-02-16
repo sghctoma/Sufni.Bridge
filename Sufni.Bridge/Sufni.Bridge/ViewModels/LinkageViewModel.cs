@@ -14,14 +14,14 @@ namespace Sufni.Bridge.ViewModels;
 public partial class LinkageViewModel : ViewModelBase
 {
     private Linkage linkage;
-    public Guid Guid { get; } = Guid.NewGuid();
+    public bool IsInDatabase;
 
     #region Private methods
 
     private void EvaluateDirtiness()
     {
         IsDirty =
-            Id == null ||
+            !IsInDatabase ||
             Name != linkage.Name ||
             Math.Abs(HeadAngle - linkage.HeadAngle) > 0.00001 ||
             Math.Abs((FrontStroke ?? 0.0) - (linkage.MaxFrontStroke ?? 0.0)) > 0.00001 ||
@@ -33,7 +33,7 @@ public partial class LinkageViewModel : ViewModelBase
     
     #region Observable properties
 
-    [ObservableProperty] private Guid? id;
+    [ObservableProperty] private Guid id;
     [ObservableProperty] private bool isDirty;
     
     [ObservableProperty]
@@ -65,9 +65,10 @@ public partial class LinkageViewModel : ViewModelBase
 
     #region Constructors
 
-    public LinkageViewModel(Linkage linkage)
+    public LinkageViewModel(Linkage linkage, bool fromDatabase)
     {
         this.linkage = linkage;
+        IsInDatabase = fromDatabase;
         Id = linkage.Id;
         LeverageRatioData = linkage.LeverageRatioData;
         Reset();
@@ -107,6 +108,7 @@ public partial class LinkageViewModel : ViewModelBase
                 RearStroke,
                 LeverageRatioData!.ToString());
             Id = await databaseService.PutLinkageAsync(newLinkage);
+            IsInDatabase = true;
             linkage = newLinkage;
             
             SaveCommand.NotifyCanExecuteChanged();

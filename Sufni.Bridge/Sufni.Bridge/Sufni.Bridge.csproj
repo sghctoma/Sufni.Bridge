@@ -16,7 +16,7 @@
     </ItemGroup>
 
    <ItemGroup>
-    <PackageReference Include="Adletec.Sonic" Version="1.4.1" />
+    <PackageReference Include="Adletec.Sonic" Version="1.5.0" />
     <PackageReference Include="Avalonia" Version="11.0.7" />
     <PackageReference Include="Avalonia.Controls.ItemsRepeater" Version="11.0.7" />
     <PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0.10" />

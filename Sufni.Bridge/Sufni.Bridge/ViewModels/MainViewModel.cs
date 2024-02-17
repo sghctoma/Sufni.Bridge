@@ -135,6 +135,7 @@ public partial class MainViewModel : ViewModelBase
 
     public MainViewModel()
     {
+        SafeAreaPadding = App.Current?.SafeAreaPadding;
         databaseService = App.Current?.Services?.GetService<IDatabaseService>();
         ImportSessionsPage = new ImportSessionsViewModel(sessionsSourceCache);
 

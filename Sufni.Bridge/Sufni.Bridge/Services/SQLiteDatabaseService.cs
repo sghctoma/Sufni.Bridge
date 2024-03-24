@@ -85,7 +85,7 @@ public class SqLiteDatabaseService : IDatabaseService
     
     public SqLiteDatabaseService()
     {
-        var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "sst");
+        var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Sufni.Bridge");
         if (!Directory.Exists(dir))
         {
             Directory.CreateDirectory(dir);

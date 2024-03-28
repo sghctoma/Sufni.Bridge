@@ -36,9 +36,11 @@ public class SufniPlotView : TemplatedControl
 
         var plot = Plot!.Plot;
         
-        plot.Style.Background(Color.FromHex("#15191C"), Color.FromHex("#20262B"));
-        plot.Style.ColorGrids(Color.FromHex("#505558"), Color.FromHex("#505558"));
-        plot.Style.ColorAxes(Color.FromHex("#505558"));
+        plot.FigureBackground.Color = Color.FromHex("#15191C");
+        plot.DataBackground.Color = Color.FromHex("#20262B");
+        plot.Grid.MajorLineColor = Color.FromHex("#505558");
+        plot.Grid.MinorLineColor = Color.FromHex("#505558");
+        plot.Axes.Color(Color.FromHex("#505558"));
         
         plot.Axes.Title.Label.FontSize = 14;
         plot.Axes.Title.Label.OffsetY = 20;

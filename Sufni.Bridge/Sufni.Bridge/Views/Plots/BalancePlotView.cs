@@ -54,6 +54,7 @@ public class BalancePlotView : SufniTelemetryPlotView
         
         var front = Plot!.Plot.Add.Scatter(balance.FrontTravel, balance.FrontVelocity);
         front.LineStyle.IsVisible = false;
+        front.MarkerStyle.Outline.Color = FrontColor.WithOpacity();
         front.MarkerStyle.Fill.Color = FrontColor.WithOpacity();
         front.MarkerStyle.Size = 5;
 
@@ -64,6 +65,7 @@ public class BalancePlotView : SufniTelemetryPlotView
         
         var rear = Plot!.Plot.Add.Scatter(balance.RearTravel, balance.RearVelocity);
         rear.LineStyle.IsVisible = false;
+        rear.MarkerStyle.Outline.Color = RearColor.WithOpacity();
         rear.MarkerStyle.Fill.Color = RearColor.WithOpacity();
         rear.MarkerStyle.Size = 5;
         

@@ -7,8 +7,6 @@ namespace Sufni.Bridge.Models;
 [Table("board")]
 public class Board : Synchronizable
 {
-    private readonly string id = null!;
-
     // Just to satisfy sql-net-pcl's parameterless constructor requirement
     // Uninitialized non-nullable property warnings are suppressed with null! initializer.
     public Board() { }
@@ -22,11 +20,7 @@ public class Board : Synchronizable
     [JsonPropertyName("id")]
     [PrimaryKey]
     [Column("id")]
-    public string Id
-    {
-        get => id.ToLower();
-        private init => id = value;
-    }
+    public string Id { get; set; } = null!;
 
     [JsonPropertyName("setup_id")]
     [Column("setup_id")]

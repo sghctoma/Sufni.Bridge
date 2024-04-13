@@ -53,7 +53,7 @@ public class RawTelemetryData
         foreach (var r in records.Skip(1))
         {
             if (r.ForkAngle <= frontBaseline) continue;
-            if (r.ForkAngle > 0x0050)
+            if (r.ForkAngle - frontBaseline > 0x0050)
             {
                 frontError = r.ForkAngle;
             }
@@ -64,7 +64,7 @@ public class RawTelemetryData
         foreach (var r in records.Skip(1))
         {
             if (r.ShockAngle <= rearBaseline) continue;
-            if (r.ShockAngle > 0x0050)
+            if (r.ShockAngle - rearBaseline > 0x0050)
             {
                 rearError = r.ShockAngle;
             }

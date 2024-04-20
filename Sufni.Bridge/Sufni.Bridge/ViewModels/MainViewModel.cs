@@ -188,6 +188,7 @@ public partial class MainViewModel : ViewModelBase
             }
 
             UploadSessionsCommand.NotifyCanExecuteChanged();
+            SyncCommand.NotifyCanExecuteChanged();
             SelectPage();
         };
         
@@ -651,7 +652,12 @@ public partial class MainViewModel : ViewModelBase
         DateFilterVisible = !DateFilterVisible;
     }
     
-    [RelayCommand]
+    private bool CanSync()
+    {
+        return SettingsPage.IsRegistered;
+    }
+    
+    [RelayCommand(CanExecute = nameof(CanSync))]
     private async Task Sync()
     {
         var httpApiService = App.Current?.Services?.GetService<IHttpApiService>();

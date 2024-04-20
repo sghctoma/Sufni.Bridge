@@ -15,7 +15,15 @@ internal class HttpApiService : IHttpApiService
     #region Private fields
 
     private string? serverUrl;
-    private readonly HttpClient client = new();
+    private readonly HttpClient client = new(Handler);
+    
+    private static readonly HttpClientHandler Handler = new()
+    {
+        UseCookies = false,
+#if  DEBUG
+        ServerCertificateCustomValidationCallback = (_, _, _, _) => true
+#endif
+    };
     
     #endregion
     

@@ -43,7 +43,7 @@ public class SufniPlotView : TemplatedControl
         plot.Axes.Color(Color.FromHex("#505558"));
         
         plot.Axes.Title.Label.FontSize = 14;
-        plot.Axes.Title.Label.OffsetY = 20;
+        plot.Axes.Title.Label.OffsetY = 5;
         plot.Axes.Title.Label.ForeColor = Color.FromHex("#D0D0D0");
         
         plot.Axes.Left.Label.ForeColor = Color.FromHex("#D0D0D0");

@@ -71,9 +71,9 @@ public class SufniTelemetryPlotView : SufniPlotView
         text.Label.OffsetY = yoffset;
 
         var line = Plot!.Plot.Add.Crosshair(0, position);
-        line.VerticalLineIsVisible = false;
-        line.LineStyle.Pattern = LinePattern.Dotted;
-        line.LineStyle.Color = Color.FromHex("#dddddd");
+        line.VerticalLine.IsVisible = false;
+        line.LinePattern = LinePattern.Dotted;
+        line.LineColor = Color.FromHex("#dddddd");
     }
 
     protected virtual void OnTelemetryChanged(TelemetryData telemetryData) { }

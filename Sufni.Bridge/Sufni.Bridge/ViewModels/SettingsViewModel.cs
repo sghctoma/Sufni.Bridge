@@ -87,11 +87,11 @@ public partial class SettingsViewModel : ViewModelBase
         // NOTE: We could also check if token is still valid based on time (this would of course
         //       not consider revoked keys, etc.)
         var newRefreshToken = refreshToken;
+        IsRegistered = true;
 
         try
         {
             newRefreshToken = await httpApiService.RefreshTokensAsync(url, refreshToken);
-            IsRegistered = true;
         }
         catch (HttpRequestException e)
         {

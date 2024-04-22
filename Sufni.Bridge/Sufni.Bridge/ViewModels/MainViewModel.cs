@@ -20,7 +20,6 @@ public partial class MainViewModel : ViewModelBase
 {
     #region Observable properties
 
-    [ObservableProperty] private Thickness? safeAreaPadding;
     [ObservableProperty] private ImportSessionsViewModel importSessionsPage;
     [ObservableProperty] private SettingsViewModel settingsPage = new();
     [ObservableProperty] private int selectedIndex;
@@ -135,7 +134,6 @@ public partial class MainViewModel : ViewModelBase
 
     public MainViewModel()
     {
-        SafeAreaPadding = App.Current?.SafeAreaPadding;
         databaseService = App.Current?.Services?.GetService<IDatabaseService>();
         ImportSessionsPage = new ImportSessionsViewModel(sessionsSourceCache);
 

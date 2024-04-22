@@ -39,9 +39,7 @@
         
     </UserControl.Styles>
 
-    <Border Padding="{Binding SafeAreaPadding}">
     <Panel>
-        
         <!-- Menu tab -->
         <TabControl TabStripPlacement="Bottom" Margin="5,0,5,5"
                     SelectedIndex="{Binding SelectedIndex}">
@@ -121,6 +119,4 @@
         </Border>
         
     </Panel>
-    </Border>
-
 </UserControl>

@@ -48,12 +48,14 @@ public partial class App : Application
                 desktop.MainWindow.DataContext = new MainViewModel();
                 break;
             case ISingleViewApplicationLifetime singleViewPlatform:
-                singleViewPlatform.MainView = new MainView();
+                singleViewPlatform.MainView = new MainView
+                {
+                    DataContext = new MainViewModel()
+                };
                 singleViewPlatform.MainView.Loaded += (_, _) =>
                 {
                     var topLevel = TopLevel.GetTopLevel(singleViewPlatform.MainView);
                     fileService.SetTarget(topLevel);
-                    singleViewPlatform.MainView!.DataContext = new MainViewModel();
                 };
                 break;
         }

@@ -17,18 +17,19 @@
         <vm:MainViewModel />
     </Design.DataContext>
 
-    <Grid RowDefinitions="auto * auto auto 40" ColumnDefinitions="*">
+    <Grid RowDefinitions="auto * auto auto 59" ColumnDefinitions="*">
 
         <!-- Filter -->
         <Grid Grid.Row="0" Grid.Column="0" Margin="6,5,6,0"
-              RowDefinitions="35 auto" ColumnDefinitions="*">
+              RowDefinitions="39 auto" ColumnDefinitions="*">
  
             <!-- Search box -->
             <TextBox Grid.Row="0"
                      Watermark="Search ..."
-                     Text="{Binding SessionSearchText}"/>
+                     Text="{Binding SessionSearchText}"
+                     VerticalContentAlignment="Center"/>
             <Button Classes="embedded" Grid.Row="0"
-                    HorizontalAlignment="Right" Margin="0,0,24,0" Width="30"
+                    HorizontalAlignment="Right" Margin="0,0,30,0" Width="30"
                     IsVisible="{Binding SessionSearchText, Converter={x:Static ObjectConverters.IsNotNull}}"
                     Command="{Binding ClearSearchTextCommand}"
                     CommandParameter="session">
@@ -51,40 +52,42 @@
             </Button>
             
             <!-- Date pickers -->
-            <Grid Grid.Row="1" Grid.Column="0" Margin="1,0,1,0"
-                  ColumnDefinitions="* auto *" RowDefinitions="auto"
-                  Background="#20262b"
-                  IsVisible="{Binding DateFilterVisible}">
+            <Border Grid.Row="1" Grid.Column="0"
+                    Background="#20262b"
+                    IsVisible="{Binding DateFilterVisible}">
+                <Grid Margin="1,0,1,0"
+                      ColumnDefinitions="* auto *" RowDefinitions="auto">
+                    
+                    <!-- From -->
+                    <CalendarDatePicker Grid.Column="0" Margin="5"
+                                        HorizontalAlignment="Stretch"
+                                        SelectedDate="{Binding DateFilterFrom}"
+                                        DisplayDateEnd="{Binding DateFilterTo}"/>
+                    <Button Classes="embedded" Grid.Column="0" HorizontalAlignment="Right"
+                            Width="30" Margin="0,0,20,0"
+                            IsVisible="{Binding DateFilterFrom, Converter={x:Static ObjectConverters.IsNotNull}}"
+                            Command="{Binding ClearDateFilterCommand}"
+                            CommandParameter="from">
+                        <Image Source="{SvgImage /Assets/fa-xmark.svg}" />
+                    </Button>
                 
-                <!-- From -->
-                <CalendarDatePicker Grid.Column="0" Margin="5"
-                            HorizontalAlignment="Stretch"
-                            SelectedDate="{Binding DateFilterFrom}"
-                            DisplayDateEnd="{Binding DateFilterTo}"/>
-                <Button Classes="embedded" Grid.Column="0" HorizontalAlignment="Right"
-                        Width="30" Margin="0,0,20,0"
-                        IsVisible="{Binding DateFilterFrom, Converter={x:Static ObjectConverters.IsNotNull}}"
-                        Command="{Binding ClearDateFilterCommand}"
-                        CommandParameter="from">
-                    <Image Source="{SvgImage /Assets/fa-xmark.svg}" />
-                </Button>
+                    <!-- Arrow -->
+                    <TextBlock Grid.Column="1" VerticalAlignment="Center" Text="→" />
                 
-                <!-- Arrow -->
-                <TextBlock Grid.Column="1" VerticalAlignment="Center" Text="→" />
-                
-                <!-- To -->
-                <CalendarDatePicker Grid.Row="0" Grid.Column="2"  Margin="5"
-                            HorizontalAlignment="Stretch"
-                            SelectedDate="{Binding DateFilterTo}"
-                            DisplayDateStart="{Binding DateFilterFrom}"/>
-                <Button Classes="embedded" Grid.Column="2" HorizontalAlignment="Right"
-                        Width="30" Margin="0,0,20,0"
-                        IsVisible="{Binding DateFilterTo, Converter={x:Static ObjectConverters.IsNotNull}}"
-                        Command="{Binding ClearDateFilterCommand}"
-                        CommandParameter="to">
-                    <Image Source="{SvgImage /Assets/fa-xmark.svg}" />
-                </Button>
-            </Grid>
+                    <!-- To -->
+                    <CalendarDatePicker Grid.Row="0" Grid.Column="2"  Margin="5"
+                                        HorizontalAlignment="Stretch"
+                                        SelectedDate="{Binding DateFilterTo}"
+                                        DisplayDateStart="{Binding DateFilterFrom}"/>
+                    <Button Classes="embedded" Grid.Column="2" HorizontalAlignment="Right"
+                            Width="30" Margin="0,0,20,0"
+                            IsVisible="{Binding DateFilterTo, Converter={x:Static ObjectConverters.IsNotNull}}"
+                            Command="{Binding ClearDateFilterCommand}"
+                            CommandParameter="to">
+                        <Image Source="{SvgImage /Assets/fa-xmark.svg}" />
+                    </Button>
+                </Grid>
+            </Border>
         </Grid>
 
         <!-- List of Sessions -->
@@ -118,7 +121,7 @@
                                 </ia:EventTriggerBehavior>
                             </i:Interaction.Behaviors>
 
-                            <Grid ColumnDefinitions="*" RowDefinitions="300 300 auto auto 250 250 auto 120 auto 40"
+                            <Grid ColumnDefinitions="*" RowDefinitions="300 300 auto auto 250 250 auto 120 auto auto"
                                   MinWidth="300" HorizontalAlignment="Stretch">
 
                                 <!-- Front travel -->
@@ -201,19 +204,25 @@
                                 <!-- Save, Reset and Delete buttons -->
                                 <Grid Grid.Row="9" Grid.Column="0"
                                       Margin="0,5,0,5"
-                                      ColumnDefinitions="* auto auto" RowDefinitions="30">
+                                      ColumnDefinitions="* auto auto" RowDefinitions="39">
                                     <Button Grid.Row="0" Grid.Column="0"
                                             Command="{Binding SaveCommand}"
                                             HorizontalAlignment="Stretch"
                                             VerticalAlignment="Stretch"
                                             HorizontalContentAlignment="Center"
+                                            VerticalContentAlignment="Center"
+                                            Margin="2,0,10,0"
                                             Content="Save" />
-                                    <Button Grid.Row="0" Grid.Column="1" VerticalAlignment="Stretch"
+                                    <Button Grid.Row="0" Grid.Column="1"
+                                            Width="39" Height="39"
+                                            Margin="0,0,5,0"
                                             Command="{Binding ResetCommand}">
                                         <Image Width="16" Height="16"
                                                Source="{SvgImage /Assets/fa-rotate-left.svg}" />
                                     </Button>
-                                    <Button Grid.Row="0" Grid.Column="2" VerticalAlignment="Stretch"
+                                    <Button Grid.Row="0" Grid.Column="2"
+                                            Width="39" Height="39"
+                                            Margin="0,0,2,0"
                                             Command="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).DeleteSessionCommand}"
                                             CommandParameter="{Binding Id}">
                                         <Image Width="16" Height="16"
@@ -238,17 +247,18 @@
                                 ClearErrorsCommand="{Binding ClearErrorsCommand}"
                                 ErrorMessages="{Binding ErrorMessages}"
                                 IsVisible="{Binding ErrorMessages.Count}" />
-
+        
         <Grid Grid.Row="4" Grid.Column="0"
-              ColumnDefinitions="* auto" RowDefinitions="40">
+              ColumnDefinitions="* auto auto" RowDefinitions="*"
+              Margin="5,7,13,13">
+            
             <!-- Upload Sessions -->
-            <Button Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
-                    Margin="5,7,5,3"
-                    HorizontalAlignment="Stretch"
+            <Button Grid.Row="0" Grid.Column="2"
+                    VerticalAlignment="Stretch"
+                    VerticalContentAlignment="Center"
                     HorizontalContentAlignment="Center"
-                    Command="{Binding UploadSessionsCommand}">
-                <Image Height="22" Source="{SvgImage /Assets/fa-cloud-arrow-up.svg}" />
-            </Button>
+                    Content="upload sessions"
+                    Command="{Binding UploadSessionsCommand}" />
         </Grid>
         
         <!-- Progress ring --> 

@@ -16,12 +16,13 @@
         <vm:MainViewModel />
     </Design.DataContext>
 
-    <Grid RowDefinitions="40 * auto auto 40" ColumnDefinitions="*">
+    <Grid RowDefinitions="44 * auto auto 59" ColumnDefinitions="*">
 
         <!-- Search box -->
         <TextBox Grid.Row="0" Grid.Column="0" Margin="6,5,6,0"
                  Watermark="Search ..."
-                 Text="{Binding LinkageSearchText}"/>
+                 Text="{Binding LinkageSearchText}"
+                 VerticalContentAlignment="Center"/>
         <Button Classes="embedded" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right"
                 Width="30" Margin="6,5,15,0" 
                 IsVisible="{Binding LinkageSearchText, Converter={x:Static ObjectConverters.IsNotNull}}"
@@ -58,7 +59,7 @@
                                 </ia:EventTriggerBehavior>
                             </i:Interaction.Behaviors>
 
-                            <Grid ColumnDefinitions="auto *" RowDefinitions="auto auto auto auto 250 auto 40"
+                            <Grid ColumnDefinitions="auto *" RowDefinitions="auto auto auto auto 250 auto auto"
                                   MinWidth="300" HorizontalAlignment="Stretch">
 
                                 <!-- Head angle -->
@@ -66,8 +67,10 @@
                                        VerticalAlignment="Center"
                                        Content="Head angle (°): " />
                                 <NumericUpDown Grid.Row="0" Grid.Column="1"
+                                               Height="39"
                                                Margin="2"
                                                HorizontalAlignment="Stretch"
+                                               VerticalContentAlignment="Center"
                                                Minimum="45"
                                                Maximum="90"
                                                Increment="0.5"
@@ -79,6 +82,8 @@
                                        Content="Front stroke (mm): " />
                                 <NumericUpDown Grid.Row="1" Grid.Column="1"
                                                Margin="2"
+                                               Height="39"
+                                               VerticalContentAlignment="Center"
                                                HorizontalAlignment="Stretch"
                                                Minimum="0"
                                                Maximum="300"
@@ -91,6 +96,8 @@
                                        Content="Rear stroke (mm): " />
                                 <NumericUpDown Grid.Row="2" Grid.Column="1"
                                                Margin="2"
+                                               Height="39"
+                                               VerticalContentAlignment="Center"
                                                HorizontalAlignment="Stretch"
                                                Minimum="0"
                                                Maximum="200"
@@ -103,6 +110,9 @@
                                        Content="Leverage ratio data: " />
                                 <Button Grid.Row="3" Grid.Column="1"
                                         Command="{Binding OpenLeverageRatioFileCommand}"
+                                        Height="39"
+                                        Margin="1,0,1,0"
+                                        VerticalContentAlignment="Center"
                                         HorizontalAlignment="Stretch"
                                         HorizontalContentAlignment="Center"
                                         Content="..." />
@@ -116,23 +126,33 @@
                                                         ClearErrorsCommand="{Binding ClearErrorsCommand}"
                                                         ErrorMessages="{Binding ErrorMessages}"
                                                         IsVisible="{Binding ErrorMessages.Count}" />
-
+                                
                                 <!-- Save, Reset and Delete buttons -->
                                 <Grid Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2"
-                                      Margin="0,5,0,5"
-                                      ColumnDefinitions="* auto auto" RowDefinitions="30">
+                                      Margin="0,15,0,5"
+                                      ColumnDefinitions="* auto auto" RowDefinitions="39">
                                     <Button Grid.Row="0" Grid.Column="0"
                                             Command="{Binding SaveCommand}"
-                                            HorizontalAlignment="Stretch"
                                             VerticalAlignment="Stretch"
+                                            HorizontalAlignment="Stretch"
                                             HorizontalContentAlignment="Center"
-                                            Content="Save" />
-                                    <Button Grid.Row="0" Grid.Column="1" VerticalAlignment="Stretch"
+                                            VerticalContentAlignment="Center"
+                                            Margin="0,0,10,0"
+                                            Content="save" />
+                                    <Button Grid.Row="0" Grid.Column="1"
+                                            Width="39" Height="39"
+                                            Margin="0,0,5,0"
+                                            HorizontalContentAlignment="Center"
+                                            VerticalContentAlignment="Center"
                                             Command="{Binding ResetCommand}">
                                         <Image Width="16" Height="16"
                                                Source="{SvgImage /Assets/fa-rotate-left.svg}" />
                                     </Button>
-                                    <Button Grid.Row="0" Grid.Column="2" VerticalAlignment="Stretch"
+                                    <Button Grid.Row="0" Grid.Column="2"
+                                            Width="39" Height="39"
+                                            Margin="0,0,2,0"
+                                            HorizontalContentAlignment="Center"
+                                            VerticalContentAlignment="Center"
                                             Command="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).DeleteLinkageCommand}"
                                             CommandParameter="{Binding}">
                                         <Image Width="16" Height="16"
@@ -159,26 +179,27 @@
                                 ClearErrorsCommand="{Binding ClearErrorsCommand}"
                                 ErrorMessages="{Binding ErrorMessages}"
                                 IsVisible="{Binding ErrorMessages.Count}" />
-
+        
         <Grid Grid.Row="4" Grid.Column="0"
-              ColumnDefinitions="* auto" RowDefinitions="40">
+              ColumnDefinitions="* auto auto" RowDefinitions="*"
+              Margin="5,7,13,13">
 
-            <!-- Add new Linkage -->
-            <Button Grid.Row="0" Grid.Column="0"
-                     HorizontalAlignment="Stretch"
-                     Margin="5,7,1,3"
-                     Command="{Binding AddLinkageCommand}">
-                <Image Source="{SvgImage /Assets/fa-plus.svg}" />
-            </Button>
+            <!-- Add new -->
+            <Button Grid.Row="0" Grid.Column="1"
+                    VerticalAlignment="Stretch"
+                    VerticalContentAlignment="Center"
+                    HorizontalContentAlignment="Center"
+                    Margin="0,0,10,0"
+                    Command="{Binding AddLinkageCommand}"
+                    Content="create linkage"/>
             
             <!-- Sync -->
-            <Button Grid.Row="0" Grid.Column="1"
-                    Margin="1,7,5,3"
-                    HorizontalAlignment="Stretch"
+            <Button Grid.Row="0" Grid.Column="2"
+                    VerticalAlignment="Stretch"
+                    VerticalContentAlignment="Center"
                     HorizontalContentAlignment="Center"
-                    Command="{Binding SyncCommand}">
-                <Image Source="{SvgImage /Assets/fa-sync-alt.svg}" />
-            </Button>
+                    Content="synchronize"
+                    Command="{Binding SyncCommand}" />
         </Grid>
     </Grid>
 </UserControl>

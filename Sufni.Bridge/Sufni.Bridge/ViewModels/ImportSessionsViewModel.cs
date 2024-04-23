@@ -16,12 +16,6 @@ namespace Sufni.Bridge.ViewModels;
 
 public partial class ImportSessionsViewModel : ViewModelBase
 {
-    #region Public properties
-
-    public string ImportLabel => "Import Selected";
-
-    #endregion Public properties
-
     #region Observable properties
 
     public ObservableCollection<ITelemetryDataStore>? TelemetryDataStores { get; set; }

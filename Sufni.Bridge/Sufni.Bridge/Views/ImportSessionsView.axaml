@@ -16,12 +16,12 @@
         <vm:ImportSessionsViewModel />
     </Design.DataContext>
 
-    <Grid RowDefinitions="40 * auto auto 40" ColumnDefinitions="auto * auto">
+    <Grid RowDefinitions="44 * auto auto 59" ColumnDefinitions="auto * auto">
         
         <!-- Datastore selector -->
         <ComboBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
-                  Height="35"
                   Margin="6,5,2,0"
+                  VerticalAlignment="Stretch"
                   HorizontalAlignment="Stretch"
                   SelectedItem="{Binding SelectedDataStore}"
                   ItemsSource="{Binding TelemetryDataStores}">
@@ -41,7 +41,7 @@
         
         <Button Grid.Row="0" Grid.Column="2" 
                 Margin="0,5,6,0" 
-                Height="35" Width="35"
+                Height="39" Width="39"
                 HorizontalContentAlignment="Center" Content="..." 
                 BorderBrush="#505050"
                 Command="{Binding OpenDataStoreCommand}"/>
@@ -58,8 +58,7 @@
             <ItemsRepeater Classes="main" ItemsSource="{Binding TelemetryFiles}">
                 <ItemsRepeater.ItemTemplate>
                     <DataTemplate>
-                        <Expander HorizontalAlignment="Stretch"
-                                  IsExpanded="{Binding ShouldBeImported, Mode=OneWay}">
+                        <Expander HorizontalAlignment="Stretch" IsExpanded="False">
                             <Expander.Header>
                                 <StackPanel Orientation="Horizontal">
                                     <CheckBox HorizontalAlignment="Left"
@@ -107,10 +106,12 @@
 
         <!-- Import selected SST files -->
         <Button Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3"
-                Margin="5,7,5,3"
-                HorizontalAlignment="Stretch"
+                Margin="5,7,13,13"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Stretch"
                 HorizontalContentAlignment="Center"
-                Content="{Binding ImportLabel}"
+                VerticalContentAlignment="Center"
+                Content="import selected"
                 Command="{Binding ImportSessionsCommand}" />
         
         <!-- Progress ring --> 

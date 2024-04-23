@@ -19,10 +19,9 @@
         </Style>
         <Style Selector="TabItem">
             <Setter Property="Margin" Value="2 0 2 0" />
-            <Setter Property="MinHeight" Value="35" />
-            <Setter Property="Height" Value="35" />
+            <Setter Property="MinHeight" Value="44" />
+            <Setter Property="Height" Value="44" />
             <Setter Property="Padding" Value="5" />
-            <Setter Property="CornerRadius" Value="3" />
         </Style>
         <Style Selector="TabItem /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Height" Value="25" />

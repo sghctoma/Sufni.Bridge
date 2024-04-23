@@ -16,7 +16,7 @@ namespace Sufni.Bridge.Views
             
             var rm = BikeSetupsTabItem.Bounds.Width / 2 - 17;
             if (double.IsNaN(rm)) return;
-            MissingSetupNotification.Margin = new Thickness(0, 0, rm, 40);
+            MissingSetupNotification.Margin = new Thickness(0, 0, rm, 54);
         }
     }
 }

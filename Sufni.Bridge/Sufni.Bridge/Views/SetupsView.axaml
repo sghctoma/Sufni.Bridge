@@ -13,12 +13,13 @@
         <vm:MainViewModel />
     </Design.DataContext>
 
-    <Grid RowDefinitions="40 * auto auto 40" ColumnDefinitions="*">
+    <Grid RowDefinitions="44 * auto auto 59" ColumnDefinitions="*">
 
         <!-- Search box -->
         <TextBox Grid.Row="0" Grid.Column="0" Margin="6,5,6,0"
                  Watermark="Search ..."
-                 Text="{Binding SetupSearchText}"/>
+                 Text="{Binding SetupSearchText}"
+                 VerticalContentAlignment="Center"/>
         <Button Classes="embedded" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right"
                 Width="30" Margin="6,5,15,0" 
                 IsVisible="{Binding SetupSearchText, Converter={x:Static ObjectConverters.IsNotNull}}"
@@ -57,6 +58,8 @@
                                        Content="Board ID: " />
                                 <TextBox Grid.Row="0" Grid.Column="1"
                                          Margin="2"
+                                         Height="39"
+                                         VerticalContentAlignment="Center"
                                          HorizontalAlignment="Stretch"
                                          Text="{Binding BoardId}" />
 
@@ -66,6 +69,8 @@
                                        Content="Linkage: " />
                                 <ComboBox Grid.Row="1" Grid.Column="1"
                                           Margin="2"
+                                          Height="39"
+                                          VerticalContentAlignment="Center"
                                           HorizontalAlignment="Stretch"
                                           ItemsSource="{Binding Linkages}"
                                           SelectedItem="{Binding SelectedLinkage}">
@@ -82,6 +87,8 @@
                                        Content="Front calibration: " />
                                 <ComboBox Grid.Row="2" Grid.Column="1"
                                           Margin="2"
+                                          Height="39"
+                                          VerticalContentAlignment="Center"
                                           HorizontalAlignment="Stretch"
                                           ItemsSource="{Binding Calibrations}"
                                           SelectedItem="{Binding SelectedFrontCalibration}">
@@ -98,6 +105,8 @@
                                        Content="Rear calibration: " />
                                 <ComboBox Grid.Row="3" Grid.Column="1"
                                           Margin="2"
+                                          Height="39"
+                                          VerticalContentAlignment="Center"
                                           HorizontalAlignment="Stretch"
                                           ItemsSource="{Binding Calibrations}"
                                           SelectedItem="{Binding SelectedRearCalibration}">
@@ -115,22 +124,32 @@
                                                         ErrorMessages="{Binding ErrorMessages}"
                                                         IsVisible="{Binding ErrorMessages.Count}" />
 
-                                <!-- Save, Reset and Delete buttons -->
+                               <!-- Save, Reset and Delete buttons -->
                                 <Grid Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2"
-                                      Margin="0,5,0,5"
-                                      ColumnDefinitions="* auto auto" RowDefinitions="30">
+                                      Margin="0,15,0,5"
+                                      ColumnDefinitions="* auto auto" RowDefinitions="39">
                                     <Button Grid.Row="0" Grid.Column="0"
                                             Command="{Binding SaveCommand}"
-                                            HorizontalAlignment="Stretch"
                                             VerticalAlignment="Stretch"
+                                            HorizontalAlignment="Stretch"
                                             HorizontalContentAlignment="Center"
-                                            Content="Save" />
-                                    <Button Grid.Row="0" Grid.Column="1" VerticalAlignment="Stretch"
+                                            VerticalContentAlignment="Center"
+                                            Margin="2,0,10,0"
+                                            Content="save" />
+                                    <Button Grid.Row="0" Grid.Column="1"
+                                            Width="39" Height="39"
+                                            Margin="0,0,5,0"
+                                            HorizontalContentAlignment="Center"
+                                            VerticalContentAlignment="Center"
                                             Command="{Binding ResetCommand}">
                                         <Image Width="16" Height="16"
                                                Source="{SvgImage /Assets/fa-rotate-left.svg}" />
                                     </Button>
-                                    <Button Grid.Row="0" Grid.Column="2" VerticalAlignment="Stretch"
+                                    <Button Grid.Row="0" Grid.Column="2"
+                                            Width="39" Height="39"
+                                            Margin="0,0,2,0"
+                                            HorizontalContentAlignment="Center"
+                                            VerticalContentAlignment="Center"
                                             Command="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).DeleteSetupCommand}"
                                             CommandParameter="{Binding}">
                                         <Image Width="16" Height="16"
@@ -159,24 +178,25 @@
                                 IsVisible="{Binding ErrorMessages.Count}" />
 
         <Grid Grid.Row="4" Grid.Column="0"
-              ColumnDefinitions="* auto" RowDefinitions="40">
+              ColumnDefinitions="* auto auto" RowDefinitions="*"
+              Margin="5,7,13,13">
 
-            <!-- Add new Linkage -->
-            <Button Grid.Row="0" Grid.Column="0"
-                    HorizontalAlignment="Stretch"
-                    Margin="5,7,1,3"
-                    Command="{Binding AddSetupCommand}">
-                <Image Source="{SvgImage /Assets/fa-plus.svg}" />
-            </Button>
+            <!-- Add new -->
+            <Button Grid.Row="0" Grid.Column="1"
+                    VerticalAlignment="Stretch"
+                    VerticalContentAlignment="Center"
+                    HorizontalContentAlignment="Center"
+                    Margin="0,0,10,0"
+                    Command="{Binding AddSetupCommand}"
+                    Content="create setup"/>
             
             <!-- Sync -->
-            <Button Grid.Row="0" Grid.Column="1"
-                    Margin="1,7,5,3"
-                    HorizontalAlignment="Stretch"
+            <Button Grid.Row="0" Grid.Column="2"
+                    VerticalAlignment="Stretch"
+                    VerticalContentAlignment="Center"
                     HorizontalContentAlignment="Center"
-                    Command="{Binding SyncCommand}">
-                <Image Source="{SvgImage /Assets/fa-sync-alt.svg}" />
-            </Button>
+                    Content="synchronize"
+                    Command="{Binding SyncCommand}" />
         </Grid>
     </Grid>
 </UserControl>

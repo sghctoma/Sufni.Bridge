@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Avalonia;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DynamicData;
@@ -20,6 +19,7 @@ public partial class MainViewModel : ViewModelBase
 {
     #region Observable properties
 
+    [ObservableProperty] private bool databaseLoaded;
     [ObservableProperty] private ImportSessionsViewModel importSessionsPage;
     [ObservableProperty] private SettingsViewModel settingsPage = new();
     [ObservableProperty] private int selectedIndex;
@@ -352,6 +352,8 @@ public partial class MainViewModel : ViewModelBase
         await LoadBoardsAsync();
         await LoadSetupsAsync();
         await LoadSessionsAsync();
+
+        DatabaseLoaded = true;
     }
 
     private async Task ReloadAfterSync()

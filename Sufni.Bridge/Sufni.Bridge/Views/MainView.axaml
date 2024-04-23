@@ -62,7 +62,7 @@
             </TabItem>
             <TabItem Name="SettingsTabItem" Content="{Binding SettingsPage}">
                 <TabItem.Header>
-                    <Image Source="{SvgImage /Assets/cog.svg}" Width="26" />
+                    <Image Source="{SvgImage /Assets/fa-user.svg}" Width="20" />
                 </TabItem.Header>
             </TabItem>
             <TabItem Name="LinkagesTabItem">

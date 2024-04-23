@@ -45,7 +45,7 @@ internal class TelemetryDataStoreService : ITelemetryDataStoreService
                 IsReady: true,
                 DriveType: DriveType.Removable,
                 DriveFormat: "FAT32",
-            } && File.Exists($"{drive.RootDirectory}/.boardid"))
+            } && File.Exists($"{drive.RootDirectory}/BOARDID"))
             .ToArray();
         var known = DataStores
             .Where(ds => ds is MassStorageTelemetryDataStore)

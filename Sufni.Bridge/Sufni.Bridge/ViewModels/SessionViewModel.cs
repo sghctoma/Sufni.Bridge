@@ -60,6 +60,12 @@ public partial class SessionViewModel : ViewModelBase
 
     #region Constructors
 
+    public SessionViewModel()
+    {
+        session = new Session();
+        IsInDatabase = false;
+    }
+    
     public SessionViewModel(Session session, bool fromDatabase)
     {
         this.session = session;
@@ -130,5 +136,36 @@ public partial class SessionViewModel : ViewModelBase
         Timestamp = DateTimeOffset.FromUnixTimeSeconds(session.Timestamp ?? 0).DateTime;
     }
 
+    [RelayCommand]
+    private void Select()
+    {
+        var mainViewModel = App.Current?.Services?.GetService<MainViewModel>();
+        Debug.Assert(mainViewModel != null, nameof(mainViewModel) + " != null");
+
+        mainViewModel.CurrentView = this;
+    }
+    
+    [RelayCommand]
+    private void OpenMainMenu()
+    {
+        var mainViewModel = App.Current?.Services?.GetService<MainViewModel>();
+        var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
+        Debug.Assert(mainViewModel != null, nameof(mainViewModel) + " != null");
+        Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
+
+        mainViewModel.CurrentView = mainPagesViewModel;
+    }
+
+    [RelayCommand]
+    private async Task Delete()
+    {
+        var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
+        Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
+
+        await mainPagesViewModel.DeleteSetupCommand.ExecuteAsync(this);
+        
+        OpenMainMenu();
+    }
+    
     #endregion
 }

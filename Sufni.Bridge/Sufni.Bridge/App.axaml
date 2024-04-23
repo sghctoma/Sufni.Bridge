@@ -15,6 +15,7 @@
         <StyleInclude Source="/Views/NotificationsControl.axaml" />
         <StyleInclude Source="/Views/Plots/SufniPlotView.axaml" />
         <StyleInclude Source="/Views/Plots/VelocityView.axaml" />
+        <StyleInclude Source="/Views/CommonButtonLine.axaml" />
         <StyleInclude Source="avares://AvaloniaProgressRing/Styles/ProgressRing.xaml"/>
         
         <!-- Global styles for TextBlock -->

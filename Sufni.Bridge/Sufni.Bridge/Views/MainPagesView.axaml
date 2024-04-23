@@ -1,0 +1,121 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Sufni.Bridge.ViewModels"
+             xmlns:v="clr-namespace:Sufni.Bridge.Views"
+             mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
+             x:Class="Sufni.Bridge.Views.MainPagesView"
+             x:DataType="vm:MainPagesViewModel"
+             Background="#15191c">
+    <Design.DataContext>
+        <vm:MainPagesViewModel />
+    </Design.DataContext>
+    
+    <UserControl.Styles>
+        <Style Selector="TabControl">
+            <Setter Property="Padding" Value="0" />
+        </Style>
+        <Style Selector="TabItem">
+            <Setter Property="Margin" Value="2 0 2 0" />
+            <Setter Property="MinHeight" Value="44" />
+            <Setter Property="Height" Value="44" />
+            <Setter Property="Padding" Value="5" />
+        </Style>
+        <Style Selector="TabItem /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Height" Value="25" />
+            <Setter Property="Margin" Value="0,10,0,0" />
+        </Style>
+        <Style Selector="TabItem:disabled /template/ Border">
+            <Setter Property="Opacity" Value="0.3" />
+        </Style>
+        <Style Selector="TabItem:selected /template/ Border#PART_SelectedPipe">
+            <Setter Property="Height" Value="2" />
+            <Setter Property="VerticalAlignment" Value="Top" />
+            <Setter Property="Background" Value="#0078D7" />
+        </Style>
+        
+    </UserControl.Styles>
+
+    <Panel>
+        <!-- Menu tab -->
+        <TabControl TabStripPlacement="Bottom" Margin="5,0,5,5"
+                    SelectedIndex="{Binding SelectedIndex}">
+            <TabControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Rows="1" Margin="3,0,3,0" HorizontalAlignment="Stretch" />
+                </ItemsPanelTemplate>
+            </TabControl.ItemsPanel>
+            <TabItem Name="ImportTabItem"
+                     Content="{Binding ImportSessionsPage}">
+                <TabItem.Header>
+                    <Image Source="{SvgImage /Assets/fa-file-import.svg}" Width="18" />
+                </TabItem.Header>
+            </TabItem>
+            <TabItem Name="SessionTabItem">
+                <TabItem.Header>
+                    <Image Source="{SvgImage /Assets/fa-chart-line.svg}" Width="20" />
+                </TabItem.Header>
+                <v:SessionsView />
+            </TabItem>
+            <TabItem Name="SettingsTabItem" Content="{Binding SettingsPage}">
+                <TabItem.Header>
+                    <Image Source="{SvgImage /Assets/fa-user.svg}" Width="20" />
+                </TabItem.Header>
+            </TabItem>
+            <TabItem Name="LinkagesTabItem">
+                <TabItem.Header>
+                    <Image Source="{SvgImage /Assets/leverage-ratio.svg}" Width="20" />
+                </TabItem.Header>
+                <v:LinkagesView />
+            </TabItem>
+            <TabItem Name="CalibrationsTabItem"
+                     IsEnabled="{Binding HasCalibrationMethods}">
+                <TabItem.Header>
+                    <Image Source="{SvgImage /Assets/fa-ruler.svg}" Width="24" />
+                </TabItem.Header>
+                <v:CalibrationsView />
+            </TabItem>
+            <TabItem Name="BikeSetupsTabItem">
+                <TabItem.IsEnabled>
+                    <MultiBinding Converter="{x:Static BoolConverters.And}">
+                        <Binding Path="HasCalibrations" />
+                        <Binding Path="HasLinkages" />
+                    </MultiBinding>
+                </TabItem.IsEnabled>
+                <TabItem.Header>
+                    <Image Source="{SvgImage /Assets/fa-person-mountainbiking.svg}" Width="24" />
+                </TabItem.Header>
+                <v:SetupsView />
+            </TabItem>
+        </TabControl>
+        
+        <!-- Missing bike setup notification -->
+        <Border Name="MissingSetupNotification"
+                CornerRadius="5" Height="70" Width="160"
+                VerticalAlignment="Bottom" HorizontalAlignment="Right" ZIndex="10"
+                Background="#6f312d">
+            <Border.IsVisible>
+                <MultiBinding Converter="{x:Static BoolConverters.And}">
+                    <Binding Path="DatabaseLoaded" />
+                    <Binding Path="IsImportSessionsPageSelected" />
+                    <Binding Path="ImportSessionsPage.SelectedDataStore" Converter="{x:Static ObjectConverters.IsNotNull}" />
+                    <Binding Path="ImportSessionsPage.SelectedSetup" Converter="{x:Static ObjectConverters.IsNull}" />
+                </MultiBinding>
+            </Border.IsVisible>
+            <StackPanel>
+                <TextBlock
+                    Foreground="#d0d0d0"
+                    Margin="5,5,5,5"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    TextWrapping="Wrap"
+                    Text="Bike setup not found for this DAQ identifier.&#x0a;Create one here." />
+                <Path Data="M 0,0 L 10,10 L 20,0"
+                      HorizontalAlignment="Right" Margin="0,6,15,0"
+                      Fill="#6f312d" />
+            </StackPanel>
+        </Border>
+        
+    </Panel>
+</UserControl>

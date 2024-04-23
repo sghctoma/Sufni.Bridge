@@ -73,6 +73,15 @@ public partial class SetupViewModel : ViewModelBase
     
     #region Constructors
     
+    public SetupViewModel()
+    {
+        setup = new Setup();
+        Id = setup.Id;
+        BoardId = originalBoardId = boardId;
+        linkages = new ReadOnlyObservableCollection<LinkageViewModel>([]);
+        calibrations = new ReadOnlyObservableCollection<CalibrationViewModel>([]);
+    }
+    
     public SetupViewModel(Setup setup, string? boardId, bool fromDatabase,
         SourceCache<LinkageViewModel, Guid> linkagesSourceCache,
         SourceCache<CalibrationViewModel, Guid> calibrationsSourceCache)
@@ -172,6 +181,37 @@ public partial class SetupViewModel : ViewModelBase
         {
             ErrorMessages.Add($"Setup could not be reset: {e.Message}");
         }
+    }
+    
+    [RelayCommand]
+    private void Select()
+    {
+        var mainViewModel = App.Current?.Services?.GetService<MainViewModel>();
+        Debug.Assert(mainViewModel != null, nameof(mainViewModel) + " != null");
+
+        mainViewModel.CurrentView = this;
+    }
+    
+    [RelayCommand]
+    private void OpenMainMenu()
+    {
+        var mainViewModel = App.Current?.Services?.GetService<MainViewModel>();
+        var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
+        Debug.Assert(mainViewModel != null, nameof(mainViewModel) + " != null");
+        Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
+
+        mainViewModel.CurrentView = mainPagesViewModel;
+    }
+
+    [RelayCommand]
+    private async Task Delete()
+    {
+        var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
+        Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
+
+        await mainPagesViewModel.DeleteSetupCommand.ExecuteAsync(this);
+        
+        OpenMainMenu();
     }
 
     #endregion

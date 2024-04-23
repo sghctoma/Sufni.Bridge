@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -65,6 +66,13 @@ public partial class LinkageViewModel : ViewModelBase
 
     #region Constructors
 
+    public LinkageViewModel()
+    {
+        linkage = new Linkage();
+        IsInDatabase = false;
+        Reset();
+    }
+    
     public LinkageViewModel(Linkage linkage, bool fromDatabase)
     {
         this.linkage = linkage;
@@ -113,6 +121,8 @@ public partial class LinkageViewModel : ViewModelBase
             
             SaveCommand.NotifyCanExecuteChanged();
             ResetCommand.NotifyCanExecuteChanged();
+            
+            OpenMainMenu();
         }
         catch (Exception e)
         {
@@ -162,6 +172,45 @@ public partial class LinkageViewModel : ViewModelBase
         {
             ErrorMessages.Add($"Leverage ratio file could not be read: {e.Message}");
         }
+    }
+    
+    [RelayCommand]
+    private void Select()
+    {
+        var mainViewModel = App.Current?.Services?.GetService<MainViewModel>();
+        Debug.Assert(mainViewModel != null, nameof(mainViewModel) + " != null");
+
+        mainViewModel.CurrentView = this;
+    }
+    
+    [RelayCommand]
+    private void OpenMainMenu()
+    {
+        var mainViewModel = App.Current?.Services?.GetService<MainViewModel>();
+        var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
+        Debug.Assert(mainViewModel != null, nameof(mainViewModel) + " != null");
+        Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
+
+        mainViewModel.CurrentView = mainPagesViewModel;
+    }
+
+    private bool CanDelete()
+    {
+        var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
+        Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
+        
+        return !mainPagesViewModel.Setups.Any(s => s.SelectedLinkage != null && s.SelectedLinkage.Id == Id);
+    }
+
+    [RelayCommand(CanExecute = nameof(CanDelete))]
+    private async Task Delete()
+    {
+        var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
+        Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
+
+        await mainPagesViewModel.DeleteLinkageCommand.ExecuteAsync(this);
+        
+        OpenMainMenu();
     }
     
     #endregion

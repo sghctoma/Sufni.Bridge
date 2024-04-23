@@ -133,6 +133,13 @@ public partial class CalibrationViewModel : ViewModelBase
 
     #region Constructors
 
+    public CalibrationViewModel()
+    {
+        CalibrationMethods = new ObservableCollection<CalibrationMethod>();
+        calibration = new Calibration();
+        Reset();
+    }
+    
     public CalibrationViewModel(Calibration calibration, ObservableCollection<CalibrationMethod> calibrationMethods, bool fromDatabase)
     {
         this.calibration = calibration;
@@ -177,6 +184,8 @@ public partial class CalibrationViewModel : ViewModelBase
             }
             IsDirty = false;
             IsInDatabase = true;
+
+            OpenMainMenu();
         }
         catch (Exception e)
         {
@@ -203,6 +212,47 @@ public partial class CalibrationViewModel : ViewModelBase
         {
             ErrorMessages.Add($"Calibration could not be reset: {e.Message}");
         }
+    }
+
+    [RelayCommand]
+    private void Select()
+    {
+        var mainViewModel = App.Current?.Services?.GetService<MainViewModel>();
+        Debug.Assert(mainViewModel != null, nameof(mainViewModel) + " != null");
+
+        mainViewModel.CurrentView = this;
+    }
+    
+    [RelayCommand]
+    private void OpenMainMenu()
+    {
+        var mainViewModel = App.Current?.Services?.GetService<MainViewModel>();
+        var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
+        Debug.Assert(mainViewModel != null, nameof(mainViewModel) + " != null");
+        Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
+
+        mainViewModel.CurrentView = mainPagesViewModel;
+    }
+
+    private bool CanDelete()
+    {
+        var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
+        Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
+        
+        return !mainPagesViewModel.Setups.Any(s =>
+            (s.SelectedFrontCalibration != null && s.SelectedFrontCalibration.Id == Id) ||
+            (s.SelectedRearCalibration != null && s.SelectedRearCalibration.Id == Id));
+    }
+
+    [RelayCommand(CanExecute = nameof(CanDelete))]
+    private async Task Delete()
+    {
+        var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
+        Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
+
+        await mainPagesViewModel.DeleteCalibrationCommand.ExecuteAsync(this);
+        
+        OpenMainMenu();
     }
 
     #endregion

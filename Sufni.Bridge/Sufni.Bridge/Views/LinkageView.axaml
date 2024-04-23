@@ -1,0 +1,113 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Sufni.Bridge.ViewModels"
+             xmlns:v="clr-namespace:Sufni.Bridge.Views"
+             xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
+             xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
+             xmlns:plots="clr-namespace:Sufni.Bridge.Views.Plots"
+             mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
+             x:Class="Sufni.Bridge.Views.LinkageView"
+             x:DataType="vm:LinkageViewModel"
+             Background="#15191c">
+
+    <Design.DataContext>
+        <vm:LinkageViewModel />
+    </Design.DataContext>
+
+    <!-- Attach command to Loaded event -->
+    <i:Interaction.Behaviors>
+        <ia:EventTriggerBehavior EventName="Loaded">
+            <InvokeCommandAction Command="{Binding SetLeverageRatioDataCommand}" />
+        </ia:EventTriggerBehavior>
+    </i:Interaction.Behaviors>
+    
+    <Grid ColumnDefinitions="auto *" RowDefinitions="auto auto auto auto auto * auto auto"
+          Margin="20,20,20,20"
+          MinWidth="300" HorizontalAlignment="Stretch">
+        
+        <!-- Name -->
+        <Label Grid.Row="0" Grid.Column="0"
+               VerticalAlignment="Center"
+               Content="Name: " />
+        <TextBox Grid.Row="0" Grid.Column="1"
+                       Height="39"
+                       Margin="2"
+                       HorizontalAlignment="Stretch"
+                       VerticalContentAlignment="Center"
+                       Text="{Binding Name}" />
+        
+        <!-- Head angle -->
+        <Label Grid.Row="1" Grid.Column="0"
+               VerticalAlignment="Center"
+               Content="Head angle (°): " />
+        <NumericUpDown Grid.Row="1" Grid.Column="1"
+                       Height="39"
+                       Margin="2"
+                       HorizontalAlignment="Stretch"
+                       VerticalContentAlignment="Center"
+                       Minimum="45"
+                       Maximum="90"
+                       Increment="0.5"
+                       Value="{Binding HeadAngle}" />
+
+        <!-- Front stroke -->
+        <Label Grid.Row="2" Grid.Column="0"
+               VerticalAlignment="Center"
+               Content="Front stroke (mm): " />
+        <NumericUpDown Grid.Row="2" Grid.Column="1"
+                       Margin="2"
+                       Height="39"
+                       VerticalContentAlignment="Center"
+                       HorizontalAlignment="Stretch"
+                       Minimum="0"
+                       Maximum="300"
+                       Increment="10"
+                       Value="{Binding FrontStroke}" />
+
+        <!-- Rear stroke -->
+        <Label Grid.Row="3" Grid.Column="0"
+               VerticalAlignment="Center"
+               Content="Rear stroke (mm): " />
+        <NumericUpDown Grid.Row="3" Grid.Column="1"
+                       Margin="2"
+                       Height="39"
+                       VerticalContentAlignment="Center"
+                       HorizontalAlignment="Stretch"
+                       Minimum="0"
+                       Maximum="200"
+                       Increment="2.5"
+                       Value="{Binding RearStroke}" />
+
+        <!-- Leverage ratio -->
+        <Label Grid.Row="4" Grid.Column="0"
+               VerticalAlignment="Center"
+               Content="Leverage ratio data: " />
+        <Button Grid.Row="4" Grid.Column="1"
+                Command="{Binding OpenLeverageRatioFileCommand}"
+                Height="39"
+                Margin="1,0,1,0"
+                VerticalContentAlignment="Center"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Center"
+                Content="..." />
+        <plots:LeverageRatioPlotView Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2"
+                                     IsHitTestVisible="False"
+                                     LevarageRatioData="{Binding LeverageRatioData}" />
+
+        <!-- Error messages for Linkage instance -->
+        <v:ErrorMessagesControl Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2"
+                                Margin="0,5, 0, 0"
+                                ClearErrorsCommand="{Binding ClearErrorsCommand}"
+                                ErrorMessages="{Binding ErrorMessages}"
+                                IsVisible="{Binding ErrorMessages.Count}" />
+
+        <!-- Back, Save, Reset and Delete buttons -->
+        <v:CommonButtonLine Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2"
+                            OpenMainMenuCommand="{Binding OpenMainMenuCommand}"
+                            SaveCommand="{Binding SaveCommand}"
+                            ResetCommand="{Binding ResetCommand}"
+                            DeleteCommand="{Binding DeleteCommand}"/>
+    </Grid>
+</UserControl>

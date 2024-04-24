@@ -15,102 +15,130 @@
     <Design.DataContext>
         <vm:SessionViewModel />
     </Design.DataContext>
+    
+    <UserControl.Styles>
+        <Style Selector="TabItem">
+            <Setter Property="FontSize" Value="14" />
+        </Style>
+        <Style Selector="TabItem:disabled /template/ Border">
+            <Setter Property="Opacity" Value="0.3" />
+        </Style>
+        <Style Selector="TabItem:selected /template/ Border#PART_SelectedPipe">
+            <Setter Property="Height" Value="2" />
+            <Setter Property="Background" Value="#0078D7" />
+        </Style>
+    </UserControl.Styles>
 
-    <!-- Attach command to Loaded event -->
-    <i:Interaction.Behaviors>
-        <ia:EventTriggerBehavior EventName="Loaded">
-            <InvokeCommandAction Command="{Binding LoadPsstCommand}" />
-        </ia:EventTriggerBehavior>
-    </i:Interaction.Behaviors>
+    <Grid RowDefinitions="59 * auto auto">
+        
+        <TextBox Grid.Row="0"
+                 Margin="10, 10, 10, 10"
+                   Text="{Binding Name}"
+                   HorizontalAlignment="Stretch"
+                   VerticalContentAlignment="Center"/>
+        
+        <TabControl Grid.Row="1">
 
-    <ScrollViewer>
-        <Grid ColumnDefinitions="*" RowDefinitions="300 300 auto auto 250 250 auto 120 auto auto"
-              Margin="20,20,20,20"
-              MinWidth="300" HorizontalAlignment="Stretch">
+            <!-- Ensure that the SufniTelemetryPlotViews' Telemetry property is set -->
+            <i:Interaction.Behaviors>
+                <ia:EventTriggerBehavior EventName="Loaded">
+                    <InvokeCommandAction Command="{Binding LoadPsstCommand}" />
+                </ia:EventTriggerBehavior>
+            </i:Interaction.Behaviors>
+            
+            <TabControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Rows="1" HorizontalAlignment="Stretch" />
+                </ItemsPanelTemplate>
+            </TabControl.ItemsPanel>
+            
+            <TabItem Header="Spring rate" HorizontalAlignment="Center">
+                <ScrollViewer>
+                    <Grid RowDefinitions="* *">
+                        <plots:TravelHistogramView Grid.Row="0"
+                                                   IsVisible="{Binding TelemetryData.Front.Present}"
+                                                   IsHitTestVisible="False"
+                                                   SuspensionType="Front"
+                                                   Telemetry="{Binding TelemetryData}" />
+                        <plots:TravelHistogramView Grid.Row="1"
+                                                   IsVisible="{Binding TelemetryData.Rear.Present}"
+                                                   IsHitTestVisible="False"
+                                                   SuspensionType="Rear"
+                                                   Telemetry="{Binding TelemetryData}" />
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+            <TabItem Header="Damping" HorizontalAlignment="Center">
+                <ScrollViewer>
+                    <Grid RowDefinitions="auto auto">
+                        <plots:VelocityView Grid.Row="0"
+                                            IsVisible="{Binding TelemetryData.Front.Present}"
+                                            IsHitTestVisible="False"
+                                            SuspensionType="Front"
+                                            Telemetry="{Binding TelemetryData}" />
+                        <plots:VelocityView Grid.Row="1"
+                                            IsVisible="{Binding TelemetryData.Rear.Present}"
+                                            IsHitTestVisible="False"
+                                            SuspensionType="Rear"
+                                            Telemetry="{Binding TelemetryData}" />
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+            <TabItem Header="Balance" HorizontalAlignment="Center">
+                <ScrollViewer>
+                    <Grid RowDefinitions="* *">
+                        <plots:BalancePlotView Grid.Row="0"
+                                               IsHitTestVisible="False"
+                                               BalanceType="Compression"
+                                               Telemetry="{Binding TelemetryData}">
+                            <plots:BalancePlotView.IsVisible>
+                                <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                    <Binding Path="TelemetryData"
+                                             Converter="{x:Static ObjectConverters.IsNotNull}" />
+                                    <Binding Path="TelemetryData.Front.Present" />
+                                    <Binding Path="TelemetryData.Rear.Present" />
+                                </MultiBinding>
+                            </plots:BalancePlotView.IsVisible>
+                        </plots:BalancePlotView>
+                        <plots:BalancePlotView Grid.Row="1"
+                                               IsHitTestVisible="False"
+                                               BalanceType="Rebound"
+                                               Telemetry="{Binding TelemetryData}">
+                            <plots:BalancePlotView.IsVisible>
+                                <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                    <Binding Path="TelemetryData"
+                                             Converter="{x:Static ObjectConverters.IsNotNull}" />
+                                    <Binding Path="TelemetryData.Front.Present" />
+                                    <Binding Path="TelemetryData.Rear.Present" />
+                                </MultiBinding>
+                            </plots:BalancePlotView.IsVisible>
+                        </plots:BalancePlotView>
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+            <TabItem Header="Notes" HorizontalAlignment="Center">
+                <TextBox Margin="2"
+                         VerticalAlignment="Stretch"
+                         HorizontalAlignment="Stretch"
+                         AcceptsReturn="True" TextWrapping="Wrap"
+                         Text="{Binding Description}" />
+            </TabItem>
+        </TabControl>
+        
+        <!-- Error messages for Session instance -->
+        <v:ErrorMessagesControl Grid.Row="2"
+                                Margin="0,5, 0, 0"
+                                ClearErrorsCommand="{Binding ClearErrorsCommand}"
+                                ErrorMessages="{Binding ErrorMessages}"
+                                IsVisible="{Binding ErrorMessages.Count}" />
 
-            <!-- Front travel -->
-            <plots:TravelHistogramView Grid.Row="0" Grid.Column="0"
-                                       IsVisible="{Binding TelemetryData.Front.Present}"
-                                       IsHitTestVisible="False"
-                                       SuspensionType="Front"
-                                       Telemetry="{Binding TelemetryData}" />
-
-            <!-- Rear travel -->
-            <plots:TravelHistogramView Grid.Row="1" Grid.Column="0"
-                                       IsVisible="{Binding TelemetryData.Rear.Present}"
-                                       IsHitTestVisible="False"
-                                       SuspensionType="Rear"
-                                       Telemetry="{Binding TelemetryData}" />
-
-            <!-- Front velocity -->
-            <plots:VelocityView Grid.Row="2" Grid.Column="0"
-                                IsVisible="{Binding TelemetryData.Front.Present}"
-                                IsHitTestVisible="False"
-                                SuspensionType="Front"
-                                Telemetry="{Binding TelemetryData}" />
-
-            <!-- Rear velocity -->
-            <plots:VelocityView Grid.Row="3" Grid.Column="0"
-                                IsVisible="{Binding TelemetryData.Rear.Present}"
-                                IsHitTestVisible="False"
-                                SuspensionType="Rear"
-                                Telemetry="{Binding TelemetryData}" />
-
-            <!-- Compression balance -->
-            <plots:BalancePlotView Grid.Row="4" Grid.Column="0"
-                                   IsHitTestVisible="False"
-                                   BalanceType="Compression"
-                                   Telemetry="{Binding TelemetryData}">
-                <plots:BalancePlotView.IsVisible>
-                    <MultiBinding Converter="{x:Static BoolConverters.And}">
-                        <Binding Path="TelemetryData"
-                                 Converter="{x:Static ObjectConverters.IsNotNull}" />
-                        <Binding Path="TelemetryData.Front.Present" />
-                        <Binding Path="TelemetryData.Rear.Present" />
-                    </MultiBinding>
-                </plots:BalancePlotView.IsVisible>
-            </plots:BalancePlotView>
-
-            <!-- Rebound balance -->
-            <plots:BalancePlotView Grid.Row="5" Grid.Column="0"
-                                   IsHitTestVisible="False"
-                                   BalanceType="Rebound"
-                                   Telemetry="{Binding TelemetryData}">
-                <plots:BalancePlotView.IsVisible>
-                    <MultiBinding Converter="{x:Static BoolConverters.And}">
-                        <Binding Path="TelemetryData"
-                                 Converter="{x:Static ObjectConverters.IsNotNull}" />
-                        <Binding Path="TelemetryData.Front.Present" />
-                        <Binding Path="TelemetryData.Rear.Present" />
-                    </MultiBinding>
-                </plots:BalancePlotView.IsVisible>
-            </plots:BalancePlotView>
-
-            <!-- Description -->
-            <TextBlock Grid.Row="6" Grid.Column="0"
-                       Padding="0,10,0,8"
-                       FontWeight="Black" Foreground="#d0d0d0"
-                       VerticalAlignment="Center" HorizontalAlignment="Center"
-                       Text="Description" />
-            <TextBox Grid.Row="7" Grid.Column="0"
-                     Margin="2"
-                     HorizontalAlignment="Stretch"
-                     AcceptsReturn="True" TextWrapping="Wrap"
-                     Text="{Binding Description}" />
-
-            <!-- Error messages for Calibration instance -->
-            <v:ErrorMessagesControl Grid.Row="8" Grid.Column="0"
-                                    Margin="0,5, 0, 0"
-                                    ClearErrorsCommand="{Binding ClearErrorsCommand}"
-                                    ErrorMessages="{Binding ErrorMessages}"
-                                    IsVisible="{Binding ErrorMessages.Count}" />
-
-            <!-- Back, Save, Reset and Delete buttons -->
-            <v:CommonButtonLine Grid.Row="9" Grid.Column="0"
-                                OpenMainMenuCommand="{Binding OpenMainMenuCommand}"
-                                SaveCommand="{Binding SaveCommand}"
-                                ResetCommand="{Binding ResetCommand}"
-                                DeleteCommand="{Binding DeleteCommand}"/>
-        </Grid>
-    </ScrollViewer>
+        <!-- Back, Save, Reset and Delete buttons -->
+        <v:CommonButtonLine Grid.Row="3"
+                            Margin="10,10,10,10"
+                            OpenMainMenuCommand="{Binding OpenMainMenuCommand}"
+                            SaveCommand="{Binding SaveCommand}"
+                            ResetCommand="{Binding ResetCommand}"
+                            DeleteCommand="{Binding DeleteCommand}"/>
+        
+    </Grid>
 </UserControl>

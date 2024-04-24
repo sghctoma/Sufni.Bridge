@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Avalonia;
 using ScottPlot;
 using Sufni.Bridge.Models.Telemetry;
@@ -21,6 +22,7 @@ public class SufniTelemetryPlotView : SufniPlotView
 
     public SufniTelemetryPlotView()
     {
+        // Populate the ScottPlot plot when the Telemetry property is set.
         PropertyChanged += (_, e) =>
         {
             if (e.NewValue is null || Plot is null) return;
@@ -35,6 +37,19 @@ public class SufniTelemetryPlotView : SufniPlotView
             }
 
             Plot.Refresh();
+        };
+        
+        // When previously not displayed plots are loaded (e.g. when they are on a TabItem
+        // we have just switched to), the Telemetry property is already set (it's static),
+        // but we still need to populate the ScottPlot plot.
+        Loaded += (sender, _) =>
+        {
+            Debug.Assert(Plot != null, nameof(Plot) + " != null");
+
+            if (sender is not SufniTelemetryPlotView { Telemetry: not null } sufniTelemetryPlotView) return;
+
+            Plot.Plot.Clear();
+            OnTelemetryChanged(sufniTelemetryPlotView.Telemetry);
         };
     }
 

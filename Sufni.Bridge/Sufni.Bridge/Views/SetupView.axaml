@@ -20,7 +20,7 @@
         <!-- Name -->
         <Label Grid.Row="0" Grid.Column="0"
                VerticalAlignment="Center"
-               Content="Name: " />
+               Content="Setup: " />
         <TextBox Grid.Row="0" Grid.Column="1"
                  Height="39"
                  Margin="2"
@@ -60,7 +60,7 @@
         <!-- Front Calibration -->
         <Label Grid.Row="3" Grid.Column="0"
                VerticalAlignment="Center"
-               Content="Front calibration: " />
+               Content="Front cal.: " />
         <ComboBox Grid.Row="3" Grid.Column="1"
                   Margin="2"
                   Height="39"
@@ -78,7 +78,7 @@
         <!-- Rear Calibration -->
         <Label Grid.Row="4" Grid.Column="0"
                VerticalAlignment="Center"
-               Content="Rear calibration: " />
+               Content="Rear cal.: " />
         <ComboBox Grid.Row="4" Grid.Column="1"
                   Margin="2"
                   Height="39"

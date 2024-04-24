@@ -82,11 +82,9 @@ public class VelocityHistogramView : SufniTelemetryPlotView
         base.OnTelemetryChanged(telemetryData);
 
         Plot!.Plot.Axes.Title.Label.Text = SuspensionType == SuspensionType.Front
-            ? "Front velocity histogram"
-            : "Rear velocity histogram";
-        Plot!.Plot.Layout.Fixed(new PixelPadding(60, 5, 40, 40));
-        Plot!.Plot.Axes.Left.Label.Text = "Speed (mm/s)";
-        Plot!.Plot.Axes.Bottom.Label.Text = "Time (%)";
+            ? "Front velocity histogram (time% / mm/s)"
+            : "Rear velocity histogram (time% / mm/s)";
+        Plot!.Plot.Layout.Fixed(new PixelPadding(40, 5, 40, 40));
 
         var data = telemetryData.CalculateVelocityHistogram(SuspensionType);
 

@@ -40,11 +40,9 @@ public class BalancePlotView : SufniTelemetryPlotView
         base.OnTelemetryChanged(telemetryData);
 
         Plot!.Plot.Axes.Title.Label.Text = BalanceType == BalanceType.Compression 
-            ? "Compression balance" 
-            : "Rebound balance";
-        Plot!.Plot.Layout.Fixed(new PixelPadding(60, 10, 40, 40));
-        Plot!.Plot.Axes.Bottom.Label.Text = "Travel (%)";
-        Plot!.Plot.Axes.Left.Label.Text = "Velocity (mm/s)";
+            ? "Compression balance (mm/s / travel%)" 
+            : "Rebound balance (mm/s / travel%)";
+        Plot!.Plot.Layout.Fixed(new PixelPadding(40, 10, 40, 40));
 
         var balance = telemetryData.CalculateBalance(BalanceType);
 

@@ -13,7 +13,7 @@
         <vm:CalibrationViewModel />
     </Design.DataContext>
 
-    <Grid ColumnDefinitions="auto *" RowDefinitions="auto auto auto auto auto"
+    <Grid ColumnDefinitions="auto *" RowDefinitions="auto auto auto auto * auto"
           Margin="20,20,20,20"
           MinWidth="300" HorizontalAlignment="Stretch">
         
@@ -80,7 +80,7 @@
                                 IsVisible="{Binding ErrorMessages.Count}" />
 
         <!-- Back, Save, Reset and Delete buttons -->
-        <v:CommonButtonLine Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2"
+        <v:CommonButtonLine Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2"
                             OpenMainMenuCommand="{Binding OpenMainMenuCommand}"
                             SaveCommand="{Binding SaveCommand}"
                             ResetCommand="{Binding ResetCommand}"

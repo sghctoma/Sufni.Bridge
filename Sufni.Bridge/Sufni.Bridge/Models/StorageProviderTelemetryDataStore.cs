@@ -8,7 +8,7 @@ namespace Sufni.Bridge.Models;
 
 public class StorageProviderTelemetryDataStore : ITelemetryDataStore
 {
-    private Task Initialization { get; }
+    public Task Initialization { get; }
     public string Name { get; }
     public string? BoardId { get; private set; }
     private IStorageFolder Folder { get; }

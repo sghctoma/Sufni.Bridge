@@ -154,7 +154,10 @@ public partial class ImportSessionsViewModel : ViewModelBase
         var folder = await filesService.OpenDataStoreFolderAsync();
         if (folder is null) return;
 
-        TelemetryDataStores.Add(new StorageProviderTelemetryDataStore(folder));
+        var dataStore = new StorageProviderTelemetryDataStore(folder);
+        await dataStore.Initialization;
+
+        TelemetryDataStores.Add(dataStore);
     }
 
     [RelayCommand(CanExecute = nameof(CanImportSessions))]

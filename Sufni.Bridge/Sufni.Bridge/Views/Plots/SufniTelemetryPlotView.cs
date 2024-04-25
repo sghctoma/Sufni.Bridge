@@ -62,11 +62,11 @@ public class SufniTelemetryPlotView : SufniPlotView
     protected void AddLabel(string content, double x, double y, int xoffset, int yoffset, Alignment alignment = Alignment.LowerLeft)
     {
         var text = Plot!.Plot.Add.Text(content, x, y);
-        text.Label.ForeColor = Color.FromHex("#fefefe");
-        text.Label.FontSize = 13;
-        text.Label.Alignment = alignment;
-        text.Label.OffsetX = xoffset;
-        text.Label.OffsetY = yoffset;
+        text.LabelFontColor = Color.FromHex("#fefefe");
+        text.LabelFontSize = 13;
+        text.LabelAlignment = alignment;
+        text.LabelOffsetX = xoffset;
+        text.LabelOffsetY = yoffset;
     }
     
     protected void AddLabelWithHorizontalLine(string content, double position, LabelLinePosition linePosition)
@@ -79,16 +79,13 @@ public class SufniTelemetryPlotView : SufniPlotView
         };
         
         var text = Plot!.Plot.Add.Text(content, Plot!.Plot.Axes.GetLimits().Right, position);
-        text.Label.ForeColor = Color.FromHex("#fefefe");
-        text.Label.FontSize = 13;
-        text.Label.Alignment = linePosition == LabelLinePosition.Above ? Alignment.UpperRight : Alignment.LowerRight;
-        text.Label.OffsetX = -10;
-        text.Label.OffsetY = yoffset;
-
-        var line = Plot!.Plot.Add.Crosshair(0, position);
-        line.VerticalLine.IsVisible = false;
-        line.LinePattern = LinePattern.Dotted;
-        line.LineColor = Color.FromHex("#dddddd");
+        text.LabelFontColor = Color.FromHex("#fefefe");
+        text.LabelFontSize = 13;
+        text.LabelAlignment = linePosition == LabelLinePosition.Above ? Alignment.UpperRight : Alignment.LowerRight;
+        text.LabelOffsetX = -10;
+        text.LabelOffsetY = yoffset;
+        
+        Plot!.Plot.Add.HorizontalLine(position, 1f, Color.FromHex("#dddddd"), LinePattern.Dotted);
     }
 
     protected virtual void OnTelemetryChanged(TelemetryData telemetryData) { }

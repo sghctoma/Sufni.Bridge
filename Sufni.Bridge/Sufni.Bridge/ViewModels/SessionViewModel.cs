@@ -162,7 +162,7 @@ public partial class SessionViewModel : ViewModelBase
         var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
         Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
 
-        await mainPagesViewModel.DeleteSetupCommand.ExecuteAsync(this);
+        await mainPagesViewModel.DeleteSessionCommand.ExecuteAsync(Id);
         
         OpenMainMenu();
     }

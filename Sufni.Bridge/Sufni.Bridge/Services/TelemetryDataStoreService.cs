@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Sufni.Bridge.Models;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -94,6 +95,27 @@ internal class TelemetryDataStoreService : ITelemetryDataStoreService
             DataStores.Add(ds); 
         }
     }
+
+    private async Task<List<StorageProviderTelemetryDataStore>> GetRemovedStorageProviders()
+    {
+        var storageProviderDatastores = DataStores
+            .OfType<StorageProviderTelemetryDataStore>()
+            .ToArray();
+        var toRemove = new List<StorageProviderTelemetryDataStore>();
+        foreach (var ds in storageProviderDatastores)
+        {
+            try
+            {
+                await ds.GetFiles();
+            }
+            catch (Exception)
+            {
+                toRemove.Add(ds);
+            }
+        }
+
+        return toRemove;
+    }
     
     public TelemetryDataStoreService()
     {
@@ -107,10 +129,15 @@ internal class TelemetryDataStoreService : ITelemetryDataStoreService
         GetMassStorageDatastores();
         var timer = new Timer(1000);
         timer.AutoReset = true;
-        timer.Elapsed += (_, _) =>
+        timer.Elapsed += async (_, _) =>
         {
+            var removedStorageProviders = await GetRemovedStorageProviders();
             lock (DataStoreLock)
             {
+                foreach (var ds in removedStorageProviders)
+                {
+                    DataStores.Remove(ds);
+                }
                 GetMassStorageDatastores();
             }
         };

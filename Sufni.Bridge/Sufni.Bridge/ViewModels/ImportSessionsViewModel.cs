@@ -8,6 +8,7 @@ using System.Collections.Specialized;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Diagnostics;
+using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
@@ -154,6 +155,16 @@ public partial class ImportSessionsViewModel : ViewModelBase
         var folder = await filesService.OpenDataStoreFolderAsync();
         if (folder is null) return;
 
+        var massStorages = TelemetryDataStores.OfType<MassStorageTelemetryDataStore>()
+            .Select(ds => ds.DriveInfo.RootDirectory.FullName)
+            .ToArray();
+        var folderLocalPath = folder.TryGetLocalPath();
+        if (massStorages.Contains(folderLocalPath))
+        {
+            Notifications.Add("Folder is already opened in mass-storage mode!");
+            return;
+        }
+        
         var dataStore = new StorageProviderTelemetryDataStore(folder);
         await dataStore.Initialization;
 

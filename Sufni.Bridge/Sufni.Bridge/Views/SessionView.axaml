@@ -52,7 +52,7 @@
                 </ItemsPanelTemplate>
             </TabControl.ItemsPanel>
             
-            <TabItem Header="Spring rate" HorizontalAlignment="Center">
+            <TabItem Header="Spring" HorizontalAlignment="Center">
                 <ScrollViewer>
                     <Grid RowDefinitions="* *">
                         <plots:TravelHistogramView Grid.Row="0"
@@ -68,7 +68,7 @@
                     </Grid>
                 </ScrollViewer>
             </TabItem>
-            <TabItem Header="Damping" HorizontalAlignment="Center">
+            <TabItem Header="Damper" HorizontalAlignment="Center">
                 <ScrollViewer>
                     <Grid RowDefinitions="auto auto">
                         <plots:VelocityView Grid.Row="0"

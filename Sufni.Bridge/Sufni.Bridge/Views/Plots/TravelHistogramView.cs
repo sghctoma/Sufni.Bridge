@@ -36,8 +36,8 @@ public class TravelHistogramView : SufniTelemetryPlotView
         base.OnTelemetryChanged(telemetryData);
 
         Plot!.Plot.Axes.Title.Label.Text = SuspensionType == SuspensionType.Front
-            ? "Front travel histogram (time% / mm)"
-            : "Rear travel histogram (time% / mm)";
+            ? "Front travel (time% / mm)"
+            : "Rear travel (time% / mm)";
         Plot!.Plot.Layout.Fixed(new PixelPadding(40, 10, 40, 40));
 
         var data = telemetryData.CalculateTravelHistogram(SuspensionType);

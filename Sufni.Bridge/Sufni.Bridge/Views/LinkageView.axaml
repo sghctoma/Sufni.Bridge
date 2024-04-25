@@ -83,7 +83,7 @@
         <!-- Leverage ratio -->
         <Label Grid.Row="4" Grid.Column="0"
                VerticalAlignment="Center"
-               Content="Leverage ratio data: " />
+               Content="Leverage data: " />
         <Button Grid.Row="4" Grid.Column="1"
                 Command="{Binding OpenLeverageRatioFileCommand}"
                 Height="39"

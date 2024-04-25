@@ -448,7 +448,8 @@ public class SqLiteDatabaseService : IDatabaseService
         session.Updated = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
         if (existing)
         {
-            await connection.UpdateAsync(session);
+            await connection.ExecuteAsync("UPDATE session SET name = ?, description = ? WHERE id = ?",
+                [session.Name, session.Description, session.Id]);
         }
         else
         {

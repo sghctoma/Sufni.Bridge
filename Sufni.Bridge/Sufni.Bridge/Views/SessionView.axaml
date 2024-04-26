@@ -16,44 +16,86 @@
         <vm:SessionViewModel />
     </Design.DataContext>
     
-    <UserControl.Styles>
-        <Style Selector="TabItem">
-            <Setter Property="FontSize" Value="14" />
-        </Style>
-        <Style Selector="TabItem:disabled /template/ Border">
-            <Setter Property="Opacity" Value="0.3" />
-        </Style>
-        <Style Selector="TabItem:selected /template/ Border#PART_SelectedPipe">
-            <Setter Property="Height" Value="2" />
-            <Setter Property="Background" Value="#0078D7" />
-        </Style>
-    </UserControl.Styles>
-
-    <Grid RowDefinitions="59 * auto auto">
+    <Grid RowDefinitions="59 auto * auto auto">
         
+        <!-- Name -->
         <TextBox Grid.Row="0"
                  Margin="10, 10, 10, 10"
                    Text="{Binding Name}"
                    HorizontalAlignment="Stretch"
                    VerticalContentAlignment="Center"/>
         
-        <TabControl Grid.Row="1">
-
-            <!-- Ensure that the SufniTelemetryPlotViews' Telemetry property is set -->
-            <i:Interaction.Behaviors>
-                <ia:EventTriggerBehavior EventName="Loaded">
-                    <InvokeCommandAction Command="{Binding LoadPsstCommand}" />
-                </ia:EventTriggerBehavior>
-            </i:Interaction.Behaviors>
+        <!-- Tab headers -->
+        <Grid Grid.Row="1" ColumnDefinitions="* * * *"
+              HorizontalAlignment="Stretch">
             
-            <TabControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <UniformGrid Rows="1" HorizontalAlignment="Stretch" />
-                </ItemsPanelTemplate>
-            </TabControl.ItemsPanel>
+            <Grid.Styles>
+                <Style Selector="Button.tabheader">
+                    <Setter Property="FontSize" Value="16" />
+                    <Setter Property="Background" Value="Transparent" />
+                    <Setter Property="CornerRadius" Value="0" />
+                    <Setter Property="Padding" Value="0,0,0,10" />
+                </Style>
+                <Style Selector="Button.tabheader:pressed /template/ ContentPresenter#PART_ContentPresenter">
+                    <Setter Property="FontSize" Value="16" />
+                    <Setter Property="Foreground" Value="#a0a0a0" />
+                    <Setter Property="Background" Value="Transparent" />
+                </Style>
+                <Style Selector="Button.tabheader:pressed /template/ ContentPresenter#PART_ContentPresenter">
+                    <Setter Property="FontSize" Value="19" />
+                    <Setter Property="Background" Value="Transparent" />
+                </Style>
+                <Style Selector="Button.tabheader:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                    <Setter Property="FontSize" Value="16" />
+                    <Setter Property="Background" Value="Transparent" />
+                </Style>
+                <Style Selector="Button.tabheader:disabled /template/ ContentPresenter#PART_ContentPresenter">
+                    <Setter Property="Foreground" Value="#a0a0a0" />
+                    <Setter Property="Background" Value="Transparent"></Setter>
+                    <Setter Property="BorderBrush" Value="#0078D7" />
+                    <Setter Property="Padding" Value="0,0,0,8" />
+                    <Setter Property="BorderThickness" Value="0,0,0,2" />
+                </Style>
+            </Grid.Styles>
             
-            <TabItem Header="Spring" HorizontalAlignment="Center">
-                <ScrollViewer>
+            <Button Classes="tabheader" Name="Spring" Grid.Column="0" 
+                    HorizontalAlignment="Center" 
+                    Content="Spring" 
+                    Click="OnSpringSelected"
+                    IsEnabled="False" />
+            <Button Classes="tabheader" Name="Damper" Grid.Column="1"
+                    HorizontalAlignment="Center" 
+                    Content="Damper" 
+                    Click="OnDamperSelected"/>
+            <Button Classes="tabheader" Name="Balance" Grid.Column="2" 
+                    HorizontalAlignment="Center" 
+                    Content="Balance"
+                    Click="OnBalanceSelected" />
+            <Button Classes="tabheader" Name="Notes" Grid.Column="3" 
+                    HorizontalAlignment="Center"
+                    Content="Notes"
+                    Click="OnNotesSelected"/>
+        </Grid>
+        
+        <ScrollViewer Name="TabScrollViewer" Grid.Row="2"
+                      Margin="10,10,10,10"
+                      HorizontalSnapPointsType="MandatorySingle"
+                      HorizontalSnapPointsAlignment="Far"
+                      HorizontalScrollBarVisibility="Hidden"
+                      VerticalScrollBarVisibility="Disabled"
+                      PropertyChanged="TabScrollViewer_OnPropertyChanged">
+            <StackPanel Orientation="Horizontal"
+                        AreHorizontalSnapPointsRegular="True">
+                
+                <!-- Ensure that the SufniTelemetryPlotViews' Telemetry property is set -->
+                <i:Interaction.Behaviors>
+                    <ia:EventTriggerBehavior EventName="Loaded">
+                        <InvokeCommandAction Command="{Binding LoadPsstCommand}" />
+                    </ia:EventTriggerBehavior>
+                </i:Interaction.Behaviors>
+                
+                <!-- Spring -->
+                <ScrollViewer Width="{Binding $parent[ScrollViewer].Bounds.Width}">
                     <Grid RowDefinitions="* *">
                         <plots:TravelHistogramView Grid.Row="0"
                                                    IsVisible="{Binding TelemetryData.Front.Present}"
@@ -67,9 +109,9 @@
                                                    Telemetry="{Binding TelemetryData}" />
                     </Grid>
                 </ScrollViewer>
-            </TabItem>
-            <TabItem Header="Damper" HorizontalAlignment="Center">
-                <ScrollViewer>
+                
+                <!-- Damper -->
+                <ScrollViewer Width="{Binding $parent[ScrollViewer].Bounds.Width}">
                     <Grid RowDefinitions="auto auto">
                         <plots:VelocityView Grid.Row="0"
                                             IsVisible="{Binding TelemetryData.Front.Present}"
@@ -83,9 +125,9 @@
                                             Telemetry="{Binding TelemetryData}" />
                     </Grid>
                 </ScrollViewer>
-            </TabItem>
-            <TabItem Header="Balance" HorizontalAlignment="Center">
-                <ScrollViewer>
+                
+                <!-- Balance -->
+                <ScrollViewer Width="{Binding $parent[ScrollViewer].Bounds.Width}">
                     <Grid RowDefinitions="* *">
                         <plots:BalancePlotView Grid.Row="0"
                                                IsHitTestVisible="False"
@@ -115,25 +157,26 @@
                         </plots:BalancePlotView>
                     </Grid>
                 </ScrollViewer>
-            </TabItem>
-            <TabItem Header="Notes" HorizontalAlignment="Center">
-                <TextBox Margin="2"
+                
+                <!-- Notes -->
+                <TextBox Width="{Binding $parent[ScrollViewer].Bounds.Width}"
+                         Margin="0,10,0,0"
                          VerticalAlignment="Stretch"
                          HorizontalAlignment="Stretch"
                          AcceptsReturn="True" TextWrapping="Wrap"
                          Text="{Binding Description}" />
-            </TabItem>
-        </TabControl>
+            </StackPanel>
+        </ScrollViewer>
         
         <!-- Error messages for Session instance -->
-        <v:ErrorMessagesControl Grid.Row="2"
+        <v:ErrorMessagesControl Grid.Row="3"
                                 Margin="0,5, 0, 0"
                                 ClearErrorsCommand="{Binding ClearErrorsCommand}"
                                 ErrorMessages="{Binding ErrorMessages}"
                                 IsVisible="{Binding ErrorMessages.Count}" />
 
         <!-- Back, Save, Reset and Delete buttons -->
-        <v:CommonButtonLine Grid.Row="3"
+        <v:CommonButtonLine Grid.Row="4"
                             Margin="10,10,10,10"
                             OpenMainMenuCommand="{Binding OpenMainMenuCommand}"
                             SaveCommand="{Binding SaveCommand}"

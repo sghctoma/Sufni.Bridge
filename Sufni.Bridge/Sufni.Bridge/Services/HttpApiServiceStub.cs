@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Sufni.Bridge.Models;
 using Sufni.Bridge.Models.Telemetry;
@@ -170,6 +171,7 @@ public class HttpApiServiceStub : IHttpApiService
 
     public Task<Guid> PutProcessedSessionAsync(string name, string description, byte[] data)
     {
+        Thread.Sleep(500);
         return Task.FromResult(Guid.NewGuid());
     }
 

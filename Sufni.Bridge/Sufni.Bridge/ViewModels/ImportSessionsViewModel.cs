@@ -8,6 +8,7 @@ using System.Collections.Specialized;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Diagnostics;
+using System.Threading;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using DynamicData;
@@ -171,8 +172,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
         TelemetryDataStores.Add(dataStore);
     }
 
-    [RelayCommand(CanExecute = nameof(CanImportSessions))]
-    private async Task ImportSessions()
+    private async void ImportSessionsInternal()
     {
         Debug.Assert(SelectedSetup != null);
         Debug.Assert(SelectedDataStore != null);
@@ -244,6 +244,12 @@ public partial class ImportSessionsViewModel : ViewModelBase
         }
 
         ImportInProgress = false;
+    }
+
+    [RelayCommand(CanExecute = nameof(CanImportSessions))]
+    private void ImportSessions()
+    {
+        new Thread(ImportSessionsInternal).Start();
     }
 
     private bool CanImportSessions()

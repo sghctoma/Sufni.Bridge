@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -377,8 +378,7 @@ public partial class MainPagesViewModel : ViewModelBase
         return SettingsPage.IsRegistered;
     }
 
-    [RelayCommand(CanExecute = nameof(CanUploadSessions))]
-    private async Task UploadSessions()
+    private async void UploadSessionsInternal()
     {
         var httpApiService = App.Current?.Services?.GetService<IHttpApiService>();
         Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
@@ -419,6 +419,12 @@ public partial class MainPagesViewModel : ViewModelBase
         }
 
         SessionUploadInProgress = false;
+    }
+    
+    [RelayCommand(CanExecute = nameof(CanUploadSessions))]
+    private void UploadSessions()
+    {
+        new Thread(UploadSessionsInternal).Start();
     }
 
     [RelayCommand]

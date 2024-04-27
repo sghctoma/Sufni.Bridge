@@ -22,10 +22,8 @@
                VerticalAlignment="Center"
                Content="Setup: " />
         <TextBox Grid.Row="0" Grid.Column="1"
-                 Height="39"
                  Margin="2"
                  HorizontalAlignment="Stretch"
-                 VerticalContentAlignment="Center"
                  Text="{Binding Name}" />
         
         <!-- Board ID -->
@@ -34,8 +32,6 @@
                Content="Board ID: " />
         <TextBox Grid.Row="1" Grid.Column="1"
                  Margin="2"
-                 Height="39"
-                 VerticalContentAlignment="Center"
                  HorizontalAlignment="Stretch"
                  Text="{Binding BoardId}" />
 
@@ -45,8 +41,6 @@
                Content="Linkage: " />
         <ComboBox Grid.Row="2" Grid.Column="1"
                   Margin="2"
-                  Height="39"
-                  VerticalContentAlignment="Center"
                   HorizontalAlignment="Stretch"
                   ItemsSource="{Binding Linkages}"
                   SelectedItem="{Binding SelectedLinkage}">
@@ -63,8 +57,6 @@
                Content="Front cal.: " />
         <ComboBox Grid.Row="3" Grid.Column="1"
                   Margin="2"
-                  Height="39"
-                  VerticalContentAlignment="Center"
                   HorizontalAlignment="Stretch"
                   ItemsSource="{Binding Calibrations}"
                   SelectedItem="{Binding SelectedFrontCalibration}">
@@ -81,8 +73,6 @@
                Content="Rear cal.: " />
         <ComboBox Grid.Row="4" Grid.Column="1"
                   Margin="2"
-                  Height="39"
-                  VerticalContentAlignment="Center"
                   HorizontalAlignment="Stretch"
                   ItemsSource="{Binding Calibrations}"
                   SelectedItem="{Binding SelectedRearCalibration}">

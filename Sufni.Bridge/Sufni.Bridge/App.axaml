@@ -70,6 +70,8 @@
         
         <!-- Global styles for NumericUpDown -->
         <Style Selector="NumericUpDown">
+            <Setter Property="Height" Value="39" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
             <Setter Property="Background" Value="#20262b" />
             <Setter Property="Foreground" Value="#a0a0a0" />
             <Setter Property="BorderBrush" Value="#505050" />
@@ -77,6 +79,8 @@
         
         <!-- Global styles for TextBox -->
         <Style Selector="TextBox">
+            <Setter Property="MinHeight" Value="39" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
             <Setter Property="Background" Value="#20262b" />
             <Setter Property="Foreground" Value="#a0a0a0" />
             <Setter Property="BorderBrush" Value="#505050" />
@@ -111,6 +115,8 @@
         
         <!-- Global styles for ComboBox -->
         <Style Selector="ComboBox">
+            <Setter Property="Height" Value="39" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
             <Setter Property="Background" Value="#20262b" />
             <Setter Property="Foreground" Value="#a0a0a0" />
             <Setter Property="BorderBrush" Value="#505050" />

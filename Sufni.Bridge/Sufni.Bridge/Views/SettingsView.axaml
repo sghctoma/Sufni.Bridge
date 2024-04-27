@@ -20,24 +20,16 @@
             </Style>
         </StackPanel.Styles>
         <TextBox Watermark="API server"
-                 Height="39"
-                 VerticalContentAlignment="Center"
                  IsEnabled="{Binding !IsRegistered}"
                  Text="{Binding ServerUrl}" />
         <TextBox Watermark="Username"
-                 Height="39"
-                 VerticalContentAlignment="Center"
                  IsEnabled="{Binding !IsRegistered}"
                  Text="{Binding Username}" />
         <TextBox Watermark="Password"
-                 Height="39"
-                 VerticalContentAlignment="Center"
                  IsEnabled="{Binding !IsRegistered}"
                  PasswordChar="*"
                  Text="{Binding Password}" />
         <Button Margin="2"
-                Height="39"
-                VerticalContentAlignment="Center"
                 HorizontalContentAlignment="Center"
                 HorizontalAlignment="Stretch"
                 IsTabStop="False"

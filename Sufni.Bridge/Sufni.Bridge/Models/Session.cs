@@ -55,4 +55,44 @@ public class Session : Synchronizable
     [Column("data")]
     // ReSharper disable once UnusedMember.Global
     public byte[]? ProcessedData { get; set; }
+    
+    [JsonIgnore]
+    [Column("front_springrate")]
+    public string? FrontSpringRate { get; set; }
+    
+    [JsonIgnore]
+    [Column("rear_springrate")]
+    public string? RearSpringRate { get; set; }
+    
+    [JsonIgnore]
+    [Column("front_hsc")]
+    public uint? FrontHighSpeedCompression { get; set; }
+    
+    [JsonIgnore]
+    [Column("rear_hsc")]
+    public uint? RearHighSpeedCompression { get; set; }
+    
+    [JsonIgnore]
+    [Column("front_lsc")]
+    public uint? FrontLowSpeedCompression { get; set; }
+    
+    [JsonIgnore]
+    [Column("rear_lsc")]
+    public uint? RearLowSpeedCompression { get; set; }
+    
+    [JsonIgnore]
+    [Column("front_lsr")]
+    public uint? FrontLowSpeedRebound { get; set; }
+    
+    [JsonIgnore]
+    [Column("rear_lsr")]
+    public uint? RearLowSpeedRebound { get; set; }
+    
+    [JsonIgnore]
+    [Column("front_hsr")]
+    public uint? FrontHighSpeedRebound { get; set; }
+    
+    [JsonIgnore]
+    [Column("rear_hsr")]
+    public uint? RearHighSpeedRebound { get; set; }
 }

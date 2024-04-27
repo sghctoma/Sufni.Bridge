@@ -10,19 +10,40 @@ using Sufni.Bridge.Services;
 
 namespace Sufni.Bridge.ViewModels;
 
+public partial class SuspensionSettings : ObservableObject
+{
+    [ObservableProperty] private string? springRate;
+    [ObservableProperty] private uint? highSpeedCompression;
+    [ObservableProperty] private uint? lowSpeedCompression;
+    [ObservableProperty] private uint? lowSpeedRebound;
+    [ObservableProperty] private uint? highSpeedRebound;
+}
+
 public partial class SessionViewModel : ViewModelBase
 {
     private Session session;
     public bool IsInDatabase;
+    public SuspensionSettings ForkSettings { get; } = new();
+    public SuspensionSettings ShockSettings { get; } = new();
 
     #region Private methods
-
+    
     private void EvaluateDirtiness()
     {
         IsDirty =
             !IsInDatabase ||
             Name != session.Name ||
-            Description != session.Description;
+            Description != session.Description ||
+            (!(ForkSettings.SpringRate is null && session.FrontSpringRate is null) && ForkSettings.SpringRate != session.FrontSpringRate) ||
+            (!(ForkSettings.HighSpeedCompression is null && session.FrontHighSpeedCompression is null) && ForkSettings.HighSpeedCompression != session.FrontHighSpeedCompression) ||
+            (!(ForkSettings.LowSpeedCompression is null && session.FrontLowSpeedCompression is null) && ForkSettings.LowSpeedCompression != session.FrontLowSpeedCompression) ||
+            (!(ForkSettings.LowSpeedRebound is null && session.FrontLowSpeedRebound is null) && ForkSettings.LowSpeedRebound != session.FrontLowSpeedRebound) ||
+            (!(ForkSettings.HighSpeedRebound is null && session.FrontHighSpeedRebound is null) && ForkSettings.HighSpeedRebound != session.FrontHighSpeedRebound) ||
+            (!(ShockSettings.SpringRate is null && session.RearSpringRate is null) && ShockSettings.SpringRate != session.RearSpringRate) ||
+            (!(ShockSettings.HighSpeedCompression is null && session.RearHighSpeedCompression is null) && ShockSettings.HighSpeedCompression != session.RearHighSpeedCompression) ||
+            (!(ShockSettings.LowSpeedCompression is null && session.RearLowSpeedCompression is null) && ShockSettings.LowSpeedCompression != session.RearLowSpeedCompression) ||
+            (!(ShockSettings.LowSpeedRebound is null && session.RearLowSpeedRebound is null) && ShockSettings.LowSpeedRebound != session.RearLowSpeedRebound) ||
+            (!(ShockSettings.HighSpeedRebound is null && session.RearHighSpeedRebound is null) && ShockSettings.HighSpeedRebound != session.RearHighSpeedRebound);
     }
 
     #endregion
@@ -70,6 +91,10 @@ public partial class SessionViewModel : ViewModelBase
     {
         this.session = session;
         IsInDatabase = fromDatabase;
+        
+        ForkSettings.PropertyChanged += (_, _) => EvaluateDirtiness();
+        ShockSettings.PropertyChanged += (_, _) => EvaluateDirtiness();
+        
         Reset();
     }
 
@@ -110,7 +135,21 @@ public partial class SessionViewModel : ViewModelBase
                 id: session.Id,
                 name: Name ?? $"session #{session.Id}",
                 description: Description ?? $"session #{session.Id}",
-                setup: session.Setup);
+                setup: session.Setup)
+            {
+                FrontSpringRate = ForkSettings.SpringRate,
+                FrontHighSpeedCompression = ForkSettings.HighSpeedCompression,
+                FrontLowSpeedCompression = ForkSettings.LowSpeedCompression,
+                FrontLowSpeedRebound = ForkSettings.LowSpeedRebound,
+                FrontHighSpeedRebound = ForkSettings.HighSpeedRebound,
+                RearSpringRate = ShockSettings.SpringRate,
+                RearHighSpeedCompression = ShockSettings.HighSpeedCompression,
+                RearLowSpeedCompression = ShockSettings.LowSpeedCompression,
+                RearLowSpeedRebound = ShockSettings.LowSpeedRebound,
+                RearHighSpeedRebound = ShockSettings.HighSpeedRebound,
+            };
+
+
             await databaseService.PutSessionAsync(newSession);
             session = newSession;
             IsDirty = false;
@@ -133,6 +172,19 @@ public partial class SessionViewModel : ViewModelBase
         Id = session.Id;
         Name = session.Name;
         Description = session.Description;
+        
+        ForkSettings.SpringRate = session.FrontSpringRate;
+        ForkSettings.HighSpeedCompression = session.FrontHighSpeedCompression;
+        ForkSettings.LowSpeedCompression = session.FrontLowSpeedCompression;
+        ForkSettings.LowSpeedRebound = session.FrontLowSpeedRebound;
+        ForkSettings.HighSpeedRebound = session.FrontHighSpeedRebound;
+        
+        ShockSettings.SpringRate = session.RearSpringRate;
+        ShockSettings.HighSpeedCompression = session.RearHighSpeedCompression;
+        ShockSettings.LowSpeedCompression = session.RearLowSpeedCompression;
+        ShockSettings.LowSpeedRebound = session.RearLowSpeedRebound;
+        ShockSettings.HighSpeedRebound = session.RearHighSpeedRebound;
+        
         Timestamp = DateTimeOffset.FromUnixTimeSeconds(session.Timestamp ?? 0).DateTime;
     }
 

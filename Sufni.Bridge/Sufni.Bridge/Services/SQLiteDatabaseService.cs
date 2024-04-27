@@ -408,8 +408,24 @@ public class SqLiteDatabaseService : IDatabaseService
     public async Task<List<Session>> GetSessionsAsync()
     {
         await Initialization;
-        var sessions = await connection.QueryAsync<Session>(
-            "SELECT id, name, setup_id, description, timestamp, track_id FROM session WHERE deleted IS null ORDER BY timestamp DESC");
+        
+        const string query = """
+                             SELECT
+                                 id,
+                                 name,
+                                 setup_id,
+                                 description,
+                                 timestamp,
+                                 track_id,
+                                 front_springrate, front_hsc, front_lsc, front_lsr, front_hsr,
+                                 rear_springrate, rear_hsc, rear_lsc, rear_lsr, rear_hsr
+                             FROM
+                                 session
+                             WHERE
+                                 deleted IS NULL
+                             ORDER BY timestamp DESC
+                             """;
+        var sessions = await connection.QueryAsync<Session>(query);
         return sessions;
     }
     
@@ -448,8 +464,31 @@ public class SqLiteDatabaseService : IDatabaseService
         session.Updated = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
         if (existing)
         {
-            await connection.ExecuteAsync("UPDATE session SET name = ?, description = ? WHERE id = ?",
-                [session.Name, session.Description, session.Id]);
+            const string query = """
+                                 UPDATE session
+                                 SET
+                                     name=?,
+                                     description=?,
+                                     front_springrate=?, front_hsc=?, front_lsc=?, front_lsr=?, front_hsr=?,
+                                     rear_springrate=?, rear_hsc=?, rear_lsc=?, rear_lsr=?, rear_hsr=?
+                                 WHERE
+                                     id=?
+                                 """;
+            await connection.ExecuteAsync(query,
+                [
+                    session.Name, 
+                    session.Description, 
+                    session.FrontSpringRate,
+                    session.FrontHighSpeedCompression,
+                    session.FrontLowSpeedCompression,
+                    session.FrontLowSpeedRebound,
+                    session.FrontHighSpeedRebound,
+                    session.RearSpringRate,
+                    session.RearHighSpeedCompression,
+                    session.RearLowSpeedCompression,
+                    session.RearLowSpeedRebound,
+                    session.RearHighSpeedRebound,
+                    session.Id]);
         }
         else
         {

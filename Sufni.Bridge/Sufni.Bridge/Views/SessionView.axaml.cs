@@ -67,9 +67,9 @@ public partial class SessionView : UserControl
         
         var width = TabScrollViewer.Viewport.Width;
         var offset = TabScrollViewer.Offset.X;
-        if (offset < width) Spring.IsEnabled = false;
-        else if (offset < 2 * width) Damper.IsEnabled = false;
-        else if (offset < 3 * width) Balance.IsEnabled = false;
+        if (offset < 0.5 * width) Spring.IsEnabled = false;
+        else if (offset < 1.5 * width) Damper.IsEnabled = false;
+        else if (offset < 2.5 * width) Balance.IsEnabled = false;
         else Notes.IsEnabled = false;
     }
 }

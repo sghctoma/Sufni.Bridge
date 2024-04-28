@@ -85,6 +85,7 @@
                       HorizontalScrollBarVisibility="Hidden"
                       VerticalScrollBarVisibility="Disabled"
                       IsScrollInertiaEnabled="False"
+                      SizeChanged="TabScrollViewer_OnSizeChanged"
                       PropertyChanged="TabScrollViewer_OnPropertyChanged">
             <StackPanel Orientation="Horizontal"
                         AreHorizontalSnapPointsRegular="True">

@@ -8,6 +8,7 @@ namespace Sufni.Bridge.Views;
 
 public partial class SessionView : UserControl
 {
+    private bool sizeChanging = false;
     public SessionView()
     {
         InitializeComponent();
@@ -58,7 +59,7 @@ public partial class SessionView : UserControl
 
     private void TabScrollViewer_OnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
     {
-        if (e.Property.Name != nameof(TabScrollViewer.Offset)) return;
+        if (e.Property.Name != nameof(TabScrollViewer.Offset) || sizeChanging) return;
 
         Spring.IsEnabled = true;
         Damper.IsEnabled = true;
@@ -71,5 +72,15 @@ public partial class SessionView : UserControl
         else if (offset < 1.5 * width) Damper.IsEnabled = false;
         else if (offset < 2.5 * width) Balance.IsEnabled = false;
         else Notes.IsEnabled = false;
+    }
+
+    private void TabScrollViewer_OnSizeChanged(object? sender, SizeChangedEventArgs e)
+    {
+        sizeChanging = true;
+        if (!Spring.IsEnabled) TabScrollViewer.Offset = new Vector(0,0);
+        else if (!Damper.IsEnabled) TabScrollViewer.Offset = new Vector(e.NewSize.Width, 0);
+        else if (!Balance.IsEnabled) TabScrollViewer.Offset = new Vector(2 * e.NewSize.Width, 0);
+        else if (!Notes.IsEnabled) TabScrollViewer.Offset = new Vector(3 * e.NewSize.Width, 0);
+        sizeChanging = false;
     }
 }

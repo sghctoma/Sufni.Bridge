@@ -36,6 +36,20 @@ public partial class ImportSessionsViewModel : ViewModelBase
 
     #region Property change handlers
 
+    private async void GetDataStoreFiles(object? dataStore)
+    {
+        ImportInProgress = true;
+        
+        TelemetryFiles.Clear();
+        var files = await (dataStore as ITelemetryDataStore)!.GetFiles();
+        foreach (var file in files)
+        {
+            TelemetryFiles.Add(file);
+        }
+
+        ImportInProgress = false;
+    }
+    
     async partial void OnSelectedDataStoreChanged(ITelemetryDataStore? value)
     {
         Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
@@ -62,12 +76,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
             ErrorMessages.Add($"Error while changing data store: {e.Message}");
         }
         
-        TelemetryFiles.Clear();
-        var files = await value.GetFiles();
-        foreach (var file in files)
-        {
-            TelemetryFiles.Add(file);
-        }
+        new Thread(GetDataStoreFiles).Start(value);
     }
 
     #endregion Property change handlers

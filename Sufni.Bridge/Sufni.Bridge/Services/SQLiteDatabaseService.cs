@@ -141,7 +141,7 @@ public class SqLiteDatabaseService : IDatabaseService
         await Initialization;
         
         return await connection.Table<Board>()
-            .Where(b => b.Updated >= since || (b.Deleted != null && b.Deleted >= since))
+            .Where(b => b.Updated > since || (b.Deleted != null && b.Deleted > since))
             .ToListAsync();
     }
 
@@ -188,7 +188,7 @@ public class SqLiteDatabaseService : IDatabaseService
         await Initialization;
         
         return await connection.Table<Linkage>()
-            .Where(l => l.Updated >= since || (l.Deleted != null && l.Deleted >= since))
+            .Where(l => l.Updated > since || (l.Deleted != null && l.Deleted > since))
             .ToListAsync();
     }
 
@@ -245,7 +245,7 @@ public class SqLiteDatabaseService : IDatabaseService
         await Initialization;
         
         return await connection.Table<CalibrationMethod>()
-            .Where(c => c.Updated >= since || (c.Deleted != null && c.Deleted >= since))
+            .Where(c => c.Updated > since || (c.Deleted != null && c.Deleted > since))
             .ToListAsync();
     }
 
@@ -302,7 +302,7 @@ public class SqLiteDatabaseService : IDatabaseService
         await Initialization;
         
         return await connection.Table<Calibration>()
-            .Where(c => c.Updated >= since || (c.Deleted != null && c.Deleted >= since))
+            .Where(c => c.Updated > since || (c.Deleted != null && c.Deleted > since))
             .ToListAsync();
     }
 
@@ -359,7 +359,7 @@ public class SqLiteDatabaseService : IDatabaseService
         await Initialization;
         
         return await connection.Table<Setup>()
-            .Where(s => s.Updated >= since || (s.Deleted != null && s.Deleted >= since))
+            .Where(s => s.Updated > since || (s.Deleted != null && s.Deleted > since))
             .ToListAsync();
     }
 
@@ -434,7 +434,7 @@ public class SqLiteDatabaseService : IDatabaseService
         await Initialization;
         
         return await connection.Table<Session>()
-            .Where(s => s.Updated >= since || (s.Deleted != null && s.Deleted >= since))
+            .Where(s => s.Updated > since || (s.Deleted != null && s.Deleted > since))
             .ToListAsync();
     }
 

@@ -6,7 +6,7 @@ namespace Sufni.Bridge.ViewModels;
 
 public partial class MainViewModel : ViewModelBase
 {
-   [ObservableProperty] private ViewModelBase currentView = new MainPagesViewModel();
+   [ObservableProperty] private ViewModelBase currentView;
 
    public MainViewModel()
    {

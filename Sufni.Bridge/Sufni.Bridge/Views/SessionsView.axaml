@@ -133,18 +133,18 @@
                     VerticalAlignment="Stretch"
                     VerticalContentAlignment="Center"
                     HorizontalContentAlignment="Center"
-                    Content="upload sessions"
-                    Command="{Binding UploadSessionsCommand}" />
+                    Content="synchronize"
+                    Command="{Binding SyncCommand}" />
         </Grid>
         
         <!-- Progress ring --> 
         <Panel Grid.Row="0" Grid.Column="0" Grid.RowSpan="5"
                Background="#0d0d0d" Opacity="0.7"
-               IsVisible="{Binding SessionUploadInProgress}">
+               IsVisible="{Binding SyncInProgress}">
             <progRing:ProgressRing Width="40" Height="40" Foreground="#0078D7"
                                    HorizontalAlignment="Center"
                                    VerticalAlignment="Center"
-                                   IsActive="{Binding SessionUploadInProgress}" />
+                                   IsActive="{Binding SyncInProgress}" />
         </Panel>
     </Grid>
 </UserControl>

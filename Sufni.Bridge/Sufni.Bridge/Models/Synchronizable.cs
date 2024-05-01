@@ -26,4 +26,5 @@ public class SynchronizationData
     [JsonPropertyName("calibration")] public List<Calibration> Calibrations { get; set; } = [];
     [JsonPropertyName("linkage")] public List<Linkage> Linkages { get; set; } = [];
     [JsonPropertyName("setup")] public List<Setup> Setups { get; set; } = [];
+    [JsonPropertyName("session")] public List<Session> Sessions { get; set; } = [];
 }

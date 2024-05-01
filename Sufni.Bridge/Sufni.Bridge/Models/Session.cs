@@ -11,7 +11,7 @@ public class Session : Synchronizable
     // Uninitialized non-nullable property warnings are suppressed with null! initializer.
     public Session() { }
     
-    public Session(Guid id, string name, string description, Guid setup, string? data = null, int? timestamp = null, Guid? track = null)
+    public Session(Guid id, string name, string description, Guid setup, int? timestamp = null, Guid? track = null)
     {
         Id = id;
         Name = name;
@@ -19,10 +19,9 @@ public class Session : Synchronizable
         Setup = setup;
         Timestamp = timestamp;
         Track = track;
-        RawData = data;
     }
 
-    [JsonPropertyName("id"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonPropertyName("id")]
     [PrimaryKey]
     [Column("id")]
     public Guid Id { get; set; } = Guid.NewGuid();
@@ -45,16 +44,20 @@ public class Session : Synchronizable
 
     [JsonPropertyName("track"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [Column("track_id")]
+    // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public Guid? Track { get; set; }
-
-    [JsonPropertyName("data")]
-    [Ignore]
-    public string? RawData { get; set; }
 
     [JsonIgnore]
     [Column("data")]
-    // ReSharper disable once UnusedMember.Global
     public byte[]? ProcessedData { get; set; }
+
+    [JsonPropertyName("psst_encoded"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [Ignore]
+    public string? ProcessedDataEncoded
+    {
+        get => ProcessedData is null || Deleted.HasValue ?  null : Convert.ToBase64String(ProcessedData);
+        set => ProcessedData = value is null ? null : Convert.FromBase64String(value);
+    }
     
     [JsonIgnore]
     [Column("front_springrate")]

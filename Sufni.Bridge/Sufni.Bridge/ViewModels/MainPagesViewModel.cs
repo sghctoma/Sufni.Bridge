@@ -28,7 +28,7 @@ public partial class MainPagesViewModel : ViewModelBase
     [ObservableProperty] private bool hasLinkages;
     [ObservableProperty] private bool hasCalibrationMethods;
     [ObservableProperty] private bool hasCalibrations;
-    [ObservableProperty] private bool sessionUploadInProgress;
+    [ObservableProperty] private bool syncInProgress;
 
     [ObservableProperty] private string? setupSearchText;
     [ObservableProperty] private string? linkageSearchText;
@@ -51,7 +51,7 @@ public partial class MainPagesViewModel : ViewModelBase
     public ReadOnlyObservableCollection<SetupViewModel> Setups => setups;
     private readonly ReadOnlyObservableCollection<SetupViewModel> setups;
 
-    private readonly SourceCache<SessionViewModel, Guid> sessionsSourceCache = new(x => x.Id);
+    private readonly SourceCache<SessionViewModel, Guid> sessionsSource = new(x => x.Id);
     public ReadOnlyObservableCollection<SessionViewModel> Sessions => sessions;
     private readonly ReadOnlyObservableCollection<SessionViewModel> sessions;
 
@@ -78,19 +78,19 @@ public partial class MainPagesViewModel : ViewModelBase
     // ReSharper disable once UnusedParameterInPartialMethod
     partial void OnSessionSearchTextChanged(string? value)
     {
-        sessionsSourceCache.Refresh();
+        sessionsSource.Refresh();
     }
 
     // ReSharper disable once UnusedParameterInPartialMethod
     partial void OnDateFilterFromChanged(DateTime? value)
     {
-        sessionsSourceCache.Refresh();
+        sessionsSource.Refresh();
     }
 
     // ReSharper disable once UnusedParameterInPartialMethod
     partial void OnDateFilterToChanged(DateTime? value)
     {
-        sessionsSourceCache.Refresh();
+        sessionsSource.Refresh();
     }
 
     // ReSharper disable once UnusedParameterInPartialMethod
@@ -136,7 +136,7 @@ public partial class MainPagesViewModel : ViewModelBase
     public MainPagesViewModel()
     {
         databaseService = App.Current?.Services?.GetService<IDatabaseService>();
-        ImportSessionsPage = new ImportSessionsViewModel(sessionsSourceCache);
+        ImportSessionsPage = new ImportSessionsViewModel(sessionsSource);
 
         calibrationsSource.CountChanged.Subscribe(_ => { HasCalibrations = calibrationsSource.Count != 0; });
         linkagesSource.CountChanged.Subscribe(_ => { HasLinkages = linkagesSource.Count != 0; });
@@ -146,7 +146,7 @@ public partial class MainPagesViewModel : ViewModelBase
             DeleteCalibrationCommand.NotifyCanExecuteChanged();
         });
 
-        sessionsSourceCache.Connect()
+        sessionsSource.Connect()
             .Filter(svm => string.IsNullOrEmpty(SessionSearchText) ||
                            (svm.Name is not null && svm.Name!.Contains(SessionSearchText,
                                StringComparison.CurrentCultureIgnoreCase)) ||
@@ -191,7 +191,6 @@ public partial class MainPagesViewModel : ViewModelBase
                 return;
             }
 
-            UploadSessionsCommand.NotifyCanExecuteChanged();
             SyncCommand.NotifyCanExecuteChanged();
             SelectPage();
         };
@@ -333,7 +332,7 @@ public partial class MainPagesViewModel : ViewModelBase
             var sessionList = await databaseService.GetSessionsAsync();
             foreach (var session in sessionList)
             {
-                sessionsSourceCache.AddOrUpdate(new SessionViewModel(session, true));
+                sessionsSource.AddOrUpdate(new SessionViewModel(session, true));
             }
         }
         catch (Exception e)
@@ -344,12 +343,14 @@ public partial class MainPagesViewModel : ViewModelBase
 
     private async Task LoadDatabaseContent()
     {
+        DatabaseLoaded = false;
+        
         linkagesSource.Clear();
         CalibrationMethods.Clear();
         calibrationsSource.Clear();
         setupsSource.Clear();
         Boards.Clear();
-        sessionsSourceCache.Clear();
+        sessionsSource.Clear();
         await LoadLinkagesAsync();
         await LoadCalibrationMethodsAsync();
         await LoadCalibrationsAsync();
@@ -359,74 +360,11 @@ public partial class MainPagesViewModel : ViewModelBase
 
         DatabaseLoaded = true;
     }
-
-    private async Task ReloadAfterSync()
-    {
-        await LoadLinkagesAsync();
-        await LoadCalibrationMethodsAsync();
-        await LoadCalibrationsAsync();
-        await LoadBoardsAsync();
-        await LoadSetupsAsync();
-    }
-
+    
     #endregion
 
     #region Commands
-
-    private bool CanUploadSessions()
-    {
-        return SettingsPage.IsRegistered;
-    }
-
-    private async void UploadSessionsInternal()
-    {
-        var httpApiService = App.Current?.Services?.GetService<IHttpApiService>();
-        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
-        Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
-        Debug.Assert(SettingsPage.IsRegistered, "SettingsPage.IsRegistered");
-
-        SessionUploadInProgress = true;
-
-        List<Session> remoteSessions;
-        try
-        {
-            remoteSessions = await httpApiService.GetSessionsAsync();
-        }
-        catch (Exception e)
-        {
-            ErrorMessages.Add($"Remote sessions could not be loaded: {e.Message}");
-            return;
-        }
-
-        foreach (var svm in Sessions)
-        {
-            try
-            {
-                var timestamp = ((DateTimeOffset)svm.Timestamp!).ToUnixTimeSeconds();
-                if (remoteSessions.Any(s => s.Timestamp == timestamp))
-                {
-                    continue;
-                }
-
-                var psst = await databaseService.GetSessionRawPsstAsync(svm.Id);
-                await httpApiService.PutProcessedSessionAsync(svm.Name!, svm.Description!, psst!);
-                Notifications.Insert(0, $"{svm.Name} was successfully uploaded.");
-            }
-            catch (Exception e)
-            {
-                ErrorMessages.Add($"Session \"{svm.Name}\" could not be uploaded: {e.Message}");
-            }
-        }
-
-        SessionUploadInProgress = false;
-    }
     
-    [RelayCommand(CanExecute = nameof(CanUploadSessions))]
-    private void UploadSessions()
-    {
-        new Thread(UploadSessionsInternal).Start();
-    }
-
     [RelayCommand]
     private void AddLinkage()
     {
@@ -614,7 +552,7 @@ public partial class MainPagesViewModel : ViewModelBase
         {
             await databaseService.DeleteSessionAsync(id);
             var toDelete = Sessions.First(s => s.Id == id);
-            sessionsSourceCache.Remove(toDelete);
+            sessionsSource.Remove(toDelete);
         }
         catch (Exception e)
         {
@@ -667,13 +605,14 @@ public partial class MainPagesViewModel : ViewModelBase
         return SettingsPage.IsRegistered;
     }
 
-    [RelayCommand(CanExecute = nameof(CanSync))]
-    private async Task Sync()
+    private async void SyncInternal()
     {
         var httpApiService = App.Current?.Services?.GetService<IHttpApiService>();
         Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
         Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
 
+        SyncInProgress = true;
+        
         try
         {
             var lastSyncTime = await databaseService.GetLastSyncTimeAsync();
@@ -684,10 +623,11 @@ public partial class MainPagesViewModel : ViewModelBase
                 Calibrations = await databaseService.GetChangedCalibrationsAsync(lastSyncTime),
                 Linkages = await databaseService.GetChangedLinkagesAsync(lastSyncTime),
                 Setups = await databaseService.GetChangedSetupsAsync(lastSyncTime),
+                Sessions = await databaseService.GetChangedSessionsAsync(lastSyncTime)
             };
             await httpApiService.PushSyncAsync(changes);
 
-            var syncData = await httpApiService.PullSyncAsync();
+            var syncData = await httpApiService.PullSyncAsync(lastSyncTime);
             foreach (var board in syncData.Boards)
             {
                 if (board.Deleted.HasValue)
@@ -748,8 +688,20 @@ public partial class MainPagesViewModel : ViewModelBase
                 }
             }
 
+            foreach (var session in syncData.Sessions)
+            {
+                if (session.Deleted.HasValue)
+                {
+                    await databaseService.DeleteSessionAsync(session.Id);
+                }
+                else
+                {
+                    await databaseService.PutSessionAsync(session);
+                }
+            }
+
             await databaseService.UpdateLastSyncTimeAsync();
-            await ReloadAfterSync();
+            await LoadDatabaseContent();
 
             Notifications.Add("Sync successful");
             ErrorMessages.Clear();
@@ -758,6 +710,14 @@ public partial class MainPagesViewModel : ViewModelBase
         {
             ErrorMessages.Add($"Could not sync: {e.Message}");
         }
+        
+        SyncInProgress = false;
+    }
+    
+    [RelayCommand(CanExecute = nameof(CanSync))]
+    private void Sync()
+    {
+        new Thread(SyncInternal).Start();
     }
 
     #endregion

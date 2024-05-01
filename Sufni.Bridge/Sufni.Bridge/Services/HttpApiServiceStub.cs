@@ -183,7 +183,8 @@ public class HttpApiServiceStub : IHttpApiService
             CalibrationMethods = CalibrationMethods,
             Calibrations = Calibrations,
             Linkages = Linkages,
-            Setups = Setups
+            Setups = Setups,
+            Sessions = Sessions
         });
     }
 

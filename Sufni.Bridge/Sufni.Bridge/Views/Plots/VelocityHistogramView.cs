@@ -19,14 +19,9 @@ public class VelocityHistogramView : SufniTelemetryPlotView
         set => SetValue(SuspensionTypeProperty, value);
     }
 
-    private void AddStatistics(double maxPlusMinVelocity)
+    private void AddStatistics()
     {
         var statistics = Telemetry.CalculateVelocityStatistics(SuspensionType);
-        
-        /*var maxReboundVelString = $"max. rebound. vel.: {statistics.MaxRebound:0.00} mm/s";
-        var avgReboundVelString = $"avg. rebound. vel.: {statistics.AverageRebound:0.00} mm/s";
-        var avgCompVelString = $"avg. comp. vel.: {statistics.AverageCompression:0.00} mm/s";
-        var maxCompVelString = $"max. comp. vel.: {statistics.MaxCompression:0.00} mm/s";*/
         
         var maxReboundVelString = $"{statistics.MaxRebound:0.00} mm/s";
         var avgReboundVelString = $"{statistics.AverageRebound:0.00} mm/s";
@@ -40,7 +35,7 @@ public class VelocityHistogramView : SufniTelemetryPlotView
             AddLabel(
                 maxReboundVelString,
                 Plot!.Plot.Axes.GetLimits().Right,
-                maxPlusMinVelocity - -2000.0,
+                -2000.0,
                 -10,
                 5,
                 Alignment.UpperRight);
@@ -48,14 +43,14 @@ public class VelocityHistogramView : SufniTelemetryPlotView
         else
         {
             AddLabelWithHorizontalLine(maxReboundVelString,
-                maxPlusMinVelocity - statistics.MaxRebound,
+                statistics.MaxRebound,
                 LabelLinePosition.Above);
         }
         
         // Average values should be between the hardcoded limits, it's safe to draw them 
         // at their actual position.
-        AddLabelWithHorizontalLine(avgReboundVelString, maxPlusMinVelocity - statistics.AverageRebound, LabelLinePosition.Below);
-        AddLabelWithHorizontalLine(avgCompVelString, maxPlusMinVelocity - statistics.AverageCompression, LabelLinePosition.Above);
+        AddLabelWithHorizontalLine(avgReboundVelString, statistics.AverageRebound, LabelLinePosition.Below);
+        AddLabelWithHorizontalLine(avgCompVelString, statistics.AverageCompression, LabelLinePosition.Above);
         
         // If max compression is more than VelocityLimit (which is the hardcoded axis limit),
         // we draw the the label at VelocityLimit, and omit the line.
@@ -64,7 +59,7 @@ public class VelocityHistogramView : SufniTelemetryPlotView
             AddLabel(
                 maxCompVelString,
                 Plot!.Plot.Axes.GetLimits().Right,
-                maxPlusMinVelocity - 2000.0,
+                2000.0,
                 -10,
                 -5,
                 Alignment.LowerRight);
@@ -72,7 +67,7 @@ public class VelocityHistogramView : SufniTelemetryPlotView
         else
         {
             AddLabelWithHorizontalLine(maxCompVelString,
-                maxPlusMinVelocity - statistics.MaxCompression,
+                statistics.MaxCompression,
                 LabelLinePosition.Below);
         }
     }
@@ -87,16 +82,13 @@ public class VelocityHistogramView : SufniTelemetryPlotView
         Plot!.Plot.Layout.Fixed(new PixelPadding(40, 5, 40, 40));
 
         var data = telemetryData.CalculateVelocityHistogram(SuspensionType);
-
-        var min = data.Bins.Min();
-        var max = data.Bins.Max();
         var step = data.Bins[1] - data.Bins[0];
         
         var color = SuspensionType == SuspensionType.Front ? FrontColor : RearColor;
         var bars = data.Bins.Zip(data.Values)
             .Select(tuple => new Bar
             {
-                Position = max - tuple.First + min, // Flip bin values, since there is no way to flip the axis itself.
+                Position = tuple.First,
                 Value = tuple.Second,
                 FillColor = color.WithOpacity(),
                 BorderColor = color,
@@ -107,35 +99,26 @@ public class VelocityHistogramView : SufniTelemetryPlotView
             .ToList();
         
         Plot!.Plot.Add.Bars(bars);
-        Plot!.Plot.Axes.AutoScale();
+        Plot!.Plot.Axes.AutoScale(invertY: true);
         
         // Set left axis limit to 0.1 to hide the border line at 0 values. Otherwise
         // it would seem that there are actual measure travel data there too.
         // Also set a hardcoded limit for the velocity range.
         Plot!.Plot.Axes.SetLimits(left: 0.1,
-            bottom: max - VelocityLimit + min,
-            top: max - -VelocityLimit + min);
+            bottom: VelocityLimit,
+            top: -VelocityLimit);
         
-        // Fix the tick values, since they are scaled and flipped.
-        const int increment = 500;
-        var ticks = Enumerable.Range(0, (2 * (int)VelocityLimit) / increment + 1)
-            .Select(i => -VelocityLimit + i * increment)
-            .TakeWhile(value => value <= VelocityLimit)
-            .ToArray();
-        
-        Plot!.Plot.Axes.Left.TickGenerator = new NumericManual(
-            ticks.Select(b => max - b + min).ToArray(),
-            ticks.Select(b => $"{b:0}").ToArray());
+        Plot!.Plot.Axes.Left.TickGenerator = new NumericFixedInterval(500);
         
         var normalData = telemetryData.CalculateNormalDistribution(SuspensionType);
         var normal = Plot!.Plot.Add.Scatter(
             normalData.Pdf.ToArray(),
-            normalData.Y.Select(y => max - y + min).ToArray());
+            normalData.Y.ToArray());
         normal.Color = Color.FromHex("#d53e4f");
         normal.MarkerStyle.IsVisible = false;
         normal.LineStyle.Width = 3;
         normal.LineStyle.Pattern = LinePattern.Dotted;
 
-        AddStatistics(max + min);
+        AddStatistics();
     }
 }

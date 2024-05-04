@@ -1,7 +1,6 @@
 using System.Linq;
 using Avalonia;
 using ScottPlot;
-using ScottPlot.TickGenerators;
 using Sufni.Bridge.Models.Telemetry;
 
 namespace Sufni.Bridge.Views.Plots;
@@ -17,7 +16,7 @@ public class TravelHistogramView : SufniTelemetryPlotView
         set => SetValue(SuspensionTypeProperty, value);
     }
 
-    private void AddStatistics(double maxTravel)
+    private void AddStatistics()
     {
         var statistics = Telemetry.CalculateTravelStatistics(SuspensionType);
         
@@ -27,8 +26,8 @@ public class TravelHistogramView : SufniTelemetryPlotView
         var avgString = $"{statistics.Average:F2} mm ({avgPercentage:F2}%)";
         var maxString = $"{statistics.Max:F2} mm ({maxPercentage:F2}%) / {statistics.Bottomouts} bottom outs";
 
-        AddLabelWithHorizontalLine(avgString, maxTravel - statistics.Average, LabelLinePosition.Above);
-        AddLabelWithHorizontalLine(maxString, maxTravel - statistics.Max, LabelLinePosition.Below);
+        AddLabelWithHorizontalLine(avgString, statistics.Average, LabelLinePosition.Above);
+        AddLabelWithHorizontalLine(maxString, statistics.Max, LabelLinePosition.Below);
     }
     
     protected override void OnTelemetryChanged(TelemetryData telemetryData)
@@ -41,17 +40,12 @@ public class TravelHistogramView : SufniTelemetryPlotView
         Plot!.Plot.Layout.Fixed(new PixelPadding(40, 10, 40, 40));
 
         var data = telemetryData.CalculateTravelHistogram(SuspensionType);
-        
-        var maxTravel = SuspensionType == SuspensionType.Front ? 
-            telemetryData.Linkage.MaxFrontTravel : 
-            telemetryData.Linkage.MaxRearTravel;
         var step = data.Bins[1] - data.Bins[0];
-
         var color = SuspensionType == SuspensionType.Front ? FrontColor : RearColor;
         var bars = data.Bins.Zip(data.Values)
             .Select(tuple => new Bar
             {
-                Position = maxTravel - tuple.First, // Flip bin values, since there is no way to flip the axis itself.
+                Position = tuple.First,
                 Value = tuple.Second,
                 FillColor = color.WithOpacity(),
                 BorderColor = color,
@@ -62,21 +56,12 @@ public class TravelHistogramView : SufniTelemetryPlotView
             .ToList();
 
         Plot!.Plot.Add.Bars(bars);
-        Plot!.Plot.Axes.AutoScale();
-        
+        Plot!.Plot.Axes.AutoScale(invertY: true);
+
         // Set to 0.05 to hide the border line at 0 values. Otherwise it would
         // seem that there are actual measure travel data there too.
         Plot!.Plot.Axes.SetLimits(left: 0.05);
         
-        // Fix the tick values, since they are flipped.
-        var ticks = Enumerable.Range(0, ((int)maxTravel + 50 - 1) / 50)
-            .Select(i => i * 50)
-            .TakeWhile(value => value <= maxTravel)
-            .ToArray();
-        Plot!.Plot.Axes.Left.TickGenerator = new NumericManual(
-            ticks.Select(b => maxTravel - b).ToArray(),
-            ticks.Select(b => $"{b:0}").ToArray());
-        
-        AddStatistics(maxTravel);
+        AddStatistics();
     }
 }

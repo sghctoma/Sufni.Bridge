@@ -5,6 +5,7 @@ using MathNet.Numerics;
 using MathNet.Numerics.Distributions;
 using MathNet.Numerics.Statistics;
 using MessagePack;
+using Generate = ScottPlot.Generate;
 
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable NotAccessedPositionalProperty.Global
@@ -36,6 +37,7 @@ public class Suspension
 };
 
 public record HistogramData(List<double> Bins, List<double> Values);
+public record StackedHistogramData(List<double> Bins, List<double[]> Values);
 
 public record TravelStatistics(double Max, double Average, int Bottomouts);
 
@@ -79,6 +81,8 @@ public record BalanceData(
 [MessagePackObject(keyAsPropertyName: true)]
 public class TelemetryData
 {
+    public const int TravelBinsForVelocityHistogram = 10;
+        
     #region Public properties
 
     public string Name { get; set; }
@@ -394,26 +398,44 @@ public class TelemetryData
             suspension.TravelBins.ToList().GetRange(0, suspension.TravelBins.Length),
             hist.ToList());
     }
-    
-    public HistogramData CalculateVelocityHistogram(SuspensionType type)
+
+    public StackedHistogramData CalculateVelocityHistogram(SuspensionType type)
     {
         var suspension = type == SuspensionType.Front ? Front : Rear;
 
-        var hist = new double[suspension.VelocityBins.Length - 1];
+        var divider = (suspension.TravelBins.Length - 1) / TravelBinsForVelocityHistogram;
+        var hist = new double[suspension.VelocityBins.Length - 1][];
+        for (var i = 0; i < hist.Length; i++)
+        {
+            hist[i] = Generate.Zeros(TravelBinsForVelocityHistogram);
+        }
+        
         var totalCount = 0;
-
         foreach (var s in suspension.Strokes.Compressions.Concat(suspension.Strokes.Rebounds))
         {
             totalCount += s.Stat.Count;
-            foreach (var d in s.DigitizedVelocity)
+            for (int i = 0; i < s.Stat.Count; ++i)
             {
-                hist[d] += 1;
+                var vbin = s.DigitizedVelocity[i];
+                var tbin = s.DigitizedTravel[i] / divider;
+                hist[vbin][tbin] += 1;
             }
         }
 
-        hist = hist.Select(value => value / totalCount * 100.0).ToArray();
+        var largestBin = 0.0;
+        foreach (var travelHist in hist)
+        {
+            var travelSum = 0.0;
+            for (var j = 0; j < TravelBinsForVelocityHistogram; j++)
+            {
+                travelHist[j] = travelHist[j] / totalCount * 100.0;
+                travelSum += travelHist[j];
+            }
 
-        return new HistogramData(
+            largestBin = Math.Max(travelSum, largestBin);
+        }
+        
+        return new StackedHistogramData(
             suspension.VelocityBins.ToList().GetRange(0, suspension.VelocityBins.Length),
             hist.ToList());
     }

@@ -1,4 +1,4 @@
-using System.Linq;
+using System.Collections.Generic;
 using Avalonia;
 using ScottPlot;
 using ScottPlot.TickGenerators;
@@ -9,6 +9,19 @@ namespace Sufni.Bridge.Views.Plots;
 public class VelocityHistogramView : SufniTelemetryPlotView
 {
     private const double VelocityLimit = 2000.0;
+    private List<Color> palette =
+    [
+        Color.FromHex("#3288bd"),
+        Color.FromHex("#66c2a5"),
+        Color.FromHex("#abdda4"),
+        Color.FromHex("#e6f598"),
+        Color.FromHex("#ffffbf"),
+        Color.FromHex("#fee08b"),
+        Color.FromHex("#fdae61"),
+        Color.FromHex("#f46d43"),
+        Color.FromHex("#d53e4f"),
+        Color.FromHex("#9e0142"),
+    ];
     
     public static readonly StyledProperty<SuspensionType> SuspensionTypeProperty = AvaloniaProperty.Register<TravelHistogramView, SuspensionType>(
         "SuspensionType");
@@ -84,21 +97,28 @@ public class VelocityHistogramView : SufniTelemetryPlotView
         var data = telemetryData.CalculateVelocityHistogram(SuspensionType);
         var step = data.Bins[1] - data.Bins[0];
         
-        var color = SuspensionType == SuspensionType.Front ? FrontColor : RearColor;
-        var bars = data.Bins.Zip(data.Values)
-            .Select(tuple => new Bar
+        for (var i = 0; i < data.Values.Count; ++i)
+        {
+            double nextBarBase = 0;
+            
+            for (var j = 0; j < TelemetryData.TravelBinsForVelocityHistogram; j++)
             {
-                Position = tuple.First,
-                Value = tuple.Second,
-                FillColor = color.WithOpacity(),
-                BorderColor = color,
-                BorderLineWidth = 1.5f,
-                Orientation = Orientation.Horizontal,
-                Size = step * 0.65,
-            })
-            .ToList();
+                Plot!.Plot.Add.Bar(new Bar
+                {
+                    Position = data.Bins[i],
+                    ValueBase = nextBarBase,
+                    Value = nextBarBase + data.Values[i][j],
+                    FillColor = palette[j].WithOpacity(0.8),
+                    BorderColor = Colors.Black,
+                    BorderLineWidth = 0.5f,
+                    Orientation = Orientation.Horizontal,
+                    Size = step * 0.95,
+                });
+                
+                nextBarBase += data.Values[i][j];
+            }
+        }
         
-        Plot!.Plot.Add.Bars(bars);
         Plot!.Plot.Axes.AutoScale(invertY: true);
         
         // Set left axis limit to 0.1 to hide the border line at 0 values. Otherwise

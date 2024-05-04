@@ -1,6 +1,5 @@
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
-using ScottPlot;
 using ScottPlot.Avalonia;
 using Color = ScottPlot.Color;
 
@@ -51,7 +50,7 @@ public class SufniPlotView : TemplatedControl
         plot.Axes.Left.Label.FontSize = 14;
        
         plot.Axes.Left.TickLabelStyle.ForeColor = Color.FromHex("#D0D0D0");
-        plot.Axes.Left.TickLabelStyle.Bold = true;
+        plot.Axes.Left.TickLabelStyle.Bold = false;
         plot.Axes.Left.TickLabelStyle.FontSize = 12;
         plot.Axes.Left.MajorTickStyle.Length = 0;
         plot.Axes.Left.MinorTickStyle.Length = 0;
@@ -63,7 +62,7 @@ public class SufniPlotView : TemplatedControl
         plot.Axes.Bottom.Label.FontSize = 14;
         
         plot.Axes.Bottom.TickLabelStyle.ForeColor = Color.FromHex("#D0D0D0");
-        plot.Axes.Bottom.TickLabelStyle.Bold = true;
+        plot.Axes.Bottom.TickLabelStyle.Bold = false;
         plot.Axes.Bottom.TickLabelStyle.FontSize = 12;
         plot.Axes.Bottom.MajorTickStyle.Length = 0;
         plot.Axes.Bottom.MinorTickStyle.Length = 0;

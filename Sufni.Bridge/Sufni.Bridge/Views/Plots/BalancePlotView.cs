@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Avalonia;
 using ScottPlot;
+using ScottPlot.TickGenerators;
 using Sufni.Bridge.Models.Telemetry;
 
 namespace Sufni.Bridge.Views.Plots;
@@ -24,15 +25,11 @@ public class BalancePlotView : SufniTelemetryPlotView
         var maxVelocity = Math.Max(
             balance.FrontVelocity.Max(),
             balance.RearVelocity.Max());
-        
-        var maxTravel = Math.Max(
-            balance.FrontTravel.Max(),
-            balance.RearTravel.Max());
-            
+
         var msd = balance.MeanSignedDeviation / maxVelocity * 100.0;
         var msdString = $"MSD: {msd:+0.00;-#.00} %";
 
-        AddLabel(msdString, maxTravel, 0, -10, -5, Alignment.LowerRight);
+        AddLabel(msdString, 100, 0, -10, -5, Alignment.LowerRight);
     }
     
     protected override void OnTelemetryChanged(TelemetryData telemetryData)
@@ -46,9 +43,15 @@ public class BalancePlotView : SufniTelemetryPlotView
 
         var balance = telemetryData.CalculateBalance(BalanceType);
 
-        var maxTravel = Math.Max(balance.FrontTravel.Max(), balance.RearTravel.Max());
         var maxVelocity = Math.Max(balance.FrontVelocity.Max(), balance.RearVelocity.Max());
-        Plot!.Plot.Axes.SetLimits(0, maxTravel, 0, maxVelocity);
+        var roundedMaxVelocity = (int)Math.Ceiling(maxVelocity / 100.0) * 100;
+        Plot!.Plot.Axes.SetLimits(0, 100, 0, roundedMaxVelocity);
+        
+        var tickInterval = (int)Math.Ceiling(maxVelocity / 5 / 100.0) * 100;
+        Plot!.Plot.Axes.Left.TickGenerator = new NumericFixedInterval(tickInterval); 
+        Plot!.Plot.Axes.Bottom.TickGenerator = new NumericManual(
+            [0.0, 10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0, 100.0],
+            ["0", "10", "20", "30", "40", "50", "60", "70", "80", "90", "100"]);
         
         var front = Plot!.Plot.Add.Scatter(balance.FrontTravel, balance.FrontVelocity);
         front.LineStyle.IsVisible = false;

@@ -15,8 +15,7 @@
                             Margin="0,0,10,0"
                             HorizontalContentAlignment="Center"
                             VerticalContentAlignment="Center"
-                            Command="{TemplateBinding OpenMainMenuCommand}"
-                            CommandParameter="{TemplateBinding}">
+                            Command="{TemplateBinding OpenMainMenuCommand}">
                         <Image Width="16" Height="16"
                                Source="{SvgImage /Assets/fa-arrow-left.svg}" />
                     </Button>

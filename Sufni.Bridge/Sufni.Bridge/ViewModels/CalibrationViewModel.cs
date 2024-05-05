@@ -222,17 +222,6 @@ public partial class CalibrationViewModel : ViewModelBase
 
         mainViewModel.CurrentView = this;
     }
-    
-    [RelayCommand]
-    private void OpenMainMenu()
-    {
-        var mainViewModel = App.Current?.Services?.GetService<MainViewModel>();
-        var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
-        Debug.Assert(mainViewModel != null, nameof(mainViewModel) + " != null");
-        Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
-
-        mainViewModel.CurrentView = mainPagesViewModel;
-    }
 
     private bool CanDelete()
     {

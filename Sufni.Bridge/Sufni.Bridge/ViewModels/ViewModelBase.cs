@@ -1,6 +1,8 @@
 ﻿using System.Collections.ObjectModel;
+using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Sufni.Bridge.ViewModels
 {
@@ -19,6 +21,17 @@ namespace Sufni.Bridge.ViewModels
         private void ClearNotifications(object? o)
         {
             Notifications.Clear();
+        }
+        
+        [RelayCommand]
+        protected void OpenMainMenu()
+        {
+            var mainViewModel = App.Current?.Services?.GetService<MainViewModel>();
+            var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
+            Debug.Assert(mainViewModel != null, nameof(mainViewModel) + " != null");
+            Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
+
+            mainViewModel.CurrentView = mainPagesViewModel;
         }
     }
 }

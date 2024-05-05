@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Avalonia.Xaml.Interactions.Core;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DynamicData;
@@ -192,18 +193,7 @@ public partial class SetupViewModel : ViewModelBase
         mainViewModel.CurrentView = this;
     }
     
-    [RelayCommand]
-    private void OpenMainMenu()
-    {
-        var mainViewModel = App.Current?.Services?.GetService<MainViewModel>();
-        var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
-        Debug.Assert(mainViewModel != null, nameof(mainViewModel) + " != null");
-        Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
-
-        mainViewModel.CurrentView = mainPagesViewModel;
-    }
-
-    [RelayCommand]
+   [RelayCommand]
     private async Task Delete()
     {
         var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();

@@ -19,8 +19,8 @@
         </Style>
         <Style Selector="TabItem">
             <Setter Property="Margin" Value="2 0 2 0" />
-            <Setter Property="MinHeight" Value="44" />
-            <Setter Property="Height" Value="44" />
+            <Setter Property="MinHeight" Value="46" />
+            <Setter Property="Height" Value="46" />
             <Setter Property="Padding" Value="5" />
         </Style>
         <Style Selector="TabItem /template/ ContentPresenter#PART_ContentPresenter">
@@ -32,6 +32,7 @@
         </Style>
         <Style Selector="TabItem:selected /template/ Border#PART_SelectedPipe">
             <Setter Property="Height" Value="2" />
+            <Setter Property="Width" Value="60" />
             <Setter Property="VerticalAlignment" Value="Top" />
             <Setter Property="Background" Value="#0078D7" />
         </Style>
@@ -91,7 +92,7 @@
         <Button Classes="seamless" Grid.Row="0" Grid.Column="2"
                 Margin="0,0,5,0"
                 IsVisible="{Binding SettingsPage.IsRegistered}">
-            <Image Source="{SvgImage /Assets/fa-link.svg}" Width="20" />
+            <Image Source="{SvgImage /Assets/fa-link.svg}" Width="20" Opacity="0.5" />
         </Button>
         
         <!-- Menu tab -->
@@ -105,20 +106,29 @@
             </TabControl.ItemsPanel>
             <TabItem Name="SessionTabItem">
                 <TabItem.Header>
-                    <Image Source="{SvgImage /Assets/fa-chart-line.svg}" Width="20" />
+                    <StackPanel>
+                        <Image Source="{SvgImage /Assets/fa-chart-line.svg}" Width="18" />
+                        <TextBlock HorizontalAlignment="Center" FontSize="9" Text="Sessions" />
+                    </StackPanel>
                 </TabItem.Header>
                 <v:SessionsView />
             </TabItem>
             <TabItem Name="LinkagesTabItem">
                 <TabItem.Header>
-                    <Image Source="{SvgImage /Assets/leverage-ratio.svg}" Width="20" />
+                    <StackPanel>
+                        <Image Source="{SvgImage /Assets/leverage-ratio.svg}" Width="18" />
+                        <TextBlock HorizontalAlignment="Center" FontSize="9" Text="Linkages" />
+                    </StackPanel>
                 </TabItem.Header>
                 <v:LinkagesView />
             </TabItem>
             <TabItem Name="CalibrationsTabItem"
                      IsEnabled="{Binding HasCalibrationMethods}">
                 <TabItem.Header>
-                    <Image Source="{SvgImage /Assets/fa-ruler.svg}" Width="24" />
+                    <StackPanel>
+                        <Image Source="{SvgImage /Assets/fa-ruler.svg}" Width="20" />
+                        <TextBlock HorizontalAlignment="Center" FontSize="9" Text="Calibrations" />
+                    </StackPanel>
                 </TabItem.Header>
                 <v:CalibrationsView />
             </TabItem>
@@ -130,7 +140,10 @@
                     </MultiBinding>
                 </TabItem.IsEnabled>
                 <TabItem.Header>
-                    <Image Source="{SvgImage /Assets/fa-person-mountainbiking.svg}" Width="24" />
+                    <StackPanel>
+                        <Image Source="{SvgImage /Assets/fa-person-mountainbiking.svg}" Width="20" />
+                        <TextBlock HorizontalAlignment="Center" FontSize="9" Text="Setups" />
+                    </StackPanel>
                 </TabItem.Header>
                 <v:SetupsView />
             </TabItem>

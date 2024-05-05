@@ -15,7 +15,7 @@ public partial class SettingsViewModel : ViewModelBase
 {
     #region Observable properties
 
-    [ObservableProperty] private string registerLabel = "Register";
+    [ObservableProperty] private string registerLabel = "connect";
     [ObservableProperty] private string? serverUrl;
     [ObservableProperty] private string? username;
     [ObservableProperty] private string? password;
@@ -27,7 +27,7 @@ public partial class SettingsViewModel : ViewModelBase
 
     partial void OnIsRegisteredChanged(bool value)
     {
-        RegisterLabel = value ? "Unregister" : "Register";
+        RegisterLabel = value ? "disconnect" : "connect";
     }
 
     #endregion
@@ -166,7 +166,22 @@ public partial class SettingsViewModel : ViewModelBase
     private async Task RegisterUnregister()
     {
         if (IsRegistered) await UnregisterAsync();
-        else await RegisterAsync();
+        else 
+        {
+            await RegisterAsync();
+            OpenMainMenu();
+        }
+    }
+    
+    [RelayCommand]
+    private void OpenMainMenu()
+    {
+        var mainViewModel = App.Current?.Services?.GetService<MainViewModel>();
+        var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
+        Debug.Assert(mainViewModel != null, nameof(mainViewModel) + " != null");
+        Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
+
+        mainViewModel.CurrentView = mainPagesViewModel;
     }
 
     #endregion Commands

@@ -10,17 +10,18 @@
              mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
              x:Class="Sufni.Bridge.Views.ImportSessionsView"
              x:DataType="vm:ImportSessionsViewModel"
-             Background="#404040">
+             Background="#15191c">
 
     <Design.DataContext>
         <vm:ImportSessionsViewModel />
     </Design.DataContext>
 
-    <Grid RowDefinitions="44 * auto auto 59" ColumnDefinitions="auto * auto">
+    <Grid RowDefinitions="44 * auto auto 39" ColumnDefinitions="auto * auto"
+          Margin="20,20,20,20">
         
         <!-- Datastore selector -->
         <ComboBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
-                  Margin="6,5,2,0"
+                  Margin="0,0,2,0"
                   VerticalAlignment="Stretch"
                   HorizontalAlignment="Stretch"
                   SelectedItem="{Binding SelectedDataStore}"
@@ -40,7 +41,6 @@
         </ComboBox>
         
         <Button Grid.Row="0" Grid.Column="2" 
-                Margin="0,5,6,0" 
                 Height="39" Width="39"
                 HorizontalContentAlignment="Center" Content="..." 
                 BorderBrush="#505050"
@@ -105,14 +105,24 @@
                                 IsVisible="{Binding ErrorMessages.Count}" />
 
         <!-- Import selected SST files -->
-        <Button Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3"
-                Margin="5,7,13,13"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Stretch"
-                HorizontalContentAlignment="Center"
-                VerticalContentAlignment="Center"
-                Content="import selected"
-                Command="{Binding ImportSessionsCommand}" />
+        <Grid Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3"
+              ColumnDefinitions="auto *">
+            <Button Grid.Column="0" Width="39" Height="39"
+                    Margin="0,0,10,0"
+                    HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center"
+                    Command="{Binding OpenMainMenuCommand}">
+                <Image Width="16" Height="16"
+                       Source="{SvgImage /Assets/fa-arrow-left.svg}" />
+            </Button>
+            <Button Grid.Column="1"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center"
+                    Content="import selected"
+                    Command="{Binding ImportSessionsCommand}" />
+        </Grid>
         
         <!-- Progress ring --> 
         <Panel Grid.Row="0" Grid.Column="0" Grid.RowSpan="5" Grid.ColumnSpan="3"

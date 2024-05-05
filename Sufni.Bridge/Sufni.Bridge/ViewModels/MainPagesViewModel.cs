@@ -62,19 +62,6 @@ public partial class MainPagesViewModel : ViewModelBase
 
     #region Property change handlers
 
-    partial void OnSelectedIndexChanged(int value)
-    {
-        if (value == (int)PageIndices.ImportSessions)
-        {
-            IsImportSessionsPageSelected = true;
-            _ = ImportSessionsPage.EvaluateSetupExists();
-        }
-        else
-        {
-            IsImportSessionsPageSelected = false;
-        }
-    }
-
     // ReSharper disable once UnusedParameterInPartialMethod
     partial void OnSessionSearchTextChanged(string? value)
     {
@@ -114,18 +101,6 @@ public partial class MainPagesViewModel : ViewModelBase
     #endregion
 
     #region Private members
-
-    private enum PageIndices
-    {
-        ImportSessions = 0,
-        Sessions = 1,
-        /*
-        Settings = 2,
-        Linkages = 2,
-        Calibrations = 3,
-        BikeSetups = 4,
-        */
-    }
 
     private readonly IDatabaseService? databaseService;
 
@@ -183,7 +158,6 @@ public partial class MainPagesViewModel : ViewModelBase
             .DisposeMany()
             .Subscribe();
 
-        SelectPage();
         SettingsPage.PropertyChanged += (_, args) =>
         {
             if (args.PropertyName != nameof(SettingsPage.IsRegistered))
@@ -192,7 +166,6 @@ public partial class MainPagesViewModel : ViewModelBase
             }
 
             SyncCommand.NotifyCanExecuteChanged();
-            SelectPage();
         };
 
         CalibrationMethods.CollectionChanged += (_, _) => { HasCalibrationMethods = CalibrationMethods.Count != 0; };
@@ -203,18 +176,6 @@ public partial class MainPagesViewModel : ViewModelBase
     #endregion
 
     #region Private methods
-
-    private void SelectPage()
-    {
-        if (ImportSessionsPage.SelectedDataStore is not null)
-        {
-            SelectedIndex = (int)PageIndices.ImportSessions;
-        }
-        else
-        {
-            SelectedIndex = (int)PageIndices.Sessions;
-        }
-    }
 
     private async Task LoadLinkagesAsync()
     {
@@ -378,6 +339,10 @@ public partial class MainPagesViewModel : ViewModelBase
                 IsDirty = true
             };
             linkagesSource.AddOrUpdate(lvm);
+            
+            var mainViewModel = App.Current?.Services?.GetService<MainViewModel>();
+            Debug.Assert(mainViewModel != null, nameof(mainViewModel) + " != null");
+            mainViewModel.CurrentView = lvm;
         }
         catch (Exception e)
         {
@@ -434,6 +399,10 @@ public partial class MainPagesViewModel : ViewModelBase
                 IsDirty = true
             };
             calibrationsSource.AddOrUpdate(cvm);
+            
+            var mainViewModel = App.Current?.Services?.GetService<MainViewModel>();
+            Debug.Assert(mainViewModel != null, nameof(mainViewModel) + " != null");
+            mainViewModel.CurrentView = cvm;
         }
         catch (Exception e)
         {
@@ -507,6 +476,10 @@ public partial class MainPagesViewModel : ViewModelBase
                 DeleteLinkageCommand.NotifyCanExecuteChanged();
             };
             setupsSource.AddOrUpdate(svm);
+            
+            var mainViewModel = App.Current?.Services?.GetService<MainViewModel>();
+            Debug.Assert(mainViewModel != null, nameof(mainViewModel) + " != null");
+            mainViewModel.CurrentView = svm;
         }
         catch (Exception e)
         {
@@ -720,5 +693,21 @@ public partial class MainPagesViewModel : ViewModelBase
         new Thread(SyncInternal).Start();
     }
 
+    [RelayCommand]
+    private void ShowConnectPage()
+    {
+        var mainViewModel = App.Current?.Services?.GetService<MainViewModel>();
+        Debug.Assert(mainViewModel != null, nameof(mainViewModel) + " != null");
+        mainViewModel.CurrentView = SettingsPage;
+    }
+    
+    [RelayCommand]
+    private void ShowImportPage()
+    {
+        var mainViewModel = App.Current?.Services?.GetService<MainViewModel>();
+        Debug.Assert(mainViewModel != null, nameof(mainViewModel) + " != null");
+        mainViewModel.CurrentView = ImportSessionsPage;
+    }
+    
     #endregion
 }

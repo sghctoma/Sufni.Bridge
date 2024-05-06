@@ -45,20 +45,13 @@
         <Style Selector="MenuItem">
             <Setter Property="Foreground" Value="#a0a0a0" />
         </Style>
-        
-        <!-- seamless button -->
-        <Style Selector="Button.seamless">
-            <Setter Property="Background" Value="#15191c" />
-        </Style>
-        <Style Selector="Button.seamless:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="#15191c" />
-        </Style>
+
     </UserControl.Styles>
 
     <Grid RowDefinitions="auto *" ColumnDefinitions="auto * auto" >
         
         <!-- Hamburger menu -->
-        <Button Classes="seamless" Grid.Row="0" Grid.Column="0" Margin="5,5,5,5">
+        <Button Classes="embedded" Grid.Row="0" Grid.Column="0" Margin="5,5,5,5">
             <Button.Flyout>
                 <MenuFlyout>
                     <MenuItem Header="connect"
@@ -92,7 +85,7 @@
                    FontWeight="Black"
                    Text="sufni suspension telemetry"/>
         
-        <Button Classes="seamless" Grid.Row="0" Grid.Column="2"
+        <Button Classes="embedded" Grid.Row="0" Grid.Column="2"
                 Margin="0,0,5,0"
                 IsVisible="{Binding SettingsPage.IsRegistered}">
             <Image Source="{SvgImage /Assets/fa-link.svg}" Width="20" Opacity="0.5" />

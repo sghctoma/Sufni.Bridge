@@ -147,18 +147,20 @@ public partial class SetupViewModel : ViewModelBase
                 await databaseService.PutBoardAsync(new Board(BoardId!, Id));
             }
             
-            IsInDatabase = true;
-            
             setup = newSetup;
             originalBoardId = BoardId;
             
             SaveCommand.NotifyCanExecuteChanged();
             ResetCommand.NotifyCanExecuteChanged();
             
+            // We notify even if the setup was already in the database, since we need to reevaluate
+            // if a setup exists for the import page.
             var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
             Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
-            await mainPagesViewModel.ImportSessionsPage.EvaluateSetupExists();
+            await mainPagesViewModel.OnEntityAdded(this);
             
+            IsInDatabase = true;
+
             OpenPreviousPage();
         }
         catch (Exception e)

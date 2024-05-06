@@ -182,9 +182,17 @@ public partial class CalibrationViewModel : ViewModelBase
                 input.OriginalValue = input.Value;
                 input.IsDirty = false;
             }
+
+            if (!IsInDatabase)
+            {
+                var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>(); 
+                Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
+                await mainPagesViewModel.OnEntityAdded(this);   
+            }
+            
             IsDirty = false;
             IsInDatabase = true;
-
+            
             OpenPreviousPage();
         }
         catch (Exception e)

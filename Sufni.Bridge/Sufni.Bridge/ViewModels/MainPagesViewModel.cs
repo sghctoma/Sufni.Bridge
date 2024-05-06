@@ -175,6 +175,27 @@ public partial class MainPagesViewModel : ViewModelBase
 
     #endregion
 
+    #region Public methods
+
+    public async Task OnEntityAdded(ViewModelBase entity)
+    {
+        switch (entity)
+        {
+            case LinkageViewModel lvm:
+                linkagesSource.AddOrUpdate(lvm);
+                break;
+            case CalibrationViewModel cvm:
+                calibrationsSource.AddOrUpdate(cvm);
+                break;
+            case SetupViewModel svm:
+                setupsSource.AddOrUpdate(svm);
+                await ImportSessionsPage.EvaluateSetupExists();
+                break;
+        }
+    }
+
+    #endregion
+    
     #region Private methods
 
     private async Task LoadLinkagesAsync()
@@ -338,7 +359,7 @@ public partial class MainPagesViewModel : ViewModelBase
             {
                 IsDirty = true
             };
-            linkagesSource.AddOrUpdate(lvm);
+            //linkagesSource.AddOrUpdate(lvm);
             
             OpenPage(lvm);
         }
@@ -396,7 +417,7 @@ public partial class MainPagesViewModel : ViewModelBase
             {
                 IsDirty = true
             };
-            calibrationsSource.AddOrUpdate(cvm);
+            //calibrationsSource.AddOrUpdate(cvm);
             
             OpenPage(cvm);
         }
@@ -472,7 +493,7 @@ public partial class MainPagesViewModel : ViewModelBase
                 DeleteCalibrationCommand.NotifyCanExecuteChanged();
                 DeleteLinkageCommand.NotifyCanExecuteChanged();
             };
-            setupsSource.AddOrUpdate(svm);
+            //setupsSource.AddOrUpdate(svm);
             
             OpenPage(svm);
         }

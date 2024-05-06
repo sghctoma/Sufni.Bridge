@@ -272,5 +272,14 @@ public partial class ImportSessionsViewModel : ViewModelBase
         NewDataStoresAvailable = false;
     }
     
+    [RelayCommand]
+    private void AddSetup()
+    {
+        var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
+        Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
+
+        mainPagesViewModel.AddSetupCommand.Execute(null);
+    }
+    
     #endregion Commands
 }

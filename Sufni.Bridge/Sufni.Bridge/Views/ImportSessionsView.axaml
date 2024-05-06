@@ -104,9 +104,10 @@
                                 ErrorMessages="{Binding ErrorMessages}"
                                 IsVisible="{Binding ErrorMessages.Count}" />
 
-        <!-- Import selected SST files -->
         <Grid Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3"
               ColumnDefinitions="auto *">
+            
+            <!-- Back button -->
             <Button Grid.Column="0" Width="39" Height="39"
                     Margin="0,0,10,0"
                     HorizontalContentAlignment="Center"
@@ -115,6 +116,8 @@
                 <Image Width="16" Height="16"
                        Source="{SvgImage /Assets/fa-arrow-left.svg}" />
             </Button>
+            
+            <!-- Import button -->
             <Button Grid.Column="1"
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Stretch"
@@ -122,6 +125,23 @@
                     VerticalContentAlignment="Center"
                     Content="import selected"
                     Command="{Binding ImportSessionsCommand}" />
+            
+            <!-- Create Session button -->
+            <Button Grid.Column="1"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center"
+                    Content="create setup for this DAQ"
+                    Command="{Binding AddSetupCommand}">
+                <Button.IsVisible>
+                    <MultiBinding Converter="{x:Static BoolConverters.And}">
+                        <Binding Path="SelectedDataStore" Converter="{x:Static ObjectConverters.IsNotNull}" />
+                        <Binding Path="SelectedSetup" Converter="{x:Static ObjectConverters.IsNull}" />
+                    </MultiBinding>
+                </Button.IsVisible>
+            </Button>
+            
         </Grid>
         
         <!-- Progress ring --> 

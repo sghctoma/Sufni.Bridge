@@ -204,6 +204,24 @@ public partial class SetupViewModel : ViewModelBase
         
         OpenPreviousPage();
     }
+    
+    [RelayCommand]
+    private void AddLinkage()
+    {
+        var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
+        Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
+
+        mainPagesViewModel.AddLinkageCommand.Execute(null);
+    }
+    
+    [RelayCommand]
+    private void AddCalibration()
+    {
+        var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
+        Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
+
+        mainPagesViewModel.AddCalibrationCommand.Execute(null);
+    }
 
     #endregion
 }

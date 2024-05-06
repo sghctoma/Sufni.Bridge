@@ -453,7 +453,8 @@ public partial class MainPagesViewModel : ViewModelBase
             // Use the SST datastore's board ID only if it's not already associated to another setup;
             string? newSetupsBoardId = null;
             var datastoreBoardId = ImportSessionsPage.SelectedDataStore?.BoardId;
-            var datastoreBoard = Boards.FirstOrDefault(b => b?.Id.ToLower() == datastoreBoardId, null);
+            var datastoreBoard = Boards.FirstOrDefault(b => 
+                b?.Id.ToLower() == datastoreBoardId && b?.SetupId is not null, null);
             if (datastoreBoard is null || datastoreBoard.SetupId is null)
             {
                 newSetupsBoardId = datastoreBoardId;

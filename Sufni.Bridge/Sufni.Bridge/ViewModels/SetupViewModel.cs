@@ -133,20 +133,21 @@ public partial class SetupViewModel : ViewModelBase
                 SelectedFrontCalibration?.Id,
                 SelectedRearCalibration?.Id);
             Id = await databaseService.PutSetupAsync(newSetup);
-            IsInDatabase = true;
             
             // If this setup was already associated with another board, clear that association.
             // Do not delete the board though, it might be picked up later.
-            if (!string.IsNullOrEmpty(originalBoardId) && originalBoardId != BoardId)
+            if (!string.IsNullOrEmpty(originalBoardId) && IsInDatabase && originalBoardId != BoardId)
             {
                 await databaseService.PutBoardAsync(new Board(originalBoardId, null));
             }
             
-            // If the board ID changed, associate this setup with the new ID.
-            if (!string.IsNullOrEmpty(BoardId) && originalBoardId != BoardId)
+            // If the board ID changed, or this is a new setup, associate it with the board ID.
+            if (!string.IsNullOrEmpty(BoardId) && (!IsInDatabase || originalBoardId != BoardId))
             {
                 await databaseService.PutBoardAsync(new Board(BoardId!, Id));
             }
+            
+            IsInDatabase = true;
             
             setup = newSetup;
             originalBoardId = BoardId;

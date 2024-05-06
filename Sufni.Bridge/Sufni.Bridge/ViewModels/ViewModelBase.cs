@@ -24,13 +24,12 @@ namespace Sufni.Bridge.ViewModels
         }
 
         [RelayCommand]
-        protected void OpenPage(ViewModelBase page)
+        protected void OpenPage(ViewModelBase view)
         {
             var mainViewModel = App.Current?.Services?.GetService<MainViewModel>();
             Debug.Assert(mainViewModel != null, nameof(mainViewModel) + " != null");
-
-            mainViewModel.PreviousView = mainViewModel.CurrentView;
-            mainViewModel.CurrentView = page;
+            
+            mainViewModel.OpenView(view);
         }
         
         [RelayCommand]
@@ -38,9 +37,8 @@ namespace Sufni.Bridge.ViewModels
         {
             var mainViewModel = App.Current?.Services?.GetService<MainViewModel>();
             Debug.Assert(mainViewModel != null, nameof(mainViewModel) + " != null");
-            Debug.Assert(mainViewModel.PreviousView != null, nameof(mainViewModel.PreviousView) + " != null");
 
-            (mainViewModel.CurrentView, mainViewModel.PreviousView) = (mainViewModel.PreviousView, mainViewModel.CurrentView);
+            mainViewModel.OpenPreviousView();
         }
     }
 }

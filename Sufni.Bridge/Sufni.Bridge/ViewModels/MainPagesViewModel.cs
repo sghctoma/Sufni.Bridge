@@ -692,7 +692,7 @@ public partial class MainPagesViewModel : ViewModelBase
     {
         var mainViewModel = App.Current?.Services?.GetService<MainViewModel>();
         Debug.Assert(mainViewModel != null, nameof(mainViewModel) + " != null");
-        mainViewModel.CurrentView = SettingsPage;
+        mainViewModel.OpenView(SettingsPage);
     }
     
     [RelayCommand]
@@ -700,7 +700,7 @@ public partial class MainPagesViewModel : ViewModelBase
     {
         var mainViewModel = App.Current?.Services?.GetService<MainViewModel>();
         Debug.Assert(mainViewModel != null, nameof(mainViewModel) + " != null");
-        mainViewModel.CurrentView = ImportSessionsPage;
+        mainViewModel.OpenView(ImportSessionsPage);
     }
     
     #endregion

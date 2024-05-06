@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -7,7 +8,7 @@ namespace Sufni.Bridge.ViewModels;
 public partial class MainViewModel : ViewModelBase
 {
    [ObservableProperty] private ViewModelBase currentView;
-   [ObservableProperty] private ViewModelBase? previousView;
+   private readonly Stack<ViewModelBase> viewHistory = new();
 
    public MainViewModel()
    {
@@ -15,5 +16,17 @@ public partial class MainViewModel : ViewModelBase
       Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
 
       CurrentView = mainPagesViewModel;
+   }
+
+   public void OpenView(ViewModelBase view)
+   {
+      viewHistory.Push(CurrentView);
+      CurrentView = view;
+   }
+
+   public void OpenPreviousView()
+   {
+      CurrentView = viewHistory.Pop();
+      Debug.Assert(CurrentView != null, nameof(CurrentView) + " != null");
    }
 }

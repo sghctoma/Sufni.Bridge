@@ -128,7 +128,7 @@
 
         <!-- Global styles for the main ItemsRepeaters' items -->
         <Style Selector="ItemsRepeater.main > Expander">
-            <Setter Property="Margin" Value="6,2, 6, 1" />
+            <Setter Property="Margin" Value="0,2, 0, 1" />
         </Style>
         <Style Selector="ItemsRepeater.main > Border">
             <Setter Property="Margin" Value="6,2, 6, 1" />

@@ -205,7 +205,7 @@ public partial class SessionViewModel : ViewModelBase
 
         await mainPagesViewModel.DeleteSessionCommand.ExecuteAsync(Id);
         
-        OpenMainMenu();
+        OpenPreviousPage();
     }
     
     #endregion

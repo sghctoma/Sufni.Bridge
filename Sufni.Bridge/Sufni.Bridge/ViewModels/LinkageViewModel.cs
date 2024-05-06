@@ -122,7 +122,7 @@ public partial class LinkageViewModel : ViewModelBase
             SaveCommand.NotifyCanExecuteChanged();
             ResetCommand.NotifyCanExecuteChanged();
             
-            OpenMainMenu();
+            OpenPreviousPage();
         }
         catch (Exception e)
         {
@@ -199,7 +199,7 @@ public partial class LinkageViewModel : ViewModelBase
 
         await mainPagesViewModel.DeleteLinkageCommand.ExecuteAsync(this);
         
-        OpenMainMenu();
+        OpenPreviousPage();
     }
     
     #endregion

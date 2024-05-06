@@ -242,7 +242,7 @@
         <!-- Back, Save, Reset and Delete buttons -->
         <v:CommonButtonLine Grid.Row="4"
                             Margin="10,10,10,10"
-                            OpenMainMenuCommand="{Binding OpenMainMenuCommand}"
+                            OpenPreviousPageCommand="{Binding OpenPreviousPageCommand}"
                             SaveCommand="{Binding SaveCommand}"
                             ResetCommand="{Binding ResetCommand}"
                             DeleteCommand="{Binding DeleteCommand}"/>

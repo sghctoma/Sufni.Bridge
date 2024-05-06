@@ -42,7 +42,7 @@
                 IsTabStop="False"
                 IsDefault="{Binding IsRegistered}"
                 Content="cancel"
-                Command="{Binding OpenMainMenuCommand}" />
+                Command="{Binding OpenPreviousPageCommand}" />
         <v:ErrorMessagesControl Margin="2, 4"
                                 ClearErrorsCommand="{Binding ClearErrorsCommand}"
                                 ErrorMessages="{Binding ErrorMessages}"

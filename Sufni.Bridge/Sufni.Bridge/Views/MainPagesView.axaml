@@ -63,7 +63,8 @@
                 <MenuFlyout>
                     <MenuItem Header="connect"
                               IsVisible="{Binding !SettingsPage.IsRegistered}"
-                              Command="{Binding ShowConnectPageCommand}"/>
+                              Command="{Binding OpenPageCommand}"
+                              CommandParameter="{Binding SettingsPage}"/>
                     <MenuItem Header="disconnect"
                               IsVisible="{Binding SettingsPage.IsRegistered}"
                               Command="{Binding SettingsPage.RegisterUnregisterCommand}"/>
@@ -75,7 +76,9 @@
                     <MenuItem Header="+ calibration" Command="{Binding AddCalibrationCommand}" />
                     <MenuItem Header="+ setup" Command="{Binding AddSetupCommand}" />
                     <MenuItem Header="-" />
-                    <MenuItem Header="import" Command="{Binding ShowImportPageCommand}"/>
+                    <MenuItem Header="import"
+                              Command="{Binding OpenPageCommand}"
+                              CommandParameter="{Binding ImportSessionsPage}"/>
                 </MenuFlyout>
             </Button.Flyout>
             <Image Source="{SvgImage /Assets/fa-bars.svg}" Width="18" />

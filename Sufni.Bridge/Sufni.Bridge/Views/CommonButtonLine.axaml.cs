@@ -6,13 +6,13 @@ namespace Sufni.Bridge.Views;
 
 public class CommonButtonLine : TemplatedControl
 {
-    public static readonly StyledProperty<IRelayCommand> OpenMainMenuCommandProperty = AvaloniaProperty.Register<CommonButtonLine, IRelayCommand>(
-        "OpenMainMenuCommand");
+    public static readonly StyledProperty<IRelayCommand> OpenPreviousPageCommandProperty = AvaloniaProperty.Register<CommonButtonLine, IRelayCommand>(
+        "OpenPreviousPageCommand");
 
-    public IRelayCommand OpenMainMenuCommand
+    public IRelayCommand OpenPreviousPageCommand
     {
-        get => GetValue(OpenMainMenuCommandProperty);
-        set => SetValue(OpenMainMenuCommandProperty, value);
+        get => GetValue(OpenPreviousPageCommandProperty);
+        set => SetValue(OpenPreviousPageCommandProperty, value);
     }
     
     public static readonly StyledProperty<IAsyncRelayCommand> SaveCommandProperty = AvaloniaProperty.Register<CommonButtonLine, IAsyncRelayCommand>(

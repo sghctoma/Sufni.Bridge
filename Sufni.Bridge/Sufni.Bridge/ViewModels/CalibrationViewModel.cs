@@ -185,7 +185,7 @@ public partial class CalibrationViewModel : ViewModelBase
             IsDirty = false;
             IsInDatabase = true;
 
-            OpenMainMenu();
+            OpenPreviousPage();
         }
         catch (Exception e)
         {
@@ -241,7 +241,7 @@ public partial class CalibrationViewModel : ViewModelBase
 
         await mainPagesViewModel.DeleteCalibrationCommand.ExecuteAsync(this);
         
-        OpenMainMenu();
+        OpenPreviousPage();
     }
 
     #endregion

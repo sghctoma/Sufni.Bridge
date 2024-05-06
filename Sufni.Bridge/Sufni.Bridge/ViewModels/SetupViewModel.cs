@@ -3,7 +3,6 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Avalonia.Xaml.Interactions.Core;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DynamicData;
@@ -154,6 +153,8 @@ public partial class SetupViewModel : ViewModelBase
             
             SaveCommand.NotifyCanExecuteChanged();
             ResetCommand.NotifyCanExecuteChanged();
+            
+            OpenPreviousPage();
         }
         catch (Exception e)
         {
@@ -193,7 +194,7 @@ public partial class SetupViewModel : ViewModelBase
         mainViewModel.CurrentView = this;
     }
     
-   [RelayCommand]
+    [RelayCommand]
     private async Task Delete()
     {
         var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
@@ -201,7 +202,7 @@ public partial class SetupViewModel : ViewModelBase
 
         await mainPagesViewModel.DeleteSetupCommand.ExecuteAsync(this);
         
-        OpenMainMenu();
+        OpenPreviousPage();
     }
 
     #endregion

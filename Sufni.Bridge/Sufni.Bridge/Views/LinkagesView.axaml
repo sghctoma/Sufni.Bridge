@@ -43,7 +43,8 @@
                                Margin="6,2,6,2"
                                HorizontalAlignment="Stretch"
                                VerticalContentAlignment="Center"
-                               Command="{Binding SelectCommand}"/>
+                               Command="{Binding OpenPageCommand}"
+                               CommandParameter="{Binding}"/>
                     </DataTemplate>
                 </ItemsRepeater.ItemTemplate>
             </ItemsRepeater>

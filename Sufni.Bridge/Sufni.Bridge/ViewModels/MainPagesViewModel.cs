@@ -340,9 +340,7 @@ public partial class MainPagesViewModel : ViewModelBase
             };
             linkagesSource.AddOrUpdate(lvm);
             
-            var mainViewModel = App.Current?.Services?.GetService<MainViewModel>();
-            Debug.Assert(mainViewModel != null, nameof(mainViewModel) + " != null");
-            mainViewModel.CurrentView = lvm;
+            OpenPage(lvm);
         }
         catch (Exception e)
         {
@@ -400,9 +398,7 @@ public partial class MainPagesViewModel : ViewModelBase
             };
             calibrationsSource.AddOrUpdate(cvm);
             
-            var mainViewModel = App.Current?.Services?.GetService<MainViewModel>();
-            Debug.Assert(mainViewModel != null, nameof(mainViewModel) + " != null");
-            mainViewModel.CurrentView = cvm;
+            OpenPage(cvm);
         }
         catch (Exception e)
         {
@@ -477,9 +473,7 @@ public partial class MainPagesViewModel : ViewModelBase
             };
             setupsSource.AddOrUpdate(svm);
             
-            var mainViewModel = App.Current?.Services?.GetService<MainViewModel>();
-            Debug.Assert(mainViewModel != null, nameof(mainViewModel) + " != null");
-            mainViewModel.CurrentView = svm;
+            OpenPage(svm);
         }
         catch (Exception e)
         {

@@ -99,7 +99,7 @@
 
         <!-- Back, Save, Reset and Delete buttons -->
         <v:CommonButtonLine Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2"
-                            OpenMainMenuCommand="{Binding OpenMainMenuCommand}"
+                            OpenPreviousPageCommand="{Binding OpenPreviousPageCommand}"
                             SaveCommand="{Binding SaveCommand}"
                             ResetCommand="{Binding ResetCommand}"
                             DeleteCommand="{Binding DeleteCommand}"/>

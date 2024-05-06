@@ -169,7 +169,7 @@ public partial class SettingsViewModel : ViewModelBase
         else 
         {
             await RegisterAsync();
-            OpenMainMenu();
+            OpenPreviousPage();
         }
     }
 

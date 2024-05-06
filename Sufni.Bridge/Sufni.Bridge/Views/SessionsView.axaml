@@ -100,7 +100,8 @@
                                 Margin="6,2,6,2"
                                 HorizontalAlignment="Stretch"
                                 VerticalContentAlignment="Center"
-                                Command="{Binding SelectCommand}">
+                                Command="{Binding OpenPageCommand}"
+                                CommandParameter="{Binding}">
                             <Grid ColumnDefinitions="auto * auto"
                                   HorizontalAlignment="Stretch">
                                 <TextBlock Grid.Column="0" Text="{Binding Name}" />

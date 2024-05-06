@@ -155,6 +155,10 @@ public partial class SetupViewModel : ViewModelBase
             SaveCommand.NotifyCanExecuteChanged();
             ResetCommand.NotifyCanExecuteChanged();
             
+            var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
+            Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
+            await mainPagesViewModel.ImportSessionsPage.EvaluateSetupExists();
+            
             OpenPreviousPage();
         }
         catch (Exception e)

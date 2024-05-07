@@ -1,4 +1,6 @@
+using System.Diagnostics;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using CommunityToolkit.Mvvm.Input;
 
@@ -40,5 +42,19 @@ public class CommonButtonLine : TemplatedControl
     {
         get => GetValue(DeleteCommandProperty);
         set => SetValue(DeleteCommandProperty, value);
+    }
+    
+    private Button? DeleteButton { get; set; }
+    private Button? CancelButton { get; set; }
+
+    protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
+    {
+        DeleteButton = e.NameScope.Find<Button>("DeleteButton");
+        CancelButton = e.NameScope.Find<Button>("CancelButton");
+        Debug.Assert(DeleteButton != null, nameof(DeleteButton) + " != null");
+        Debug.Assert(CancelButton != null, nameof(CancelButton) + " != null");
+
+        DeleteButton.IsEnabled = DeleteCommand.CanExecute(null);
+        CancelButton.Click += (_, _) => DeleteButton?.Flyout?.Hide();
     }
 }

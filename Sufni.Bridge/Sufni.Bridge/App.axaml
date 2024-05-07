@@ -68,6 +68,14 @@
             <Setter Property="Opacity" Value="0.8" />
         </Style>
         
+        <!-- Global styles for "dangerous" Buttons  -->
+        <Style Selector="Button.dangerous">
+            <Setter Property="Foreground" Value="#bf312d" />
+        </Style>
+        <Style Selector="Button.dangerous:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="#bf312d" />
+        </Style>
+        
         <!-- Global styles for NumericUpDown -->
         <Style Selector="NumericUpDown">
             <Setter Property="Height" Value="39" />
@@ -151,12 +159,14 @@
     </Application.Styles>
     
     <Application.Resources>
-        <!-- ReSharper disable once Xaml.RedundantResource -->
         <SolidColorBrush x:Key="ComboBoxDropDownBackground" Color="#20262b" />
-        <!-- ReSharper disable once Xaml.RedundantResource -->
         <SolidColorBrush x:Key="ExpanderHeaderBackgroundPointerOver" Color="#20262b" />
-        <!-- ReSharper disable once Xaml.RedundantResource -->
         <SolidColorBrush x:Key="ExpanderHeaderBackground" Color="#20262b" />
+        <SolidColorBrush x:Key="FlyoutPresenterBackground" Color="#20262b" />
+        <Thickness x:Key="FlyoutContentThemePadding">0</Thickness>
+        <x:Double x:Key="FlyoutThemeMaxWidth">600</x:Double>
+        <CornerRadius x:Key="OverlayCornerRadius">3</CornerRadius>
+        <Thickness x:Key="FlyoutBorderThemeThickness">0</Thickness>
     </Application.Resources>
     
 </Application>

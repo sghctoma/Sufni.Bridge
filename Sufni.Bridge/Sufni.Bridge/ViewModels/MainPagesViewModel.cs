@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DynamicData;
@@ -690,14 +691,21 @@ public partial class MainPagesViewModel : ViewModelBase
             }
 
             await databaseService.UpdateLastSyncTimeAsync();
-            await LoadDatabaseContent();
 
-            Notifications.Add("Sync successful");
-            ErrorMessages.Clear();
+            await Dispatcher.UIThread.InvokeAsync(async () =>
+            {
+                await LoadDatabaseContent();
+
+                Notifications.Add("Sync successful");
+                ErrorMessages.Clear();
+            });
         }
         catch (Exception e)
         {
-            ErrorMessages.Add($"Could not sync: {e.Message}");
+            Dispatcher.UIThread.Post(() =>
+            {
+                ErrorMessages.Add($"Could not sync: {e.Message}");
+            });
         }
         
         SyncInProgress = false;

@@ -42,10 +42,13 @@ public partial class ImportSessionsViewModel : ViewModelBase
         
         TelemetryFiles.Clear();
         var files = await (dataStore as ITelemetryDataStore)!.GetFiles();
-        foreach (var file in files)
+        Dispatcher.UIThread.Post(() =>
         {
-            TelemetryFiles.Add(file);
-        }
+            foreach (var file in files)
+            {
+                TelemetryFiles.Add(file);
+            }
+        });
 
         ImportInProgress = false;
     }
@@ -233,15 +236,21 @@ public partial class ImportSessionsViewModel : ViewModelBase
 
                 await databaseService.PutSessionAsync(session);
                 
-                var svm = new SessionViewModel(session, true);
-                sessions.AddOrUpdate(svm);
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    var svm = new SessionViewModel(session, true);
+                    sessions.AddOrUpdate(svm);
                 
-                telemetryFile.OnImported();
-                Notifications.Insert(0, $"{svm.Name} was successfully imported.");
+                    telemetryFile.OnImported();
+                    Notifications.Insert(0, $"{svm.Name} was successfully imported.");
+                });
             }
             catch (Exception e)
             {
-                ErrorMessages.Add($"Could not import {telemetryFile.Name}: {e.Message}");
+                Dispatcher.UIThread.Post(() =>
+                {
+                    ErrorMessages.Add($"Could not import {telemetryFile.Name}: {e.Message}");
+                });
             }
         }
         

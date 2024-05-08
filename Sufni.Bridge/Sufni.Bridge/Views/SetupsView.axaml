@@ -5,7 +5,7 @@
              xmlns:vm="clr-namespace:Sufni.Bridge.ViewModels"
              xmlns:v="clr-namespace:Sufni.Bridge.Views"
              xmlns:progRing="clr-namespace:AvaloniaProgressRing;assembly=AvaloniaProgressRing"
-             mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
+             mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="400"
              x:Class="Sufni.Bridge.Views.SetupsView"
              x:DataType="vm:MainPagesViewModel"
              Background="#404040">
@@ -30,7 +30,7 @@
         </Button>
         
         <!-- List of Setups -->
-        <ScrollViewer Grid.Row="1" Grid.Column="0" Margin="0,5,0,0">
+        <ScrollViewer Grid.Row="1" Grid.Column="0" Margin="0,5,0,5">
             <ItemsRepeater Classes="main" ItemsSource="{Binding Setups}">
                 <ItemsRepeater.ItemTemplate>
                     <DataTemplate>

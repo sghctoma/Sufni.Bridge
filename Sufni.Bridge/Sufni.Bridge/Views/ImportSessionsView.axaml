@@ -54,7 +54,7 @@
                Source="{SvgImage /Assets/fa-circle-exclamation.svg}" />
 
         <!-- List of SST files in selected datastore -->
-        <ScrollViewer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,5,0,0">
+        <ScrollViewer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,5,0,5">
             <ItemsRepeater Classes="main" ItemsSource="{Binding TelemetryFiles}">
                 <ItemsRepeater.ItemTemplate>
                     <DataTemplate>

@@ -30,7 +30,7 @@
         </Button>
 
         <!-- List of Linkages -->
-        <ScrollViewer Grid.Row="1" Grid.Column="0" Margin="0,5,0,0">
+        <ScrollViewer Grid.Row="1" Grid.Column="0" Margin="0,5,0,5">
             <ItemsRepeater Classes="main" ItemsSource="{Binding Linkages}">
                 <ItemsRepeater.ItemTemplate>
                     <DataTemplate>

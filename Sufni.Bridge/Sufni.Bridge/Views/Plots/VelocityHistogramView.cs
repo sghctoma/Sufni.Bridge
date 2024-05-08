@@ -103,6 +103,11 @@ public class VelocityHistogramView : SufniTelemetryPlotView
             
             for (var j = 0; j < TelemetryData.TravelBinsForVelocityHistogram; j++)
             {
+                if (data.Values[i][j] == 0)
+                {
+                    continue;
+                }
+
                 Plot!.Plot.Add.Bar(new Bar
                 {
                     Position = data.Bins[i],

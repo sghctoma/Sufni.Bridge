@@ -13,6 +13,18 @@ public class StorageProviderTelemetryDataStore : ITelemetryDataStore
     public string? BoardId { get; private set; }
     private IStorageFolder Folder { get; }
 
+    public async Task<bool> IsAvailable()
+    {
+        try
+        {
+            return await Folder.CreateFileAsync("available.flag") is not null;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
     public async Task<List<ITelemetryFile>> GetFiles()
     {
         await Initialization;

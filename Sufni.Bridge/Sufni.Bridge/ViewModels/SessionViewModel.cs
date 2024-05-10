@@ -189,15 +189,6 @@ public partial class SessionViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private void Select()
-    {
-        var mainViewModel = App.Current?.Services?.GetService<MainViewModel>();
-        Debug.Assert(mainViewModel != null, nameof(mainViewModel) + " != null");
-
-        mainViewModel.CurrentView = this;
-    }
-
-    [RelayCommand]
     private async Task Delete()
     {
         var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();

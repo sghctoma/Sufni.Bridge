@@ -13,7 +13,7 @@
     </Design.DataContext>
     
     <UserControl.Styles>
-        <!-- tabs -->
+        <!-- Tabs -->
         <Style Selector="TabControl">
             <Setter Property="Padding" Value="0" />
         </Style>
@@ -50,40 +50,13 @@
 
     <Grid RowDefinitions="auto *" ColumnDefinitions="auto * auto" >
         
-        <!-- Hamburger menu -->
-        <Button Classes="embedded" Grid.Row="0" Grid.Column="0" Margin="5,5,5,5">
-            <Button.Flyout>
-                <MenuFlyout>
-                    <MenuItem Header="connect"
-                              IsVisible="{Binding !SettingsPage.IsRegistered}"
-                              Command="{Binding OpenPageCommand}"
-                              CommandParameter="{Binding SettingsPage}"/>
-                    <MenuItem Header="disconnect"
-                              IsVisible="{Binding SettingsPage.IsRegistered}"
-                              Command="{Binding SettingsPage.RegisterUnregisterCommand}"/>
-                    <MenuItem Header="synchronize"
-                              IsVisible="{Binding SettingsPage.IsRegistered}"
-                              Command="{Binding SyncCommand}"/>
-                    <MenuItem Header="-" />
-                    <MenuItem Header="+ linkage" Command="{Binding AddLinkageCommand}" />
-                    <MenuItem Header="+ calibration" Command="{Binding AddCalibrationCommand}" />
-                    <MenuItem Header="+ setup" Command="{Binding AddSetupCommand}" />
-                    <MenuItem Header="-" />
-                    <MenuItem Header="import"
-                              Command="{Binding OpenPageCommand}"
-                              CommandParameter="{Binding ImportSessionsPage}"/>
-                </MenuFlyout>
-            </Button.Flyout>
-            <Image Source="{SvgImage /Assets/fa-bars.svg}" Width="18" />
-        </Button>
-        
         <!-- Title -->
         <TextBlock Grid.Row="0" Grid.Column="1"
                    IsHitTestVisible="False"
                    HorizontalAlignment="Left" VerticalAlignment="Center"
-                   Margin="10,0,0,0"
+                   Margin="15,0,0,0"
                    FontWeight="Black"
-                   Text="sufni suspension telemetry"/>
+                   Text="Sufni Suspension Telemetry"/>
         
         <Button Classes="embedded" Grid.Row="0" Grid.Column="2"
                 Margin="0,0,5,0"
@@ -103,8 +76,9 @@
             <TabItem Name="SessionTabItem">
                 <TabItem.Header>
                     <StackPanel>
-                        <Image Source="{SvgImage /Assets/fa-chart-line.svg}" Width="18" />
-                        <TextBlock HorizontalAlignment="Center" FontSize="9" Text="Sessions" />
+                        <Image Source="{SvgImage /Assets/fa-chart-line.svg}" Width="16" />
+                        <TextBlock HorizontalAlignment="Center" Margin="0,2,0,0"
+                                   FontSize="9" Text="Sessions" />
                     </StackPanel>
                 </TabItem.Header>
                 <v:SessionsView />
@@ -112,8 +86,9 @@
             <TabItem Name="LinkagesTabItem">
                 <TabItem.Header>
                     <StackPanel>
-                        <Image Source="{SvgImage /Assets/leverage-ratio.svg}" Width="18" />
-                        <TextBlock HorizontalAlignment="Center" FontSize="9" Text="Linkages" />
+                        <Image Source="{SvgImage /Assets/leverage-ratio.svg}" Width="16" />
+                        <TextBlock HorizontalAlignment="Center" Margin="0,2,0,0"
+                                   FontSize="9" Text="Linkages" />
                     </StackPanel>
                 </TabItem.Header>
                 <v:LinkagesView />
@@ -122,8 +97,9 @@
                      IsEnabled="{Binding HasCalibrationMethods}">
                 <TabItem.Header>
                     <StackPanel>
-                        <Image Source="{SvgImage /Assets/fa-ruler.svg}" Width="20" />
-                        <TextBlock HorizontalAlignment="Center" FontSize="9" Text="Calibrations" />
+                        <Image Source="{SvgImage /Assets/fa-ruler.svg}" Width="18" />
+                        <TextBlock HorizontalAlignment="Center"
+                                   FontSize="9" Text="Calibrations" />
                     </StackPanel>
                 </TabItem.Header>
                 <v:CalibrationsView />
@@ -137,11 +113,46 @@
                 </TabItem.IsEnabled>
                 <TabItem.Header>
                     <StackPanel>
-                        <Image Source="{SvgImage /Assets/fa-person-mountainbiking.svg}" Width="20" />
+                        <Image Source="{SvgImage /Assets/fa-person-mountainbiking.svg}" Width="18" />
                         <TextBlock HorizontalAlignment="Center" FontSize="9" Text="Setups" />
                     </StackPanel>
                 </TabItem.Header>
                 <v:SetupsView />
+            </TabItem>
+            <TabItem Name="MenuTabItem"
+                     PointerReleased="MenuTabItem_OnPointerReleased" 
+                     PointerPressed="MenuTabItem_OnPointerPressed">
+                <FlyoutBase.AttachedFlyout>
+                    <MenuFlyout Placement="Top">
+                        <MenuItem Header="connect"
+                                  IsVisible="{Binding !SettingsPage.IsRegistered}"
+                                  Command="{Binding OpenPageCommand}"
+                                  CommandParameter="{Binding SettingsPage}"/>
+                        <MenuItem Header="disconnect"
+                                  IsVisible="{Binding SettingsPage.IsRegistered}"
+                                  Command="{Binding SettingsPage.RegisterUnregisterCommand}"/>
+                        <MenuItem Header="synchronize"
+                                  IsVisible="{Binding SettingsPage.IsRegistered}"
+                                  Command="{Binding SyncCommand}"/>
+                        <MenuItem Header="-" />
+                        <MenuItem Header="+ linkage" Command="{Binding AddLinkageCommand}" />
+                        <MenuItem Header="+ calibration" Command="{Binding AddCalibrationCommand}" />
+                        <MenuItem Header="+ setup" Command="{Binding AddSetupCommand}" />
+                        <MenuItem Header="-" />
+                        <MenuItem Header="import"
+                                  Command="{Binding OpenPageCommand}"
+                                  CommandParameter="{Binding ImportSessionsPage}"/>
+                    </MenuFlyout>
+                </FlyoutBase.AttachedFlyout>
+                <TabItem.Header>
+                    <StackPanel>
+                        <Image Source="{SvgImage /Assets/fa-bars.svg}" Width="17"
+                               Margin="2,0,0,0"
+                               HorizontalAlignment="Stretch"/>
+                        <TextBlock HorizontalAlignment="Center" FontSize="9" Text="Menu"
+                                   Margin="0,1,0,0"/>
+                    </StackPanel>
+                </TabItem.Header>
             </TabItem>
         </TabControl>
     </Grid>

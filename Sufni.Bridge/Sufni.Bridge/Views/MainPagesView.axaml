@@ -36,16 +36,6 @@
             <Setter Property="VerticalAlignment" Value="Top" />
             <Setter Property="Background" Value="#0078D7" />
         </Style>
-        
-        <!-- Flyout -->
-        <Style Selector="MenuFlyoutPresenter">
-            <Setter Property="Background" Value="#15191c" />
-            <Setter Property="Foreground" Value="#a0a0a0" />
-        </Style>
-        <Style Selector="MenuItem">
-            <Setter Property="Foreground" Value="#a0a0a0" />
-        </Style>
-
     </UserControl.Styles>
 
     <Grid RowDefinitions="auto *" ColumnDefinitions="auto * auto" >
@@ -61,7 +51,7 @@
         <Button Classes="embedded" Grid.Row="0" Grid.Column="2"
                 Margin="0,0,5,0"
                 IsVisible="{Binding SettingsPage.IsRegistered}">
-            <Image Source="{SvgImage /Assets/fa-link.svg}" Width="20" Opacity="0.5" />
+            <Image Source="{SvgImage /Assets/fa-link_green.svg}" Width="20" Opacity="0.5" />
         </Button>
         
         <!-- Menu tab -->
@@ -124,24 +114,56 @@
                      PointerPressed="MenuTabItem_OnPointerPressed">
                 <FlyoutBase.AttachedFlyout>
                     <MenuFlyout Placement="Top">
+                        <MenuItem Header="import"
+                                  Command="{Binding OpenPageCommand}"
+                                  CommandParameter="{Binding ImportSessionsPage}">
+                            <MenuItem.Icon>
+                                <Image Source="{SvgImage /Assets/fa-file-import.svg}" Width="12" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <Separator />
+                        <MenuItem Header="linkage" Command="{Binding AddLinkageCommand}">
+                            <MenuItem.Icon>
+                                <Image Source="{SvgImage /Assets/fa-plus.svg}" Width="12"
+                                       Margin="0,3,0,0"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="calibration" Command="{Binding AddCalibrationCommand}">
+                            <MenuItem.Icon>
+                                <Image Source="{SvgImage /Assets/fa-plus.svg}" Width="12"
+                                       Margin="0,3,0,0"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="setup" Command="{Binding AddSetupCommand}">
+                            <MenuItem.Icon>
+                                <Image Source="{SvgImage /Assets/fa-plus.svg}" Width="12"
+                                       Margin="0,3,0,0"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <Separator />
+                        <MenuItem Header="synchronize"
+                                  IsVisible="{Binding SettingsPage.IsRegistered}"
+                                  Command="{Binding SyncCommand}">
+                            <MenuItem.Icon>
+                                <Image Source="{SvgImage /Assets/fa-sync-alt.svg}" Width="10"
+                                       Margin="0,3,0,0"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
                         <MenuItem Header="connect"
                                   IsVisible="{Binding !SettingsPage.IsRegistered}"
                                   Command="{Binding OpenPageCommand}"
-                                  CommandParameter="{Binding SettingsPage}"/>
+                                  CommandParameter="{Binding SettingsPage}">
+                            <MenuItem.Icon>
+                                <Image Source="{SvgImage /Assets/fa-link.svg}" Width="12" />
+                            </MenuItem.Icon>
+                        </MenuItem>
                         <MenuItem Header="disconnect"
                                   IsVisible="{Binding SettingsPage.IsRegistered}"
-                                  Command="{Binding SettingsPage.RegisterUnregisterCommand}"/>
-                        <MenuItem Header="synchronize"
-                                  IsVisible="{Binding SettingsPage.IsRegistered}"
-                                  Command="{Binding SyncCommand}"/>
-                        <MenuItem Header="-" />
-                        <MenuItem Header="+ linkage" Command="{Binding AddLinkageCommand}" />
-                        <MenuItem Header="+ calibration" Command="{Binding AddCalibrationCommand}" />
-                        <MenuItem Header="+ setup" Command="{Binding AddSetupCommand}" />
-                        <MenuItem Header="-" />
-                        <MenuItem Header="import"
-                                  Command="{Binding OpenPageCommand}"
-                                  CommandParameter="{Binding ImportSessionsPage}"/>
+                                  Command="{Binding SettingsPage.RegisterUnregisterCommand}">
+                            <MenuItem.Icon>
+                                <Image Source="{SvgImage /Assets/fa-link-slash.svg}" Width="18" />
+                            </MenuItem.Icon>
+                        </MenuItem>
                     </MenuFlyout>
                 </FlyoutBase.AttachedFlyout>
                 <TabItem.Header>

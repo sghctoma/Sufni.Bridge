@@ -156,6 +156,22 @@
         <Style Selector="CalendarDayButton">
             <Setter Property="FontSize" Value="14" />
         </Style>
+        
+        <!-- Global styles for Flyouts -->
+        <Style Selector="MenuFlyoutPresenter">
+            <Setter Property="Background" Value="#15191c" />
+            <Setter Property="Foreground" Value="#a0a0a0" />
+        </Style>
+        <Style Selector="MenuItem">
+            <Setter Property="Foreground" Value="#a0a0a0" />
+            <Setter Property="Height" Value="39" />
+        </Style>
+        <Style Selector="MenuItem:pointerover /template/ Border#PART_LayoutRoot">
+            <Setter Property="Background" Value="#15191c" />
+        </Style>
+        <Style Selector="MenuItem:pointerover /template/ ContentPresenter#PART_HeaderPresenter">
+            <Setter Property="TextElement.Foreground" Value="#c0c0c0" />
+        </Style>
     </Application.Styles>
     
     <Application.Resources>

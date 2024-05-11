@@ -48,10 +48,6 @@
       <DependentUpon>SufniPlotView.axaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Views\Plots\VelocityView.axaml.cs">
-      <DependentUpon>VelocityView.axaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
   </ItemGroup>
     
 </Project>

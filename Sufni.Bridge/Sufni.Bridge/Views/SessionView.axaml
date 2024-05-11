@@ -93,71 +93,47 @@
                 <!-- Ensure that the SufniTelemetryPlotViews' Telemetry property is set -->
                 <i:Interaction.Behaviors>
                     <ia:EventTriggerBehavior EventName="Loaded">
-                        <InvokeCommandAction Command="{Binding LoadPsstCommand}" />
+                        <InvokeCommandAction Command="{Binding LoadedCommand}"
+                                             CommandParameter="{Binding ElementName=TabScrollViewer, Path=Bounds}"/>
                     </ia:EventTriggerBehavior>
                 </i:Interaction.Behaviors>
                 
                 <!-- Spring -->
                 <ScrollViewer Width="{Binding $parent[ScrollViewer].Bounds.Width}">
                     <Grid RowDefinitions="* *">
-                        <plots:TravelHistogramView Grid.Row="0"
-                                                   IsVisible="{Binding TelemetryData.Front.Present}"
-                                                   IsHitTestVisible="False"
-                                                   SuspensionType="Front"
-                                                   Telemetry="{Binding TelemetryData}" />
-                        <plots:TravelHistogramView Grid.Row="1"
-                                                   IsVisible="{Binding TelemetryData.Rear.Present}"
-                                                   IsHitTestVisible="False"
-                                                   SuspensionType="Rear"
-                                                   Telemetry="{Binding TelemetryData}" />
+                        <Svg Grid.Row="0" Source="{Binding FrontTravelHistogram}" />
+                        <Svg Grid.Row="1" Source="{Binding RearTravelHistogram}" />
                     </Grid>
                 </ScrollViewer>
                 
                 <!-- Damper -->
                 <ScrollViewer Width="{Binding $parent[ScrollViewer].Bounds.Width}">
-                    <Grid RowDefinitions="auto auto">
-                        <plots:VelocityView Grid.Row="0"
-                                            IsVisible="{Binding TelemetryData.Front.Present}"
-                                            IsHitTestVisible="False"
-                                            SuspensionType="Front"
-                                            Telemetry="{Binding TelemetryData}" />
-                        <plots:VelocityView Grid.Row="1"
-                                            IsVisible="{Binding TelemetryData.Rear.Present}"
-                                            IsHitTestVisible="False"
-                                            SuspensionType="Rear"
-                                            Telemetry="{Binding TelemetryData}" />
+                    <Grid RowDefinitions="auto auto" ColumnDefinitions="* auto">
+                        <!-- Front velocity histogram -->
+                        <Svg Grid.Column="0" Grid.Row="0"
+                             Source="{Binding FrontVelocityHistogram}" />
+                        <plots:VelocityBandView Grid.Column="1" Grid.Row="0"
+                                                HsrPercentage="{Binding FrontHsrPercentage}"
+                                                LsrPercentage="{Binding FrontLsrPercentage}"
+                                                LscPercentage="{Binding FrontLscPercentage}"
+                                                HscPercentage="{Binding FrontHscPercentage}"/>
+
+                        <!-- Rear velocity histogram -->
+                        <Svg Grid.Column="0" Grid.Row="1"
+                             Source="{Binding RearVelocityHistogram}" />
+                        <plots:VelocityBandView Grid.Column="1" Grid.Row="1"
+                                                HsrPercentage="{Binding RearHsrPercentage}"
+                                                LsrPercentage="{Binding RearLsrPercentage}"
+                                                LscPercentage="{Binding RearLscPercentage}"
+                                                HscPercentage="{Binding RearHscPercentage}"/>
                     </Grid>
                 </ScrollViewer>
                 
                 <!-- Balance -->
                 <ScrollViewer Width="{Binding $parent[ScrollViewer].Bounds.Width}">
                     <Grid RowDefinitions="* *">
-                        <plots:BalancePlotView Grid.Row="0"
-                                               IsHitTestVisible="False"
-                                               BalanceType="Compression"
-                                               Telemetry="{Binding TelemetryData}">
-                            <plots:BalancePlotView.IsVisible>
-                                <MultiBinding Converter="{x:Static BoolConverters.And}">
-                                    <Binding Path="TelemetryData"
-                                             Converter="{x:Static ObjectConverters.IsNotNull}" />
-                                    <Binding Path="TelemetryData.Front.Present" />
-                                    <Binding Path="TelemetryData.Rear.Present" />
-                                </MultiBinding>
-                            </plots:BalancePlotView.IsVisible>
-                        </plots:BalancePlotView>
-                        <plots:BalancePlotView Grid.Row="1"
-                                               IsHitTestVisible="False"
-                                               BalanceType="Rebound"
-                                               Telemetry="{Binding TelemetryData}">
-                            <plots:BalancePlotView.IsVisible>
-                                <MultiBinding Converter="{x:Static BoolConverters.And}">
-                                    <Binding Path="TelemetryData"
-                                             Converter="{x:Static ObjectConverters.IsNotNull}" />
-                                    <Binding Path="TelemetryData.Front.Present" />
-                                    <Binding Path="TelemetryData.Rear.Present" />
-                                </MultiBinding>
-                            </plots:BalancePlotView.IsVisible>
-                        </plots:BalancePlotView>
+                        <Svg Grid.Row="0" Source="{Binding CompressionBalance}" />
+                        <Svg Grid.Row="1" Source="{Binding ReboundBalance}" />
                     </Grid>
                 </ScrollViewer>
                 

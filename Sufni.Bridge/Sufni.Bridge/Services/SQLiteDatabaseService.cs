@@ -111,6 +111,7 @@ public class SqLiteDatabaseService : IDatabaseService
             typeof(Calibration),
             typeof(Setup),
             typeof(Session),
+            typeof(SessionCache),
             typeof(Synchronization)
         });
 
@@ -509,6 +510,33 @@ public class SqLiteDatabaseService : IDatabaseService
             session.Deleted = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
             await connection.UpdateAsync(session);
         }
+    }
+
+    public async Task<SessionCache?> GetSessionCacheAsync(Guid sessionId)
+    {
+        await Initialization;
+        return await connection.Table<SessionCache>()
+            .Where(s => s.SessionId == sessionId)
+            .FirstOrDefaultAsync();
+    }
+
+    public async Task<Guid> PutSessionCacheAsync(SessionCache sessionCache)
+    {
+        await Initialization;
+
+        var existing = await connection.Table<SessionCache>()
+            .Where(s => s.SessionId == sessionCache.SessionId)
+            .FirstOrDefaultAsync() is not null;
+        if (existing)
+        {
+            await connection.UpdateAsync(sessionCache);
+        }
+        else
+        {
+            await connection.InsertAsync(sessionCache);
+        }
+
+        return sessionCache.SessionId;
     }
 
     public async Task<int> GetLastSyncTimeAsync()

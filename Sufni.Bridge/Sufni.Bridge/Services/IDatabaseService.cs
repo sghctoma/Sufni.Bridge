@@ -38,6 +38,8 @@ public interface IDatabaseService
     public Task<byte[]?> GetSessionRawPsstAsync(Guid id);
     public Task<Guid> PutSessionAsync(Session session);
     public Task DeleteSessionAsync(Guid id);
+    public Task<SessionCache?> GetSessionCacheAsync(Guid sessionId);
+    public Task<Guid> PutSessionCacheAsync(SessionCache sessionCache);
     public Task<int> GetLastSyncTimeAsync();
     public Task UpdateLastSyncTimeAsync();
 }

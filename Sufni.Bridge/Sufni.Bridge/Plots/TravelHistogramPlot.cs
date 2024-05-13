@@ -9,9 +9,12 @@ public class TravelHistogramPlot(Plot plot, SuspensionType type) : TelemetryPlot
     private void AddStatistics(TelemetryData telemetryData)
     {
         var statistics = telemetryData.CalculateTravelStatistics(type);
-        
-        var avgPercentage = statistics.Average / telemetryData.Linkage.MaxFrontTravel * 100.0;
-        var maxPercentage = statistics.Max / telemetryData.Linkage.MaxFrontTravel * 100.0;
+
+        var mx = type == SuspensionType.Front
+            ? telemetryData.Linkage.MaxFrontTravel
+            : telemetryData.Linkage.MaxRearTravel;
+        var avgPercentage = statistics.Average / mx * 100.0;
+        var maxPercentage = statistics.Max / mx * 100.0;
         
         var avgString = $"{statistics.Average:F2} mm ({avgPercentage:F2}%)";
         var maxString = $"{statistics.Max:F2} mm ({maxPercentage:F2}%) / {statistics.Bottomouts} bottom outs";

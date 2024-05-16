@@ -37,6 +37,7 @@ public interface IDatabaseService
     public Task<TelemetryData?> GetSessionPsstAsync(Guid id);
     public Task<byte[]?> GetSessionRawPsstAsync(Guid id);
     public Task<Guid> PutSessionAsync(Session session);
+    public Task PatchSessionPsstAsync(Guid id, byte[] data);
     public Task DeleteSessionAsync(Guid id);
     public Task<SessionCache?> GetSessionCacheAsync(Guid sessionId);
     public Task<Guid> PutSessionCacheAsync(SessionCache sessionCache);

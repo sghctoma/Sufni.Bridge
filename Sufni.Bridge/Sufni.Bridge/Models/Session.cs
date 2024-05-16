@@ -50,14 +50,6 @@ public class Session : Synchronizable
     [JsonIgnore]
     [Column("data")]
     public byte[]? ProcessedData { get; set; }
-
-    [JsonPropertyName("psst_encoded"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [Ignore]
-    public string? ProcessedDataEncoded
-    {
-        get => ProcessedData is null || Deleted.HasValue ?  null : Convert.ToBase64String(ProcessedData);
-        set => ProcessedData = value is null ? null : Convert.FromBase64String(value);
-    }
     
     [JsonIgnore]
     [Column("front_springrate")]

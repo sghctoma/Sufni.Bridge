@@ -14,4 +14,6 @@ internal interface IHttpApiService
     public Task<Guid> PutProcessedSessionAsync(string name, string description, byte[] data);
     public Task<SynchronizationData> PullSyncAsync(int since = 0);
     public Task PushSyncAsync(SynchronizationData syncData);
+    public Task<byte[]?> GetSessionPsstAsync(Guid id);
+    public Task PatchSessionPsstAsync(Guid id, byte[] data);
 }

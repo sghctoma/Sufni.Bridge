@@ -499,6 +499,21 @@ public class SqLiteDatabaseService : IDatabaseService
         return session.Id;
     }
 
+    public async Task PatchSessionPsstAsync(Guid id, byte[] data)
+    {
+        await Initialization;
+
+        var session = await connection.Table<Session>()
+            .Where(s => s.Id == id && s.Deleted == null)
+            .FirstOrDefaultAsync();
+        if (session is null)
+        {
+            throw new Exception($"Session {id} does not exist.");
+        }
+
+        await connection.ExecuteAsync("UPDATE session SET data=? WHERE id=?", [data, id]);
+    }
+
     public async Task DeleteSessionAsync(Guid id)
     {
         await Initialization;

@@ -109,4 +109,18 @@ internal class HttpApiService : IHttpApiService
         using var response = await client.PutAsJsonAsync($"{serverUrl}/api/sync/push", syncData);
         response.EnsureSuccessStatusCode();
     }
+
+    public async Task<byte[]?> GetSessionPsstAsync(Guid id)
+    {
+        using var response = await client.GetAsync($"{serverUrl}/api/session/{id}/psst");
+        response.EnsureSuccessStatusCode() ;
+        return await response.Content.ReadAsByteArrayAsync();
+    }
+
+    public async Task PatchSessionPsstAsync(Guid id, byte[] data)
+    {
+        using var response = await client.PatchAsync($"{serverUrl}/api/session/{id}/psst",
+            new ByteArrayContent(data));
+        response.EnsureSuccessStatusCode();
+    }
 }

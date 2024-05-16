@@ -616,6 +616,13 @@ public partial class MainPagesViewModel : ViewModelBase
                 Sessions = await databaseService.GetChangedSessionsAsync(lastSyncTime)
             };
             await httpApiService.PushSyncAsync(changes);
+            foreach (var session in changes.Sessions.Where(s => !s.Deleted.HasValue))
+            {
+                // TODO: Send data only for sessions that do not exist on the other side yet.
+                //       This would require getting feedback from the server, or storing sync
+                //       time for individual rows.
+                await httpApiService.PatchSessionPsstAsync(session.Id, session.ProcessedData!);
+            }
 
             var syncData = await httpApiService.PullSyncAsync(lastSyncTime);
             foreach (var board in syncData.Boards)
@@ -687,6 +694,11 @@ public partial class MainPagesViewModel : ViewModelBase
                 else
                 {
                     await databaseService.PutSessionAsync(session);
+                    var data = await httpApiService.GetSessionPsstAsync(session.Id);
+                    if (data is not null)
+                    {
+                        await databaseService.PatchSessionPsstAsync(session.Id, data);
+                    }
                 }
             }
 

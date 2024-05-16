@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Avalonia.Platform;
 using Sufni.Bridge.Models;
 using Sufni.Bridge.Models.Telemetry;
 
@@ -22,6 +25,14 @@ public class HttpApiServiceStub : IHttpApiService
     private static readonly Guid SetupClashId = Guid.NewGuid();
     private static readonly Guid SetupClashNewId = Guid.NewGuid();
     private static readonly Guid SetupOneSuspensionId = Guid.NewGuid();
+    private static readonly byte[] SessionData;
+
+    static HttpApiServiceStub()
+    {
+        using var assetLoader = AssetLoader.Open(new Uri("avares://Sufni.Bridge/Assets/sample.psst"));
+        using var binaryReader = new BinaryReader(assetLoader);
+        SessionData = binaryReader.ReadBytes((int)assetLoader.Length);
+    }
     
     private static readonly List<Linkage> Linkages = new()
     {
@@ -144,9 +155,18 @@ public class HttpApiServiceStub : IHttpApiService
 
     private static readonly List<Session> Sessions = new()
     {
-        new Session(id: Guid.NewGuid(), name: "session 1", description: "Test session #1", setup: SetupClashNewId, timestamp: 1686998748),
-        new Session(id: Guid.NewGuid(), name: "session 2", description: "Test session #2", setup: SetupClashNewId, timestamp: 1682943649),
-        new Session(id: Guid.NewGuid(), name: "session 3", description: "Test session #3", setup: SetupClashNewId, timestamp: 1682760595),
+        new Session(id: Guid.NewGuid(), name: "session 1", description: "Test session #1", setup: SetupClashNewId, timestamp: 1686998748)
+        {
+            ProcessedData = SessionData,
+        },
+        new Session(id: Guid.NewGuid(), name: "session 2", description: "Test session #2", setup: SetupClashNewId, timestamp: 1682943649)
+        {
+            ProcessedData = SessionData,
+        },
+        new Session(id: Guid.NewGuid(), name: "session 3", description: "Test session #3", setup: SetupClashNewId, timestamp: 1682760595)
+        {
+            ProcessedData = SessionData,
+        },
     };
     
     public Task<string> RefreshTokensAsync(string url, string refreshToken)
@@ -190,6 +210,19 @@ public class HttpApiServiceStub : IHttpApiService
 
     public Task PushSyncAsync(SynchronizationData syncData)
     {
+        return Task.CompletedTask;
+    }
+
+    public Task<byte[]?> GetSessionPsstAsync(Guid id)
+    {
+        return Task.FromResult(Sessions.First(s => s.Id == id).ProcessedData ?? null);
+    }
+
+    public Task PatchSessionPsstAsync(Guid id, byte[] data)
+    {
+        var s = Sessions.First(s => s.Id == id);
+        s.ProcessedData = data;
+
         return Task.CompletedTask;
     }
 }

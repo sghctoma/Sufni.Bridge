@@ -24,14 +24,17 @@ namespace Sufni.Bridge.Models.Telemetry;
 public class Linkage : Synchronizable
 {
     private LeverageRatioData? leverageRatioData;
+    // ReSharper disable once NotAccessedField.Local
+    // The field is accessed by the MessagePack serializer.
+    private double[][]? leverageRatio;
     private double? maxFrontTravel;
     private double? maxRearTravel;
     private double[]? shockWheelCoeffs;
-    
+
     // Just to satisfy sql-net-pcl's parameterless constructor requirement
     // Uninitialized non-nullable property warnings are suppressed with null! initializer.
     public Linkage() { }
-    
+
     public Linkage(Guid id, string name, double headAngle, double? maxFrontStroke, double? maxRearStroke, string? rawData)
     {
         Id = id;
@@ -63,7 +66,7 @@ public class Linkage : Synchronizable
     [JsonPropertyName("rear_stroke")]
     [Column("rear_stroke")]
     public double? MaxRearStroke { get; set; }
-    
+
     [JsonPropertyName("data")]
     [Column("raw_lr_data")]
     [IgnoreMember]
@@ -99,22 +102,28 @@ public class Linkage : Synchronizable
     {
         get
         {
-            shockWheelCoeffs ??= Fit.Polynomial(LeverageRatioData?.ShockTravel.ToArray(), 
+            shockWheelCoeffs ??= Fit.Polynomial(LeverageRatioData?.ShockTravel.ToArray(),
                 LeverageRatioData?.WheelTravel.ToArray(), 3);
             return shockWheelCoeffs;
 
         }
         init => shockWheelCoeffs = value;
     }
-    
+
+    [Ignore] [JsonIgnore] [IgnoreMember] public Polynomial Polynomial => new(ShockWheelCoeffs);
+
+    [Ignore]
+    [JsonIgnore]
+    public double[][]? LeverageRatio
+    {
+        get => LeverageRatioData?.ToArray();
+        init => leverageRatio = value;
+    }
+
     [Ignore]
     [JsonIgnore]
     [IgnoreMember]
-    public Polynomial Polynomial => new(ShockWheelCoeffs);
-
-    [Ignore] [JsonIgnore] public double[][]? LeverageRatio { get; set; }
-    
-    [Ignore] [JsonIgnore] [IgnoreMember] public LeverageRatioData? LeverageRatioData 
+    public LeverageRatioData? LeverageRatioData 
     {
         get
         {
@@ -124,11 +133,6 @@ public class Linkage : Synchronizable
                 // so we add the header so that LeverageFromCsv can process it.
                 var csv = $"Wheel_T,Leverage_R\n{RawData}";
                 leverageRatioData = new LeverageRatioData(new StringReader(csv));
-            }
-
-            if (leverageRatioData is null && LeverageRatio is not null)
-            {
-                leverageRatioData = new LeverageRatioData(LeverageRatio);
             }
 
             return leverageRatioData;
@@ -232,8 +236,7 @@ public class LeverageRatioData
         var data = new double[WheelTravel.Count][];
         for (var i = 0; i < WheelTravel.Count; i++)
         {
-            data[i][0] = WheelTravel[i];
-            data[i][1] = LeverageRatio[i];
+            data[i] = [WheelTravel[i], LeverageRatio[i]];
         }
 
         return data;

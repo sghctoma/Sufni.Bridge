@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using MessagePack;
 using SQLite;
 using Sufni.Bridge.Models.Telemetry;
 
@@ -7,8 +8,12 @@ namespace Sufni.Bridge.Models;
 
 public class Synchronizable
 {
-    [Column("updated"), NotNull] public int Updated { get; set; }
-    [Column("deleted")] public int? Deleted { get; set; }
+    [Column("updated"), NotNull]
+    [IgnoreMember]
+    public int Updated { get; set; }
+    [Column("deleted")]
+    [IgnoreMember]
+    public int? Deleted { get; set; }
 }
 
 [Table("sync")]

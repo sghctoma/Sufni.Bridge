@@ -159,7 +159,8 @@
                         </MenuItem>
                         <MenuItem Header="disconnect"
                                   IsVisible="{Binding SettingsPage.IsRegistered}"
-                                  Command="{Binding SettingsPage.RegisterUnregisterCommand}">
+                                  Command="{Binding OpenPageCommand}"
+                                  CommandParameter="{Binding SettingsPage}">
                             <MenuItem.Icon>
                                 <Image Source="{SvgImage /Assets/fa-link-slash.svg}" Width="18" />
                             </MenuItem.Icon>

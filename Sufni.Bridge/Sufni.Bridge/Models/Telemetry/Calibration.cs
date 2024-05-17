@@ -7,9 +7,30 @@ using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using Adletec.Sonic;
 using MessagePack;
+using MessagePack.Formatters;
 using SQLite;
 
 namespace Sufni.Bridge.Models.Telemetry;
+
+public class IdFormatter : IMessagePackFormatter<Guid>
+{
+    public Guid Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
+    {
+        try
+        {
+            return GuidFormatter.Instance.Deserialize(ref reader, options);
+        }
+        catch (Exception)
+        {
+            return Guid.Empty;
+        }
+    }
+
+    public void Serialize(ref MessagePackWriter writer, Guid value, MessagePackSerializerOptions options)
+    {
+        GuidFormatter.Instance.Serialize(ref writer, value, options);
+    }
+}
 
 [Table("calibration")]
 [MessagePackObject(keyAsPropertyName: true)]
@@ -42,6 +63,7 @@ public class Calibration : Synchronizable
 
     [JsonPropertyName("method_id")]
     [Column("method_id")]
+    [MessagePackFormatter(typeof(IdFormatter))]
     public Guid MethodId { get; set; }
     
     [JsonPropertyName("inputs")]

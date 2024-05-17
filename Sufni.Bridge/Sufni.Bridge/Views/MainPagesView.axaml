@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:Sufni.Bridge.ViewModels"
              xmlns:v="clr-namespace:Sufni.Bridge.Views"
+             xmlns:progRing="clr-namespace:AvaloniaProgressRing;assembly=AvaloniaProgressRing"
              mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="720"
              x:Class="Sufni.Bridge.Views.MainPagesView"
              x:DataType="vm:MainPagesViewModel"
@@ -38,7 +39,7 @@
         </Style>
     </UserControl.Styles>
 
-    <Grid RowDefinitions="auto *" ColumnDefinitions="auto * auto" >
+    <Grid RowDefinitions="30 *" ColumnDefinitions="auto * 40" >
         
         <!-- Title -->
         <TextBlock Grid.Row="0" Grid.Column="1"
@@ -48,11 +49,30 @@
                    FontWeight="Black"
                    Text="Sufni Suspension Telemetry"/>
         
+        <!-- Connection indicator -->
         <Button Classes="embedded" Grid.Row="0" Grid.Column="2"
-                Margin="0,0,5,0"
-                IsVisible="{Binding SettingsPage.IsRegistered}">
+                Margin="0,0,5,0">
+            <Button.IsVisible>
+                <MultiBinding Converter="{x:Static BoolConverters.And}">
+                    <Binding Path="SettingsPage.IsRegistered" />
+                    <Binding Path="!SyncInProgress" />
+                </MultiBinding>
+            </Button.IsVisible>
             <Image Source="{SvgImage /Assets/fa-link_green.svg}" Width="20" Opacity="0.5" />
         </Button>
+        
+        <!-- Synchronization indicator -->
+        <progRing:ProgressRing Grid.Row="0" Grid.Column="2"
+                               Width="20" Height="20" Foreground="#0078D7"
+                               Margin="0,0,5,0"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center">
+            <progRing:ProgressRing.IsActive>
+                <MultiBinding Converter="{x:Static BoolConverters.And}">
+                    <Binding Path="SyncInProgress" />
+                </MultiBinding>
+            </progRing:ProgressRing.IsActive>
+        </progRing:ProgressRing>
         
         <!-- Menu tab -->
         <TabControl Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"

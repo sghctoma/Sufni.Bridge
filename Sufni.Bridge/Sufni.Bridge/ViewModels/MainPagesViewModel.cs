@@ -595,6 +595,113 @@ public partial class MainPagesViewModel : ViewModelBase
         return SettingsPage.IsRegistered;
     }
 
+    private async Task PushLocalChanges(int lastSyncTime, IHttpApiService httpApiService)
+    {
+        Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
+        
+        var changes = new SynchronizationData
+        {
+            Boards = await databaseService.GetChangedBoardsAsync(lastSyncTime),
+            CalibrationMethods = await databaseService.GetChangedCalibrationMethodsAsync(lastSyncTime),
+            Calibrations = await databaseService.GetChangedCalibrationsAsync(lastSyncTime),
+            Linkages = await databaseService.GetChangedLinkagesAsync(lastSyncTime),
+            Setups = await databaseService.GetChangedSetupsAsync(lastSyncTime),
+            Sessions = await databaseService.GetChangedSessionsAsync(lastSyncTime)
+        };
+        await httpApiService.PushSyncAsync(changes);
+
+        foreach (var session in changes.Sessions.Where(s => !s.Deleted.HasValue))
+        {
+            // TODO: Send data only for sessions that do not exist on the other side yet.
+            //       This would require getting feedback from the server, or storing sync
+            //       time for individual rows.
+            await httpApiService.PatchSessionPsstAsync(session.Id, session.ProcessedData!);
+        }
+    }
+
+    private async Task PullRemoteChanges(int lastSyncTime, IHttpApiService httpApiService)
+    {
+        Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
+        
+        var syncData = await httpApiService.PullSyncAsync(lastSyncTime);
+        foreach (var board in syncData.Boards)
+        {
+            if (board.Deleted.HasValue)
+            {
+                await databaseService.DeleteBoardAsync(board.Id);
+            }
+            else
+            {
+                await databaseService.PutBoardAsync(board);
+            }
+        }
+
+        foreach (var calibrationMethod in syncData.CalibrationMethods)
+        {
+            if (calibrationMethod.Deleted.HasValue)
+            {
+                await databaseService.DeleteCalibrationMethodAsync(calibrationMethod.Id);
+            }
+            else
+            {
+                await databaseService.PutCalibrationMethodAsync(calibrationMethod);
+            }
+        }
+
+        foreach (var calibration in syncData.Calibrations)
+        {
+            if (calibration.Deleted.HasValue)
+            {
+                await databaseService.DeleteCalibrationAsync(calibration.Id);
+            }
+            else
+            {
+                await databaseService.PutCalibrationAsync(calibration);
+            }
+        }
+
+        foreach (var linkage in syncData.Linkages)
+        {
+            if (linkage.Deleted.HasValue)
+            {
+                await databaseService.DeleteLinkageAsync(linkage.Id);
+            }
+            else
+            {
+                await databaseService.PutLinkageAsync(linkage);
+            }
+        }
+
+        foreach (var setup in syncData.Setups)
+        {
+            if (setup.Deleted.HasValue)
+            {
+                await databaseService.DeleteSetupAsync(setup.Id);
+            }
+            else
+            {
+                await databaseService.PutSetupAsync(setup);
+            }
+        }
+
+        foreach (var session in syncData.Sessions)
+        {
+            if (session.Deleted.HasValue)
+            {
+                await databaseService.DeleteSessionAsync(session.Id);
+            }
+            else
+            {
+                await databaseService.PutSessionAsync(session);
+                var data = await httpApiService.GetSessionPsstAsync(session.Id);
+                if (data is not null)
+                {
+                    await databaseService.PatchSessionPsstAsync(session.Id, data);
+                }
+            }
+        }
+    }
+
     private async void SyncInternal()
     {
         var httpApiService = App.Current?.Services?.GetService<IHttpApiService>();
@@ -602,106 +709,13 @@ public partial class MainPagesViewModel : ViewModelBase
         Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
 
         SyncInProgress = true;
-        
+
         try
         {
             var lastSyncTime = await databaseService.GetLastSyncTimeAsync();
-            var changes = new SynchronizationData
-            {
-                Boards = await databaseService.GetChangedBoardsAsync(lastSyncTime),
-                CalibrationMethods = await databaseService.GetChangedCalibrationMethodsAsync(lastSyncTime),
-                Calibrations = await databaseService.GetChangedCalibrationsAsync(lastSyncTime),
-                Linkages = await databaseService.GetChangedLinkagesAsync(lastSyncTime),
-                Setups = await databaseService.GetChangedSetupsAsync(lastSyncTime),
-                Sessions = await databaseService.GetChangedSessionsAsync(lastSyncTime)
-            };
-            await httpApiService.PushSyncAsync(changes);
-            foreach (var session in changes.Sessions.Where(s => !s.Deleted.HasValue))
-            {
-                // TODO: Send data only for sessions that do not exist on the other side yet.
-                //       This would require getting feedback from the server, or storing sync
-                //       time for individual rows.
-                await httpApiService.PatchSessionPsstAsync(session.Id, session.ProcessedData!);
-            }
 
-            var syncData = await httpApiService.PullSyncAsync(lastSyncTime);
-            foreach (var board in syncData.Boards)
-            {
-                if (board.Deleted.HasValue)
-                {
-                    await databaseService.DeleteBoardAsync(board.Id);
-                }
-                else
-                {
-                    await databaseService.PutBoardAsync(board);
-                }
-            }
-
-            foreach (var calibrationMethod in syncData.CalibrationMethods)
-            {
-                if (calibrationMethod.Deleted.HasValue)
-                {
-                    await databaseService.DeleteCalibrationMethodAsync(calibrationMethod.Id);
-                }
-                else
-                {
-                    await databaseService.PutCalibrationMethodAsync(calibrationMethod);
-                }
-            }
-
-            foreach (var calibration in syncData.Calibrations)
-            {
-                if (calibration.Deleted.HasValue)
-                {
-                    await databaseService.DeleteCalibrationAsync(calibration.Id);
-                }
-                else
-                {
-                    await databaseService.PutCalibrationAsync(calibration);
-                }
-            }
-
-            foreach (var linkage in syncData.Linkages)
-            {
-                if (linkage.Deleted.HasValue)
-                {
-                    await databaseService.DeleteLinkageAsync(linkage.Id);
-                }
-                else
-                {
-                    await databaseService.PutLinkageAsync(linkage);
-                }
-            }
-
-            foreach (var setup in syncData.Setups)
-            {
-                if (setup.Deleted.HasValue)
-                {
-                    await databaseService.DeleteSetupAsync(setup.Id);
-                }
-                else
-                {
-                    await databaseService.PutSetupAsync(setup);
-                }
-            }
-
-            foreach (var session in syncData.Sessions)
-            {
-                if (session.Deleted.HasValue)
-                {
-                    await databaseService.DeleteSessionAsync(session.Id);
-                }
-                else
-                {
-                    await databaseService.PutSessionAsync(session);
-                    var data = await httpApiService.GetSessionPsstAsync(session.Id);
-                    if (data is not null)
-                    {
-                        await databaseService.PatchSessionPsstAsync(session.Id, data);
-                    }
-                }
-            }
-
+            await PushLocalChanges(lastSyncTime, httpApiService);
+            await PullRemoteChanges(lastSyncTime, httpApiService);
             await databaseService.UpdateLastSyncTimeAsync();
 
             await Dispatcher.UIThread.InvokeAsync(async () =>
@@ -716,10 +730,10 @@ public partial class MainPagesViewModel : ViewModelBase
         {
             Dispatcher.UIThread.Post(() =>
             {
-                ErrorMessages.Add($"Could not sync: {e.Message}");
+                ErrorMessages.Add($"Sync failed: {e.Message}");
             });
         }
-        
+
         SyncInProgress = false;
     }
     

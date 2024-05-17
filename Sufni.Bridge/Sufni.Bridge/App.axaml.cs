@@ -18,7 +18,7 @@ public partial class App : Application
 
     public App()
     {
-#if !DEBUG
+#if DEBUG
         RegisteredServices.Collection.AddSingleton<IHttpApiService, HttpApiServiceStub>();
 #else
         RegisteredServices.Collection.AddSingleton<IHttpApiService, HttpApiService>();

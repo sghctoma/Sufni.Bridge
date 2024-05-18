@@ -609,13 +609,20 @@ public partial class MainPagesViewModel : ViewModelBase
             Sessions = await databaseService.GetChangedSessionsAsync(lastSyncTime)
         };
         await httpApiService.PushSyncAsync(changes);
+    }
 
-        foreach (var session in changes.Sessions.Where(s => !s.Deleted.HasValue))
+    private async Task PushIncompleteSessions(IHttpApiService httpApiService)
+    {
+        Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
+
+        var incompleteSessions = await httpApiService.GetIncompleteSessionIdsAsync();
+        foreach (var id in incompleteSessions)
         {
-            // TODO: Send data only for sessions that do not exist on the other side yet.
-            //       This would require getting feedback from the server, or storing sync
-            //       time for individual rows.
-            await httpApiService.PatchSessionPsstAsync(session.Id, session.ProcessedData!);
+            var psst = await databaseService.GetSessionRawPsstAsync(id);
+            if (psst is not null)
+            {
+                await httpApiService.PatchSessionPsstAsync(id, psst);
+            }
         }
     }
 
@@ -693,11 +700,21 @@ public partial class MainPagesViewModel : ViewModelBase
             else
             {
                 await databaseService.PutSessionAsync(session);
-                var data = await httpApiService.GetSessionPsstAsync(session.Id);
-                if (data is not null)
-                {
-                    await databaseService.PatchSessionPsstAsync(session.Id, data);
-                }
+            }
+        }
+    }
+
+    private async Task PullIncompleteSessions(IHttpApiService httpApiService)
+    {
+        Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
+
+        var incompleteSessionIds = await databaseService.GetIncompleteSessionIdsAsync();
+        foreach (var id in incompleteSessionIds)
+        {
+            var psst = await httpApiService.GetSessionPsstAsync(id);
+            if (psst is not null)
+            {
+                await databaseService.PatchSessionPsstAsync(id, psst);
             }
         }
     }
@@ -716,6 +733,9 @@ public partial class MainPagesViewModel : ViewModelBase
 
             await PushLocalChanges(lastSyncTime, httpApiService);
             await PullRemoteChanges(lastSyncTime, httpApiService);
+            await PushIncompleteSessions(httpApiService);
+            await PullIncompleteSessions(httpApiService);
+            
             await databaseService.UpdateLastSyncTimeAsync();
 
             await Dispatcher.UIThread.InvokeAsync(async () =>

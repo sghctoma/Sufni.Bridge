@@ -33,6 +33,7 @@ public interface IDatabaseService
     public Task<Guid> PutSetupAsync(Setup setup);
     public Task DeleteSetupAsync(Guid id);
     public Task<List<Session>> GetSessionsAsync();
+    public Task<List<Guid>> GetIncompleteSessionIdsAsync();
     public Task<List<Session>> GetChangedSessionsAsync(int since);
     public Task<TelemetryData?> GetSessionPsstAsync(Guid id);
     public Task<byte[]?> GetSessionRawPsstAsync(Guid id);

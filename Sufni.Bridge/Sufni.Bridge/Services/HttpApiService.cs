@@ -2,6 +2,7 @@
 using Sufni.Bridge.Models;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -27,7 +28,8 @@ internal class HttpApiService : IHttpApiService
     
     #endregion
     
-    // ReSharper disable once ClassNeverInstantiated.Local
+    // ReSharper disable once UnusedType.Local
+    // ReSharper disable once NotAccessedPositionalProperty.Local
     // It's used in response.Content.ReadFromJsonAsync<Tokens>() calls
     private record PutResponse(
         [property: JsonPropertyName("id")] Guid Id);
@@ -71,30 +73,6 @@ internal class HttpApiService : IHttpApiService
         client.DefaultRequestHeaders.Authorization = null;
     }
     
-    public async Task<List<Session>> GetSessionsAsync()
-    {
-        using var response = await client.GetAsync($"{serverUrl}/api/session");
-        response.EnsureSuccessStatusCode() ;
-        var sessions = await response.Content.ReadFromJsonAsync<List<Session>>();
-        Debug.Assert(sessions != null);
-        return sessions;
-    }
-
-    public async Task<Guid> PutProcessedSessionAsync(string name, string description, byte[] data)
-    {
-        using HttpResponseMessage response = await client.PutAsJsonAsync($"{serverUrl}/api/session/psst",
-            new
-            {
-                name,
-                description,
-                data = Convert.ToBase64String(data)
-            });
-        response.EnsureSuccessStatusCode();
-        var result = await response.Content.ReadFromJsonAsync<PutResponse>();
-        Debug.Assert(result != null);
-        return result.Id;
-    }
-    
     public async Task<SynchronizationData> PullSyncAsync(int since = 0)
     {
         using var response = await client.GetAsync($"{serverUrl}/api/sync/pull?since={since}");
@@ -110,10 +88,22 @@ internal class HttpApiService : IHttpApiService
         response.EnsureSuccessStatusCode();
     }
 
+    public async Task<List<Guid>> GetIncompleteSessionIdsAsync()
+    {
+        using var response = await client.GetAsync($"{serverUrl}/api/session/incomplete");
+        response.EnsureSuccessStatusCode();
+        var incompleteSessions = await response.Content.ReadFromJsonAsync<List<Guid>>();
+        return incompleteSessions ?? [];
+    }
+
     public async Task<byte[]?> GetSessionPsstAsync(Guid id)
     {
         using var response = await client.GetAsync($"{serverUrl}/api/session/{id}/psst");
-        response.EnsureSuccessStatusCode() ;
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            return null;
+        }
+        response.EnsureSuccessStatusCode();
         return await response.Content.ReadAsByteArrayAsync();
     }
 

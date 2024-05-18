@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Platform;
 using Sufni.Bridge.Models;
@@ -155,18 +154,15 @@ public class HttpApiServiceStub : IHttpApiService
 
     private static readonly List<Session> Sessions = new()
     {
-        new Session(id: Guid.NewGuid(), name: "session 1", description: "Test session #1", setup: SetupClashNewId, timestamp: 1686998748)
+        new Session(id: new Guid("396d9b75-8adb-44b9-b265-bcabeb031b26"), name: "session 1", description: "Test session #1", setup: SetupClashNewId, timestamp: 1686998748)
         {
             ProcessedData = SessionData,
         },
-        new Session(id: Guid.NewGuid(), name: "session 2", description: "Test session #2", setup: SetupClashNewId, timestamp: 1682943649)
+        new Session(id: new Guid("f2e2300f-ff25-47f1-85e8-836704a84984"), name: "session 2", description: "Test session #2", setup: SetupClashNewId, timestamp: 1682943649)
         {
             ProcessedData = SessionData,
         },
-        new Session(id: Guid.NewGuid(), name: "session 3", description: "Test session #3", setup: SetupClashNewId, timestamp: 1682760595)
-        {
-            ProcessedData = SessionData,
-        },
+        new Session(id: new Guid("eea9800b-89b0-4369-a017-7788ec507f98"), name: "session 3", description: "Test session #3", setup: SetupClashNewId, timestamp: 1682760595)
     };
     
     public Task<string> RefreshTokensAsync(string url, string refreshToken)
@@ -182,17 +178,6 @@ public class HttpApiServiceStub : IHttpApiService
     public Task UnregisterAsync(string refreshToken)
     {
         return Task.CompletedTask;
-    }
-
-    public Task<List<Session>> GetSessionsAsync()
-    {
-        return Task.FromResult(Sessions);
-    }
-
-    public Task<Guid> PutProcessedSessionAsync(string name, string description, byte[] data)
-    {
-        Thread.Sleep(500);
-        return Task.FromResult(Guid.NewGuid());
     }
 
     public Task<SynchronizationData> PullSyncAsync(int since = 0)
@@ -211,6 +196,11 @@ public class HttpApiServiceStub : IHttpApiService
     public Task PushSyncAsync(SynchronizationData syncData)
     {
         return Task.CompletedTask;
+    }
+
+    public Task<List<Guid>> GetIncompleteSessionIdsAsync()
+    {
+        return Task.FromResult(Sessions.Where(s => s.ProcessedData is null).Select(s => s.Id).ToList());
     }
 
     public Task<byte[]?> GetSessionPsstAsync(Guid id)

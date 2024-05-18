@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using MessagePack;
 using SQLite;
@@ -429,7 +430,15 @@ public class SqLiteDatabaseService : IDatabaseService
         var sessions = await connection.QueryAsync<Session>(query);
         return sessions;
     }
-    
+
+    public async Task<List<Guid>> GetIncompleteSessionIdsAsync()
+    {
+        await Initialization;
+
+        const string query = "SELECT id FROM session WHERE deleted IS null AND data IS null";
+        return (await connection.QueryAsync<Session>(query)).Select(s => s.Id).ToList();
+    }
+
     public async Task<List<Session>> GetChangedSessionsAsync(int since)
     {
         await Initialization;

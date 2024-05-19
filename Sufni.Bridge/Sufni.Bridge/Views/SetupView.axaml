@@ -7,6 +7,7 @@
              mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
              x:Class="Sufni.Bridge.Views.SetupView"
              x:DataType="vm:SetupViewModel"
+             Focusable="True"
              Background="#15191c">
 
     <Design.DataContext>
@@ -18,13 +19,11 @@
           MinWidth="300" HorizontalAlignment="Stretch">
 
         <!-- Name -->
-        <Label Grid.Row="0" Grid.Column="0"
-               VerticalAlignment="Center"
-               Content="Setup: " />
-        <TextBox Grid.Row="0" Grid.Column="1"
-                 Margin="2"
-                 HorizontalAlignment="Stretch"
-                 Text="{Binding Name}" />
+        <v:EditableTitleControl
+            Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+            Margin="0,0,0,10"
+            HorizontalAlignment="Center"
+            Title="{Binding Name}" />
         
         <!-- Board ID -->
         <Label Grid.Row="1" Grid.Column="0"

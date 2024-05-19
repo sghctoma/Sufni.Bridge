@@ -10,6 +10,7 @@
              mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
              x:Class="Sufni.Bridge.Views.LinkageView"
              x:DataType="vm:LinkageViewModel"
+             Focusable="True"
              Background="#15191c">
 
     <Design.DataContext>
@@ -28,15 +29,11 @@
           MinWidth="300" HorizontalAlignment="Stretch">
         
         <!-- Name -->
-        <Label Grid.Row="0" Grid.Column="0"
-               VerticalAlignment="Center"
-               Content="Linkage: " />
-        <TextBox Grid.Row="0" Grid.Column="1"
-                       Height="39"
-                       Margin="2"
-                       HorizontalAlignment="Stretch"
-                       VerticalContentAlignment="Center"
-                       Text="{Binding Name}" />
+        <v:EditableTitleControl
+            Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+            Margin="0,0,0,10"
+            HorizontalAlignment="Center"
+            Title="{Binding Name}" />
         
         <!-- Head angle -->
         <Label Grid.Row="1" Grid.Column="0"

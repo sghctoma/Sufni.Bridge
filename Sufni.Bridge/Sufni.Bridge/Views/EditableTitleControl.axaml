@@ -1,0 +1,58 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="using:Sufni.Bridge.Views">
+    <Design.PreviewWith>
+        <controls:EditableTitleControl Title="Test title" Height="59" />
+    </Design.PreviewWith>
+
+    <Style Selector="controls|EditableTitleControl">
+        <!-- Set Defaults -->
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid>
+                    <TextBox Name="TitleTextBox"
+                             Text="{TemplateBinding Title}"
+                             Padding="10,0,30,0"
+                             FontWeight="500"
+                             IsEnabled="False"
+                             Background="Transparent"
+                             HorizontalAlignment="Stretch"
+                             VerticalContentAlignment="Center">
+                        <TextBox.Styles>
+                            <Style Selector="TextBox:pointerover /template/ Border">
+                                <Setter Property="Background" Value="Transparent" />
+                                <Setter Property="BorderBrush" Value="Transparent" />
+                            </Style>
+                            <Style Selector="TextBox:disabled /template/ TextPresenter#PART_TextPresenter">
+                                <Setter Property="TextElement.Foreground" Value="#a0a0a0" />
+                            </Style>
+                            <Style Selector="TextBox:disabled /template/ Border">
+                                <Setter Property="Background" Value="Transparent" />
+                                <Setter Property="BorderBrush" Value="Transparent" />
+                            </Style>
+                            <Style Selector="TextBox:focus:pointerover /template/ Border">
+                                <Setter Property="Background" Value="Transparent" />
+                                <Setter Property="BorderBrush" Value="#0078D7" />
+                            </Style>
+                        </TextBox.Styles>
+                    </TextBox>
+                    <Button Name="EditButton"
+                            Classes="embedded"
+                            Margin="0,1,0,0"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            IsVisible="{Binding !#TitleTextBox.IsEnabled}">
+                        <Image Source="{SvgImage /Assets/fa-pen-square.svg}" Width="13" />
+                    </Button>
+                    <Button Classes="embedded"
+                            Margin="0,1,0,0"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            IsVisible="{Binding #TitleTextBox.IsEnabled}">
+                        <Image Source="{SvgImage /Assets/fa-check_green.svg}" Width="13" />
+                    </Button>
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+</Styles>

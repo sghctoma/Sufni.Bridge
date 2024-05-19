@@ -7,6 +7,7 @@
              mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
              x:Class="Sufni.Bridge.Views.CalibrationView"
              x:DataType="vm:CalibrationViewModel"
+             Focusable="True"
              Background="#15191c">
 
     <Design.DataContext>
@@ -18,17 +19,15 @@
           MinWidth="300" HorizontalAlignment="Stretch">
         
         <!-- Name -->
-        <Label Grid.Row="0" Grid.Column="0"
-               VerticalAlignment="Center"
-               Content="Calibration: " />
-        <TextBox Grid.Row="0" Grid.Column="1"
-                 Margin="2"
-                 HorizontalAlignment="Stretch"
-                 VerticalContentAlignment="Center"
-                 Text="{Binding Name}" />
+        <v:EditableTitleControl
+            Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+            Margin="0,0,0,10"
+            HorizontalAlignment="Center"
+            Title="{Binding Name}" />
 
         <!-- Calibration method -->
-        <Label Grid.Row="1" Grid.Column="0"
+        <Label Name="MethodLabel"
+               Grid.Row="1" Grid.Column="0"
                VerticalAlignment="Center"
                Content="Method: " />
         <ComboBox Grid.Row="1" Grid.Column="1"
@@ -50,13 +49,8 @@
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <Grid RowDefinitions="*" ColumnDefinitions="auto *">
-                        <!--
-                        Label.Width is set to 86 manually, because it matches 
-                        the width of the "Calibration: " label and I could not
-                        bind the Width to that control'Width.
-                        -->
                         <Label Grid.Row="0" Grid.Column="0"
-                               Width="86"
+                               Width="{Binding #MethodLabel.Bounds.Width}"
                                VerticalAlignment="Center"
                                Content="{Binding Name}" />
                         <NumericUpDown Grid.Row="0" Grid.Column="1"

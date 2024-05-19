@@ -8,7 +8,7 @@ namespace Sufni.Bridge.Views;
 
 public partial class SessionView : UserControl
 {
-    private bool sizeChanging = false;
+    private bool sizeChanging;
     public SessionView()
     {
         InitializeComponent();

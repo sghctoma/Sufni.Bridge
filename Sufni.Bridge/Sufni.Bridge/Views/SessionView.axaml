@@ -17,14 +17,13 @@
         <vm:SessionViewModel />
     </Design.DataContext>
     
-    <Grid RowDefinitions="59 auto * auto auto">
+    <Grid RowDefinitions="auto auto * auto auto">
         
         <!-- Name -->
         <v:EditableTitleControl
             Grid.Row="0"
-            Margin="0,10,0,10"
-            HorizontalAlignment="Center"
-            Title="{Binding Name}" />
+            Margin="15,0,20,10"
+            HorizontalAlignment="Stretch"
             Title="{Binding Name}"
             Subtitle="{Binding Timestamp}"/>
        

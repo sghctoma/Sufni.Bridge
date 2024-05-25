@@ -15,14 +15,14 @@
     </Design.DataContext>
 
     <Grid ColumnDefinitions="auto *" RowDefinitions="auto auto auto auto auto auto * auto"
-          Margin="20,20,20,20"
+          Margin="20,0,20,20"
           MinWidth="300" HorizontalAlignment="Stretch">
 
         <!-- Name -->
         <v:EditableTitleControl
             Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
-            Margin="0,0,0,10"
-            HorizontalAlignment="Center"
+            Margin="-5,0,0,10"
+            HorizontalAlignment="Stretch"
             Title="{Binding Name}" />
         
         <!-- Board ID -->

@@ -9,18 +9,19 @@
         <!-- Set Defaults -->
         <Setter Property="Template">
             <ControlTemplate>
-                <Grid>
+                <Grid RowDefinitions="auto" Background="#15191c">
+
                     <!-- Title -->
                     <TextBox Name="TitleTextBox"
-                             Text="{TemplateBinding Title}"
-                             Padding="10,0,30,0"
-                             FontWeight="500"
-                             IsEnabled="False"
-                             Background="Transparent"
-                             HorizontalAlignment="Stretch"
-                             VerticalContentAlignment="Center">
+                             MinHeight="30"
                              Text="{Binding Title, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                             Padding="0,0,25,0"
+                             FontWeight="Black"
+                             IsEnabled="False">
                         <TextBox.Styles>
+                            <Style Selector="TextBox:focus">
+                                <Setter Property="Padding" Value="5,0,25,0" />
+                            </Style>
                             <Style Selector="TextBox:pointerover /template/ Border">
                                 <Setter Property="Background" Value="Transparent" />
                                 <Setter Property="BorderBrush" Value="Transparent" />
@@ -51,15 +52,17 @@
                     <!-- Edit / OK buttons -->
                     <Button Name="EditButton"
                             Classes="embedded"
-                            Margin="0,1,0,0"
-                            HorizontalAlignment="Right"
+                            Padding="0,0,0,0"
+                            Margin="0,-2,0,0"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Right"
                             VerticalAlignment="Center"
                             IsVisible="{Binding !#TitleTextBox.IsEnabled}">
                         <Image Source="{SvgImage /Assets/fa-pen-square.svg}" Width="13" />
                     </Button>
                     <Button Classes="embedded"
-                            Margin="0,1,0,0"
                             HorizontalAlignment="Right"
+                            HorizontalContentAlignment="Right"
                             VerticalAlignment="Center"
                             IsVisible="{Binding #TitleTextBox.IsEnabled}">
                         <Image Source="{SvgImage /Assets/fa-check_green.svg}" Width="13" />

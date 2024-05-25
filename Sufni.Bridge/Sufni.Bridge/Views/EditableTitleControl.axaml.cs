@@ -16,6 +16,15 @@ public class EditableTitleControl : TemplatedControl
         get => GetValue(TitleProperty);
         set => SetValue(TitleProperty, value);
     }
+
+    public static readonly StyledProperty<string> SubtitleProperty = AvaloniaProperty.Register<EditableTitleControl, string>(
+        "Subtitle");
+
+    public string Subtitle
+    {
+        get => GetValue(SubtitleProperty);
+        set => SetValue(SubtitleProperty, value);
+    }
     
     private TextBox? TitleTextBox { get; set; }
     private Button? EditButton { get; set; }

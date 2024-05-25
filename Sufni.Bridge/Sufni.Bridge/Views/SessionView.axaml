@@ -25,6 +25,8 @@
             Margin="0,10,0,10"
             HorizontalAlignment="Center"
             Title="{Binding Name}" />
+            Title="{Binding Name}"
+            Subtitle="{Binding Timestamp}"/>
        
         <!-- Tab headers -->
         <Grid Grid.Row="1" ColumnDefinitions="* * * *"

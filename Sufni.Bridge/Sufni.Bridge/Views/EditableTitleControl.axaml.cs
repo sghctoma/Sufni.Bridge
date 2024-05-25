@@ -2,13 +2,14 @@ using System.Diagnostics;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
+using Avalonia.Data;
 
 namespace Sufni.Bridge.Views;
 
 public class EditableTitleControl : TemplatedControl
 {
     public static readonly StyledProperty<string> TitleProperty = AvaloniaProperty.Register<EditableTitleControl, string>(
-        "Title");
+        "Title", defaultBindingMode:BindingMode.TwoWay);
 
     public string Title
     {

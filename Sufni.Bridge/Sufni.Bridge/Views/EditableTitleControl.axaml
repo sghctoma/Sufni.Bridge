@@ -18,6 +18,7 @@
                              Background="Transparent"
                              HorizontalAlignment="Stretch"
                              VerticalContentAlignment="Center">
+                             Text="{Binding Title, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
                         <TextBox.Styles>
                             <Style Selector="TextBox:pointerover /template/ Border">
                                 <Setter Property="Background" Value="Transparent" />

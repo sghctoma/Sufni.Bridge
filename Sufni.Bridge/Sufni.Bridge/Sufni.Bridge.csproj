@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
@@ -31,7 +31,7 @@
     <PackageReference Include="DynamicData" Version="8.4.1" />
     <PackageReference Include="MathNet.Numerics" Version="6.0.0-beta1" />
     <PackageReference Include="MessagePack" Version="3.0.54-alpha" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0-preview.4.24266.19" />
     <PackageReference Include="ScottPlot" Version="5.0.34" />
     <PackageReference Include="ScottPlot.Avalonia" Version="5.0.34" />
     <PackageReference Include="sqlite-net-pcl" Version="1.9.172" />

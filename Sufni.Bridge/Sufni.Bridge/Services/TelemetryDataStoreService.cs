@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Sufni.Bridge.Models;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -103,7 +103,7 @@ internal class TelemetryDataStoreService : ITelemetryDataStoreService
         var toRemove = new List<StorageProviderTelemetryDataStore>();
         foreach (var ds in storageProviderDatastores)
         {
-            if (!await ds.IsAvailable())
+            if (!ds.IsAvailable())
             {
                 toRemove.Add(ds);
             }

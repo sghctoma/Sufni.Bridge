@@ -14,47 +14,35 @@ public partial class SessionView : UserControl
         InitializeComponent();
     }
 
-    private void OnSpringSelected(object? sender, RoutedEventArgs e)
+    private void OnTabHeaderClicked(object? sender, RoutedEventArgs e)
     {
-        TabScrollViewer.Offset = new Vector(0, 0);
-        
-        Spring.IsEnabled = false;
-        Damper.IsEnabled = true;
-        Balance.IsEnabled = true;
-        Notes.IsEnabled = true;
-    }
+        if (e.Source is not Button button) { return; }
 
-    private void OnDamperSelected(object? sender, RoutedEventArgs e)
-    {
-        var x = TabScrollViewer.Viewport.Width;
-        TabScrollViewer.Offset = new Vector(x, 0);
-        
-        Spring.IsEnabled = true;
-        Damper.IsEnabled = false;
-        Balance.IsEnabled = true;
-        Notes.IsEnabled = true;
-    }
-
-    private void OnBalanceSelected(object? sender, RoutedEventArgs e)
-    {
-        var x = 2 * TabScrollViewer.Viewport.Width;
-        TabScrollViewer.Offset = new Vector(x, 0);
-        
-        Spring.IsEnabled = true;
-        Damper.IsEnabled = true;
-        Balance.IsEnabled = false;
-        Notes.IsEnabled = true;
-    }
-
-    private void OnNotesSelected(object? sender, RoutedEventArgs e)
-    {
-        var x = 3 * TabScrollViewer.Viewport.Width;
-        TabScrollViewer.Offset = new Vector(x, 0);
-        
         Spring.IsEnabled = true;
         Damper.IsEnabled = true;
         Balance.IsEnabled = true;
-        Notes.IsEnabled = false;
+        Notes.IsEnabled = true;
+
+        var w = TabScrollViewer.Viewport.Width;
+        switch (button.Name)
+        {
+            case "Spring":
+                Spring.IsEnabled = false;
+                TabScrollViewer.Offset = new Vector(0, 0);
+                break;
+            case "Damper":
+                Damper.IsEnabled = false;
+                TabScrollViewer.Offset = new Vector(w, 0); 
+                break;
+            case "Balance":
+                Balance.IsEnabled = false;
+                TabScrollViewer.Offset = new Vector(2 * w, 0);
+                break;
+            case "Notes":
+                Notes.IsEnabled = false;
+                TabScrollViewer.Offset = new Vector(3 * w, 0);
+                break;
+        }
     }
 
     private void TabScrollViewer_OnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)

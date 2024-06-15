@@ -28,10 +28,17 @@
             Subtitle="{Binding Timestamp}"/>
        
         <!-- Tab headers -->
-        <Grid Grid.Row="1" ColumnDefinitions="* * * *"
+        <ItemsControl Name="TabHeaders"
+              Grid.Row="1"
               HorizontalAlignment="Stretch">
+
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Rows="1" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
             
-            <Grid.Styles>
+            <ItemsControl.Styles>
                 <Style Selector="Button.tabheader">
                     <Setter Property="FontSize" Value="14" />
                     <Setter Property="Background" Value="Transparent" />
@@ -59,26 +66,26 @@
                     <Setter Property="Padding" Value="0,0,0,8" />
                     <Setter Property="BorderThickness" Value="0,0,0,2" />
                 </Style>
-            </Grid.Styles>
+            </ItemsControl.Styles>
             
-            <Button Classes="tabheader" Name="Spring" Grid.Column="0" 
-                    HorizontalAlignment="Center" 
+            <Button Classes="tabheader" Name="Spring"
+                    HorizontalAlignment="Center"
                     Content="Spring" 
-                    Click="OnSpringSelected"
+                    Click="OnTabHeaderClicked"
                     IsEnabled="False" />
-            <Button Classes="tabheader" Name="Damper" Grid.Column="1"
+            <Button Classes="tabheader" Name="Damper"
                     HorizontalAlignment="Center" 
                     Content="Damper" 
-                    Click="OnDamperSelected"/>
-            <Button Classes="tabheader" Name="Balance" Grid.Column="2" 
+                    Click="OnTabHeaderClicked"/>
+            <Button Classes="tabheader" Name="Balance"
                     HorizontalAlignment="Center" 
                     Content="Balance"
-                    Click="OnBalanceSelected" />
-            <Button Classes="tabheader" Name="Notes" Grid.Column="3" 
+                    Click="OnTabHeaderClicked" />
+            <Button Classes="tabheader" Name="Notes"
                     HorizontalAlignment="Center"
                     Content="Notes"
-                    Click="OnNotesSelected"/>
-        </Grid>
+                    Click="OnTabHeaderClicked"/>
+        </ItemsControl>
         
         <ScrollViewer Name="TabScrollViewer" Grid.Row="2"
                       Margin="10,10,10,10"

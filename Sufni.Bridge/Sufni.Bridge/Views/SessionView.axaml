@@ -31,13 +31,26 @@
         <!-- Tab headers -->
         <ItemsControl Name="TabHeaders"
               Grid.Row="1"
-              HorizontalAlignment="Stretch">
+              HorizontalAlignment="Stretch"
+			  ItemsSource="{Binding Pages}">
 
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <UniformGrid Rows="1" />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
+
+			<ItemsControl.ItemTemplate>
+				<DataTemplate>
+					<Button
+						Classes="tabheader"
+						HorizontalAlignment="Center"
+						Name="{Binding DisplayName}"
+						Content="{Binding DisplayName}}" 
+						Click="OnTabHeaderClicked"
+                    	IsEnabled="{Binding !Selected, Mode=TwoWay}" />
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
             
             <ItemsControl.Styles>
                 <Style Selector="Button.tabheader">
@@ -68,24 +81,7 @@
                     <Setter Property="BorderThickness" Value="0,0,0,2" />
                 </Style>
             </ItemsControl.Styles>
-            
-            <Button Classes="tabheader" Name="Spring"
-                    HorizontalAlignment="Center"
-                    Content="Spring" 
-                    Click="OnTabHeaderClicked"
-                    IsEnabled="False" />
-            <Button Classes="tabheader" Name="Damper"
-                    HorizontalAlignment="Center" 
-                    Content="Damper" 
-                    Click="OnTabHeaderClicked"/>
-            <Button Classes="tabheader" Name="Balance"
-                    HorizontalAlignment="Center" 
-                    Content="Balance"
-                    Click="OnTabHeaderClicked" />
-            <Button Classes="tabheader" Name="Notes"
-                    HorizontalAlignment="Center"
-                    Content="Notes"
-                    Click="OnTabHeaderClicked"/>
+
         </ItemsControl>
         
         <ScrollViewer Name="TabScrollViewer" Grid.Row="2"
@@ -97,9 +93,13 @@
                       IsScrollInertiaEnabled="False"
                       SizeChanged="TabScrollViewer_OnSizeChanged"
                       PropertyChanged="TabScrollViewer_OnPropertyChanged">
-            <StackPanel Name="TabContainer"
-                        Orientation="Horizontal"
-                        AreHorizontalSnapPointsRegular="True">
+            <ItemsControl Name="TabContainer" ItemsSource="{Binding Pages}">
+
+				<ItemsControl.ItemsPanel>
+                	<ItemsPanelTemplate>
+                    	<StackPanel Orientation="Horizontal" />
+                	</ItemsPanelTemplate>
+            	</ItemsControl.ItemsPanel>
                 
                 <!-- Ensure that the SufniTelemetryPlotViews' Telemetry property is set -->
                 <i:Interaction.Behaviors>
@@ -108,13 +108,8 @@
                                              CommandParameter="{Binding ElementName=TabScrollViewer, Path=Bounds}"/>
                     </ia:EventTriggerBehavior>
                 </i:Interaction.Behaviors>
-                
-                <sessionpages:SpringPageView Width="{Binding $parent[ScrollViewer].Bounds.Width}" />
-				<sessionpages:DamperPageView Width="{Binding $parent[ScrollViewer].Bounds.Width}" />
-                <sessionpages:BalancePageView Width="{Binding $parent[ScrollViewer].Bounds.Width}" />
-				<sessionpages:NotesPageView Width="{Binding $parent[ScrollViewer].Bounds.Width}" />
 				
-            </StackPanel>
+            </ItemsControl>
         </ScrollViewer>
         
         <!-- Error messages for Session instance -->

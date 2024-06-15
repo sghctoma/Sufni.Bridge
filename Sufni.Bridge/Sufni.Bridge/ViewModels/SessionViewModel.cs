@@ -1,4 +1,5 @@
 using System;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,43 +13,42 @@ using Sufni.Bridge.Models;
 using Sufni.Bridge.Models.Telemetry;
 using Sufni.Bridge.Plots;
 using Sufni.Bridge.Services;
+using Sufni.Bridge.ViewModels.SessionPages;
 
 namespace Sufni.Bridge.ViewModels;
-
-public partial class SuspensionSettings : ObservableObject
-{
-    [ObservableProperty] private string? springRate;
-    [ObservableProperty] private uint? highSpeedCompression;
-    [ObservableProperty] private uint? lowSpeedCompression;
-    [ObservableProperty] private uint? lowSpeedRebound;
-    [ObservableProperty] private uint? highSpeedRebound;
-}
 
 public partial class SessionViewModel : ViewModelBase
 {
     private Session session;
     public bool IsInDatabase;
-    public SuspensionSettings ForkSettings { get; } = new();
-    public SuspensionSettings ShockSettings { get; } = new();
+    private SpringPageViewModel SpringPage { get; } = new();
+    private DamperPageViewModel DamperPage { get; } = new();
+    private BalancePageViewModel BalancePage { get; } = new();
+    private NotesPageViewModel NotesPage { get; } = new();
+    public ObservableCollection<PageViewModelBase> Pages {get; }
+    public string Description => NotesPage.Description ?? "";
+    
+    #region Observable properties
+
+    [ObservableProperty] private Guid id;
+    [ObservableProperty] private string? name;
+    [ObservableProperty] private DateTime? timestamp;
+    
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ResetCommand))]
+    private bool isDirty;
+
+    #endregion
 
     #region Private methods
-    
+
     private void EvaluateDirtiness()
     {
         IsDirty =
             !IsInDatabase ||
             Name != session.Name ||
-            Description != session.Description ||
-            (!(ForkSettings.SpringRate is null && session.FrontSpringRate is null) && ForkSettings.SpringRate != session.FrontSpringRate) ||
-            (!(ForkSettings.HighSpeedCompression is null && session.FrontHighSpeedCompression is null) && ForkSettings.HighSpeedCompression != session.FrontHighSpeedCompression) ||
-            (!(ForkSettings.LowSpeedCompression is null && session.FrontLowSpeedCompression is null) && ForkSettings.LowSpeedCompression != session.FrontLowSpeedCompression) ||
-            (!(ForkSettings.LowSpeedRebound is null && session.FrontLowSpeedRebound is null) && ForkSettings.LowSpeedRebound != session.FrontLowSpeedRebound) ||
-            (!(ForkSettings.HighSpeedRebound is null && session.FrontHighSpeedRebound is null) && ForkSettings.HighSpeedRebound != session.FrontHighSpeedRebound) ||
-            (!(ShockSettings.SpringRate is null && session.RearSpringRate is null) && ShockSettings.SpringRate != session.RearSpringRate) ||
-            (!(ShockSettings.HighSpeedCompression is null && session.RearHighSpeedCompression is null) && ShockSettings.HighSpeedCompression != session.RearHighSpeedCompression) ||
-            (!(ShockSettings.LowSpeedCompression is null && session.RearLowSpeedCompression is null) && ShockSettings.LowSpeedCompression != session.RearLowSpeedCompression) ||
-            (!(ShockSettings.LowSpeedRebound is null && session.RearLowSpeedRebound is null) && ShockSettings.LowSpeedRebound != session.RearLowSpeedRebound) ||
-            (!(ShockSettings.HighSpeedRebound is null && session.RearHighSpeedRebound is null) && ShockSettings.HighSpeedRebound != session.RearHighSpeedRebound);
+            NotesPage.IsDirty(session);
     }
 
     private async Task<bool> LoadCache()
@@ -62,20 +62,29 @@ public partial class SessionViewModel : ViewModelBase
             return false;
         }
 
-        FrontTravelHistogram = cache.FrontTravelHistogram;
-        RearTravelHistogram = cache.RearTravelHistogram;
-        FrontVelocityHistogram = cache.FrontVelocityHistogram;
-        RearVelocityHistogram = cache.RearVelocityHistogram;
-        CompressionBalance = cache.CompressionBalance;
-        ReboundBalance = cache.ReboundBalance;
-        FrontHscPercentage = cache.FrontHscPercentage;
-        RearHscPercentage = cache.RearHscPercentage;
-        FrontLscPercentage = cache.FrontLscPercentage;
-        RearLscPercentage = cache.RearLscPercentage;
-        FrontLsrPercentage = cache.FrontLsrPercentage;
-        RearLsrPercentage = cache.RearLsrPercentage;
-        FrontHsrPercentage = cache.FrontHsrPercentage;
-        RearHsrPercentage = cache.RearHsrPercentage;
+        SpringPage.FrontTravelHistogram = cache.FrontTravelHistogram;
+        SpringPage.RearTravelHistogram = cache.RearTravelHistogram;
+
+        DamperPage.FrontVelocityHistogram = cache.FrontVelocityHistogram;
+        DamperPage.RearVelocityHistogram = cache.RearVelocityHistogram;
+        DamperPage.FrontHscPercentage = cache.FrontHscPercentage;
+        DamperPage.RearHscPercentage = cache.RearHscPercentage;
+        DamperPage.FrontLscPercentage = cache.FrontLscPercentage;
+        DamperPage.RearLscPercentage = cache.RearLscPercentage;
+        DamperPage.FrontLsrPercentage = cache.FrontLsrPercentage;
+        DamperPage.RearLsrPercentage = cache.RearLsrPercentage;
+        DamperPage.FrontHsrPercentage = cache.FrontHsrPercentage;
+        DamperPage.RearHsrPercentage = cache.RearHsrPercentage;
+
+        if (cache.CompressionBalance is not null) 
+        {
+            BalancePage.CompressionBalance = cache.CompressionBalance;
+            BalancePage.ReboundBalance = cache.ReboundBalance;
+        }
+        else 
+        {
+            Pages.Remove(BalancePage);
+        }
 
         return true;
     }
@@ -103,12 +112,12 @@ public partial class SessionViewModel : ViewModelBase
             var fth = new TravelHistogramPlot(new Plot(), SuspensionType.Front);
             fth.LoadTelemetryData(telemetryData);
             sessionCache.FrontTravelHistogram = fth.Plot.GetSvgXml(width, height);
-            Dispatcher.UIThread.Post(() => { FrontTravelHistogram = sessionCache.FrontTravelHistogram; });
+            Dispatcher.UIThread.Post(() => { SpringPage.FrontTravelHistogram = sessionCache.FrontTravelHistogram; });
 
             var fvh = new VelocityHistogramPlot(new Plot(), SuspensionType.Front);
             fvh.LoadTelemetryData(telemetryData);
             sessionCache.FrontVelocityHistogram = fvh.Plot.GetSvgXml(width - 64, 478);
-            Dispatcher.UIThread.Post(() => { FrontVelocityHistogram = sessionCache.FrontVelocityHistogram; });
+            Dispatcher.UIThread.Post(() => { DamperPage.FrontVelocityHistogram = sessionCache.FrontVelocityHistogram; });
 
             var fvb = telemetryData.CalculateVelocityBands(SuspensionType.Front, 200);
             sessionCache.FrontHsrPercentage = fvb.HighSpeedRebound;
@@ -117,10 +126,10 @@ public partial class SessionViewModel : ViewModelBase
             sessionCache.FrontHscPercentage = fvb.HighSpeedCompression;
             Dispatcher.UIThread.Post(() =>
             {
-                FrontHsrPercentage = fvb.HighSpeedRebound;
-                FrontLsrPercentage = fvb.LowSpeedRebound;
-                FrontLscPercentage = fvb.LowSpeedCompression;
-                FrontHscPercentage = fvb.HighSpeedCompression;
+                DamperPage.FrontHsrPercentage = fvb.HighSpeedRebound;
+                DamperPage.FrontLsrPercentage = fvb.LowSpeedRebound;
+                DamperPage.FrontLscPercentage = fvb.LowSpeedCompression;
+                DamperPage.FrontHscPercentage = fvb.HighSpeedCompression;
             });
         }
         
@@ -129,12 +138,12 @@ public partial class SessionViewModel : ViewModelBase
             var rth = new TravelHistogramPlot(new Plot(), SuspensionType.Rear);
             rth.LoadTelemetryData(telemetryData);
             sessionCache.RearTravelHistogram = rth.Plot.GetSvgXml(width, height);
-            Dispatcher.UIThread.Post(() => { RearTravelHistogram = sessionCache.RearTravelHistogram; });
+            Dispatcher.UIThread.Post(() => { SpringPage.RearTravelHistogram = sessionCache.RearTravelHistogram; });
 
             var rvh = new VelocityHistogramPlot(new Plot(), SuspensionType.Rear);
             rvh.LoadTelemetryData(telemetryData);
             sessionCache.RearVelocityHistogram = rvh.Plot.GetSvgXml(width - 64, 478);
-            Dispatcher.UIThread.Post(() => { RearVelocityHistogram = sessionCache.RearVelocityHistogram; });
+            Dispatcher.UIThread.Post(() => { DamperPage.RearVelocityHistogram = sessionCache.RearVelocityHistogram; });
 
             var rvb = telemetryData.CalculateVelocityBands(SuspensionType.Rear, 200);
             sessionCache.RearHsrPercentage = rvb.HighSpeedRebound;
@@ -143,10 +152,10 @@ public partial class SessionViewModel : ViewModelBase
             sessionCache.RearHscPercentage = rvb.HighSpeedCompression;
             Dispatcher.UIThread.Post(() =>
             {
-                RearHsrPercentage = rvb.HighSpeedRebound;
-                RearLsrPercentage = rvb.LowSpeedRebound;
-                RearLscPercentage = rvb.LowSpeedCompression;
-                RearHscPercentage = rvb.HighSpeedCompression;
+                DamperPage.RearHsrPercentage = rvb.HighSpeedRebound;
+                DamperPage.RearLsrPercentage = rvb.LowSpeedRebound;
+                DamperPage.RearLscPercentage = rvb.LowSpeedCompression;
+                DamperPage.RearHscPercentage = rvb.HighSpeedCompression;
             });
         }
 
@@ -156,45 +165,20 @@ public partial class SessionViewModel : ViewModelBase
             var cb = new BalancePlot(new Plot(), BalanceType.Compression);
             cb.LoadTelemetryData(telemetryData);
             sessionCache.CompressionBalance = cb.Plot.GetSvgXml(width, height);
-            Dispatcher.UIThread.Post(() => { CompressionBalance = sessionCache.CompressionBalance; });
+            Dispatcher.UIThread.Post(() => { BalancePage.CompressionBalance = sessionCache.CompressionBalance; });
 
             var rb = new BalancePlot(new Plot(), BalanceType.Rebound);
             rb.LoadTelemetryData(telemetryData);
             sessionCache.ReboundBalance = rb.Plot.GetSvgXml(width, height);
-            Dispatcher.UIThread.Post(() => { ReboundBalance = sessionCache.ReboundBalance; });
+            Dispatcher.UIThread.Post(() => { BalancePage.ReboundBalance = sessionCache.ReboundBalance; });
+        }
+        else
+        {
+            Dispatcher.UIThread.Post(() => { Pages.Remove(BalancePage); });
         }
         
         await databaseService.PutSessionCacheAsync(sessionCache);
     }
-
-    #endregion
-
-    #region Observable properties
-
-    [ObservableProperty] private Guid id;
-    [ObservableProperty] private string? name;
-    [ObservableProperty] private string? description;
-    [ObservableProperty] private DateTime? timestamp;
-
-    [ObservableProperty] private string? frontTravelHistogram;
-    [ObservableProperty] private string? rearTravelHistogram;
-    [ObservableProperty] private string? frontVelocityHistogram;
-    [ObservableProperty] private string? rearVelocityHistogram;
-    [ObservableProperty] private string? compressionBalance;
-    [ObservableProperty] private string? reboundBalance;
-    [ObservableProperty] private double? frontHscPercentage;
-    [ObservableProperty] private double? rearHscPercentage;
-    [ObservableProperty] private double? frontLscPercentage;
-    [ObservableProperty] private double? rearLscPercentage;
-    [ObservableProperty] private double? frontLsrPercentage;
-    [ObservableProperty] private double? rearLsrPercentage;
-    [ObservableProperty] private double? frontHsrPercentage;
-    [ObservableProperty] private double? rearHsrPercentage;
-    
-    [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
-    [NotifyCanExecuteChangedFor(nameof(ResetCommand))]
-    private bool isDirty;
 
     #endregion
     
@@ -202,12 +186,6 @@ public partial class SessionViewModel : ViewModelBase
     
     // ReSharper disable once UnusedParameterInPartialMethod
     partial void OnNameChanged(string? value)
-    {
-        EvaluateDirtiness();
-    }
-
-    // ReSharper disable once UnusedParameterInPartialMethod
-    partial void OnDescriptionChanged(string? value)
     {
         EvaluateDirtiness();
     }
@@ -220,16 +198,19 @@ public partial class SessionViewModel : ViewModelBase
     {
         session = new Session();
         IsInDatabase = false;
+        Pages = [SpringPage, DamperPage, BalancePage, NotesPage];
     }
     
     public SessionViewModel(Session session, bool fromDatabase)
     {
         this.session = session;
         IsInDatabase = fromDatabase;
-        
-        ForkSettings.PropertyChanged += (_, _) => EvaluateDirtiness();
-        ShockSettings.PropertyChanged += (_, _) => EvaluateDirtiness();
-        
+        Pages = [SpringPage, DamperPage, BalancePage, NotesPage];
+
+        NotesPage.ForkSettings.PropertyChanged += (_, _) => EvaluateDirtiness();
+        NotesPage.ShockSettings.PropertyChanged += (_, _) => EvaluateDirtiness();
+        NotesPage.PropertyChanged += (_, _) => EvaluateDirtiness();
+
         Reset();
     }
 
@@ -269,19 +250,19 @@ public partial class SessionViewModel : ViewModelBase
             var newSession = new Session(
                 id: session.Id,
                 name: Name ?? $"session #{session.Id}",
-                description: Description ?? $"session #{session.Id}",
+                description: NotesPage.Description ?? $"session #{session.Id}",
                 setup: session.Setup)
             {
-                FrontSpringRate = ForkSettings.SpringRate,
-                FrontHighSpeedCompression = ForkSettings.HighSpeedCompression,
-                FrontLowSpeedCompression = ForkSettings.LowSpeedCompression,
-                FrontLowSpeedRebound = ForkSettings.LowSpeedRebound,
-                FrontHighSpeedRebound = ForkSettings.HighSpeedRebound,
-                RearSpringRate = ShockSettings.SpringRate,
-                RearHighSpeedCompression = ShockSettings.HighSpeedCompression,
-                RearLowSpeedCompression = ShockSettings.LowSpeedCompression,
-                RearLowSpeedRebound = ShockSettings.LowSpeedRebound,
-                RearHighSpeedRebound = ShockSettings.HighSpeedRebound,
+                FrontSpringRate = NotesPage.ForkSettings.SpringRate,
+                FrontHighSpeedCompression = NotesPage.ForkSettings.HighSpeedCompression,
+                FrontLowSpeedCompression = NotesPage.ForkSettings.LowSpeedCompression,
+                FrontLowSpeedRebound = NotesPage.ForkSettings.LowSpeedRebound,
+                FrontHighSpeedRebound = NotesPage.ForkSettings.HighSpeedRebound,
+                RearSpringRate = NotesPage.ShockSettings.SpringRate,
+                RearHighSpeedCompression = NotesPage.ShockSettings.HighSpeedCompression,
+                RearLowSpeedCompression = NotesPage.ShockSettings.LowSpeedCompression,
+                RearLowSpeedRebound = NotesPage.ShockSettings.LowSpeedRebound,
+                RearHighSpeedRebound = NotesPage.ShockSettings.HighSpeedRebound,
             };
 
 
@@ -306,19 +287,19 @@ public partial class SessionViewModel : ViewModelBase
     {
         Id = session.Id;
         Name = session.Name;
-        Description = session.Description;
         
-        ForkSettings.SpringRate = session.FrontSpringRate;
-        ForkSettings.HighSpeedCompression = session.FrontHighSpeedCompression;
-        ForkSettings.LowSpeedCompression = session.FrontLowSpeedCompression;
-        ForkSettings.LowSpeedRebound = session.FrontLowSpeedRebound;
-        ForkSettings.HighSpeedRebound = session.FrontHighSpeedRebound;
+        NotesPage.Description = session.Description;
+        NotesPage.ForkSettings.SpringRate = session.FrontSpringRate;
+        NotesPage.ForkSettings.HighSpeedCompression = session.FrontHighSpeedCompression;
+        NotesPage.ForkSettings.LowSpeedCompression = session.FrontLowSpeedCompression;
+        NotesPage.ForkSettings.LowSpeedRebound = session.FrontLowSpeedRebound;
+        NotesPage.ForkSettings.HighSpeedRebound = session.FrontHighSpeedRebound;
         
-        ShockSettings.SpringRate = session.RearSpringRate;
-        ShockSettings.HighSpeedCompression = session.RearHighSpeedCompression;
-        ShockSettings.LowSpeedCompression = session.RearLowSpeedCompression;
-        ShockSettings.LowSpeedRebound = session.RearLowSpeedRebound;
-        ShockSettings.HighSpeedRebound = session.RearHighSpeedRebound;
+        NotesPage.ShockSettings.SpringRate = session.RearSpringRate;
+        NotesPage.ShockSettings.HighSpeedCompression = session.RearHighSpeedCompression;
+        NotesPage.ShockSettings.LowSpeedCompression = session.RearLowSpeedCompression;
+        NotesPage.ShockSettings.LowSpeedRebound = session.RearLowSpeedRebound;
+        NotesPage.ShockSettings.HighSpeedRebound = session.RearHighSpeedRebound;
         
         Timestamp = DateTimeOffset.FromUnixTimeSeconds(session.Timestamp ?? 0).DateTime;
     }

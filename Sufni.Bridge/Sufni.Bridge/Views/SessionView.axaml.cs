@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Sufni.Bridge.ViewModels.SessionPages;
 
 namespace Sufni.Bridge.Views;
 
@@ -12,63 +13,71 @@ public partial class SessionView : UserControl
     public SessionView()
     {
         InitializeComponent();
+        TabHeaders.Items.CollectionChanged += (_, _) => 
+        {
+            if (TabHeaders.ItemCount > 0) 
+            {
+                (TabHeaders.Items[0] as PageViewModelBase)!.Selected = true;
+            }
+        };
     }
 
     private void OnTabHeaderClicked(object? sender, RoutedEventArgs e)
     {
         if (e.Source is not Button button) { return; }
 
-        Spring.IsEnabled = true;
-        Damper.IsEnabled = true;
-        Balance.IsEnabled = true;
-        Notes.IsEnabled = true;
+        sizeChanging = true;
+
+        var index = 0;
+        for (var i = 0; i < TabHeaders.ItemCount; ++i)
+        {
+            var page = (TabHeaders.Items[i] as PageViewModelBase);
+            if (page != null)
+            {
+                if (page.DisplayName == button.Name)
+                {
+                    index = i;
+                }
+                page.Selected = false;
+            }
+        }
+
+        button.IsEnabled = false;
 
         var w = TabScrollViewer.Viewport.Width;
-        switch (button.Name)
-        {
-            case "Spring":
-                Spring.IsEnabled = false;
-                TabScrollViewer.Offset = new Vector(0, 0);
-                break;
-            case "Damper":
-                Damper.IsEnabled = false;
-                TabScrollViewer.Offset = new Vector(w, 0); 
-                break;
-            case "Balance":
-                Balance.IsEnabled = false;
-                TabScrollViewer.Offset = new Vector(2 * w, 0);
-                break;
-            case "Notes":
-                Notes.IsEnabled = false;
-                TabScrollViewer.Offset = new Vector(3 * w, 0);
-                break;
-        }
+        TabScrollViewer.Offset = new Vector(index * w, 0);
+
+        sizeChanging = false;
     }
 
     private void TabScrollViewer_OnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
     {
         if (e.Property.Name != nameof(TabScrollViewer.Offset) || sizeChanging) return;
 
-        Spring.IsEnabled = true;
-        Damper.IsEnabled = true;
-        Balance.IsEnabled = true;
-        Notes.IsEnabled = true;
-        
+        foreach (var header in TabHeaders.Items)
+        {
+            (header as PageViewModelBase)!.Selected = false;
+        }
+
         var width = TabScrollViewer.Viewport.Width;
         var offset = TabScrollViewer.Offset.X;
-        if (offset < 0.5 * width) Spring.IsEnabled = false;
-        else if (offset < 1.5 * width) Damper.IsEnabled = false;
-        else if (offset < 2.5 * width) Balance.IsEnabled = false;
-        else Notes.IsEnabled = false;
+        var index = (int)(offset + width / 2.0) / (int)width;
+        (TabHeaders.Items[index] as PageViewModelBase)!.Selected = true;
     }
 
     private void TabScrollViewer_OnSizeChanged(object? sender, SizeChangedEventArgs e)
     {
         sizeChanging = true;
-        if (!Spring.IsEnabled) TabScrollViewer.Offset = new Vector(0,0);
-        else if (!Damper.IsEnabled) TabScrollViewer.Offset = new Vector(e.NewSize.Width, 0);
-        else if (!Balance.IsEnabled) TabScrollViewer.Offset = new Vector(2 * e.NewSize.Width, 0);
-        else if (!Notes.IsEnabled) TabScrollViewer.Offset = new Vector(3 * e.NewSize.Width, 0);
+
+        for (var i = 0; i < TabHeaders.ItemCount; i++)
+        {
+            if ((TabHeaders.Items[i] as PageViewModelBase)!.Selected)
+            {
+                TabScrollViewer.Offset = new Vector(i * e.NewSize.Width, 0);
+                break;
+            }
+        }
+
         sizeChanging = false;
     }
 }

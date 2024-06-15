@@ -93,7 +93,10 @@ public partial class SessionViewModel : ViewModelBase
 
         var b = (Rect)bounds!;
         var (width, height) = ((int)b.Width, (int)(b.Height / 2.0));
-        var sessionCache = new SessionCache();
+        var sessionCache = new SessionCache
+        {
+            SessionId = Id
+        };
 
         if (telemetryData.Front.Present)
         {

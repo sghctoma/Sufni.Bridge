@@ -95,61 +95,71 @@ public partial class SessionViewModel : ViewModelBase
         var (width, height) = ((int)b.Width, (int)(b.Height / 2.0));
         var sessionCache = new SessionCache();
 
-        var fth = new TravelHistogramPlot(new Plot(), SuspensionType.Front);
-        fth.LoadTelemetryData(telemetryData);
-        sessionCache.FrontTravelHistogram = fth.Plot.GetSvgXml(width, height);
-        Dispatcher.UIThread.Post(() => { FrontTravelHistogram = sessionCache.FrontTravelHistogram; });
-
-        var rth = new TravelHistogramPlot(new Plot(), SuspensionType.Rear);
-        rth.LoadTelemetryData(telemetryData);
-        sessionCache.RearTravelHistogram = rth.Plot.GetSvgXml(width, height);
-        Dispatcher.UIThread.Post(() => { RearTravelHistogram = sessionCache.RearTravelHistogram; });
-
-        var fvh = new VelocityHistogramPlot(new Plot(), SuspensionType.Front);
-        fvh.LoadTelemetryData(telemetryData);
-        sessionCache.FrontVelocityHistogram = fvh.Plot.GetSvgXml(width - 64, 478);
-        Dispatcher.UIThread.Post(() => { FrontVelocityHistogram = sessionCache.FrontVelocityHistogram; });
-
-        var rvh = new VelocityHistogramPlot(new Plot(), SuspensionType.Rear);
-        rvh.LoadTelemetryData(telemetryData);
-        sessionCache.RearVelocityHistogram = rvh.Plot.GetSvgXml(width - 64, 478);
-        Dispatcher.UIThread.Post(() => { RearVelocityHistogram = sessionCache.RearVelocityHistogram; });
-
-        var cb = new BalancePlot(new Plot(), BalanceType.Compression);
-        cb.LoadTelemetryData(telemetryData);
-        sessionCache.CompressionBalance = cb.Plot.GetSvgXml(width, height);
-        Dispatcher.UIThread.Post(() => { CompressionBalance = sessionCache.CompressionBalance; });
-
-        var rb = new BalancePlot(new Plot(), BalanceType.Rebound);
-        rb.LoadTelemetryData(telemetryData);
-        sessionCache.ReboundBalance = rb.Plot.GetSvgXml(width, height);
-        Dispatcher.UIThread.Post(() => { ReboundBalance = sessionCache.ReboundBalance; });
-
-        var fvb = telemetryData.CalculateVelocityBands(SuspensionType.Front, 200);
-        sessionCache.FrontHsrPercentage = fvb.HighSpeedRebound;
-        sessionCache.FrontLsrPercentage = fvb.LowSpeedRebound;
-        sessionCache.FrontLscPercentage = fvb.LowSpeedCompression;
-        sessionCache.FrontHscPercentage = fvb.HighSpeedCompression;
-        Dispatcher.UIThread.Post(() =>
+        if (telemetryData.Front.Present)
         {
-            FrontHsrPercentage = fvb.HighSpeedRebound;
-            FrontLsrPercentage = fvb.LowSpeedRebound;
-            FrontLscPercentage = fvb.LowSpeedCompression;
-            FrontHscPercentage = fvb.HighSpeedCompression;
-        });
+            var fth = new TravelHistogramPlot(new Plot(), SuspensionType.Front);
+            fth.LoadTelemetryData(telemetryData);
+            sessionCache.FrontTravelHistogram = fth.Plot.GetSvgXml(width, height);
+            Dispatcher.UIThread.Post(() => { FrontTravelHistogram = sessionCache.FrontTravelHistogram; });
 
-        var rvb = telemetryData.CalculateVelocityBands(SuspensionType.Rear, 200);
-        sessionCache.RearHsrPercentage = rvb.HighSpeedRebound;
-        sessionCache.RearLsrPercentage = rvb.LowSpeedRebound;
-        sessionCache.RearLscPercentage = rvb.LowSpeedCompression;
-        sessionCache.RearHscPercentage = rvb.HighSpeedCompression;
-        Dispatcher.UIThread.Post(() =>
+            var fvh = new VelocityHistogramPlot(new Plot(), SuspensionType.Front);
+            fvh.LoadTelemetryData(telemetryData);
+            sessionCache.FrontVelocityHistogram = fvh.Plot.GetSvgXml(width - 64, 478);
+            Dispatcher.UIThread.Post(() => { FrontVelocityHistogram = sessionCache.FrontVelocityHistogram; });
+
+            var fvb = telemetryData.CalculateVelocityBands(SuspensionType.Front, 200);
+            sessionCache.FrontHsrPercentage = fvb.HighSpeedRebound;
+            sessionCache.FrontLsrPercentage = fvb.LowSpeedRebound;
+            sessionCache.FrontLscPercentage = fvb.LowSpeedCompression;
+            sessionCache.FrontHscPercentage = fvb.HighSpeedCompression;
+            Dispatcher.UIThread.Post(() =>
+            {
+                FrontHsrPercentage = fvb.HighSpeedRebound;
+                FrontLsrPercentage = fvb.LowSpeedRebound;
+                FrontLscPercentage = fvb.LowSpeedCompression;
+                FrontHscPercentage = fvb.HighSpeedCompression;
+            });
+        }
+        
+        if (telemetryData.Rear.Present) 
         {
-            RearHsrPercentage = rvb.HighSpeedRebound;
-            RearLsrPercentage = rvb.LowSpeedRebound;
-            RearLscPercentage = rvb.LowSpeedCompression;
-            RearHscPercentage = rvb.HighSpeedCompression;
-        });
+            var rth = new TravelHistogramPlot(new Plot(), SuspensionType.Rear);
+            rth.LoadTelemetryData(telemetryData);
+            sessionCache.RearTravelHistogram = rth.Plot.GetSvgXml(width, height);
+            Dispatcher.UIThread.Post(() => { RearTravelHistogram = sessionCache.RearTravelHistogram; });
+
+            var rvh = new VelocityHistogramPlot(new Plot(), SuspensionType.Rear);
+            rvh.LoadTelemetryData(telemetryData);
+            sessionCache.RearVelocityHistogram = rvh.Plot.GetSvgXml(width - 64, 478);
+            Dispatcher.UIThread.Post(() => { RearVelocityHistogram = sessionCache.RearVelocityHistogram; });
+
+            var rvb = telemetryData.CalculateVelocityBands(SuspensionType.Rear, 200);
+            sessionCache.RearHsrPercentage = rvb.HighSpeedRebound;
+            sessionCache.RearLsrPercentage = rvb.LowSpeedRebound;
+            sessionCache.RearLscPercentage = rvb.LowSpeedCompression;
+            sessionCache.RearHscPercentage = rvb.HighSpeedCompression;
+            Dispatcher.UIThread.Post(() =>
+            {
+                RearHsrPercentage = rvb.HighSpeedRebound;
+                RearLsrPercentage = rvb.LowSpeedRebound;
+                RearLscPercentage = rvb.LowSpeedCompression;
+                RearHscPercentage = rvb.HighSpeedCompression;
+            });
+        }
+
+        if (telemetryData.Front.Present && telemetryData.Rear.Present)
+        {
+
+            var cb = new BalancePlot(new Plot(), BalanceType.Compression);
+            cb.LoadTelemetryData(telemetryData);
+            sessionCache.CompressionBalance = cb.Plot.GetSvgXml(width, height);
+            Dispatcher.UIThread.Post(() => { CompressionBalance = sessionCache.CompressionBalance; });
+
+            var rb = new BalancePlot(new Plot(), BalanceType.Rebound);
+            rb.LoadTelemetryData(telemetryData);
+            sessionCache.ReboundBalance = rb.Plot.GetSvgXml(width, height);
+            Dispatcher.UIThread.Post(() => { ReboundBalance = sessionCache.ReboundBalance; });
+        }
         
         await databaseService.PutSessionCacheAsync(sessionCache);
     }

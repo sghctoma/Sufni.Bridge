@@ -49,5 +49,9 @@
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Views/SessionPages/" />
+  </ItemGroup>
     
 </Project>

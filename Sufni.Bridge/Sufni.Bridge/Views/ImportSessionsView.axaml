@@ -1,157 +1,235 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:vm="clr-namespace:Sufni.Bridge.ViewModels"
-             xmlns:v="clr-namespace:Sufni.Bridge.Views"
-             xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
-             xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
-             xmlns:progRing="clr-namespace:AvaloniaProgressRing;assembly=AvaloniaProgressRing"
-             mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
-             x:Class="Sufni.Bridge.Views.ImportSessionsView"
-             x:DataType="vm:ImportSessionsViewModel"
-             Background="#15191c">
+﻿<UserControl
+    x:Class="Sufni.Bridge.Views.ImportSessionsView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
+    xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:progRing="clr-namespace:AvaloniaProgressRing;assembly=AvaloniaProgressRing"
+    xmlns:v="clr-namespace:Sufni.Bridge.Views"
+    xmlns:vm="clr-namespace:Sufni.Bridge.ViewModels"
+    d:DesignHeight="600"
+    d:DesignWidth="500"
+    x:DataType="vm:ImportSessionsViewModel"
+    Background="#15191c"
+    mc:Ignorable="d">
 
     <Design.DataContext>
         <vm:ImportSessionsViewModel />
     </Design.DataContext>
 
-    <Grid RowDefinitions="44 * auto auto 39" ColumnDefinitions="auto * auto"
-          Margin="20,20,20,20">
-        
-        <!-- Datastore selector -->
-        <ComboBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
-                  Margin="0,0,2,0"
-                  VerticalAlignment="Stretch"
-                  HorizontalAlignment="Stretch"
-                  SelectedItem="{Binding SelectedDataStore}"
-                  ItemsSource="{Binding TelemetryDataStores}">
+    <Grid
+        Margin="20,20,20,20"
+        ColumnDefinitions="auto * auto"
+        RowDefinitions="44 * auto auto 39">
+
+        <!--  Datastore selector  -->
+        <ComboBox
+            Grid.Row="0"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Margin="0,0,2,0"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            ItemsSource="{Binding TelemetryDataStores}"
+            SelectedItem="{Binding SelectedDataStore}">
             <ComboBox.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding Name}" />
                 </DataTemplate>
             </ComboBox.ItemTemplate>
-            
-            <!-- Attach command to Expanded event -->
+
+            <!--  Attach command to Expanded event  -->
             <i:Interaction.Behaviors>
                 <ia:EventTriggerBehavior EventName="GotFocus">
                     <InvokeCommandAction Command="{Binding ClearNewDataStoresAvailableCommand}" />
                 </ia:EventTriggerBehavior>
             </i:Interaction.Behaviors>
         </ComboBox>
-        
-        <Button Grid.Row="0" Grid.Column="2" 
-                Height="39" Width="39"
-                HorizontalContentAlignment="Center" Content="..." 
-                BorderBrush="#505050"
-                Command="{Binding OpenDataStoreCommand}"/>
-        
-        <Image Grid.Row="0" Grid.Column="1"
-               Height="20"
-               IsVisible="{Binding NewDataStoresAvailable}"
-               Margin="0,2,40,0"
-               HorizontalAlignment="Right"
-               Source="{SvgImage /Assets/fa-circle-exclamation.svg}" />
 
-        <!-- List of SST files in selected datastore -->
-        <ScrollViewer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,5,0,5">
+        <Button
+            Grid.Row="0"
+            Grid.Column="2"
+            Width="39"
+            Height="39"
+            HorizontalContentAlignment="Center"
+            BorderBrush="#505050"
+            Command="{Binding OpenDataStoreCommand}"
+            Content="..." />
+
+        <Image
+            Grid.Row="0"
+            Grid.Column="1"
+            Height="20"
+            Margin="0,2,40,0"
+            HorizontalAlignment="Right"
+            IsVisible="{Binding NewDataStoresAvailable}"
+            Source="{SvgImage /Assets/fa-circle-exclamation.svg}" />
+
+        <!--  List of SST files in selected datastore  -->
+        <ScrollViewer
+            Grid.Row="1"
+            Grid.Column="0"
+            Grid.ColumnSpan="3"
+            Margin="0,5,0,5">
             <ItemsRepeater Classes="main" ItemsSource="{Binding TelemetryFiles}">
                 <ItemsRepeater.ItemTemplate>
                     <DataTemplate>
                         <Expander HorizontalAlignment="Stretch" IsExpanded="False">
                             <Expander.Header>
                                 <StackPanel Orientation="Horizontal">
-                                    <CheckBox HorizontalAlignment="Left"
-                                              IsChecked="{Binding ShouldBeImported}"
-                                              Content="" />
-                                    <TextBlock Margin="2" VerticalAlignment="Center"
-                                               FontWeight="Black" Text="{Binding FileName}" />
-                                    <TextBlock Margin="2" VerticalAlignment="Center"
-                                               FontSize="12"
-                                               Text="{Binding StartTime}" />
-                                    <TextBlock Margin="2" VerticalAlignment="Center"
-                                               FontSize="12"
-                                               Text="{Binding Duration, StringFormat=({0})}" />
+                                    <CheckBox
+                                        HorizontalAlignment="Left"
+                                        Content=""
+                                        IsChecked="{Binding ShouldBeImported}" />
+                                    <TextBlock
+                                        Margin="2"
+                                        VerticalAlignment="Center"
+                                        FontWeight="Black"
+                                        Text="{Binding FileName}" />
+                                    <TextBlock
+                                        Margin="2"
+                                        VerticalAlignment="Center"
+                                        FontSize="12"
+                                        Text="{Binding StartTime}" />
+                                    <TextBlock
+                                        Margin="2"
+                                        VerticalAlignment="Center"
+                                        FontSize="12"
+                                        Text="{Binding Duration, StringFormat=({0})}" />
                                 </StackPanel>
                             </Expander.Header>
-                            <Grid ColumnDefinitions="auto *" RowDefinitions="auto auto auto *"
-                                  Height="150" HorizontalAlignment="Stretch">
-                                
-                                <Label Grid.Row="1" Grid.Column="0" VerticalAlignment="Center">Name:</Label>
-                                <TextBox Grid.Row="1" Grid.Column="1" Margin="2"
-                                         Text="{Binding Name}" />
-                                <Label Grid.Row="2" Grid.Column="0" VerticalAlignment="Center">Description:</Label>
-                                <TextBox Grid.Row="2" Grid.Column="1" Grid.RowSpan="2"
-                                         Margin="2" AcceptsReturn="True" VerticalAlignment="Stretch"
-                                         TextWrapping="Wrap"
-                                         Text="{Binding Description}" />
+                            <Grid
+                                Height="150"
+                                HorizontalAlignment="Stretch"
+                                ColumnDefinitions="auto *"
+                                RowDefinitions="auto auto auto *">
+
+                                <Label
+                                    Grid.Row="1"
+                                    Grid.Column="0"
+                                    VerticalAlignment="Center">
+                                    Name:
+                                </Label>
+                                <TextBox
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    Margin="2"
+                                    Text="{Binding Name}" />
+                                <Label
+                                    Grid.Row="2"
+                                    Grid.Column="0"
+                                    VerticalAlignment="Center">
+                                    Description:
+                                </Label>
+                                <TextBox
+                                    Grid.Row="2"
+                                    Grid.RowSpan="2"
+                                    Grid.Column="1"
+                                    Margin="2"
+                                    VerticalAlignment="Stretch"
+                                    AcceptsReturn="True"
+                                    Text="{Binding Description}"
+                                    TextWrapping="Wrap" />
                             </Grid>
                         </Expander>
                     </DataTemplate>
                 </ItemsRepeater.ItemTemplate>
             </ItemsRepeater>
         </ScrollViewer>
-        
-        <!-- Notifications -->
-        <v:NotificationsControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Margin="2, 4" ZIndex="10"
-                                ClearNotificationsCommand="{Binding ClearNotificationsCommand}"
-                                Notifications="{Binding Notifications}"
-                                IsVisible="{Binding Notifications.Count}" />
-        
-        <!-- Error messages -->
-        <v:ErrorMessagesControl Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Margin="2, 4" ZIndex="10"
-                                ClearErrorsCommand="{Binding ClearErrorsCommand}"
-                                ErrorMessages="{Binding ErrorMessages}"
-                                IsVisible="{Binding ErrorMessages.Count}" />
 
-        <Grid Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3"
-              ColumnDefinitions="auto *">
-            
-            <!-- Back button -->
-            <Button Grid.Column="0" Width="39" Height="39"
-                    Margin="0,0,10,0"
-                    HorizontalContentAlignment="Center"
-                    VerticalContentAlignment="Center"
-                    Command="{Binding OpenPreviousPageCommand}">
-                <Image Width="16" Height="16"
-                       Source="{SvgImage /Assets/fa-arrow-left.svg}" />
+        <!--  Notifications  -->
+        <v:NotificationsControl
+            Grid.Row="2"
+            Grid.Column="0"
+            Grid.ColumnSpan="3"
+            Margin="2,4"
+            ClearNotificationsCommand="{Binding ClearNotificationsCommand}"
+            IsVisible="{Binding Notifications.Count}"
+            Notifications="{Binding Notifications}"
+            ZIndex="10" />
+
+        <!--  Error messages  -->
+        <v:ErrorMessagesControl
+            Grid.Row="3"
+            Grid.Column="0"
+            Grid.ColumnSpan="3"
+            Margin="2,4"
+            ClearErrorsCommand="{Binding ClearErrorsCommand}"
+            ErrorMessages="{Binding ErrorMessages}"
+            IsVisible="{Binding ErrorMessages.Count}"
+            ZIndex="10" />
+
+        <Grid
+            Grid.Row="4"
+            Grid.Column="0"
+            Grid.ColumnSpan="3"
+            ColumnDefinitions="auto *">
+
+            <!--  Back button  -->
+            <Button
+                Grid.Column="0"
+                Width="39"
+                Height="39"
+                Margin="0,0,10,0"
+                HorizontalContentAlignment="Center"
+                VerticalContentAlignment="Center"
+                Command="{Binding OpenPreviousPageCommand}">
+                <Image
+                    Width="16"
+                    Height="16"
+                    Source="{SvgImage /Assets/fa-arrow-left.svg}" />
             </Button>
-            
-            <!-- Import button -->
-            <Button Grid.Column="1"
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Stretch"
-                    HorizontalContentAlignment="Center"
-                    VerticalContentAlignment="Center"
-                    Content="import selected"
-                    Command="{Binding ImportSessionsCommand}" />
-            
-            <!-- Create Session button -->
-            <Button Grid.Column="1"
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Stretch"
-                    HorizontalContentAlignment="Center"
-                    VerticalContentAlignment="Center"
-                    Content="create setup for this DAQ"
-                    Command="{Binding AddSetupCommand}">
+
+            <!--  Import button  -->
+            <Button
+                Grid.Column="1"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                HorizontalContentAlignment="Center"
+                VerticalContentAlignment="Center"
+                Command="{Binding ImportSessionsCommand}"
+                Content="import selected" />
+
+            <!--  Create Session button  -->
+            <Button
+                Grid.Column="1"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                HorizontalContentAlignment="Center"
+                VerticalContentAlignment="Center"
+                Command="{Binding AddSetupCommand}"
+                Content="create setup for this DAQ">
                 <Button.IsVisible>
                     <MultiBinding Converter="{x:Static BoolConverters.And}">
-                        <Binding Path="SelectedDataStore" Converter="{x:Static ObjectConverters.IsNotNull}" />
-                        <Binding Path="SelectedSetup" Converter="{x:Static ObjectConverters.IsNull}" />
+                        <Binding Converter="{x:Static ObjectConverters.IsNotNull}" Path="SelectedDataStore" />
+                        <Binding Converter="{x:Static ObjectConverters.IsNull}" Path="SelectedSetup" />
                     </MultiBinding>
                 </Button.IsVisible>
             </Button>
-            
+
         </Grid>
-        
-        <!-- Progress ring --> 
-        <Panel Grid.Row="0" Grid.Column="0" Grid.RowSpan="5" Grid.ColumnSpan="3"
-               Background="#0d0d0d" Opacity="0.7"
-               IsVisible="{Binding ImportInProgress}" />
-        <progRing:ProgressRing Grid.Row="0" Grid.Column="0" Grid.RowSpan="5" Grid.ColumnSpan="3"
-                               Width="40" Height="40" Foreground="#0078D7"
-                               HorizontalAlignment="Center"
-                               VerticalAlignment="Center">
+
+        <!--  Progress ring  -->
+        <Panel
+            Grid.Row="0"
+            Grid.RowSpan="5"
+            Grid.Column="0"
+            Grid.ColumnSpan="3"
+            Background="#0d0d0d"
+            IsVisible="{Binding ImportInProgress}"
+            Opacity="0.7" />
+        <progRing:ProgressRing
+            Grid.Row="0"
+            Grid.RowSpan="5"
+            Grid.Column="0"
+            Grid.ColumnSpan="3"
+            Width="40"
+            Height="40"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Foreground="#0078D7">
             <progRing:ProgressRing.IsActive>
                 <MultiBinding Converter="{x:Static BoolConverters.Or}">
                     <Binding Path="!TelemetryDataStores.Count" />
@@ -159,6 +237,6 @@
                 </MultiBinding>
             </progRing:ProgressRing.IsActive>
         </progRing:ProgressRing>
-        
+
     </Grid>
 </UserControl>

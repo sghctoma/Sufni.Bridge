@@ -15,10 +15,10 @@
     </Design.DataContext>
 
     <Grid
+        Width="{Binding $parent[ScrollViewer].Bounds.Width}"
         Margin="0,10,0,0"
         ColumnDefinitions="auto 10 * 6 *"
-        RowDefinitions="auto auto auto auto auto auto *"
-		Width="{Binding $parent[ScrollViewer].Bounds.Width}">
+        RowDefinitions="auto auto auto auto auto auto *">
 
         <Grid.Styles>
             <Style Selector="NumericUpDown">

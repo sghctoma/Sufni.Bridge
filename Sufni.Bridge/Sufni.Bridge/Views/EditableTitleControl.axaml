@@ -1,23 +1,28 @@
-<Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:controls="using:Sufni.Bridge.Views">
+﻿<Styles
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:Sufni.Bridge.Views">
     <Design.PreviewWith>
-        <controls:EditableTitleControl Title="Test title test title test" Subtitle="1337. 01. 13."  Width="150" />
+        <controls:EditableTitleControl
+            Title="Test title test title test"
+            Width="150"
+            Subtitle="1337. 01. 13." />
     </Design.PreviewWith>
 
     <Style Selector="controls|EditableTitleControl">
-        <!-- Set Defaults -->
+        <!--  Set Defaults  -->
         <Setter Property="Template">
             <ControlTemplate>
-                <Grid RowDefinitions="auto" Background="#15191c">
+                <Grid Background="#15191c" RowDefinitions="auto">
 
-                    <!-- Title -->
-                    <TextBox Name="TitleTextBox"
-                             MinHeight="30"
-                             Text="{Binding Title, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
-                             Padding="0,0,25,0"
-                             FontWeight="Black"
-                             IsEnabled="False">
+                    <!--  Title  -->
+                    <TextBox
+                        Name="TitleTextBox"
+                        MinHeight="30"
+                        Padding="0,0,25,0"
+                        FontWeight="Black"
+                        IsEnabled="False"
+                        Text="{Binding Title, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}">
                         <TextBox.Styles>
                             <Style Selector="TextBox:focus">
                                 <Setter Property="Padding" Value="5,0,25,0" />
@@ -40,32 +45,36 @@
                         </TextBox.Styles>
                     </TextBox>
 
-                    <!-- Subtitle -->
-                    <TextBlock Text="{TemplateBinding Subtitle}"
-                               Background="#15191c"
-                               VerticalAlignment="Center"
-                               HorizontalAlignment="Right"
-                               Padding="10,0,0,0"
-                               Margin="0,0,25,0"
-                               IsVisible="{TemplateBinding Subtitle, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+                    <!--  Subtitle  -->
+                    <TextBlock
+                        Margin="0,0,25,0"
+                        Padding="10,0,0,0"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        Background="#15191c"
+                        IsVisible="{TemplateBinding Subtitle,
+                                                    Converter={x:Static ObjectConverters.IsNotNull}}"
+                        Text="{TemplateBinding Subtitle}" />
 
-                    <!-- Edit / OK buttons -->
-                    <Button Name="EditButton"
-                            Classes="embedded"
-                            Padding="0,0,0,0"
-                            Margin="0,-2,0,0"
-                            HorizontalAlignment="Stretch"
-                            HorizontalContentAlignment="Right"
-                            VerticalAlignment="Center"
-                            IsVisible="{Binding !#TitleTextBox.IsEnabled}">
-                        <Image Source="{SvgImage /Assets/fa-pen-square.svg}" Width="13" />
+                    <!--  Edit / OK buttons  -->
+                    <Button
+                        Name="EditButton"
+                        Margin="0,-2,0,0"
+                        Padding="0,0,0,0"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Center"
+                        HorizontalContentAlignment="Right"
+                        Classes="embedded"
+                        IsVisible="{Binding !#TitleTextBox.IsEnabled}">
+                        <Image Width="13" Source="{SvgImage /Assets/fa-pen-square.svg}" />
                     </Button>
-                    <Button Classes="embedded"
-                            HorizontalAlignment="Right"
-                            HorizontalContentAlignment="Right"
-                            VerticalAlignment="Center"
-                            IsVisible="{Binding #TitleTextBox.IsEnabled}">
-                        <Image Source="{SvgImage /Assets/fa-check_green.svg}" Width="13" />
+                    <Button
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        HorizontalContentAlignment="Right"
+                        Classes="embedded"
+                        IsVisible="{Binding #TitleTextBox.IsEnabled}">
+                        <Image Width="13" Source="{SvgImage /Assets/fa-check_green.svg}" />
                     </Button>
                 </Grid>
             </ControlTemplate>

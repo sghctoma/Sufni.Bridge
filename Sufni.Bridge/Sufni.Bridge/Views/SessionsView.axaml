@@ -1,108 +1,143 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:vm="clr-namespace:Sufni.Bridge.ViewModels"
-             xmlns:v="clr-namespace:Sufni.Bridge.Views"
-             mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
-             x:Class="Sufni.Bridge.Views.SessionsView"
-             x:DataType="vm:MainPagesViewModel"
-             Background="#404040">
+﻿<UserControl
+    x:Class="Sufni.Bridge.Views.SessionsView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:v="clr-namespace:Sufni.Bridge.Views"
+    xmlns:vm="clr-namespace:Sufni.Bridge.ViewModels"
+    d:DesignHeight="600"
+    d:DesignWidth="500"
+    x:DataType="vm:MainPagesViewModel"
+    Background="#404040"
+    mc:Ignorable="d">
 
     <Design.DataContext>
         <vm:MainPagesViewModel />
     </Design.DataContext>
 
-    <Grid RowDefinitions="auto * auto auto" ColumnDefinitions="*">
+    <Grid ColumnDefinitions="*" RowDefinitions="auto * auto auto">
 
-        <!-- Filter -->
-        <Grid Grid.Row="0" Grid.Column="0" Margin="6,5,6,0"
-              RowDefinitions="39 auto" ColumnDefinitions="*">
- 
-            <!-- Search box -->
-            <TextBox Grid.Row="0"
-                     Watermark="Search ..."
-                     Text="{Binding SessionSearchText}"
-                     VerticalContentAlignment="Center"/>
-            <Button Classes="embedded" Grid.Row="0"
-                    HorizontalAlignment="Right" Margin="0,0,30,0" Width="30"
-                    IsVisible="{Binding SessionSearchText, Converter={x:Static ObjectConverters.IsNotNull}}"
-                    Command="{Binding ClearSearchTextCommand}"
-                    CommandParameter="session">
+        <!--  Filter  -->
+        <Grid
+            Grid.Row="0"
+            Grid.Column="0"
+            Margin="6,5,6,0"
+            ColumnDefinitions="*"
+            RowDefinitions="39 auto">
+
+            <!--  Search box  -->
+            <TextBox
+                Grid.Row="0"
+                VerticalContentAlignment="Center"
+                Text="{Binding SessionSearchText}"
+                Watermark="Search ..." />
+            <Button
+                Grid.Row="0"
+                Width="30"
+                Margin="0,0,30,0"
+                HorizontalAlignment="Right"
+                Classes="embedded"
+                Command="{Binding ClearSearchTextCommand}"
+                CommandParameter="session"
+                IsVisible="{Binding SessionSearchText, Converter={x:Static ObjectConverters.IsNotNull}}">
                 <Image Source="{SvgImage /Assets/fa-xmark.svg}" />
             </Button>
-            
-            <!-- Date picker opener button -->
-            <Button Classes="embedded" Grid.Row="0"
-                    HorizontalAlignment="Right"
-                    Command="{Binding ToggleDateFilterCommand}">
+
+            <!--  Date picker opener button  -->
+            <Button
+                Grid.Row="0"
+                HorizontalAlignment="Right"
+                Classes="embedded"
+                Command="{Binding ToggleDateFilterCommand}">
                 <Image Height="14" Source="{SvgImage /Assets/fa-filter.svg}" />
                 <Button.IsEnabled>
                     <MultiBinding Converter="{x:Static BoolConverters.And}">
-                        <Binding Path="DateFilterFrom"
-                                 Converter="{x:Static ObjectConverters.IsNull}" />
-                        <Binding Path="DateFilterTo"
-                                 Converter="{x:Static ObjectConverters.IsNull}" />
+                        <Binding Converter="{x:Static ObjectConverters.IsNull}" Path="DateFilterFrom" />
+                        <Binding Converter="{x:Static ObjectConverters.IsNull}" Path="DateFilterTo" />
                     </MultiBinding>
                 </Button.IsEnabled>
             </Button>
-            
-            <!-- Date pickers -->
-            <Border Grid.Row="1" Grid.Column="0"
-                    Background="#20262b"
-                    IsVisible="{Binding DateFilterVisible}">
-                <Grid Margin="1,0,1,0"
-                      ColumnDefinitions="* auto *" RowDefinitions="auto">
-                    
-                    <!-- From -->
-                    <CalendarDatePicker Grid.Column="0" Margin="5"
-                                        HorizontalAlignment="Stretch"
-                                        SelectedDate="{Binding DateFilterFrom}"
-                                        DisplayDateEnd="{Binding DateFilterTo}"/>
-                    <Button Classes="embedded" Grid.Column="0" HorizontalAlignment="Right"
-                            Width="30" Margin="0,0,20,0"
-                            IsVisible="{Binding DateFilterFrom, Converter={x:Static ObjectConverters.IsNotNull}}"
-                            Command="{Binding ClearDateFilterCommand}"
-                            CommandParameter="from">
+
+            <!--  Date pickers  -->
+            <Border
+                Grid.Row="1"
+                Grid.Column="0"
+                Background="#20262b"
+                IsVisible="{Binding DateFilterVisible}">
+                <Grid
+                    Margin="1,0,1,0"
+                    ColumnDefinitions="* auto *"
+                    RowDefinitions="auto">
+
+                    <!--  From  -->
+                    <CalendarDatePicker
+                        Grid.Column="0"
+                        Margin="5"
+                        HorizontalAlignment="Stretch"
+                        DisplayDateEnd="{Binding DateFilterTo}"
+                        SelectedDate="{Binding DateFilterFrom}" />
+                    <Button
+                        Grid.Column="0"
+                        Width="30"
+                        Margin="0,0,20,0"
+                        HorizontalAlignment="Right"
+                        Classes="embedded"
+                        Command="{Binding ClearDateFilterCommand}"
+                        CommandParameter="from"
+                        IsVisible="{Binding DateFilterFrom, Converter={x:Static ObjectConverters.IsNotNull}}">
                         <Image Source="{SvgImage /Assets/fa-xmark.svg}" />
                     </Button>
-                
-                    <!-- Arrow -->
-                    <TextBlock Grid.Column="1" VerticalAlignment="Center" Text="→" />
-                
-                    <!-- To -->
-                    <CalendarDatePicker Grid.Row="0" Grid.Column="2"  Margin="5"
-                                        HorizontalAlignment="Stretch"
-                                        SelectedDate="{Binding DateFilterTo}"
-                                        DisplayDateStart="{Binding DateFilterFrom}"/>
-                    <Button Classes="embedded" Grid.Column="2" HorizontalAlignment="Right"
-                            Width="30" Margin="0,0,20,0"
-                            IsVisible="{Binding DateFilterTo, Converter={x:Static ObjectConverters.IsNotNull}}"
-                            Command="{Binding ClearDateFilterCommand}"
-                            CommandParameter="to">
+
+                    <!--  Arrow  -->
+                    <TextBlock
+                        Grid.Column="1"
+                        VerticalAlignment="Center"
+                        Text="→" />
+
+                    <!--  To  -->
+                    <CalendarDatePicker
+                        Grid.Row="0"
+                        Grid.Column="2"
+                        Margin="5"
+                        HorizontalAlignment="Stretch"
+                        DisplayDateStart="{Binding DateFilterFrom}"
+                        SelectedDate="{Binding DateFilterTo}" />
+                    <Button
+                        Grid.Column="2"
+                        Width="30"
+                        Margin="0,0,20,0"
+                        HorizontalAlignment="Right"
+                        Classes="embedded"
+                        Command="{Binding ClearDateFilterCommand}"
+                        CommandParameter="to"
+                        IsVisible="{Binding DateFilterTo, Converter={x:Static ObjectConverters.IsNotNull}}">
                         <Image Source="{SvgImage /Assets/fa-xmark.svg}" />
                     </Button>
                 </Grid>
             </Border>
         </Grid>
 
-        <!-- List of Sessions -->
-        <ScrollViewer Grid.Row="1" Grid.Column="0" Margin="0,5,0,5">
+        <!--  List of Sessions  -->
+        <ScrollViewer
+            Grid.Row="1"
+            Grid.Column="0"
+            Margin="0,5,0,5">
             <ItemsRepeater Classes="main" ItemsSource="{Binding Sessions}">
                 <ItemsRepeater.ItemTemplate>
                     <DataTemplate>
-                        <Button Padding="30,0,50,0"
-                                CornerRadius="5"
-                                Height="48"
-                                BorderBrush="#505050"
-                                BorderThickness="1"
-                                Margin="6,2,6,2"
-                                HorizontalAlignment="Stretch"
-                                VerticalContentAlignment="Center"
-                                Command="{Binding OpenPageCommand}"
-                                CommandParameter="{Binding}">
-                            <Grid ColumnDefinitions="auto * auto"
-                                  HorizontalAlignment="Stretch">
+                        <Button
+                            Height="48"
+                            Margin="6,2,6,2"
+                            Padding="30,0,50,0"
+                            HorizontalAlignment="Stretch"
+                            VerticalContentAlignment="Center"
+                            BorderBrush="#505050"
+                            BorderThickness="1"
+                            Command="{Binding OpenPageCommand}"
+                            CommandParameter="{Binding}"
+                            CornerRadius="5">
+                            <Grid HorizontalAlignment="Stretch" ColumnDefinitions="auto * auto">
                                 <TextBlock Grid.Column="0" Text="{Binding Name}" />
                                 <TextBlock Grid.Column="2" Text="{Binding Timestamp}" />
                             </Grid>
@@ -111,17 +146,25 @@
                 </ItemsRepeater.ItemTemplate>
             </ItemsRepeater>
         </ScrollViewer>
-        
-        <!-- Notifications -->
-        <v:NotificationsControl Grid.Row="2" Grid.Column="0" Margin="5, 0" ZIndex="10"
-                                ClearNotificationsCommand="{Binding ClearNotificationsCommand}"
-                                Notifications="{Binding Notifications}"
-                                IsVisible="{Binding Notifications.Count}" />
-        
-        <!-- Error messages -->
-        <v:ErrorMessagesControl Grid.Row="3" Grid.Column="0" Margin="5, 0" ZIndex="10"
-                                ClearErrorsCommand="{Binding ClearErrorsCommand}"
-                                ErrorMessages="{Binding ErrorMessages}"
-                                IsVisible="{Binding ErrorMessages.Count}" />
+
+        <!--  Notifications  -->
+        <v:NotificationsControl
+            Grid.Row="2"
+            Grid.Column="0"
+            Margin="5,0"
+            ClearNotificationsCommand="{Binding ClearNotificationsCommand}"
+            IsVisible="{Binding Notifications.Count}"
+            Notifications="{Binding Notifications}"
+            ZIndex="10" />
+
+        <!--  Error messages  -->
+        <v:ErrorMessagesControl
+            Grid.Row="3"
+            Grid.Column="0"
+            Margin="5,0"
+            ClearErrorsCommand="{Binding ClearErrorsCommand}"
+            ErrorMessages="{Binding ErrorMessages}"
+            IsVisible="{Binding ErrorMessages.Count}"
+            ZIndex="10" />
     </Grid>
 </UserControl>

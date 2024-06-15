@@ -1,9 +1,10 @@
-<Application xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="using:Sufni.Bridge"
-             x:Class="Sufni.Bridge.App"
-             RequestedThemeVariant="Dark">
-    <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+﻿<Application
+    x:Class="Sufni.Bridge.App"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Sufni.Bridge"
+    RequestedThemeVariant="Dark">
+    <!--  "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options.  -->
 
     <Application.DataTemplates>
         <local:ViewLocator />
@@ -17,33 +18,33 @@
         <StyleInclude Source="/Views/Plots/VelocityBandView.axaml" />
         <StyleInclude Source="/Views/CommonButtonLine.axaml" />
         <StyleInclude Source="/Views/EditableTitleControl.axaml" />
-        <StyleInclude Source="avares://AvaloniaProgressRing/Styles/ProgressRing.xaml"/>
-        
-        <!-- Global styles for TextBlock -->
+        <StyleInclude Source="avares://AvaloniaProgressRing/Styles/ProgressRing.xaml" />
+
+        <!--  Global styles for TextBlock  -->
         <Style Selector="TextBlock">
             <Setter Property="Foreground" Value="#a0a0a0" />
         </Style>
-        
-        <!-- Global styles for Label -->
+
+        <!--  Global styles for Label  -->
         <Style Selector="Label">
             <Setter Property="Foreground" Value="#a0a0a0" />
         </Style>
-        
-        <!-- Global styles for CheckBlock -->
+
+        <!--  Global styles for CheckBlock  -->
         <Style Selector="CheckBox">
             <Setter Property="Background" Value="#20262b" />
             <Setter Property="Foreground" Value="#a0a0a0" />
         </Style>
-        
-        <!-- Global styles for Expander -->
+
+        <!--  Global styles for Expander  -->
         <Style Selector="Expander">
             <Setter Property="Background" Value="#15191c" />
         </Style>
         <Style Selector="Expander ToggleButton:pressed /template/ Border">
             <Setter Property="Background" Value="#20262b" />
         </Style>
-        
-        <!-- Global styles for Button -->
+
+        <!--  Global styles for Button  -->
         <Style Selector="Button">
             <Setter Property="Background" Value="#20262b" />
             <Setter Property="Foreground" Value="#a0a0a0" />
@@ -59,8 +60,8 @@
             <Setter Property="TextElement.Foreground" Value="#a0a0a0" />
             <Setter Property="Background" Value="#2c3032" />
         </Style>
-        
-        <!-- Global styles for Buttons embedded in TextBoxes -->
+
+        <!--  Global styles for Buttons embedded in TextBoxes  -->
         <Style Selector="Button.embedded /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background" Value="Transparent" />
         </Style>
@@ -68,16 +69,16 @@
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="Opacity" Value="0.8" />
         </Style>
-        
-        <!-- Global styles for "dangerous" Buttons  -->
+
+        <!--  Global styles for "dangerous" Buttons  -->
         <Style Selector="Button.dangerous">
             <Setter Property="Foreground" Value="#bf312d" />
         </Style>
         <Style Selector="Button.dangerous:pointerover /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Foreground" Value="#bf312d" />
         </Style>
-        
-        <!-- Global styles for NumericUpDown -->
+
+        <!--  Global styles for NumericUpDown  -->
         <Style Selector="NumericUpDown">
             <Setter Property="Height" Value="39" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
@@ -85,8 +86,8 @@
             <Setter Property="Foreground" Value="#a0a0a0" />
             <Setter Property="BorderBrush" Value="#505050" />
         </Style>
-        
-        <!-- Global styles for TextBox -->
+
+        <!--  Global styles for TextBox  -->
         <Style Selector="TextBox">
             <Setter Property="MinHeight" Value="39" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
@@ -121,8 +122,8 @@
         <Style Selector="TextBox:disabled /template/ TextPresenter#PART_TextPresenter">
             <Setter Property="TextElement.Foreground" Value="#606060" />
         </Style>
-        
-        <!-- Global styles for ComboBox -->
+
+        <!--  Global styles for ComboBox  -->
         <Style Selector="ComboBox">
             <Setter Property="Height" Value="39" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
@@ -135,15 +136,15 @@
             <Setter Property="BorderBrush" Value="#505050" />
         </Style>
 
-        <!-- Global styles for the main ItemsRepeaters' items -->
-        <Style Selector="ItemsRepeater.main > Expander">
+        <!--  Global styles for the main ItemsRepeaters' items  -->
+        <Style Selector="ItemsRepeater.main &gt; Expander">
             <Setter Property="Margin" Value="0,2, 0, 1" />
         </Style>
-        <Style Selector="ItemsRepeater.main > Border">
+        <Style Selector="ItemsRepeater.main &gt; Border">
             <Setter Property="Margin" Value="6,2, 6, 1" />
         </Style>
-        
-        <!-- Global styles for CalendarDatePicker -->
+
+        <!--  Global styles for CalendarDatePicker  -->
         <Style Selector="CalendarDatePicker">
             <Setter Property="Foreground" Value="#a0a0a0" />
             <Setter Property="BorderBrush" Value="#505050" />
@@ -157,8 +158,8 @@
         <Style Selector="CalendarDayButton">
             <Setter Property="FontSize" Value="14" />
         </Style>
-        
-        <!-- Global styles for Flyouts -->
+
+        <!--  Global styles for Flyouts  -->
         <Style Selector="MenuFlyoutPresenter">
             <Setter Property="Background" Value="#15191c" />
             <Setter Property="Foreground" Value="#a0a0a0" />
@@ -174,7 +175,7 @@
             <Setter Property="TextElement.Foreground" Value="#c0c0c0" />
         </Style>
     </Application.Styles>
-    
+
     <Application.Resources>
         <SolidColorBrush x:Key="ComboBoxDropDownBackground" Color="#20262b" />
         <SolidColorBrush x:Key="ExpanderHeaderBackgroundPointerOver" Color="#20262b" />
@@ -185,5 +186,5 @@
         <CornerRadius x:Key="OverlayCornerRadius">3</CornerRadius>
         <Thickness x:Key="FlyoutBorderThemeThickness">0</Thickness>
     </Application.Resources>
-    
+
 </Application>

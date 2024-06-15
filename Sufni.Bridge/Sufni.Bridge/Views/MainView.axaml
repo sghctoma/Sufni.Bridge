@@ -1,11 +1,14 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:vm="clr-namespace:Sufni.Bridge.ViewModels"
-             mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
-             x:Class="Sufni.Bridge.Views.MainView"
-             x:DataType="vm:MainViewModel"
-             Background="#15191c">
+﻿<UserControl
+    x:Class="Sufni.Bridge.Views.MainView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:Sufni.Bridge.ViewModels"
+    d:DesignHeight="600"
+    d:DesignWidth="500"
+    x:DataType="vm:MainViewModel"
+    Background="#15191c"
+    mc:Ignorable="d">
     <ContentControl Content="{Binding CurrentView}" />
 </UserControl>

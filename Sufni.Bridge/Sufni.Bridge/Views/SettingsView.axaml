@@ -1,51 +1,64 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:v="clr-namespace:Sufni.Bridge.Views"
-             xmlns:vm="clr-namespace:Sufni.Bridge.ViewModels"
-             mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
-             x:Class="Sufni.Bridge.Views.SettingsView"
-             x:DataType="vm:SettingsViewModel"
-             Background="#15191c">
+﻿<UserControl
+    x:Class="Sufni.Bridge.Views.SettingsView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:v="clr-namespace:Sufni.Bridge.Views"
+    xmlns:vm="clr-namespace:Sufni.Bridge.ViewModels"
+    d:DesignHeight="600"
+    d:DesignWidth="500"
+    x:DataType="vm:SettingsViewModel"
+    Background="#15191c"
+    mc:Ignorable="d">
 
     <Design.DataContext>
         <vm:SettingsViewModel />
     </Design.DataContext>
 
-    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical" Width="200">
+    <StackPanel
+        Width="200"
+        HorizontalAlignment="Center"
+        VerticalAlignment="Center"
+        Orientation="Vertical">
         <StackPanel.Styles>
             <Style Selector="TextBox">
                 <Setter Property="Margin" Value="2" />
             </Style>
         </StackPanel.Styles>
-        <TextBox Watermark="API server"
-                 IsEnabled="{Binding !IsRegistered}"
-                 Text="{Binding ServerUrl}" />
-        <TextBox Watermark="Username"
-                 IsEnabled="{Binding !IsRegistered}"
-                 Text="{Binding Username}" />
-        <TextBox Watermark="Password"
-                 IsEnabled="{Binding !IsRegistered}"
-                 PasswordChar="*"
-                 Text="{Binding Password}" />
-        <Button Margin="2"
-                HorizontalContentAlignment="Center"
-                HorizontalAlignment="Stretch"
-                IsTabStop="False"
-                IsDefault="{Binding !IsRegistered}"
-                Content="{Binding RegisterLabel}"
-                Command="{Binding RegisterUnregisterCommand}" />
-        <Button Margin="2"
-                HorizontalContentAlignment="Center"
-                HorizontalAlignment="Stretch"
-                IsTabStop="False"
-                IsDefault="{Binding IsRegistered}"
-                Content="cancel"
-                Command="{Binding OpenPreviousPageCommand}" />
-        <v:ErrorMessagesControl Margin="2, 4"
-                                ClearErrorsCommand="{Binding ClearErrorsCommand}"
-                                ErrorMessages="{Binding ErrorMessages}"
-                                IsVisible="{Binding ErrorMessages.Count}" />
+        <TextBox
+            IsEnabled="{Binding !IsRegistered}"
+            Text="{Binding ServerUrl}"
+            Watermark="API server" />
+        <TextBox
+            IsEnabled="{Binding !IsRegistered}"
+            Text="{Binding Username}"
+            Watermark="Username" />
+        <TextBox
+            IsEnabled="{Binding !IsRegistered}"
+            PasswordChar="*"
+            Text="{Binding Password}"
+            Watermark="Password" />
+        <Button
+            Margin="2"
+            HorizontalAlignment="Stretch"
+            HorizontalContentAlignment="Center"
+            Command="{Binding RegisterUnregisterCommand}"
+            Content="{Binding RegisterLabel}"
+            IsDefault="{Binding !IsRegistered}"
+            IsTabStop="False" />
+        <Button
+            Margin="2"
+            HorizontalAlignment="Stretch"
+            HorizontalContentAlignment="Center"
+            Command="{Binding OpenPreviousPageCommand}"
+            Content="cancel"
+            IsDefault="{Binding IsRegistered}"
+            IsTabStop="False" />
+        <v:ErrorMessagesControl
+            Margin="2,4"
+            ClearErrorsCommand="{Binding ClearErrorsCommand}"
+            ErrorMessages="{Binding ErrorMessages}"
+            IsVisible="{Binding ErrorMessages.Count}" />
     </StackPanel>
 </UserControl>

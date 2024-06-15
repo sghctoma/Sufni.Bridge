@@ -365,8 +365,9 @@ FodyWeavers.xsd
 # Android native libraries (generated during prebuild event)
 Sufni.Bridge/Sufni.Bridge.Android/lib
 
-# Idea IDE files
+# IDE files
 .idea/
+.vscode/
 
 # User dictionary
 Sufni.Bridge.sln.DotSettings

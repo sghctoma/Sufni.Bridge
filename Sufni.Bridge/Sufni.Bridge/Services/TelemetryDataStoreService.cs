@@ -95,7 +95,7 @@ internal class TelemetryDataStoreService : ITelemetryDataStoreService
         }
     }
 
-    private async Task<List<StorageProviderTelemetryDataStore>> GetRemovedStorageProviders()
+    private List<StorageProviderTelemetryDataStore> GetRemovedStorageProviders()
     {
         var storageProviderDatastores = DataStores
             .OfType<StorageProviderTelemetryDataStore>()
@@ -124,9 +124,9 @@ internal class TelemetryDataStoreService : ITelemetryDataStoreService
         GetMassStorageDatastores();
         var timer = new Timer(1000);
         timer.AutoReset = true;
-        timer.Elapsed += async (_, _) =>
+        timer.Elapsed += (_, _) =>
         {
-            var removedStorageProviders = await GetRemovedStorageProviders();
+            var removedStorageProviders = GetRemovedStorageProviders();
             lock (DataStoreLock)
             {
                 foreach (var ds in removedStorageProviders)

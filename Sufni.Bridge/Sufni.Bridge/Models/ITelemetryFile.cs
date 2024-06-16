@@ -15,5 +15,5 @@ public interface ITelemetryFile
     public string Duration { get; }
 
     public Task<byte[]> GeneratePsstAsync(Linkage linkage, Calibration? frontCal, Calibration? rearCal);
-    public void OnImported();
+    public Task OnImported();
 }

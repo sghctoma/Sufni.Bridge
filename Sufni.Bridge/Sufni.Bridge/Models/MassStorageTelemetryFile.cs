@@ -55,10 +55,11 @@ public class MassStorageTelemetryFile : ITelemetryFile
         return telemetryData.ProcessRecording(rawTelemetryData.Front, rawTelemetryData.Rear);
     }
     
-    public void OnImported()
+    public Task OnImported()
     {
         Imported = true;
         File.Move(fileInfo.FullName,
             $"{Path.GetDirectoryName(fileInfo.FullName)}/uploaded/{fileInfo.Name}");
+        return Task.CompletedTask;
     }
 }

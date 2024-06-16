@@ -235,13 +235,12 @@ public partial class ImportSessionsViewModel : ViewModelBase
                     };
 
                 await databaseService.PutSessionAsync(session);
-                
+                await telemetryFile.OnImported();
+
                 await Dispatcher.UIThread.InvokeAsync(() =>
                 {
                     var svm = new SessionViewModel(session, true);
                     sessions.AddOrUpdate(svm);
-                
-                    telemetryFile.OnImported();
                     Notifications.Insert(0, $"{svm.Name} was successfully imported.");
                 });
             }

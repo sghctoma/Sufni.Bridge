@@ -29,9 +29,10 @@ public class NetworkTelemetryFile : ITelemetryFile
         return telemetryData.ProcessRecording(rawTelemetryData.Front, rawTelemetryData.Rear);
     }
 
-    public void OnImported()
+    public Task OnImported()
     {
         Imported = true;
+        return Task.CompletedTask;
     }
     
     public NetworkTelemetryFile(IPEndPoint source, ushort sampleRate, string name, ulong size, ulong timestamp)

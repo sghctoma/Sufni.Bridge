@@ -65,7 +65,7 @@ public class StorageProviderTelemetryFile : ITelemetryFile
         return telemetryData.ProcessRecording(rawTelemetryData.Front, rawTelemetryData.Rear);
     }
     
-    public async void OnImported()
+    public async Task OnImported()
     {
         await Initialization;
         

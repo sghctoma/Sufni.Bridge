@@ -38,14 +38,12 @@ internal class TelemetryDataStoreService : ITelemetryDataStoreService
     
     private void GetMassStorageDatastores()
     {
+        var x = DriveInfo.GetDrives();
         var comparer = new DriveInfoComparer();
         var current = DriveInfo.GetDrives()
-            .Where(drive => drive is
-            {
-                IsReady: true,
-                DriveType: DriveType.Removable,
-                DriveFormat: "FAT32",
-            } && File.Exists($"{drive.RootDirectory}/BOARDID"))
+            .Where(drive => drive.IsReady && 
+                (drive.DriveFormat == "FAT32" || drive.DriveFormat == "msdos") &&
+                File.Exists($"{drive.RootDirectory}/BOARDID"))
             .ToArray();
         var known = DataStores
             .Where(ds => ds is MassStorageTelemetryDataStore)

@@ -138,41 +138,48 @@ public class Strokes
             s.FineDigitizedVelocity = dvFine[s.Start..(s.End + 1)];
         }
     }
-    
+
     public static Stroke[] FilterStrokes(double[] velocity, double[] travel, double maxTravel, int sampleRate)
     {
         var strokes = new List<Stroke>();
+        int velocityLength = velocity.Length;
 
-        for (var i = 0; i < velocity.Length - 1; i++)
+        for (int i = 0; i < velocityLength - 1; i++)
         {
+            int startIndex = i;
+            int startSign = Math.Sign(velocity[i]);
+            double maxPosition = travel[startIndex];
+
             // Loop until velocity changes sign
-            var startIndex = i;
-            var startSign = Math.Sign(velocity[i]);
-            for (; i < velocity.Length - 1 && Math.Sign(velocity[i + 1]) == startSign; i++) { }
+            while (i < velocityLength - 1 && Math.Sign(velocity[i + 1]) == startSign)
+            {
+                i++;
+                if (travel[i] > maxPosition)
+                {
+                    maxPosition = travel[i];
+                }
+            }
 
             // We are at the end of the data stream
-            if (i >= velocity.Length)
+            if (i >= velocityLength)
             {
-                i = velocity.Length - 1;
+                i = velocityLength - 1;
             }
 
             // Top-out periods often oscillate a bit, so they are split into multiple
             // strokes. We fix this by concatenating consecutive strokes if their
             // mean position is close to zero.
-            var duration = (i - startIndex + 1) / (double)sampleRate;
-            var maxPosition = travel.Skip(startIndex).Take(i - startIndex + 1).Max();
-
+            double duration = (i - startIndex + 1) / (double)sampleRate;
             if (maxPosition < Parameters.StrokeLengthThreshold &&
                 strokes.Count > 0 &&
-                strokes.Last().Stat.MaxTravel < Parameters.StrokeLengthThreshold)
+                strokes[^1].Stat.MaxTravel < Parameters.StrokeLengthThreshold)
             {
-                strokes.Last().End = i;
-                strokes.Last().Duration += duration;
+                strokes[^1].End = i;
+                strokes[^1].Duration += duration;
             }
             else
             {
-                var newStroke = new Stroke(startIndex, i, duration, travel, velocity, maxTravel);
-                strokes.Add(newStroke);
+                strokes.Add(new Stroke(startIndex, i, duration, travel, velocity, maxTravel));
             }
         }
 

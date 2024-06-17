@@ -445,22 +445,34 @@ public class TelemetryData
         var suspension = type == SuspensionType.Front ? Front : Rear;
         var step = suspension.VelocityBins[1] - suspension.VelocityBins[0];
         var velocity = suspension.Velocity.ToList();
-        
+
         var strokeVelocity = new List<double>();
-        foreach (var s in suspension.Strokes.Compressions.Concat(suspension.Strokes.Rebounds))
+        foreach (var s in suspension.Strokes.Compressions)
+        {
+            strokeVelocity.AddRange(velocity.GetRange(s.Start, s.End - s.Start + 1));
+        }
+        foreach (var s in suspension.Strokes.Rebounds)
         {
             strokeVelocity.AddRange(velocity.GetRange(s.Start, s.End - s.Start + 1));
         }
 
-        var strokeVelocityArray = strokeVelocity.ToArray();
         var mu = strokeVelocity.Mean();
         var std = strokeVelocity.StandardDeviation();
 
-        var ny = Enumerable.Range(0, 100)
-            .Select(i => strokeVelocityArray.Min() + i * (strokeVelocityArray.Max() - strokeVelocityArray.Min()) / 99)
-            .ToArray();
+        var min = strokeVelocity.Min();
+        var max = strokeVelocity.Max();
+        var range = max - min;
+        var ny = new double[100];
+        for (int i = 0; i < 100; i++)
+        {
+            ny[i] = min + i * range / 99;
+        }
 
-        var pdf = ny.Select(value => Normal.PDF(mu, std, value) * step * 100).ToList();
+        var pdf = new List<double>(100);
+        for (int i = 0; i < 100; i++)
+        {
+            pdf.Add(Normal.PDF(mu, std, ny[i]) * step * 100);
+        }
 
         return new NormalDistributionData(ny.ToList(), pdf);
     }
@@ -527,40 +539,55 @@ public class TelemetryData
     public VelocityBands CalculateVelocityBands(SuspensionType type, double highSpeedThreshold)
     {
         var suspension = type == SuspensionType.Front ? Front : Rear;
+        var velocity = suspension.Velocity;
 
-        var totalCount = 0;
-        
+        var totalCount = 0.0;
         var lsc = 0.0;
         var hsc = 0.0;
+
+        // Process compressions
         foreach (var compression in suspension.Strokes.Compressions)
         {
             totalCount += compression.Stat.Count;
-            var strokeLsc = suspension.Velocity
-                .Skip(compression.Start)
-                .Take(compression.End - compression.Start + 1)
-                .Count(v => v < highSpeedThreshold);
-            lsc += strokeLsc;
-            hsc += compression.Stat.Count - strokeLsc;
+            for (int i = compression.Start; i <= compression.End; i++)
+            {
+                if (velocity[i] < highSpeedThreshold)
+                {
+                    lsc++;
+                }
+                else
+                {
+                    hsc++;
+                }
+            }
         }
-        
+
         var lsr = 0.0;
         var hsr = 0.0;
+
+        // Process rebounds
         foreach (var rebound in suspension.Strokes.Rebounds)
         {
             totalCount += rebound.Stat.Count;
-            var strokeLsr = suspension.Velocity
-                .Skip(rebound.Start)
-                .Take(rebound.End - rebound.Start + 1)
-                .Count(v => v > -highSpeedThreshold);
-            lsr += strokeLsr;
-            hsr += rebound.Stat.Count - strokeLsr;
+            for (int i = rebound.Start; i <= rebound.End; i++)
+            {
+                if (velocity[i] > -highSpeedThreshold)
+                {
+                    lsr++;
+                }
+                else
+                {
+                    hsr++;
+                }
+            }
         }
 
+        var totalPercentage = 100.0 / totalCount;
         return new VelocityBands(
-            lsc / totalCount * 100.0,
-            hsc / totalCount * 100.0,
-            lsr / totalCount * 100.0,
-            hsr / totalCount * 100.0);
+            lsc * totalPercentage,
+            hsc * totalPercentage,
+            lsr * totalPercentage,
+            hsr * totalPercentage);
     }
     
     private static Func<double, double> FitPolynomial(double[] x, double[] y)

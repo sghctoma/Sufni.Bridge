@@ -17,14 +17,14 @@ public class SqLiteDatabaseService : IDatabaseService
     
     private static readonly List<CalibrationMethod> DefaultCalibrationMethods = new()
     {
-        new(Guid.Parse("230e04a092ce42189a3c23bf3cde2b05"),
+        new(CalibrationMethod.FractionId,
             "fraction", 
             "Sample is in fraction of maximum suspension stroke.",
             new CalibrationMethodProperties(
                 new List<string>(),
                 new Dictionary<string, string>(),
                 "sample * MAX_STROKE")),
-        new(Guid.Parse("c619045af435427797cb1e2c1fddcfeb"),
+        new(CalibrationMethod.PercentageId,
             "percentage", 
             "Sample is in percentage of maximum suspension stroke.",
             new CalibrationMethodProperties(
@@ -34,7 +34,7 @@ public class SqLiteDatabaseService : IDatabaseService
                     {"factor", "MAX_STROKE / 100.0"}
                 },
                 "sample * factor")),
-        new(Guid.Parse("3e799d5a5652430e900c06a3277ab1dc"),
+        new(CalibrationMethod.LinearId,
             "linear", 
             "Sample is linearly distributed within a given range.",
             new CalibrationMethodProperties(
@@ -48,7 +48,7 @@ public class SqLiteDatabaseService : IDatabaseService
                     {"factor", "MAX_STROKE / (max_measurement - min_measurement)"}
                 },
                 "(sample - min_measurement) * factor")),
-        new(Guid.Parse("12f4a1b922f74524abcbdaa99a5c1c3a"),
+        new(CalibrationMethod.IsoscelesId,
             "as5600-isosceles-triangle", 
             "Triangle setup with the sensor between the base and leg.",
             new CalibrationMethodProperties(
@@ -64,7 +64,7 @@ public class SqLiteDatabaseService : IDatabaseService
                     {"dbl_arm", "2.0 * arm"},
                 },
                 "max - (dbl_arm * cos((factor*sample) + start_angle))")),
-        new(Guid.Parse("9a27abc4125148a2b64989fb315ca2de"),
+        new(CalibrationMethod.TriangleId,
             "as5600-triangle", 
             "Triangle setup with the sensor between two known sides.",
             new CalibrationMethodProperties(

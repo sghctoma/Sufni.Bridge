@@ -20,7 +20,7 @@
 
   <ItemGroup>
     <PackageReference Include="Avalonia.Android" Version="11.1.0-beta1" />
-    <PackageReference Include="Xamarin.AndroidX.Core.SplashScreen" Version="1.0.1.7" />
+    <PackageReference Include="Xamarin.AndroidX.Core.SplashScreen" Version="1.0.1.9" />
   </ItemGroup>
 
   <ItemGroup>

@@ -40,10 +40,7 @@ public static class SstTcpClient
         var totalRead = 0;
         do
         {
-            // Receiving the entire file fails without setting a cap on size with one Receive call. On my FreeBSD
-            // box, the Python client (test_utils/tcpserver_client.py in the sst repo) reads 1460 (MSS) bytes of data
-            // in one go most of the times, and it did not fail yet - hence the 1460 bytes cap.
-            var read = client.Receive(buffer, totalRead, Math.Min(1460, size - totalRead), SocketFlags.None);
+            var read = client.Receive(buffer, totalRead, size - totalRead, SocketFlags.None);
             if (read == 0)
             {
                 throw new Exception("Server closed connection while receiveing data.");

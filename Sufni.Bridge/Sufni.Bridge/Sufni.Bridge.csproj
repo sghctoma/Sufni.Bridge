@@ -41,6 +41,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\SecureStorage\SecureStorage.csproj" />
     <ProjectReference Include="..\..\ServiceDiscovery\ServiceDiscovery.csproj" />
+    <ProjectReference Include="..\..\submodules\Avalonia.Labs\src\Avalonia.Labs.Controls\Avalonia.Labs.Controls.csproj" />
   </ItemGroup>
 
   <ItemGroup>

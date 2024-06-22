@@ -140,7 +140,7 @@
                                 <labs:Swipe.Content>
                                     <Button
                                         Height="48"
-                                        Padding="30,0,0,0"
+                                        Padding="30,0,50,0"
                                         HorizontalAlignment="Stretch"
                                         VerticalContentAlignment="Center"
                                         BorderBrush="#505050"

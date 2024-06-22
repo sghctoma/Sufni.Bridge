@@ -1,5 +1,9 @@
+using System.Diagnostics;
+using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Interactivity;
+using Avalonia.Labs.Controls;
+using Microsoft.Extensions.DependencyInjection;
+using Sufni.Bridge.ViewModels;
 
 namespace Sufni.Bridge.Views;
 
@@ -10,9 +14,18 @@ public partial class SessionsView : UserControl
         InitializeComponent();
     }
 
-    // ReSharper disable UnusedParameter.Local
-    private void Expander_OnExpanded(object? sender, RoutedEventArgs e)
+    public async void SwipePropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
     {
-        // Without this, Avalonia.Xaml.Behavior can't find the Expanded event on the Expander on iOS.
+        if (e.Property.Name == "SwipeState" && sender is Swipe swipe && e.NewValue is SwipeState.LeftVisible)
+        {
+            var vm = swipe.DataContext as SessionViewModel;
+            Debug.Assert(vm != null, nameof(vm) + " != null");
+
+            var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
+            Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
+
+            swipe.SwipeState = SwipeState.Hidden;
+            await mainPagesViewModel.DeleteSessionCommand.ExecuteAsync(vm.Id);
+        }
     }
 }

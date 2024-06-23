@@ -216,8 +216,6 @@ public partial class CalibrationViewModel : ItemViewModelBase
         Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
 
         await mainPagesViewModel.DeleteCalibrationCommand.ExecuteAsync(this);
-
-        OpenPreviousPage();
     }
 
     #endregion

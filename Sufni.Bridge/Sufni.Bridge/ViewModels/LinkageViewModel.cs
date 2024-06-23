@@ -138,8 +138,6 @@ public partial class LinkageViewModel : ItemViewModelBase
         Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
 
         await mainPagesViewModel.DeleteLinkageCommand.ExecuteAsync(this);
-
-        OpenPreviousPage();
     }
 
     #endregion

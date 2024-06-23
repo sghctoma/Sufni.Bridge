@@ -182,8 +182,6 @@ public partial class SetupViewModel : ItemViewModelBase
         Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
 
         await mainPagesViewModel.DeleteSetupCommand.ExecuteAsync(this);
-
-        OpenPreviousPage();
     }
 
     #endregion

@@ -3,7 +3,6 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:labs="clr-namespace:Avalonia.Labs.Controls;assembly=Avalonia.Labs.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:v="clr-namespace:Sufni.Bridge.Views"
     xmlns:vm="clr-namespace:Sufni.Bridge.ViewModels"
@@ -48,47 +47,7 @@
             <ItemsRepeater Classes="main" ItemsSource="{Binding Linkages}">
                 <ItemsRepeater.ItemTemplate>
                     <DataTemplate>
-                        <Panel Margin="6,2,6,2">
-                            <Border
-                                Height="48"
-                                Margin="10,0,10,0"
-                                HorizontalAlignment="Stretch"
-                                Background="#bf312d"
-                                BorderBrush="#505050"
-                                BorderThickness="1"
-                                CornerRadius="5" />
-                            <labs:Swipe PropertyChanged="SwipePropertyChanged">
-                                <labs:Swipe.Content>
-                                    <Button
-                                        Height="48"
-                                        Padding="30,0,0,0"
-                                        HorizontalAlignment="Stretch"
-                                        VerticalContentAlignment="Center"
-                                        BorderBrush="#505050"
-                                        BorderThickness="1"
-                                        Command="{Binding OpenPageCommand}"
-                                        CommandParameter="{Binding}"
-                                        Content="{Binding Name}"
-                                        CornerRadius="5" />
-                                </labs:Swipe.Content>
-                                <labs:Swipe.Left>
-                                    <DataTemplate>
-                                        <Button
-                                            Width="64"
-                                            Height="48"
-                                            VerticalContentAlignment="Center"
-                                            Background="#a02010"
-                                            BorderThickness="1"
-                                            CornerRadius="5">
-                                            <Image
-                                                Width="20"
-                                                Height="20"
-                                                Source="{SvgImage /Assets/fa-trash-can.svg}" />
-                                        </Button>
-                                    </DataTemplate>
-                                </labs:Swipe.Left>
-                            </labs:Swipe>
-                        </Panel>
+                        <v:SwipeToDeleteButtonView />
                     </DataTemplate>
                 </ItemsRepeater.ItemTemplate>
             </ItemsRepeater>

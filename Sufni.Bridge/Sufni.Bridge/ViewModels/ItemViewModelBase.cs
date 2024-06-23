@@ -49,9 +49,13 @@ public partial class ItemViewModelBase : ViewModelBase
     }
 
     [RelayCommand(CanExecute = nameof(CanDelete))]
-    private async Task Delete()
+    private async Task Delete(bool navigateBack = true)
     {
         await DeleteImplementation();
+        if (navigateBack)
+        {
+            OpenPreviousPage();
+        }
     }
 
     [RelayCommand(CanExecute = nameof(CanDelete))]

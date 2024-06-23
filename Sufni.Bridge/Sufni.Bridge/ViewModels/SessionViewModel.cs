@@ -266,9 +266,7 @@ public partial class SessionViewModel : ItemViewModelBase
         var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
         Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
 
-        await mainPagesViewModel.DeleteSessionCommand.ExecuteAsync(Id);
-
-        OpenPreviousPage();
+        await mainPagesViewModel.DeleteSessionCommand.ExecuteAsync(this);
     }
 
     #endregion

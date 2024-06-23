@@ -51,7 +51,7 @@ public partial class ItemViewModelBase : ViewModelBase
     }
 
     [RelayCommand(CanExecute = nameof(CanDelete))]
-    private async Task Delete(bool navigateBack = true)
+    private async Task Delete(bool navigateBack)
     {
         await DeleteImplementation();
         if (navigateBack)

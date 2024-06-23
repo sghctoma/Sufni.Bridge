@@ -82,6 +82,7 @@
                             VerticalContentAlignment="Center"
                             Classes="embedded dangerous"
                             Command="{Binding DeleteCommand}"
+                            CommandParameter="{x:True}"
                             Content="delete" />
                     </StackPanel>
                 </Flyout>

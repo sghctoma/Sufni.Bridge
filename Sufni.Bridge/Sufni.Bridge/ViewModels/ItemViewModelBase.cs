@@ -53,4 +53,11 @@ public partial class ItemViewModelBase : ViewModelBase
     {
         await DeleteImplementation();
     }
+
+    [RelayCommand(CanExecute = nameof(CanDelete))]
+    private void FakeDelete()
+    {
+        // This exists just so we can easily control the enabled/disabled
+        // state of the Delete button on the CommonButtonLine.
+    }
 }

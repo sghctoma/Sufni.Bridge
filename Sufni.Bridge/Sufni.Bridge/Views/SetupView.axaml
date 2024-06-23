@@ -141,13 +141,9 @@
             Margin="0,5,0,0" />
 
         <!--  Back, Save, Reset and Delete buttons  -->
-        <v:CommonButtonLine
+        <v:CommonButtonLineView
             Grid.Row="7"
             Grid.Column="0"
-            Grid.ColumnSpan="2"
-            DeleteCommand="{Binding DeleteCommand}"
-            OpenPreviousPageCommand="{Binding OpenPreviousPageCommand}"
-            ResetCommand="{Binding ResetCommand}"
-            SaveCommand="{Binding SaveCommand}" />
+            Grid.ColumnSpan="2" />
     </Grid>
 </UserControl>

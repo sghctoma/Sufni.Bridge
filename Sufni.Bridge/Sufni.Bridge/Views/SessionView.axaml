@@ -121,13 +121,7 @@
         <v:ErrorMessagesView Grid.Row="3" Margin="0,5,0,0" />
 
         <!--  Back, Save, Reset and Delete buttons  -->
-        <v:CommonButtonLine
-            Grid.Row="4"
-            Margin="10,10,10,10"
-            DeleteCommand="{Binding DeleteCommand}"
-            OpenPreviousPageCommand="{Binding OpenPreviousPageCommand}"
-            ResetCommand="{Binding ResetCommand}"
-            SaveCommand="{Binding SaveCommand}" />
+        <v:CommonButtonLineView Grid.Row="4" Margin="10,10,10,10" />
 
     </Grid>
 </UserControl>

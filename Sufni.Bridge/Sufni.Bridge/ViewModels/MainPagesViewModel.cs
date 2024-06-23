@@ -534,14 +534,14 @@ public partial class MainPagesViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private async Task DeleteSession(Guid id)
+    private async Task DeleteSession(SessionViewModel session)
     {
         Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
 
         try
         {
-            await databaseService.DeleteSessionAsync(id);
-            var toDelete = Sessions.First(s => s.Id == id);
+            await databaseService.DeleteSessionAsync(session.Id);
+            var toDelete = Sessions.First(s => s.Id == session.Id);
             sessionsSource.Remove(toDelete);
         }
         catch (Exception e)

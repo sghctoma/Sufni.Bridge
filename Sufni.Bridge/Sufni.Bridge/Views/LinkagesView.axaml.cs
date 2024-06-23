@@ -25,7 +25,7 @@ public partial class LinkagesView : UserControl
             Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
 
             swipe.SwipeState = SwipeState.Hidden;
-            await mainPagesViewModel.DeleteSessionCommand.ExecuteAsync(vm.Id);
+            await mainPagesViewModel.DeleteLinkageCommand.ExecuteAsync(vm);
         }
     }
 }

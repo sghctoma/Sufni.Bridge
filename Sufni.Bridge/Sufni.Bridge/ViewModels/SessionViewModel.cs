@@ -17,7 +17,7 @@ using Sufni.Bridge.ViewModels.SessionPages;
 
 namespace Sufni.Bridge.ViewModels;
 
-public partial class SessionViewModel : ViewModelBase
+public partial class SessionViewModel : ItemViewModelBase
 {
     private Session session;
     public bool IsInDatabase;
@@ -31,25 +31,11 @@ public partial class SessionViewModel : ViewModelBase
     #region Observable properties
 
     [ObservableProperty] private Guid id;
-    [ObservableProperty] private string? name;
     [ObservableProperty] private DateTime? timestamp;
-    
-    [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
-    [NotifyCanExecuteChangedFor(nameof(ResetCommand))]
-    private bool isDirty;
 
     #endregion
 
     #region Private methods
-
-    private void EvaluateDirtiness()
-    {
-        IsDirty =
-            !IsInDatabase ||
-            Name != session.Name ||
-            NotesPage.IsDirty(session);
-    }
 
     private async Task<bool> LoadCache()
     {
@@ -182,16 +168,6 @@ public partial class SessionViewModel : ViewModelBase
 
     #endregion
     
-    #region Property change handlers
-    
-    // ReSharper disable once UnusedParameterInPartialMethod
-    partial void OnNameChanged(string? value)
-    {
-        EvaluateDirtiness();
-    }
-
-    #endregion
-
     #region Constructors
 
     public SessionViewModel()
@@ -211,36 +187,21 @@ public partial class SessionViewModel : ViewModelBase
         NotesPage.ShockSettings.PropertyChanged += (_, _) => EvaluateDirtiness();
         NotesPage.PropertyChanged += (_, _) => EvaluateDirtiness();
 
-        Reset();
+        ResetImplementation();
     }
 
     #endregion
 
-    #region Commands
-
-    [RelayCommand]
-    private async Task Loaded(Rect bounds)
+    #region ItemViewModelBase overrides
+    protected override void EvaluateDirtiness()
     {
-        try
-        {
-            if (!await LoadCache())
-            {
-                new Thread(CreateCache).Start(bounds);
-            }
-        }
-        catch (Exception e)
-        {
-            ErrorMessages.Add($"Could not load session data: {e.Message}");
-        }
+        IsDirty =
+            !IsInDatabase ||
+            Name != session.Name ||
+            NotesPage.IsDirty(session);
     }
 
-    private bool CanSave()
-    {
-        return IsDirty;
-    }
-
-    [RelayCommand(CanExecute = nameof(CanSave))]
-    private async Task Save()
+    protected override async Task SaveImplementation()
     {
         var databaseService = App.Current?.Services?.GetService<IDatabaseService>();
         Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
@@ -277,43 +238,58 @@ public partial class SessionViewModel : ViewModelBase
         }
     }
 
-    private bool CanReset()
-    {
-        return IsDirty;
-    }
-
-    [RelayCommand(CanExecute = nameof(CanReset))]
-    private void Reset()
+    protected override Task ResetImplementation()
     {
         Id = session.Id;
         Name = session.Name;
-        
+
         NotesPage.Description = session.Description;
         NotesPage.ForkSettings.SpringRate = session.FrontSpringRate;
         NotesPage.ForkSettings.HighSpeedCompression = session.FrontHighSpeedCompression;
         NotesPage.ForkSettings.LowSpeedCompression = session.FrontLowSpeedCompression;
         NotesPage.ForkSettings.LowSpeedRebound = session.FrontLowSpeedRebound;
         NotesPage.ForkSettings.HighSpeedRebound = session.FrontHighSpeedRebound;
-        
+
         NotesPage.ShockSettings.SpringRate = session.RearSpringRate;
         NotesPage.ShockSettings.HighSpeedCompression = session.RearHighSpeedCompression;
         NotesPage.ShockSettings.LowSpeedCompression = session.RearLowSpeedCompression;
         NotesPage.ShockSettings.LowSpeedRebound = session.RearLowSpeedRebound;
         NotesPage.ShockSettings.HighSpeedRebound = session.RearHighSpeedRebound;
-        
+
         Timestamp = DateTimeOffset.FromUnixTimeSeconds(session.Timestamp ?? 0).DateTime;
+
+        return Task.CompletedTask;
     }
 
-    [RelayCommand]
-    private async Task Delete()
+    protected override async Task DeleteImplementation()
     {
         var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
         Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
 
         await mainPagesViewModel.DeleteSessionCommand.ExecuteAsync(Id);
-        
+
         OpenPreviousPage();
     }
-    
+
+    #endregion
+
+    #region Commands
+
+    [RelayCommand]
+    private async Task Loaded(Rect bounds)
+    {
+        try
+        {
+            if (!await LoadCache())
+            {
+                new Thread(CreateCache).Start(bounds);
+            }
+        }
+        catch (Exception e)
+        {
+            ErrorMessages.Add($"Could not load session data: {e.Message}");
+        }
+    }
+
     #endregion
 }

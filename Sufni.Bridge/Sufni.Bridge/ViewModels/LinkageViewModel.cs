@@ -12,35 +12,14 @@ using Sufni.Bridge.Services;
 
 namespace Sufni.Bridge.ViewModels;
 
-public partial class LinkageViewModel : ViewModelBase
+public partial class LinkageViewModel : ItemViewModelBase
 {
     private Linkage linkage;
     public bool IsInDatabase;
-
-    #region Private methods
-
-    private void EvaluateDirtiness()
-    {
-        IsDirty =
-            !IsInDatabase ||
-            Name != linkage.Name ||
-            Math.Abs(HeadAngle - linkage.HeadAngle) > 0.00001 ||
-            Math.Abs((FrontStroke ?? 0.0) - (linkage.MaxFrontStroke ?? 0.0)) > 0.00001 ||
-            Math.Abs((RearStroke ?? 0.0) - (linkage.MaxRearStroke ?? 0.0)) > 0.00001 || 
-            LeverageRatioData == null || !LeverageRatioData.Equals(linkage.LeverageRatioData);
-    }
-
-    #endregion
     
     #region Observable properties
 
     [ObservableProperty] private Guid id;
-    [ObservableProperty] private bool isDirty;
-    
-    [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
-    [NotifyCanExecuteChangedFor(nameof(ResetCommand))]
-    private string? name;
     
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
@@ -70,7 +49,7 @@ public partial class LinkageViewModel : ViewModelBase
     {
         linkage = new Linkage();
         IsInDatabase = false;
-        Reset();
+        ResetImplementation();
     }
     
     public LinkageViewModel(Linkage linkage, bool fromDatabase)
@@ -79,29 +58,25 @@ public partial class LinkageViewModel : ViewModelBase
         IsInDatabase = fromDatabase;
         Id = linkage.Id;
         LeverageRatioData = linkage.LeverageRatioData;
-        Reset();
+        ResetImplementation();
     }
 
     #endregion
 
-    #region Commands
-    
-    [RelayCommand]
-    private void SetLeverageRatioData()
+    #region ItemViewModelBase overrides
+
+    protected override void EvaluateDirtiness()
     {
-        // Trigger LeverageRatioData change, so the plot will pick the data up.
-        LeverageRatioData = null;
-        LeverageRatioData = linkage.LeverageRatioData;
+        IsDirty =
+            !IsInDatabase ||
+            Name != linkage.Name ||
+            Math.Abs(HeadAngle - linkage.HeadAngle) > 0.00001 ||
+            Math.Abs((FrontStroke ?? 0.0) - (linkage.MaxFrontStroke ?? 0.0)) > 0.00001 ||
+            Math.Abs((RearStroke ?? 0.0) - (linkage.MaxRearStroke ?? 0.0)) > 0.00001 ||
+            LeverageRatioData == null || !LeverageRatioData.Equals(linkage.LeverageRatioData);
     }
 
-    private bool CanSave()
-    {
-        EvaluateDirtiness();
-        return IsDirty;
-    }
-
-    [RelayCommand(CanExecute = nameof(CanSave))]
-    private async Task Save()
+    protected override async Task SaveImplementation()
     {
         var databaseService = App.Current?.Services?.GetService<IDatabaseService>();
         Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
@@ -117,17 +92,17 @@ public partial class LinkageViewModel : ViewModelBase
                 LeverageRatioData!.ToString());
             Id = await databaseService.PutLinkageAsync(newLinkage);
             linkage = newLinkage;
-            
+
             SaveCommand.NotifyCanExecuteChanged();
             ResetCommand.NotifyCanExecuteChanged();
-            
+
             if (!IsInDatabase)
             {
-                var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>(); 
+                var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
                 Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
-                await mainPagesViewModel.OnEntityAdded(this);   
+                await mainPagesViewModel.OnEntityAdded(this);
             }
-            
+
             IsInDatabase = true;
 
             OpenPreviousPage();
@@ -138,19 +113,44 @@ public partial class LinkageViewModel : ViewModelBase
         }
     }
 
-    private bool CanReset()
-    {
-        EvaluateDirtiness();
-        return IsDirty;
-    }
-    
-    [RelayCommand(CanExecute = nameof(CanReset))]
-    private void Reset()
+    protected override Task ResetImplementation()
     {
         Name = linkage.Name;
         HeadAngle = linkage.HeadAngle;
         FrontStroke = linkage.MaxFrontStroke;
         RearStroke = linkage.MaxRearStroke;
+        LeverageRatioData = linkage.LeverageRatioData;
+
+        return Task.CompletedTask;
+    }
+
+    protected override bool CanDelete()
+    {
+        var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
+        Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
+
+        return !mainPagesViewModel.Setups.Any(s => s.SelectedLinkage != null && s.SelectedLinkage.Id == Id);
+    }
+
+    protected override async Task DeleteImplementation()
+    {
+        var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
+        Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
+
+        await mainPagesViewModel.DeleteLinkageCommand.ExecuteAsync(this);
+
+        OpenPreviousPage();
+    }
+
+    #endregion
+
+    #region Commands
+
+    [RelayCommand]
+    private void SetLeverageRatioData()
+    {
+        // Trigger LeverageRatioData change, so the plot will pick the data up.
+        LeverageRatioData = null;
         LeverageRatioData = linkage.LeverageRatioData;
     }
 
@@ -180,34 +180,6 @@ public partial class LinkageViewModel : ViewModelBase
         {
             ErrorMessages.Add($"Leverage ratio file could not be read: {e.Message}");
         }
-    }
-    
-    [RelayCommand]
-    private void Select()
-    {
-        var mainViewModel = App.Current?.Services?.GetService<MainViewModel>();
-        Debug.Assert(mainViewModel != null, nameof(mainViewModel) + " != null");
-
-        mainViewModel.CurrentView = this;
-    }
-
-    private bool CanDelete()
-    {
-        var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
-        Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
-        
-        return !mainPagesViewModel.Setups.Any(s => s.SelectedLinkage != null && s.SelectedLinkage.Id == Id);
-    }
-
-    [RelayCommand(CanExecute = nameof(CanDelete))]
-    private async Task Delete()
-    {
-        var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
-        Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
-
-        await mainPagesViewModel.DeleteLinkageCommand.ExecuteAsync(this);
-        
-        OpenPreviousPage();
     }
     
     #endregion

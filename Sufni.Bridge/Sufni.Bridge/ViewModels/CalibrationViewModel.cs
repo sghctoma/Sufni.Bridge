@@ -52,7 +52,7 @@ public partial class CalibrationInputViewModel : ViewModelBase
     #endregion
 }
 
-public partial class CalibrationViewModel : ViewModelBase
+public partial class CalibrationViewModel : ItemViewModelBase
 {
     private Calibration calibration;
     public bool IsInDatabase;
@@ -60,12 +60,6 @@ public partial class CalibrationViewModel : ViewModelBase
     #region Observable properties
     
     [ObservableProperty] private Guid id;
-    [ObservableProperty] private bool isDirty;
-    
-    [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
-    [NotifyCanExecuteChangedFor(nameof(ResetCommand))]
-    private string? name;
     
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
@@ -77,19 +71,6 @@ public partial class CalibrationViewModel : ViewModelBase
     
     #endregion
 
-    #region Private methods
-
-    private void EvaluateDirtiness()
-    {
-        IsDirty =
-            !IsInDatabase ||
-            Name != calibration.Name ||
-            SelectedCalibrationMethod == null || SelectedCalibrationMethod.Id != calibration.MethodId ||
-            Inputs.Any(i => i.IsDirty);
-    }
-
-    #endregion
-    
     #region Property change handlers
 
     partial void OnSelectedCalibrationMethodChanged(CalibrationMethod? value)
@@ -137,7 +118,7 @@ public partial class CalibrationViewModel : ViewModelBase
     {
         CalibrationMethods = new ObservableCollection<CalibrationMethod>();
         calibration = new Calibration();
-        Reset();
+        ResetImplementation();
     }
     
     public CalibrationViewModel(Calibration calibration, ObservableCollection<CalibrationMethod> calibrationMethods, bool fromDatabase)
@@ -146,24 +127,26 @@ public partial class CalibrationViewModel : ViewModelBase
         IsInDatabase = fromDatabase;
         Id = calibration.Id;
         CalibrationMethods = calibrationMethods;
-        Reset();
+        ResetImplementation();
     }
 
     #endregion
 
-    #region Commands
+    #region ItemViewModelBase overrides
 
-    private bool CanSave()
+    protected override void EvaluateDirtiness()
     {
-        EvaluateDirtiness();
-        return IsDirty;
+        IsDirty =
+            !IsInDatabase ||
+            Name != calibration.Name ||
+            SelectedCalibrationMethod == null || SelectedCalibrationMethod.Id != calibration.MethodId ||
+            Inputs.Any(i => i.IsDirty);
     }
 
-    [RelayCommand(CanExecute = nameof(CanSave))]
-    private async Task Save()
+    protected override async Task SaveImplementation()
     {
         Debug.Assert(SelectedCalibrationMethod != null, nameof(SelectedCalibrationMethod) + " != null");
-        
+
         var databaseService = App.Current?.Services?.GetService<IDatabaseService>();
         Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
 
@@ -175,7 +158,7 @@ public partial class CalibrationViewModel : ViewModelBase
                 SelectedCalibrationMethod.Id,
                 Inputs.ToDictionary(input => input.Name, input => input.Value));
             Id = await databaseService.PutCalibrationAsync(newCalibration);
-            
+
             calibration = newCalibration;
             foreach (var input in Inputs)
             {
@@ -185,14 +168,14 @@ public partial class CalibrationViewModel : ViewModelBase
 
             if (!IsInDatabase)
             {
-                var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>(); 
+                var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
                 Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
-                await mainPagesViewModel.OnEntityAdded(this);   
+                await mainPagesViewModel.OnEntityAdded(this);
             }
-            
+
             IsDirty = false;
             IsInDatabase = true;
-            
+
             OpenPreviousPage();
         }
         catch (Exception e)
@@ -201,14 +184,7 @@ public partial class CalibrationViewModel : ViewModelBase
         }
     }
 
-    private bool CanReset()
-    {
-        EvaluateDirtiness();
-        return IsDirty;
-    }
-    
-    [RelayCommand(CanExecute = nameof(CanReset))]
-    private void Reset()
+    protected override Task ResetImplementation()
     {
         try
         {
@@ -220,35 +196,27 @@ public partial class CalibrationViewModel : ViewModelBase
         {
             ErrorMessages.Add($"Calibration could not be reset: {e.Message}");
         }
+
+        return Task.CompletedTask;
     }
 
-    [RelayCommand]
-    private void Select()
-    {
-        var mainViewModel = App.Current?.Services?.GetService<MainViewModel>();
-        Debug.Assert(mainViewModel != null, nameof(mainViewModel) + " != null");
-
-        mainViewModel.CurrentView = this;
-    }
-
-    private bool CanDelete()
+    protected override bool CanDelete()
     {
         var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
         Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
-        
+
         return !mainPagesViewModel.Setups.Any(s =>
             (s.SelectedFrontCalibration != null && s.SelectedFrontCalibration.Id == Id) ||
             (s.SelectedRearCalibration != null && s.SelectedRearCalibration.Id == Id));
     }
 
-    [RelayCommand(CanExecute = nameof(CanDelete))]
-    private async Task Delete()
+    protected override async Task DeleteImplementation()
     {
         var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
         Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
 
         await mainPagesViewModel.DeleteCalibrationCommand.ExecuteAsync(this);
-        
+
         OpenPreviousPage();
     }
 

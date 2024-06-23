@@ -12,7 +12,7 @@ using Sufni.Bridge.Services;
 
 namespace Sufni.Bridge.ViewModels;
 
-public partial class SetupViewModel : ViewModelBase
+public partial class SetupViewModel : ItemViewModelBase
 {
     private Setup setup;
     private string? originalBoardId;
@@ -21,12 +21,6 @@ public partial class SetupViewModel : ViewModelBase
     #region Observable properties
     
     [ObservableProperty] private Guid id;
-    [ObservableProperty] private bool isDirty;
-    
-    [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
-    [NotifyCanExecuteChangedFor(nameof(ResetCommand))]
-    private string? name;
     
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
@@ -54,21 +48,6 @@ public partial class SetupViewModel : ViewModelBase
     public ReadOnlyObservableCollection<CalibrationViewModel> Calibrations => calibrations;
     private readonly ReadOnlyObservableCollection<CalibrationViewModel> calibrations;
     
-    #endregion
-
-    #region Private methods
-
-    private void EvaluateDirtiness()
-    {
-        IsDirty =
-            !IsInDatabase ||
-            Name != setup.Name ||
-            BoardId != originalBoardId ||
-            SelectedLinkage == null || SelectedLinkage.Id != setup.LinkageId ||
-            SelectedFrontCalibration?.Id != setup.FrontCalibrationId ||
-            SelectedRearCalibration?.Id != setup.RearCalibrationId;
-    }
-
     #endregion
     
     #region Constructors
@@ -101,21 +80,31 @@ public partial class SetupViewModel : ViewModelBase
             .DisposeMany()
             .Subscribe();
         
-        Reset();
+        ResetImplementation();
     }
 
     #endregion
 
-    #region Commands
+    #region ItemViewModelBase overrides
 
-    private bool CanSave()
+    protected override void EvaluateDirtiness()
+    {
+        IsDirty =
+            !IsInDatabase ||
+            Name != setup.Name ||
+            BoardId != originalBoardId ||
+            SelectedLinkage == null || SelectedLinkage.Id != setup.LinkageId ||
+            SelectedFrontCalibration?.Id != setup.FrontCalibrationId ||
+            SelectedRearCalibration?.Id != setup.RearCalibrationId;
+    }
+
+    protected override bool CanSave()
     {
         EvaluateDirtiness();
         return IsDirty && !(SelectedFrontCalibration == null && SelectedRearCalibration == null);
     }
 
-    [RelayCommand(CanExecute = nameof(CanSave))]
-    private async Task Save()
+    protected override async Task SaveImplementation()
     {
         Debug.Assert(SelectedLinkage != null, nameof(SelectedLinkage) + " != null");
         Debug.Assert(!(SelectedFrontCalibration == null && SelectedRearCalibration == null), 
@@ -168,15 +157,8 @@ public partial class SetupViewModel : ViewModelBase
             ErrorMessages.Add($"Setup could not be saved: {e.Message}");
         }
     }
-
-    private bool CanReset()
-    {
-        EvaluateDirtiness();
-        return IsDirty;
-    }
     
-    [RelayCommand(CanExecute = nameof(CanReset))]
-    private void Reset()
+    protected override Task ResetImplementation()
     {
         try
         {
@@ -190,28 +172,24 @@ public partial class SetupViewModel : ViewModelBase
         {
             ErrorMessages.Add($"Setup could not be reset: {e.Message}");
         }
-    }
-    
-    [RelayCommand]
-    private void Select()
-    {
-        var mainViewModel = App.Current?.Services?.GetService<MainViewModel>();
-        Debug.Assert(mainViewModel != null, nameof(mainViewModel) + " != null");
 
-        mainViewModel.CurrentView = this;
+        return Task.CompletedTask;
     }
-    
-    [RelayCommand]
-    private async Task Delete()
+
+    protected override async Task DeleteImplementation()
     {
         var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
         Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
 
         await mainPagesViewModel.DeleteSetupCommand.ExecuteAsync(this);
-        
+
         OpenPreviousPage();
     }
-    
+
+    #endregion
+
+    #region Commands
+     
     [RelayCommand]
     private void AddLinkage()
     {

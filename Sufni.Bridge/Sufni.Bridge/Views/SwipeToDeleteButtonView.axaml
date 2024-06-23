@@ -24,15 +24,19 @@
             <labs:Swipe.Content>
                 <Button
                     Height="48"
-                    Padding="30,0,0,0"
+                    Padding="30,0,50,0"
                     HorizontalAlignment="Stretch"
                     VerticalContentAlignment="Center"
                     BorderBrush="#505050"
                     BorderThickness="1"
                     Command="{Binding OpenPageCommand}"
                     CommandParameter="{Binding}"
-                    Content="{Binding Name}"
-                    CornerRadius="5" />
+                    CornerRadius="5">
+                    <Grid HorizontalAlignment="Stretch" ColumnDefinitions="auto * auto">
+                        <TextBlock Grid.Column="0" Text="{Binding Name}" />
+                        <TextBlock Grid.Column="2" Text="{Binding Timestamp}" />
+                    </Grid>
+                </Button>
             </labs:Swipe.Content>
             <labs:Swipe.Left>
                 <DataTemplate>

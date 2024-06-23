@@ -64,7 +64,7 @@ public partial class CalibrationViewModel : ItemViewModelBase
     private CalibrationMethod? selectedCalibrationMethod;
 
     public ObservableCollection<CalibrationMethod> CalibrationMethods { get; }
-    public ObservableCollection<CalibrationInputViewModel> Inputs { get; } = new();
+    public ObservableCollection<CalibrationInputViewModel> Inputs { get; } = [];
     
     #endregion
 
@@ -113,7 +113,7 @@ public partial class CalibrationViewModel : ItemViewModelBase
 
     public CalibrationViewModel()
     {
-        CalibrationMethods = new ObservableCollection<CalibrationMethod>();
+        CalibrationMethods = [];
         calibration = new Calibration();
         ResetImplementation();
     }

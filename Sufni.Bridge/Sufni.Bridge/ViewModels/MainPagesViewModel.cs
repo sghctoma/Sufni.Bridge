@@ -57,8 +57,8 @@ public partial class MainPagesViewModel : ViewModelBase
     public ReadOnlyObservableCollection<SessionViewModel> Sessions => sessions;
     private readonly ReadOnlyObservableCollection<SessionViewModel> sessions;
 
-    private ObservableCollection<CalibrationMethod> CalibrationMethods { get; } = new();
-    private ObservableCollection<Board> Boards { get; } = new();
+    private ObservableCollection<CalibrationMethod> CalibrationMethods { get; } = [];
+    private ObservableCollection<Board> Boards { get; } = [];
 
     #endregion
 
@@ -362,7 +362,7 @@ public partial class MainPagesViewModel : ViewModelBase
                 IsDirty = true
             };
             //linkagesSource.AddOrUpdate(lvm);
-            
+
             OpenPage(lvm);
         }
         catch (Exception e)
@@ -420,7 +420,7 @@ public partial class MainPagesViewModel : ViewModelBase
                 IsDirty = true
             };
             //calibrationsSource.AddOrUpdate(cvm);
-            
+
             OpenPage(cvm);
         }
         catch (Exception e)
@@ -496,7 +496,7 @@ public partial class MainPagesViewModel : ViewModelBase
                 DeleteLinkageCommand.NotifyCanExecuteChanged();
             };
             //setupsSource.AddOrUpdate(svm);
-            
+
             OpenPage(svm);
         }
         catch (Exception e)

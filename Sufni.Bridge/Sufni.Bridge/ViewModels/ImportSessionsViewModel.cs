@@ -22,7 +22,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
     #region Observable properties
 
     public ObservableCollection<ITelemetryDataStore>? TelemetryDataStores { get; set; }
-    public ObservableCollection<ITelemetryFile> TelemetryFiles { get; } = new();
+    public ObservableCollection<ITelemetryFile> TelemetryFiles { get; } = [];
     private readonly SourceCache<SessionViewModel, Guid> sessions;
 
     [ObservableProperty] private ITelemetryDataStore? selectedDataStore;
@@ -282,7 +282,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
     }
     
     [RelayCommand]
-    private void AddSetup()
+    private static void AddSetup()
     {
         var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
         Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");

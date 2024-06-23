@@ -15,20 +15,17 @@ public class SqLiteDatabaseService : IDatabaseService
     private Task Initialization { get; }
     private readonly SQLiteAsyncConnection connection;
     
-    private static readonly List<CalibrationMethod> DefaultCalibrationMethods = new()
-    {
+    private static readonly List<CalibrationMethod> DefaultCalibrationMethods =
+    [
         new(CalibrationMethod.FractionId,
             "fraction", 
             "Sample is in fraction of maximum suspension stroke.",
-            new CalibrationMethodProperties(
-                new List<string>(),
-                new Dictionary<string, string>(),
-                "sample * MAX_STROKE")),
+            new CalibrationMethodProperties([], [], "sample * MAX_STROKE")),
         new(CalibrationMethod.PercentageId,
             "percentage", 
             "Sample is in percentage of maximum suspension stroke.",
             new CalibrationMethodProperties(
-                new List<string>(),
+                [],
                 new Dictionary<string, string>()
                 {
                     {"factor", "MAX_STROKE / 100.0"}
@@ -38,11 +35,10 @@ public class SqLiteDatabaseService : IDatabaseService
             "linear", 
             "Sample is linearly distributed within a given range.",
             new CalibrationMethodProperties(
-                new List<string>()
-                {
+                [
                     "min_measurement",
                     "max_measurement"
-                },
+                ],
                 new Dictionary<string, string>()
                 {
                     {"factor", "MAX_STROKE / (max_measurement - min_measurement)"}
@@ -52,11 +48,10 @@ public class SqLiteDatabaseService : IDatabaseService
             "as5600-isosceles-triangle", 
             "Triangle setup with the sensor between the base and leg.",
             new CalibrationMethodProperties(
-                new List<string>()
-                {
+                [
                     "arm",
                     "max"
-                },
+                ],
                 new Dictionary<string, string>()
                 {
                     {"start_angle", "acos(max / 2.0 / arm)"},
@@ -68,12 +63,11 @@ public class SqLiteDatabaseService : IDatabaseService
             "as5600-triangle", 
             "Triangle setup with the sensor between two known sides.",
             new CalibrationMethodProperties(
-                new List<string>()
-                {
+                [
                     "arm1",
                     "arm2",
                     "max"
-                },
+                ],
                 new Dictionary<string, string>()
                 {
                     {"start_angle", "acos((arm1^2+arm2^2-max^2)/(2*arm1*arm2))"},
@@ -82,7 +76,7 @@ public class SqLiteDatabaseService : IDatabaseService
                     {"dbl_arm1_arm2", "2 * arm1 * arm2"},
                 },
                 "max - sqrt(arms_sqr_sum - dbl_arm1_arm2 * cos(start_angle-(factor*sample)))")),
-    };
+    ];
     
     public SqLiteDatabaseService()
     {

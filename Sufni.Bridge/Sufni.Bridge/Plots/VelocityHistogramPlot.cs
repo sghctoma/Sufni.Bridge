@@ -8,7 +8,7 @@ namespace Sufni.Bridge.Plots;
 public class VelocityHistogramPlot(Plot plot, SuspensionType type) : TelemetryPlot(plot)
 {
     private const double VelocityLimit = 2000.0;
-    private List<Color> palette =
+    private readonly List<Color> palette =
     [
         Color.FromHex("#3288bd"),
         Color.FromHex("#66c2a5"),

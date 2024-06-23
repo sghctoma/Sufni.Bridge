@@ -55,10 +55,6 @@
             Content="cancel"
             IsDefault="{Binding IsRegistered}"
             IsTabStop="False" />
-        <v:ErrorMessagesControl
-            Margin="2,4"
-            ClearErrorsCommand="{Binding ClearErrorsCommand}"
-            ErrorMessages="{Binding ErrorMessages}"
-            IsVisible="{Binding ErrorMessages.Count}" />
+        <v:ErrorMessagesView Margin="2,4" />
     </StackPanel>
 </UserControl>

@@ -82,14 +82,11 @@
         </ItemsControl>
 
         <!--  Error messages for Calibration instance  -->
-        <v:ErrorMessagesControl
+        <v:ErrorMessagesView
             Grid.Row="3"
             Grid.Column="0"
             Grid.ColumnSpan="2"
-            Margin="0,5,0,0"
-            ClearErrorsCommand="{Binding ClearErrorsCommand}"
-            ErrorMessages="{Binding ErrorMessages}"
-            IsVisible="{Binding ErrorMessages.Count}" />
+            Margin="0,5,0,0" />
 
         <!--  Back, Save, Reset and Delete buttons  -->
         <v:CommonButtonLine

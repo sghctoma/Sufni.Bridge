@@ -95,21 +95,15 @@
         </ScrollViewer>
 
         <!--  Notifications  -->
-        <v:NotificationsControl
+        <v:NotificationsView
             Grid.Row="2"
             Grid.Column="0"
-            Margin="5,0"
-            ClearNotificationsCommand="{Binding ClearNotificationsCommand}"
-            IsVisible="{Binding Notifications.Count}"
-            Notifications="{Binding Notifications}" />
+            Margin="5,0" />
 
         <!--  Error messages  -->
-        <v:ErrorMessagesControl
+        <v:ErrorMessagesView
             Grid.Row="3"
             Grid.Column="0"
-            Margin="5,0"
-            ClearErrorsCommand="{Binding ClearErrorsCommand}"
-            ErrorMessages="{Binding ErrorMessages}"
-            IsVisible="{Binding ErrorMessages.Count}" />
+            Margin="5,0" />
     </Grid>
 </UserControl>

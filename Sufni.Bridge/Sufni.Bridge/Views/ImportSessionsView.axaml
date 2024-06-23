@@ -140,25 +140,19 @@
         </ScrollViewer>
 
         <!--  Notifications  -->
-        <v:NotificationsControl
+        <v:NotificationsView
             Grid.Row="2"
             Grid.Column="0"
             Grid.ColumnSpan="3"
             Margin="2,4"
-            ClearNotificationsCommand="{Binding ClearNotificationsCommand}"
-            IsVisible="{Binding Notifications.Count}"
-            Notifications="{Binding Notifications}"
             ZIndex="10" />
 
         <!--  Error messages  -->
-        <v:ErrorMessagesControl
+        <v:ErrorMessagesView
             Grid.Row="3"
             Grid.Column="0"
             Grid.ColumnSpan="3"
             Margin="2,4"
-            ClearErrorsCommand="{Binding ClearErrorsCommand}"
-            ErrorMessages="{Binding ErrorMessages}"
-            IsVisible="{Binding ErrorMessages.Count}"
             ZIndex="10" />
 
         <Grid

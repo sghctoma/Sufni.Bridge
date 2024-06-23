@@ -5,7 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:progRing="clr-namespace:AvaloniaProgressRing;assembly=AvaloniaProgressRing"
-    xmlns:v="clr-namespace:Sufni.Bridge.Views"
+    xmlns:v="clr-namespace:Sufni.Bridge.Views.ItemLists"
     xmlns:vm="clr-namespace:Sufni.Bridge.ViewModels"
     d:DesignHeight="720"
     d:DesignWidth="500"

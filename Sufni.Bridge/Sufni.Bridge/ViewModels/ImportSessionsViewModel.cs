@@ -13,6 +13,7 @@ using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
+using Sufni.Bridge.ViewModels.Items;
 
 namespace Sufni.Bridge.ViewModels;
 

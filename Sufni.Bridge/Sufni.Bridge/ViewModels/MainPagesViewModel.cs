@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Sufni.Bridge.Models;
 using Sufni.Bridge.Models.Telemetry;
 using Sufni.Bridge.Services;
+using Sufni.Bridge.ViewModels.Items;
 
 namespace Sufni.Bridge.ViewModels;
 

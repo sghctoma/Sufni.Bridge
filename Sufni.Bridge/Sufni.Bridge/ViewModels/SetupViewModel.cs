@@ -20,8 +20,6 @@ public partial class SetupViewModel : ItemViewModelBase
 
     #region Observable properties
     
-    [ObservableProperty] private Guid id;
-    
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
     [NotifyCanExecuteChangedFor(nameof(ResetCommand))]

@@ -25,8 +25,7 @@
         RowDefinitions="auto auto auto auto auto auto * auto">
 
         <!--  Name  -->
-        <v:EditableTitleControl
-            Title="{Binding Name}"
+        <v:EditableTitleView
             Grid.Row="0"
             Grid.Column="0"
             Grid.ColumnSpan="2"

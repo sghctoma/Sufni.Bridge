@@ -27,13 +27,6 @@ public partial class SessionViewModel : ItemViewModelBase
     private NotesPageViewModel NotesPage { get; } = new();
     public ObservableCollection<PageViewModelBase> Pages {get; }
     public string Description => NotesPage.Description ?? "";
-    
-    #region Observable properties
-
-    [ObservableProperty] private Guid id;
-    [ObservableProperty] private DateTime? timestamp;
-
-    #endregion
 
     #region Private methods
 

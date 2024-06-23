@@ -24,12 +24,10 @@
     <Grid RowDefinitions="auto auto * auto auto">
 
         <!--  Name  -->
-        <v:EditableTitleControl
-            Title="{Binding Name}"
+        <v:EditableTitleView
             Grid.Row="0"
             Margin="15,0,20,10"
-            HorizontalAlignment="Stretch"
-            Subtitle="{Binding Timestamp}" />
+            HorizontalAlignment="Stretch" />
 
         <!--  Tab headers  -->
         <ItemsControl

@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.Extensions.DependencyInjection;
-using System.Diagnostics;
+using System;
 using System.Threading.Tasks;
 
 namespace Sufni.Bridge.ViewModels;
@@ -17,6 +16,9 @@ public partial class ItemViewModelBase : ViewModelBase
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
     [NotifyCanExecuteChangedFor(nameof(ResetCommand))]
     private string? name;
+
+    [ObservableProperty] private Guid id;
+    [ObservableProperty] private DateTime? timestamp;
 
     protected virtual void EvaluateDirtiness() { IsDirty = false; }
     protected virtual bool CanDelete() { return true; }

@@ -1,11 +1,14 @@
 using System;
 using System.Globalization;
 using Avalonia;
+using Avalonia.Animation;
 using Avalonia.Controls;
+using Avalonia.Controls.Presenters;
 using Avalonia.Data;
 using Avalonia.Data.Converters;
 using Avalonia.Labs.Controls;
 using Avalonia.Media;
+using Avalonia.Media.Transformation;
 using Sufni.Bridge.ViewModels.Items;
 
 namespace Sufni.Bridge.Views.Controls;
@@ -34,9 +37,32 @@ public class SwipeColorConverter : IValueConverter
 
 public partial class SwipeToDeleteButtonView : UserControl
 {
+    private bool animationPlayed = false;
+
     public SwipeToDeleteButtonView()
     {
         InitializeComponent();
+        SwipeButton.Children[2].PropertyChanged += async (s, e) =>
+        {
+            if (e.Property.Name == "RenderTransform" && e.NewValue is TransformOperations ops)
+            {
+                var offset = ops.Operations[0].Matrix.M31;
+                var deleteButton = ((ContentPresenter)SwipeButton.Children[1]).Content as Button;
+                var trashcan = deleteButton!.Content as Image;
+                trashcan!.Opacity = Math.Min(1.0, offset / 64.0);
+
+                if (offset > deleteButton.Width && !animationPlayed)
+                {
+                    animationPlayed = true;
+                    var animation = Resources["ImageSizeAnimation"] as Animation;
+                    await animation!.RunAsync(trashcan);
+                }
+                if (offset < deleteButton.Width) 
+                {
+                    animationPlayed = false;
+                }
+            }
+        };
     }
 
     public async void SwipePropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)

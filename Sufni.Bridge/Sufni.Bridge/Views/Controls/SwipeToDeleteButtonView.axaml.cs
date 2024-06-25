@@ -9,6 +9,8 @@ using Avalonia.Data.Converters;
 using Avalonia.Labs.Controls;
 using Avalonia.Media;
 using Avalonia.Media.Transformation;
+using HapticFeedback;
+using Microsoft.Extensions.DependencyInjection;
 using Sufni.Bridge.ViewModels.Items;
 
 namespace Sufni.Bridge.Views.Controls;
@@ -38,6 +40,7 @@ public class SwipeColorConverter : IValueConverter
 public partial class SwipeToDeleteButtonView : UserControl
 {
     private bool animationPlayed = false;
+    private readonly IHapticFeedback? hapticFeedback = App.Current?.Services?.GetService<IHapticFeedback>();
 
     public SwipeToDeleteButtonView()
     {
@@ -53,6 +56,8 @@ public partial class SwipeToDeleteButtonView : UserControl
 
                 if (offset > deleteButton.Width && !animationPlayed)
                 {
+                    hapticFeedback?.LongPress();
+
                     animationPlayed = true;
                     var animation = Resources["ImageSizeAnimation"] as Animation;
                     await animation!.RunAsync(trashcan);

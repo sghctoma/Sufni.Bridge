@@ -2,6 +2,7 @@
 using Android.Content.PM;
 using Avalonia;
 using Avalonia.Android;
+using HapticFeedback;
 using Microsoft.Extensions.DependencyInjection;
 using SecureStorage;
 using ServiceDiscovery;
@@ -21,7 +22,9 @@ namespace Sufni.Bridge.Android
         {
             RegisteredServices.Collection.AddSingleton<ISecureStorage, SecureStorage.SecureStorage>();
             RegisteredServices.Collection.AddSingleton<IServiceDiscovery, ServiceDiscovery.ServiceDiscovery>();
-            
+            RegisteredServices.Collection.AddSingleton<IHapticFeedback, HapticFeedback.HapticFeedback>(provider => 
+                new HapticFeedback.HapticFeedback(Window!));
+
             return base.CustomizeAppBuilder(builder)
                 .UseAndroid()
                 .WithInterFont()

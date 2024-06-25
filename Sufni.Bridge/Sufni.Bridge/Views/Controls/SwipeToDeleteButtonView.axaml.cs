@@ -48,7 +48,10 @@ public partial class SwipeToDeleteButtonView : UserControl
         SwipeButton.Children[2].PropertyChanged += async (s, e) =>
         {
             var deleteButton = ((ContentPresenter)SwipeButton.Children[1]).Content as Button;
-            if (e.Property.Name == "RenderTransform" && e.NewValue is TransformOperations ops && deleteButton!.Command!.CanExecute(false))
+            if (e.Property.Name == "RenderTransform" &&
+                e.NewValue is TransformOperations ops &&
+                deleteButton!.Command is not null &&
+                deleteButton!.Command!.CanExecute(false))
             {
                 var offset = ops.Operations[0].Matrix.M31;
                 var trashcan = deleteButton!.Content as Image;

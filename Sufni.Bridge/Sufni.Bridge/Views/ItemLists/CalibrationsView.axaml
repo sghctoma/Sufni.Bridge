@@ -40,18 +40,21 @@
         </Button>
 
         <!--  List of Calibrations  -->
-        <ScrollViewer
+        <v:PullableScrollViewer
             Grid.Row="1"
             Grid.Column="0"
-            Margin="0,5,0,5">
-            <ItemsRepeater Classes="main" ItemsSource="{Binding Calibrations}">
-                <ItemsRepeater.ItemTemplate>
-                    <DataTemplate>
-                        <v:SwipeToDeleteButtonView />
-                    </DataTemplate>
-                </ItemsRepeater.ItemTemplate>
-            </ItemsRepeater>
-        </ScrollViewer>
+            Margin="0,5,0,5"
+            PullCommand="{Binding SyncCommand}">
+            <v:PullableScrollViewer.ItemsContainer>
+                <ItemsRepeater Classes="main" ItemsSource="{Binding Calibrations}">
+                    <ItemsRepeater.ItemTemplate>
+                        <DataTemplate>
+                            <v:SwipeToDeleteButtonView />
+                        </DataTemplate>
+                    </ItemsRepeater.ItemTemplate>
+                </ItemsRepeater>
+            </v:PullableScrollViewer.ItemsContainer>
+        </v:PullableScrollViewer>
 
         <!--  Notifications  -->
         <v:NotificationsView

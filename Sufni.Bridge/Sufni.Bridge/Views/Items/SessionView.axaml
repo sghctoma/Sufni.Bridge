@@ -94,6 +94,7 @@
             HorizontalSnapPointsAlignment="Far"
             HorizontalSnapPointsType="MandatorySingle"
             IsScrollInertiaEnabled="False"
+            IsScrollChainingEnabled="False"
             PropertyChanged="TabScrollViewer_OnPropertyChanged"
             SizeChanged="TabScrollViewer_OnSizeChanged"
             VerticalScrollBarVisibility="Disabled">

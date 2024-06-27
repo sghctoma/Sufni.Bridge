@@ -14,7 +14,7 @@
         <vm:BalancePageViewModel />
     </Design.DataContext>
 
-    <ScrollViewer Width="{Binding $parent[ScrollViewer].Bounds.Width}">
+    <ScrollViewer Width="{Binding $parent[ScrollViewer].Bounds.Width}" IsScrollChainingEnabled="False">
         <Grid RowDefinitions="* *">
             <Svg Grid.Row="0" Source="{Binding CompressionBalance}" />
             <Svg Grid.Row="1" Source="{Binding ReboundBalance}" />

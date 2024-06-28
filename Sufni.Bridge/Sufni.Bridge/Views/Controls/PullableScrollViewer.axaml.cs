@@ -44,7 +44,7 @@ public partial class PullableScrollViewer : UserControl
     }
 
     public static readonly StyledProperty<double> PullThresholdProperty =
-        AvaloniaProperty.Register<PullableScrollViewer, double>(nameof(PullThreshold), defaultValue: 80);
+        AvaloniaProperty.Register<PullableScrollViewer, double>(nameof(PullThreshold), defaultValue: 60);
 
     public double PullThreshold
     {

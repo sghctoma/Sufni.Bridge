@@ -11,7 +11,7 @@
     <Panel>
         <Image
             Name="Progress"
-            Width="28"
+            Width="20"
             Margin="0,15,0,0"
             HorizontalAlignment="Center"
             VerticalAlignment="Top"

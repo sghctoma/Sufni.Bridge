@@ -16,6 +16,7 @@ public partial class PullableScrollViewer : UserControl
     private static readonly double pullRatio = 3;
 
     private double totalPulled;
+    private bool thresholdAlreadyReached;
     private readonly IHapticFeedback? hapticFeedback = App.Current?.Services?.GetService<IHapticFeedback>();
 
     #region Styled properties
@@ -117,15 +118,26 @@ public partial class PullableScrollViewer : UserControl
         var translate = new TranslateTransform(0, totalPulled / pullRatio);
         Scroll.SetValue(RenderTransformProperty, translate);
 
-        var ratio = Math.Min(1.0, totalPulled / (PullThreshold * pullRatio));
-        Progress.Opacity = ratio * 0.6;
-        var rotate = new RotateTransform(360.0 * ratio);
-        Progress.SetValue(RenderTransformProperty, rotate);
+        if (!thresholdAlreadyReached)
+        {
+            var ratio = Math.Min(1.0, totalPulled / (PullThreshold * pullRatio));
+            Progress.Opacity = ratio * 0.6;
+            var rotate = new RotateTransform(360.0 * ratio);
+            Progress.SetValue(RenderTransformProperty, rotate);
+        }
 
         if (totalPulled > PullThreshold * pullRatio)
         {
-            hapticFeedback?.LongPress();
-            Progress.Opacity = 1.0;
+            if (!thresholdAlreadyReached)
+            {
+                thresholdAlreadyReached = true;
+                hapticFeedback?.LongPress();
+                Progress.Opacity = 1.0;
+            }
+        }
+        else
+        {
+            thresholdAlreadyReached = false;
         }
     }
 

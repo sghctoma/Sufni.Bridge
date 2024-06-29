@@ -18,16 +18,16 @@
             x:SetterTargetType="Image"
             Duration="0:0:0.2">
             <KeyFrame Cue="0%">
-                <Setter Property="Height" Value="20" />
-                <Setter Property="Width" Value="20" />
-            </KeyFrame>
-            <KeyFrame Cue="10%">
                 <Setter Property="Height" Value="16" />
                 <Setter Property="Width" Value="16" />
             </KeyFrame>
+            <KeyFrame Cue="10%">
+                <Setter Property="Height" Value="12" />
+                <Setter Property="Width" Value="12" />
+            </KeyFrame>
             <KeyFrame Cue="100%">
-                <Setter Property="Height" Value="20" />
-                <Setter Property="Width" Value="20" />
+                <Setter Property="Height" Value="16" />
+                <Setter Property="Width" Value="16" />
             </KeyFrame>
         </Animation>
     </UserControl.Resources>
@@ -40,9 +40,9 @@
             Height="46"
             Margin="10,0,10,0"
             HorizontalAlignment="Stretch"
-            Background="{Binding Converter={StaticResource SwipeColorConverter}}"
+            Background="#15191c"
             BorderBrush="#505050"
-            BorderThickness="1"
+            BorderThickness="0"
             CornerRadius="5" />
         <labs:Swipe Name="SwipeButton" PropertyChanged="SwipePropertyChanged">
             <labs:Swipe.Content>
@@ -66,16 +66,16 @@
                 <DataTemplate>
                     <Button
                         Width="64"
-                        Height="46"
+                        Height="48"
                         HorizontalContentAlignment="Center"
                         VerticalContentAlignment="Center"
-                        Background="#8f312d"
                         BorderThickness="1"
                         Command="{Binding $parent[labs:Swipe].((vm:ItemViewModelBase)DataContext).FakeDeleteCommand}"
-                        CornerRadius="5">
+                        CornerRadius="5"
+                        Svg.Css="{Binding $parent[labs:Swipe].((vm:ItemViewModelBase)DataContext), Converter={StaticResource SwipeColorConverter}}">
                         <Image
-                            Width="20"
-                            Height="20"
+                            Width="16"
+                            Height="16"
                             Source="{SvgImage /Assets/fa-trash-can.svg}" />
                     </Button>
                 </DataTemplate>

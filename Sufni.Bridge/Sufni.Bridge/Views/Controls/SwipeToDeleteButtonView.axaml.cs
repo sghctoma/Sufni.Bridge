@@ -7,7 +7,6 @@ using Avalonia.Controls.Presenters;
 using Avalonia.Data;
 using Avalonia.Data.Converters;
 using Avalonia.Labs.Controls;
-using Avalonia.Media;
 using Avalonia.Media.Transformation;
 using HapticFeedback;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,9 +22,9 @@ public class SwipeColorConverter : IValueConverter
     {
         if (value is ItemViewModelBase vm)
         {
-            return vm.DeleteCommand.CanExecute(false) ? 
-                Brush.Parse("#6f312d") : 
-                Brush.Parse("#505050");
+            return vm.DeleteCommand.CanExecute(false) ?
+                ".default { fill: #9f312d; }" :
+                ".default { fill: #a0a0a0; }";
         }
 
         return new BindingNotification(new InvalidCastException(), BindingErrorType.Error);

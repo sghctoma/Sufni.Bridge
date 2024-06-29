@@ -40,21 +40,12 @@
         </Button>
 
         <!--  List of Setups  -->
-        <v:PullableScrollViewer
+        <v:PullableMenuScrollViewer
             Grid.Row="1"
             Grid.Column="0"
             Margin="0,5,0,5"
-            PullCommand="{Binding SyncCommand}">
-            <v:PullableScrollViewer.ItemsContainer>
-                <ItemsRepeater Classes="main" ItemsSource="{Binding Setups}">
-                    <ItemsRepeater.ItemTemplate>
-                        <DataTemplate>
-                            <v:SwipeToDeleteButtonView />
-                        </DataTemplate>
-                    </ItemsRepeater.ItemTemplate>
-                </ItemsRepeater>
-            </v:PullableScrollViewer.ItemsContainer>
-        </v:PullableScrollViewer>
+            Items="{Binding Setups}"
+            MenuItems="{Binding SetupsMenuItems}" />
 
         <!--  Notifications  -->
         <v:NotificationsView

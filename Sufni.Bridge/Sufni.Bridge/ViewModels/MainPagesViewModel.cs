@@ -60,6 +60,11 @@ public partial class MainPagesViewModel : ViewModelBase
     private ObservableCollection<CalibrationMethod> CalibrationMethods { get; } = [];
     private ObservableCollection<Board> Boards { get; } = [];
 
+    public ObservableCollection<PullMenuItemViewModel> SessionsMenuItems { get; set; } = [];
+    public ObservableCollection<PullMenuItemViewModel> LinkagesMenuItems { get; set; } = [];
+    public ObservableCollection<PullMenuItemViewModel> CalibrationsMenuItems { get; set; } = [];
+    public ObservableCollection<PullMenuItemViewModel> SetupsMenuItems { get; set; } = [];
+
     #endregion
 
     #region Property change handlers
@@ -171,6 +176,18 @@ public partial class MainPagesViewModel : ViewModelBase
         };
 
         CalibrationMethods.CollectionChanged += (_, _) => { HasCalibrationMethods = CalibrationMethods.Count != 0; };
+
+        SessionsMenuItems.Add(new("sync", SyncCommand));
+        SessionsMenuItems.Add(new("import", OpenPageCommand, ImportSessionsPage));
+
+        LinkagesMenuItems.Add(new("sync", SyncCommand));
+        LinkagesMenuItems.Add(new("add", AddLinkageCommand));
+
+        CalibrationsMenuItems.Add(new("sync", SyncCommand));
+        CalibrationsMenuItems.Add(new("add", AddCalibrationCommand));
+
+        SetupsMenuItems.Add(new("sync", SyncCommand));
+        SetupsMenuItems.Add(new("add", AddSetupCommand));
 
         _ = LoadDatabaseContent();
     }

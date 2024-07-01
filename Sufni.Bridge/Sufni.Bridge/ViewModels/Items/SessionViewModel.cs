@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Threading;
-using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using ScottPlot;
@@ -27,6 +26,7 @@ public partial class SessionViewModel : ItemViewModelBase
     private NotesPageViewModel NotesPage { get; } = new();
     public ObservableCollection<PageViewModelBase> Pages {get; }
     public string Description => NotesPage.Description ?? "";
+    public override bool IsComplete => session.HasProcessedData;
 
     #region Private methods
 
@@ -217,8 +217,8 @@ public partial class SessionViewModel : ItemViewModelBase
                 RearLowSpeedCompression = NotesPage.ShockSettings.LowSpeedCompression,
                 RearLowSpeedRebound = NotesPage.ShockSettings.LowSpeedRebound,
                 RearHighSpeedRebound = NotesPage.ShockSettings.HighSpeedRebound,
+                HasProcessedData = IsComplete,
             };
-
 
             await databaseService.PutSessionAsync(newSession);
             session = newSession;
@@ -271,6 +271,18 @@ public partial class SessionViewModel : ItemViewModelBase
     {
         try
         {
+            if (!IsComplete)
+            {
+                var httpApiService = App.Current?.Services?.GetService<IHttpApiService>();
+                var databaseService = App.Current?.Services?.GetService<IDatabaseService>();
+                Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
+                Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
+
+                var psst = await httpApiService.GetSessionPsstAsync(Id) ?? throw new Exception("Session data could not be downloaded from server.");
+                await databaseService.PatchSessionPsstAsync(Id, psst);
+                session.HasProcessedData = true;
+            }
+
             if (!await LoadCache())
             {
                 new Thread(CreateCache).Start(bounds);

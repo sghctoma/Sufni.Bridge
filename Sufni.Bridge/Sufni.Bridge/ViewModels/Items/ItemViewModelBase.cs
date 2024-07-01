@@ -19,6 +19,7 @@ public partial class ItemViewModelBase : ViewModelBase
 
     [ObservableProperty] private Guid id;
     [ObservableProperty] private DateTime? timestamp;
+    public virtual bool IsComplete => true;
 
     protected virtual void EvaluateDirtiness() { IsDirty = false; }
     protected virtual bool CanDelete() { return true; }

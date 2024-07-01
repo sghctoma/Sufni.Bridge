@@ -7,6 +7,8 @@ namespace Sufni.Bridge.Models;
 [Table("session")]
 public class Session : Synchronizable
 {
+    private byte[]? processedData;
+
     // Just to satisfy sql-net-pcl's parameterless constructor requirement
     // Uninitialized non-nullable property warnings are suppressed with null! initializer.
     public Session() { }
@@ -49,8 +51,16 @@ public class Session : Synchronizable
 
     [JsonIgnore]
     [Column("data")]
-    public byte[]? ProcessedData { get; set; }
-    
+    public byte[]? ProcessedData
+    {
+        get => processedData;
+        set
+        {
+            HasProcessedData = value is not null;
+            processedData = value;
+        }
+    }
+
     [JsonIgnore]
     [Column("front_springrate")]
     public string? FrontSpringRate { get; set; }
@@ -90,4 +100,8 @@ public class Session : Synchronizable
     [JsonIgnore]
     [Column("rear_hsr")]
     public uint? RearHighSpeedRebound { get; set; }
+
+    [JsonIgnore]
+    [Column("has_data")]
+    public bool HasProcessedData  {get; set; }
 }

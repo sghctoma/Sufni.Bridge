@@ -414,7 +414,11 @@ public class SqLiteDatabaseService : IDatabaseService
                                  timestamp,
                                  track_id,
                                  front_springrate, front_hsc, front_lsc, front_lsr, front_hsr,
-                                 rear_springrate, rear_hsc, rear_lsc, rear_lsr, rear_hsr
+                                 rear_springrate, rear_hsc, rear_lsc, rear_lsr, rear_hsr,
+                                 CASE
+                                    WHEN data IS NOT NULL THEN 1
+                                    ELSE 0
+                                 END AS has_data
                              FROM
                                  session
                              WHERE

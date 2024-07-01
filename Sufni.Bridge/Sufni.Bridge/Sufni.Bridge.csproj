@@ -32,8 +32,8 @@
     <PackageReference Include="MathNet.Numerics" Version="6.0.0-beta1" />
     <PackageReference Include="MessagePack" Version="3.0.54-alpha" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0-preview.5.24306.7" />
-    <PackageReference Include="ScottPlot" Version="5.0.35" />
-    <PackageReference Include="ScottPlot.Avalonia" Version="5.0.35" />
+    <PackageReference Include="ScottPlot" Version="5.0.36" />
+    <PackageReference Include="ScottPlot.Avalonia" Version="5.0.36" />
     <PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
     <PackageReference Include="Tmds.MDns" Version="0.8.0" />
   </ItemGroup>

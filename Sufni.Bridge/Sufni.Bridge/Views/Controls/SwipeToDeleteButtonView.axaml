@@ -33,9 +33,6 @@
     </UserControl.Resources>
 
     <Panel Margin="6,2,6,2">
-        <Panel.Resources>
-            <v:SwipeColorConverter x:Key="SwipeColorConverter" />
-        </Panel.Resources>
         <Border
             Height="46"
             Margin="10,0,10,0"
@@ -70,7 +67,7 @@
             </labs:Swipe.Content>
             <labs:Swipe.Left>
                 <DataTemplate>
-                    <Button
+                    <Button 
                         Width="64"
                         Height="48"
                         HorizontalContentAlignment="Center"
@@ -78,7 +75,7 @@
                         BorderThickness="1"
                         Command="{Binding $parent[labs:Swipe].((vm:ItemViewModelBase)DataContext).FakeDeleteCommand}"
                         CornerRadius="5"
-                        Svg.Css="{Binding $parent[labs:Swipe].((vm:ItemViewModelBase)DataContext), Converter={StaticResource SwipeColorConverter}}">
+                        Svg.Css=".default { fill: #9f312d; }">
                         <Image
                             Width="16"
                             Height="16"

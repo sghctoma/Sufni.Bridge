@@ -1,11 +1,8 @@
 using System;
-using System.Globalization;
 using Avalonia;
 using Avalonia.Animation;
 using Avalonia.Controls;
 using Avalonia.Controls.Presenters;
-using Avalonia.Data;
-using Avalonia.Data.Converters;
 using Avalonia.Labs.Controls;
 using Avalonia.Media.Transformation;
 using HapticFeedback;
@@ -13,28 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Sufni.Bridge.ViewModels.Items;
 
 namespace Sufni.Bridge.Views.Controls;
-
-public class SwipeColorConverter : IValueConverter
-{
-    public static readonly SwipeColorConverter Instance = new();
-
-    public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
-    {
-        if (value is ItemViewModelBase vm)
-        {
-            return vm.DeleteCommand.CanExecute(false) ?
-                ".default { fill: #9f312d; }" :
-                ".default { fill: #a0a0a0; }";
-        }
-
-        return new BindingNotification(new InvalidCastException(), BindingErrorType.Error);
-    }
-
-    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
-    {
-        throw new NotSupportedException();
-    }
-}
 
 public partial class SwipeToDeleteButtonView : UserControl
 {

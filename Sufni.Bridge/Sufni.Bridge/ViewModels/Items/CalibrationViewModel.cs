@@ -207,13 +207,5 @@ public partial class CalibrationViewModel : ItemViewModelBase
             (s.SelectedRearCalibration != null && s.SelectedRearCalibration.Id == Id));
     }
 
-    protected override async Task DeleteImplementation()
-    {
-        var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
-        Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
-
-        await mainPagesViewModel.DeleteCalibrationCommand.ExecuteAsync(this);
-    }
-
     #endregion
 }

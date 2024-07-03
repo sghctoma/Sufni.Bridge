@@ -130,14 +130,6 @@ public partial class LinkageViewModel : ItemViewModelBase
         return !mainPagesViewModel.Setups.Any(s => s.SelectedLinkage != null && s.SelectedLinkage.Id == Id);
     }
 
-    protected override async Task DeleteImplementation()
-    {
-        var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
-        Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
-
-        await mainPagesViewModel.DeleteLinkageCommand.ExecuteAsync(this);
-    }
-
     #endregion
 
     #region Commands

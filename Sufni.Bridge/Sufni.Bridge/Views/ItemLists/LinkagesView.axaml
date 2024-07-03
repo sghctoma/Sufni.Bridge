@@ -58,5 +58,11 @@
             Grid.Row="3"
             Grid.Column="0"
             Margin="5,0" />
+
+        <!--  Undo last deleted  -->
+        <v:UndoDeleteButtonView
+            Grid.Row="0"
+            Grid.RowSpan="4"
+            Grid.Column="0" />
     </Grid>
 </UserControl>

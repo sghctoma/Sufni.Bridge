@@ -254,14 +254,6 @@ public partial class SessionViewModel : ItemViewModelBase
         return Task.CompletedTask;
     }
 
-    protected override async Task DeleteImplementation()
-    {
-        var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
-        Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
-
-        await mainPagesViewModel.DeleteSessionCommand.ExecuteAsync(this);
-    }
-
     #endregion
 
     #region Commands

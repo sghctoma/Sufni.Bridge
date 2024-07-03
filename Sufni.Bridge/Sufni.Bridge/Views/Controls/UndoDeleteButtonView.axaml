@@ -1,0 +1,51 @@
+﻿<UserControl
+    x:Class="Sufni.Bridge.Views.Controls.UndoDeleteButtonView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:v="clr-namespace:Sufni.Bridge.Views"
+    xmlns:vm="clr-namespace:Sufni.Bridge.ViewModels"
+    d:DesignHeight="600"
+    d:DesignWidth="500"
+    x:DataType="vm:MainPagesViewModel"
+    mc:Ignorable="d">
+
+    <UserControl.Styles>
+        <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="#0078D7" />
+        </Style>
+    </UserControl.Styles>
+
+    <Panel IsVisible="{Binding LastDeletedItem, Converter={x:Static ObjectConverters.IsNotNull}}">
+        <Button
+            Name="DeleteButton"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            Classes="embedded"
+            Command="{Binding FinalizeDeleteCommand}"
+            CornerRadius="0" />
+        <Label
+            Height="39"
+            Margin="5,0,5,0"
+            Padding="5,0,0,0"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Bottom"
+            VerticalContentAlignment="Center"
+            Background="#f0f0f0"
+            Content="Item deleted."
+            Foreground="#15191c"
+            IsHitTestVisible="False" />
+        <Button
+            Name="UndoButton"
+            Height="39"
+            Margin="0,0,10,0"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
+            VerticalContentAlignment="Center"
+            Classes="embedded"
+            Command="{Binding UndoDeleteCommand}"
+            Content="undo"
+            Foreground="#0078D7" />
+    </Panel>
+</UserControl>

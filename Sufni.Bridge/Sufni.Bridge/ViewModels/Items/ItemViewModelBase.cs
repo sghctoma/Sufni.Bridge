@@ -1,7 +1,9 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using System;
+﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Sufni.Bridge.ViewModels.Items;
 
@@ -25,7 +27,6 @@ public partial class ItemViewModelBase : ViewModelBase
     protected virtual bool CanDelete() { return true; }
     protected virtual Task SaveImplementation() { return Task.CompletedTask; }
     protected virtual Task ResetImplementation() { return Task.CompletedTask; }
-    protected virtual Task DeleteImplementation() { return Task.CompletedTask; }
 
     protected virtual bool CanSave()
     {
@@ -43,22 +44,36 @@ public partial class ItemViewModelBase : ViewModelBase
     private async Task Save()
     {
         await SaveImplementation();
+        IsDirty = false;
     }
 
     [RelayCommand(CanExecute = nameof(CanReset))]
     private async Task Reset()
     {
         await ResetImplementation();
+        IsDirty = false;
     }
 
     [RelayCommand(CanExecute = nameof(CanDelete))]
     private async Task Delete(bool navigateBack)
     {
-        await DeleteImplementation();
+        var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
+        Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
+
+        await mainPagesViewModel.DeleteItem(this);
         if (navigateBack)
         {
             OpenPreviousPage();
         }
+    }
+
+    [RelayCommand(CanExecute = nameof(CanDelete))]
+    private void UndoableDelete()
+    {
+        var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
+        Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
+
+        mainPagesViewModel.UndoableDelete(this);
     }
 
     [RelayCommand(CanExecute = nameof(CanDelete))]

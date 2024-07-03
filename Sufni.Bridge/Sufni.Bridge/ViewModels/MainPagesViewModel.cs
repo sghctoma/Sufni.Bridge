@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -40,6 +41,7 @@ public partial class MainPagesViewModel : ViewModelBase
     [ObservableProperty] private DateTime? dateFilterFrom;
     [ObservableProperty] private DateTime? dateFilterTo;
     [ObservableProperty] private bool dateFilterVisible;
+    [ObservableProperty] private ItemViewModelBase? lastDeletedItem;
 
     private readonly SourceCache<LinkageViewModel, Guid> linkagesSource = new(x => x.Id);
     public ReadOnlyObservableCollection<LinkageViewModel> Linkages => linkages;
@@ -122,11 +124,6 @@ public partial class MainPagesViewModel : ViewModelBase
 
         calibrationsSource.CountChanged.Subscribe(_ => { HasCalibrations = calibrationsSource.Count != 0; });
         linkagesSource.CountChanged.Subscribe(_ => { HasLinkages = linkagesSource.Count != 0; });
-        setupsSource.CountChanged.Subscribe(_ =>
-        {
-            DeleteLinkageCommand.NotifyCanExecuteChanged();
-            DeleteCalibrationCommand.NotifyCanExecuteChanged();
-        });
 
         sessionsSource.Connect()
             .Filter(svm => string.IsNullOrEmpty(SessionSearchText) ||
@@ -196,9 +193,9 @@ public partial class MainPagesViewModel : ViewModelBase
 
     #region Public methods
 
-    public async Task OnEntityAdded(ViewModelBase entity)
+    public async Task OnEntityAdded(ItemViewModelBase item)
     {
-        switch (entity)
+        switch (item)
         {
             case LinkageViewModel lvm:
                 linkagesSource.AddOrUpdate(lvm);
@@ -209,6 +206,66 @@ public partial class MainPagesViewModel : ViewModelBase
             case SetupViewModel svm:
                 setupsSource.AddOrUpdate(svm);
                 await ImportSessionsPage.EvaluateSetupExists();
+                break;
+        }
+    }
+
+    public async Task DeleteItem(ItemViewModelBase item)
+    {
+        Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
+
+        switch (item)
+        {
+            case LinkageViewModel lvm:
+                linkagesSource.Remove(lvm);
+                await databaseService.DeleteLinkageAsync(lvm.Id);
+                break;
+            case CalibrationViewModel cvm:
+                calibrationsSource.Remove(cvm);
+                await databaseService.DeleteCalibrationAsync(cvm.Id);
+                break;
+            case SetupViewModel svm:
+                // If this setup is associated with a board ID, clear that association.
+                if (svm.BoardId is not null)
+                {
+                    await databaseService.PutBoardAsync(new Board(svm.BoardId, null));
+                }
+
+                // Delete setup
+                setupsSource.Remove(svm);
+                await databaseService.DeleteSetupAsync(svm.Id);
+
+                // Notify associated calibrations and linkages about the deletion
+                svm.SelectedFrontCalibration?.DeleteCommand.NotifyCanExecuteChanged();
+                svm.SelectedRearCalibration?.DeleteCommand.NotifyCanExecuteChanged();
+                svm.SelectedLinkage?.DeleteCommand.NotifyCanExecuteChanged();
+                svm.SelectedFrontCalibration?.FakeDeleteCommand.NotifyCanExecuteChanged();
+                svm.SelectedRearCalibration?.FakeDeleteCommand.NotifyCanExecuteChanged();
+                svm.SelectedLinkage?.FakeDeleteCommand.NotifyCanExecuteChanged();
+                break;
+            case SessionViewModel svm:
+                sessionsSource.Remove(svm);
+                await databaseService.DeleteSessionAsync(svm.Id);
+                break;
+        }
+    }
+
+    public void UndoableDelete(ItemViewModelBase item)
+    {
+        LastDeletedItem = item;
+        switch (item)
+        {
+            case LinkageViewModel lvm:
+                linkagesSource.Remove(lvm);
+                break;
+            case CalibrationViewModel cvm:
+                calibrationsSource.Remove(cvm);
+                break;
+            case SetupViewModel svm:
+                setupsSource.Remove(svm);
+                break;
+            case SessionViewModel svm:
+                sessionsSource.Remove(svm);
                 break;
         }
     }
@@ -291,6 +348,21 @@ public partial class MainPagesViewModel : ViewModelBase
         }
     }
 
+    private void OnSetupDirtinessChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(SetupViewModel.IsDirty) &&
+            sender is SetupViewModel svm &&
+            !svm.IsDirty)
+        {
+            svm.SelectedFrontCalibration?.DeleteCommand.NotifyCanExecuteChanged();
+            svm.SelectedRearCalibration?.DeleteCommand.NotifyCanExecuteChanged();
+            svm.SelectedLinkage?.DeleteCommand.NotifyCanExecuteChanged();
+            svm.SelectedFrontCalibration?.FakeDeleteCommand.NotifyCanExecuteChanged();
+            svm.SelectedRearCalibration?.FakeDeleteCommand.NotifyCanExecuteChanged();
+            svm.SelectedLinkage?.FakeDeleteCommand.NotifyCanExecuteChanged();
+        }
+    }
+
     private async Task LoadSetupsAsync()
     {
         Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
@@ -307,14 +379,7 @@ public partial class MainPagesViewModel : ViewModelBase
                     true,
                     linkagesSource,
                     calibrationsSource);
-                svm.PropertyChanged += (sender, args) =>
-                {
-                    if (sender is null ||
-                        args.PropertyName != nameof(SetupViewModel.IsDirty) ||
-                        ((SetupViewModel)sender).IsDirty) return;
-                    DeleteCalibrationCommand.NotifyCanExecuteChanged();
-                    DeleteLinkageCommand.NotifyCanExecuteChanged();
-                };
+                svm.PropertyChanged += OnSetupDirtinessChanged;
                 setupsSource.AddOrUpdate(svm);
             }
         }
@@ -378,41 +443,12 @@ public partial class MainPagesViewModel : ViewModelBase
             {
                 IsDirty = true
             };
-            //linkagesSource.AddOrUpdate(lvm);
 
             OpenPage(lvm);
         }
         catch (Exception e)
         {
             ErrorMessages.Add($"Could not add Linkage: {e.Message}");
-        }
-    }
-
-    private bool CanDeleteLinkage(LinkageViewModel? linkage)
-    {
-        return !Setups.Any(s => s.SelectedLinkage != null && s.SelectedLinkage.Id == linkage?.Id);
-    }
-
-    [RelayCommand(CanExecute = nameof(CanDeleteLinkage))]
-    private async Task DeleteLinkage(LinkageViewModel linkage)
-    {
-        Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
-
-        try
-        {
-            // If this linkage was not yet saved into the database, we just need to remove it from Linkages.
-            if (!linkage.IsInDatabase)
-            {
-                linkagesSource.Remove(linkage);
-                return;
-            }
-
-            await databaseService.DeleteLinkageAsync(linkage.Id);
-            linkagesSource.Remove(linkage);
-        }
-        catch (Exception e)
-        {
-            ErrorMessages.Add($"Could not delete Linkage: {e.Message}");
         }
     }
 
@@ -436,43 +472,12 @@ public partial class MainPagesViewModel : ViewModelBase
             {
                 IsDirty = true
             };
-            //calibrationsSource.AddOrUpdate(cvm);
 
             OpenPage(cvm);
         }
         catch (Exception e)
         {
             ErrorMessages.Add($"Could not add Calibration: {e.Message}");
-        }
-    }
-
-    private bool CanDeleteCalibration(CalibrationViewModel? calibration)
-    {
-        return !Setups.Any(s =>
-            (s.SelectedFrontCalibration != null && s.SelectedFrontCalibration.Id == calibration?.Id) ||
-            (s.SelectedRearCalibration != null && s.SelectedRearCalibration.Id == calibration?.Id));
-    }
-
-    [RelayCommand(CanExecute = nameof(CanDeleteCalibration))]
-    private async Task DeleteCalibration(CalibrationViewModel calibration)
-    {
-        Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
-
-        try
-        {
-            // If this calibration was not yet saved into the database, we just need to remove it from Calibrations.
-            if (!calibration.IsInDatabase)
-            {
-                calibrationsSource.Remove(calibration);
-                return;
-            }
-
-            await databaseService.DeleteCalibrationAsync(calibration.Id);
-            calibrationsSource.Remove(calibration);
-        }
-        catch (Exception e)
-        {
-            ErrorMessages.Add($"Could not delete Calibration: {e.Message}");
         }
     }
 
@@ -504,67 +509,13 @@ public partial class MainPagesViewModel : ViewModelBase
             {
                 IsDirty = true
             };
-            svm.PropertyChanged += (sender, args) =>
-            {
-                if (sender is null ||
-                    args.PropertyName != nameof(SetupViewModel.IsDirty) ||
-                    ((SetupViewModel)sender).IsDirty) return;
-                DeleteCalibrationCommand.NotifyCanExecuteChanged();
-                DeleteLinkageCommand.NotifyCanExecuteChanged();
-            };
-            //setupsSource.AddOrUpdate(svm);
+            svm.PropertyChanged += OnSetupDirtinessChanged;
 
             OpenPage(svm);
         }
         catch (Exception e)
         {
             ErrorMessages.Add($"Could not add Setup: {e.Message}");
-        }
-    }
-
-    [RelayCommand]
-    private async Task DeleteSetup(SetupViewModel setup)
-    {
-        Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
-
-        try
-        {
-            // If this setup was not yet saved into the database, we just need to remove it from Setups.
-            if (!setup.IsInDatabase)
-            {
-                setupsSource.Remove(setup);
-                return;
-            }
-
-            // If this setup is associated with a board ID, clear that association.
-            if (setup.BoardId is not null)
-            {
-                await databaseService.PutBoardAsync(new Board(setup.BoardId, null));
-            }
-
-            await databaseService.DeleteSetupAsync(setup.Id);
-            setupsSource.Remove(setup);
-        }
-        catch (Exception e)
-        {
-            ErrorMessages.Add($"Could not delete Setup: {e.Message}");
-        }
-    }
-
-    [RelayCommand]
-    private async Task DeleteSession(SessionViewModel session)
-    {
-        Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
-
-        try
-        {
-            await databaseService.DeleteSessionAsync(session.Id);
-            var toDelete = Sessions.First(s => s.Id == session.Id);
-            sessionsSource.Remove(toDelete);
-        }
-        catch (Exception e)
-        {
-            ErrorMessages.Add($"Could not delete Session: {e.Message}");
         }
     }
 
@@ -796,6 +747,52 @@ public partial class MainPagesViewModel : ViewModelBase
         Debug.Assert(mainViewModel != null, nameof(mainViewModel) + " != null");
         mainViewModel.OpenView(ImportSessionsPage);
     }
-    
+
+    [RelayCommand]
+    public async Task FinalizeDelete()
+    {
+        Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
+
+        switch (LastDeletedItem)
+        {
+            case LinkageViewModel lvm:
+                await databaseService.DeleteLinkageAsync(lvm.Id);
+                break;
+            case CalibrationViewModel cvm:
+                await databaseService.DeleteCalibrationAsync(cvm.Id);
+                break;
+            case SetupViewModel svm:
+                await databaseService.DeleteSetupAsync(svm.Id);
+                break;
+            case SessionViewModel svm:
+                await databaseService.DeleteSessionAsync(svm.Id);
+                break;
+        }
+
+        LastDeletedItem = null;
+    }
+
+    [RelayCommand]
+    public void UndoDelete()
+    {
+        switch (LastDeletedItem)
+        {
+            case LinkageViewModel lvm:
+                linkagesSource.AddOrUpdate(lvm);
+                break;
+            case CalibrationViewModel cvm:
+                calibrationsSource.AddOrUpdate(cvm);
+                break;
+            case SetupViewModel svm:
+                setupsSource.AddOrUpdate(svm);
+                break;
+            case SessionViewModel svm:
+                sessionsSource.AddOrUpdate(svm);
+                break;
+        }
+
+        LastDeletedItem = null;
+    }
+
     #endregion
 }

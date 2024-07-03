@@ -174,14 +174,6 @@ public partial class SetupViewModel : ItemViewModelBase
         return Task.CompletedTask;
     }
 
-    protected override async Task DeleteImplementation()
-    {
-        var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
-        Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
-
-        await mainPagesViewModel.DeleteSetupCommand.ExecuteAsync(this);
-    }
-
     #endregion
 
     #region Commands

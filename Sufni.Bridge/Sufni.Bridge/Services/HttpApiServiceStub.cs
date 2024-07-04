@@ -16,14 +16,15 @@ public class HttpApiServiceStub : IHttpApiService
     private static readonly Guid CalibrationMethodLinearId = Guid.Parse("3e799d5a5652430e900c06a3277ab1dc");
     private static readonly Guid CalibrationMethodIsoscelesId = Guid.Parse("12f4a1b922f74524abcbdaa99a5c1c3a");
     private static readonly Guid CalibrationMethodTriangleId = Guid.Parse("9a27abc4125148a2b64989fb315ca2de");
-    private static readonly Guid LinkageId1 = Guid.NewGuid();
-    private static readonly Guid LinkageId2 = Guid.NewGuid();
-    private static readonly Guid CalibrationMezzerId = Guid.NewGuid();
-    private static readonly Guid CalibrationMaraId = Guid.NewGuid();
-    private static readonly Guid CalibrationMaraRockerId = Guid.NewGuid();
-    private static readonly Guid SetupClashId = Guid.NewGuid();
-    private static readonly Guid SetupClashNewId = Guid.NewGuid();
-    private static readonly Guid SetupOneSuspensionId = Guid.NewGuid();
+    private static readonly Guid LinkageId1 = Guid.Parse("aa230fd54c864b3b99c81252dfea0055");
+    private static readonly Guid LinkageId2 = Guid.Parse("b75d069643a0462980c3490559bd47d4");
+    private static readonly Guid CalibrationMezzerId = Guid.Parse("5d58e84b38474e59846b8088c1213961");
+    private static readonly Guid CalibrationMaraId = Guid.Parse("06e8142aff2b438a956c98ebb6be131b");
+    private static readonly Guid CalibrationMaraRockerId = Guid.Parse("a8455d4d2d6347b0998b58461ba43d98");
+    private static readonly Guid SetupClashId = Guid.Parse("6afdbe77bff1429da05c3442d59c4461");
+    private static readonly Guid SetupClashNewId = Guid.Parse("8b5b3f2ed8404fb6ace97e155d40e6e8");
+    private static readonly Guid SetupOneSuspensionId = Guid.Parse("484f618cd3bd48828e991d55d54003f5");
+    
     private static readonly byte[] SessionData;
 
     static HttpApiServiceStub()

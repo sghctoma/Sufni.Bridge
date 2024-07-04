@@ -1,4 +1,4 @@
-<UserControl
+﻿<UserControl
     x:Class="Sufni.Bridge.Views.Controls.UndoDeleteButtonView"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -27,8 +27,9 @@
             CornerRadius="0" />
         <Label
             Height="39"
-            Margin="5,0,5,0"
-            Padding="5,0,0,0"
+            CornerRadius="2"
+            Margin="5,0,5,5"
+            Padding="10,0,0,0"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Bottom"
             VerticalContentAlignment="Center"
@@ -39,7 +40,7 @@
         <Button
             Name="UndoButton"
             Height="39"
-            Margin="0,0,10,0"
+            Margin="0,0,10,5"
             HorizontalAlignment="Right"
             VerticalAlignment="Bottom"
             VerticalContentAlignment="Center"

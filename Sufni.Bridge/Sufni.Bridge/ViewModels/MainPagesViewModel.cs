@@ -564,149 +564,16 @@ public partial class MainPagesViewModel : ViewModelBase
         return SettingsPage.IsRegistered;
     }
 
-    private async Task PushLocalChanges(int lastSyncTime, IHttpApiService httpApiService)
-    {
-        Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
-        
-        var changes = new SynchronizationData
-        {
-            Boards = await databaseService.GetChangedBoardsAsync(lastSyncTime),
-            CalibrationMethods = await databaseService.GetChangedCalibrationMethodsAsync(lastSyncTime),
-            Calibrations = await databaseService.GetChangedCalibrationsAsync(lastSyncTime),
-            Linkages = await databaseService.GetChangedLinkagesAsync(lastSyncTime),
-            Setups = await databaseService.GetChangedSetupsAsync(lastSyncTime),
-            Sessions = await databaseService.GetChangedSessionsAsync(lastSyncTime)
-        };
-        await httpApiService.PushSyncAsync(changes);
-    }
-
-    private async Task PushIncompleteSessions(IHttpApiService httpApiService)
-    {
-        Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
-
-        var incompleteSessions = await httpApiService.GetIncompleteSessionIdsAsync();
-        foreach (var id in incompleteSessions)
-        {
-            var psst = await databaseService.GetSessionRawPsstAsync(id);
-            if (psst is not null)
-            {
-                await httpApiService.PatchSessionPsstAsync(id, psst);
-            }
-        }
-    }
-
-    private async Task PullRemoteChanges(int lastSyncTime, IHttpApiService httpApiService)
-    {
-        Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
-        
-        var syncData = await httpApiService.PullSyncAsync(lastSyncTime);
-        foreach (var board in syncData.Boards)
-        {
-            if (board.Deleted.HasValue)
-            {
-                await databaseService.DeleteBoardAsync(board.Id);
-            }
-            else
-            {
-                await databaseService.PutBoardAsync(board);
-            }
-        }
-
-        foreach (var calibrationMethod in syncData.CalibrationMethods)
-        {
-            if (calibrationMethod.Deleted.HasValue)
-            {
-                await databaseService.DeleteCalibrationMethodAsync(calibrationMethod.Id);
-            }
-            else
-            {
-                await databaseService.PutCalibrationMethodAsync(calibrationMethod);
-            }
-        }
-
-        foreach (var calibration in syncData.Calibrations)
-        {
-            if (calibration.Deleted.HasValue)
-            {
-                await databaseService.DeleteCalibrationAsync(calibration.Id);
-            }
-            else
-            {
-                await databaseService.PutCalibrationAsync(calibration);
-            }
-        }
-
-        foreach (var linkage in syncData.Linkages)
-        {
-            if (linkage.Deleted.HasValue)
-            {
-                await databaseService.DeleteLinkageAsync(linkage.Id);
-            }
-            else
-            {
-                await databaseService.PutLinkageAsync(linkage);
-            }
-        }
-
-        foreach (var setup in syncData.Setups)
-        {
-            if (setup.Deleted.HasValue)
-            {
-                await databaseService.DeleteSetupAsync(setup.Id);
-            }
-            else
-            {
-                await databaseService.PutSetupAsync(setup);
-            }
-        }
-
-        foreach (var session in syncData.Sessions)
-        {
-            if (session.Deleted.HasValue)
-            {
-                await databaseService.DeleteSessionAsync(session.Id);
-            }
-            else
-            {
-                await databaseService.PutSessionAsync(session);
-            }
-        }
-    }
-
-    private async Task PullIncompleteSessions(IHttpApiService httpApiService)
-    {
-        Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
-
-        var incompleteSessionIds = await databaseService.GetIncompleteSessionIdsAsync();
-        foreach (var id in incompleteSessionIds)
-        {
-            var psst = await httpApiService.GetSessionPsstAsync(id);
-            if (psst is not null)
-            {
-                await databaseService.PatchSessionPsstAsync(id, psst);
-            }
-        }
-    }
-
     private async void SyncInternal()
     {
-        var httpApiService = App.Current?.Services?.GetService<IHttpApiService>();
-        Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
-        Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
+        var synchronizationService = App.Current?.Services?.GetService<ISynchronizationService>();
+        Debug.Assert(synchronizationService != null, nameof(synchronizationService) + " != null");
 
         SyncInProgress = true;
 
         try
         {
-            var lastSyncTime = await databaseService.GetLastSyncTimeAsync();
-
-            await PushLocalChanges(lastSyncTime, httpApiService);
-            await PullRemoteChanges(lastSyncTime, httpApiService);
-            await PushIncompleteSessions(httpApiService);
-            await PullIncompleteSessions(httpApiService);
-            
-            await databaseService.UpdateLastSyncTimeAsync();
-
+            await synchronizationService.SyncAll();
             await Dispatcher.UIThread.InvokeAsync(async () =>
             {
                 await LoadDatabaseContent();

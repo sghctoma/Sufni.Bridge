@@ -98,7 +98,7 @@ public partial class LinkageViewModel : ItemViewModelBase
             {
                 var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
                 Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
-                await mainPagesViewModel.OnEntityAdded(this);
+                mainPagesViewModel.LinkagesPage.OnAdded(this);
             }
 
             IsInDatabase = true;
@@ -127,7 +127,10 @@ public partial class LinkageViewModel : ItemViewModelBase
         var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
         Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
 
-        return !mainPagesViewModel.Setups.Any(s => s.SelectedLinkage != null && s.SelectedLinkage.Id == Id);
+        return !mainPagesViewModel.SetupsPage.Items.Any(s => 
+            s is SetupViewModel svm && 
+            svm.SelectedLinkage != null && 
+            svm.SelectedLinkage.Id == Id);
     }
 
     #endregion

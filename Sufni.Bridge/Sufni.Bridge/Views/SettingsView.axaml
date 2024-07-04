@@ -55,6 +55,6 @@
             Content="cancel"
             IsDefault="{Binding IsRegistered}"
             IsTabStop="False" />
-        <v:ErrorMessagesView Margin="2,4" />
+        <v:ErrorMessagesBar Margin="2,4" />
     </StackPanel>
 </UserControl>

@@ -1,19 +1,19 @@
 ﻿<UserControl
-    x:Class="Sufni.Bridge.Views.ItemLists.CalibrationsView"
+    x:Class="Sufni.Bridge.Views.ItemLists.SetupListView"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:v="clr-namespace:Sufni.Bridge.Views.Controls"
-    xmlns:vm="clr-namespace:Sufni.Bridge.ViewModels"
-    d:DesignHeight="600"
+    xmlns:vm="clr-namespace:Sufni.Bridge.ViewModels.ItemLists"
+    d:DesignHeight="400"
     d:DesignWidth="500"
-    x:DataType="vm:MainPagesViewModel"
+    x:DataType="vm:SetupListViewModel"
     Background="#404040"
     mc:Ignorable="d">
 
     <Design.DataContext>
-        <vm:MainPagesViewModel />
+        <vm:SetupListViewModel />
     </Design.DataContext>
 
     <Grid ColumnDefinitions="*" RowDefinitions="44 * auto auto">
@@ -24,7 +24,7 @@
             Grid.Column="0"
             Margin="6,5,6,0"
             VerticalContentAlignment="Center"
-            Text="{Binding CalibrationSearchText}"
+            Text="{Binding SearchText}"
             Watermark="Search ..." />
         <Button
             Grid.Row="0"
@@ -34,33 +34,35 @@
             HorizontalAlignment="Right"
             Classes="embedded"
             Command="{Binding ClearSearchTextCommand}"
-            CommandParameter="calibration"
-            IsVisible="{Binding CalibrationSearchText, Converter={x:Static ObjectConverters.IsNotNull}}">
+            CommandParameter="setup"
+            IsVisible="{Binding SearchText, Converter={x:Static ObjectConverters.IsNotNull}}">
             <Image Source="{SvgImage /Assets/fa-xmark.svg}" />
         </Button>
 
-        <!--  List of Calibrations  -->
+        <!--  List of Setups  -->
         <v:PullableMenuScrollViewer
             Grid.Row="1"
             Grid.Column="0"
             Margin="0,5,0,5"
-            Items="{Binding Calibrations}"
-            MenuItems="{Binding CalibrationsMenuItems}" />
+            Items="{Binding Items}"
+            MenuItems="{Binding MenuItems}" />
 
         <!--  Notifications  -->
-        <v:NotificationsView
+        <v:NotificationsBar
             Grid.Row="2"
             Grid.Column="0"
-            Margin="5,0" />
+            Margin="5,0"
+            IsVisible="{Binding Notifications.Count}" />
 
         <!--  Error messages  -->
-        <v:ErrorMessagesView
+        <v:ErrorMessagesBar
             Grid.Row="3"
             Grid.Column="0"
-            Margin="5,0" />
+            Margin="5,0"
+            IsVisible="{Binding ErrorMessages.Count}" />
 
         <!--  Undo last deleted  -->
-        <v:UndoDeleteButtonView
+        <v:UndoDeleteButton
             Grid.Row="0"
             Grid.RowSpan="4"
             Grid.Column="0" />

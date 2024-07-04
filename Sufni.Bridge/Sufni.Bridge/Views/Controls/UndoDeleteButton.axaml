@@ -1,14 +1,14 @@
 ﻿<UserControl
-    x:Class="Sufni.Bridge.Views.Controls.UndoDeleteButtonView"
+    x:Class="Sufni.Bridge.Views.Controls.UndoDeleteButton"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:v="clr-namespace:Sufni.Bridge.Views"
-    xmlns:vm="clr-namespace:Sufni.Bridge.ViewModels"
+    xmlns:vm="clr-namespace:Sufni.Bridge.ViewModels.ItemLists"
     d:DesignHeight="600"
     d:DesignWidth="500"
-    x:DataType="vm:MainPagesViewModel"
+    x:DataType="vm:ItemListViewModelBase"
     mc:Ignorable="d">
 
     <UserControl.Styles>
@@ -17,7 +17,7 @@
         </Style>
     </UserControl.Styles>
 
-    <Panel IsVisible="{Binding LastDeletedItem, Converter={x:Static ObjectConverters.IsNotNull}}">
+    <Panel IsVisible="{Binding LastDeleted, Converter={x:Static ObjectConverters.IsNotNull}}">
         <Button
             Name="DeleteButton"
             HorizontalAlignment="Stretch"
@@ -27,8 +27,9 @@
             CornerRadius="0" />
         <Label
             Height="39"
-            Margin="5,0,5,0"
-            Padding="5,0,0,0"
+            CornerRadius="2"
+            Margin="5,0,5,5"
+            Padding="10,0,0,0"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Bottom"
             VerticalContentAlignment="Center"
@@ -39,7 +40,7 @@
         <Button
             Name="UndoButton"
             Height="39"
-            Margin="0,0,10,0"
+            Margin="0,0,10,5"
             HorizontalAlignment="Right"
             VerticalAlignment="Bottom"
             VerticalContentAlignment="Center"

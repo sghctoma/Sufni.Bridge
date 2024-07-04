@@ -11,12 +11,12 @@ using Sufni.Bridge.ViewModels.Items;
 
 namespace Sufni.Bridge.Views.Controls;
 
-public partial class SwipeToDeleteButtonView : UserControl
+public partial class SwipeToDeleteButton : UserControl
 {
     private bool animationPlayed = false;
     private readonly IHapticFeedback? hapticFeedback = App.Current?.Services?.GetService<IHapticFeedback>();
 
-    public SwipeToDeleteButtonView()
+    public SwipeToDeleteButton()
     {
         InitializeComponent();
         SwipeButton.Children[2].PropertyChanged += async (s, e) =>

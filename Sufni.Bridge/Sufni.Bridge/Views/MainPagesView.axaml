@@ -2,6 +2,7 @@
     x:Class="Sufni.Bridge.Views.MainPagesView"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:c="clr-namespace:Sufni.Bridge.Views.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:progRing="clr-namespace:AvaloniaProgressRing;assembly=AvaloniaProgressRing"
@@ -106,7 +107,7 @@
                         Rows="1" />
                 </ItemsPanelTemplate>
             </TabControl.ItemsPanel>
-            <TabItem Name="SessionTabItem">
+            <TabItem Name="SessionTabItem" Content="{Binding SessionsPage}">
                 <TabItem.Header>
                     <StackPanel>
                         <Image Width="16" Source="{SvgImage /Assets/fa-chart-line.svg}" />
@@ -117,9 +118,8 @@
                             Text="Sessions" />
                     </StackPanel>
                 </TabItem.Header>
-                <v:SessionsView />
             </TabItem>
-            <TabItem Name="LinkagesTabItem">
+            <TabItem Name="LinkagesTabItem" Content="{Binding LinkagesPage}">
                 <TabItem.Header>
                     <StackPanel>
                         <Image Width="16" Source="{SvgImage /Assets/leverage-ratio.svg}" />
@@ -130,9 +130,11 @@
                             Text="Linkages" />
                     </StackPanel>
                 </TabItem.Header>
-                <v:LinkagesView />
             </TabItem>
-            <TabItem Name="CalibrationsTabItem" IsEnabled="{Binding HasCalibrationMethods}">
+            <TabItem
+                Name="CalibrationsTabItem"
+                Content="{Binding CalibrationsPage}"
+                IsEnabled="{Binding CalibrationsPage.HasCalibrationMethods}">
                 <TabItem.Header>
                     <StackPanel>
                         <Image Width="18" Source="{SvgImage /Assets/fa-ruler.svg}" />
@@ -142,13 +144,12 @@
                             Text="Calibrations" />
                     </StackPanel>
                 </TabItem.Header>
-                <v:CalibrationsView />
             </TabItem>
-            <TabItem Name="BikeSetupsTabItem">
+            <TabItem Name="BikeSetupsTabItem" Content="{Binding SetupsPage}">
                 <TabItem.IsEnabled>
                     <MultiBinding Converter="{x:Static BoolConverters.And}">
-                        <Binding Path="HasCalibrations" />
-                        <Binding Path="HasLinkages" />
+                        <Binding Path="CalibrationsPage.HasCalibrations" />
+                        <Binding Path="LinkagesPage.HasLinkages" />
                     </MultiBinding>
                 </TabItem.IsEnabled>
                 <TabItem.Header>
@@ -160,7 +161,6 @@
                             Text="Setups" />
                     </StackPanel>
                 </TabItem.Header>
-                <v:SetupsView />
             </TabItem>
             <TabItem
                 Name="MenuTabItem"
@@ -177,7 +177,7 @@
                             </MenuItem.Icon>
                         </MenuItem>
                         <Separator />
-                        <MenuItem Command="{Binding AddLinkageCommand}" Header="linkage">
+                        <MenuItem Command="{Binding LinkagesPage.AddCommand}" Header="linkage">
                             <MenuItem.Icon>
                                 <Image
                                     Width="12"
@@ -185,7 +185,7 @@
                                     Source="{SvgImage /Assets/fa-plus.svg}" />
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem Command="{Binding AddCalibrationCommand}" Header="calibration">
+                        <MenuItem Command="{Binding CalibrationsPage.AddCommand}" Header="calibration">
                             <MenuItem.Icon>
                                 <Image
                                     Width="12"
@@ -193,7 +193,7 @@
                                     Source="{SvgImage /Assets/fa-plus.svg}" />
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem Command="{Binding AddSetupCommand}" Header="setup">
+                        <MenuItem Command="{Binding SetupsPage.AddCommand}" Header="setup">
                             <MenuItem.Icon>
                                 <Image
                                     Width="12"

@@ -58,7 +58,7 @@
             <ItemsRepeater Classes="main" ItemsSource="{Binding $parent[v:PullableMenuScrollViewer].Items}">
                 <ItemsRepeater.ItemTemplate>
                     <DataTemplate>
-                        <v:SwipeToDeleteButtonView />
+                        <v:SwipeToDeleteButton />
                     </DataTemplate>
                 </ItemsRepeater.ItemTemplate>
             </ItemsRepeater>

@@ -40,11 +40,11 @@ public partial class SetupViewModel : ItemViewModelBase
     [NotifyCanExecuteChangedFor(nameof(ResetCommand))]
     private CalibrationViewModel? selectedRearCalibration;
 
-    public ReadOnlyObservableCollection<LinkageViewModel> Linkages => linkages;
-    private readonly ReadOnlyObservableCollection<LinkageViewModel> linkages;
+    public ReadOnlyObservableCollection<ItemViewModelBase> Linkages => linkages;
+    private readonly ReadOnlyObservableCollection<ItemViewModelBase> linkages;
     
-    public ReadOnlyObservableCollection<CalibrationViewModel> Calibrations => calibrations;
-    private readonly ReadOnlyObservableCollection<CalibrationViewModel> calibrations;
+    public ReadOnlyObservableCollection<ItemViewModelBase> Calibrations => calibrations;
+    private readonly ReadOnlyObservableCollection<ItemViewModelBase> calibrations;
     
     #endregion
     
@@ -55,13 +55,13 @@ public partial class SetupViewModel : ItemViewModelBase
         setup = new Setup();
         Id = setup.Id;
         BoardId = originalBoardId = boardId;
-        linkages = new ReadOnlyObservableCollection<LinkageViewModel>([]);
-        calibrations = new ReadOnlyObservableCollection<CalibrationViewModel>([]);
+        linkages = new ReadOnlyObservableCollection<ItemViewModelBase>([]);
+        calibrations = new ReadOnlyObservableCollection<ItemViewModelBase>([]);
     }
     
     public SetupViewModel(Setup setup, string? boardId, bool fromDatabase,
-        SourceCache<LinkageViewModel, Guid> linkagesSourceCache,
-        SourceCache<CalibrationViewModel, Guid> calibrationsSourceCache)
+        SourceCache<ItemViewModelBase, Guid> linkagesSourceCache,
+        SourceCache<ItemViewModelBase, Guid> calibrationsSourceCache)
     {
         this.setup = setup;
         IsInDatabase = fromDatabase;
@@ -144,7 +144,8 @@ public partial class SetupViewModel : ItemViewModelBase
             // if a setup exists for the import page.
             var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
             Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
-            await mainPagesViewModel.OnEntityAdded(this);
+            mainPagesViewModel.SetupsPage.OnAdded(this);
+            await mainPagesViewModel.ImportSessionsPage.EvaluateSetupExists();
             
             IsInDatabase = true;
 
@@ -162,9 +163,9 @@ public partial class SetupViewModel : ItemViewModelBase
         {
             Name = setup.Name;
             BoardId = originalBoardId;
-            SelectedLinkage = Linkages.First(l => l.Id == setup.LinkageId);
-            SelectedFrontCalibration = Calibrations.FirstOrDefault(c => c?.Id == setup.FrontCalibrationId, null);
-            SelectedRearCalibration = Calibrations.FirstOrDefault(c => c?.Id == setup.RearCalibrationId, null);
+            SelectedLinkage = Linkages.First(l => l.Id == setup.LinkageId) as LinkageViewModel;
+            SelectedFrontCalibration = Calibrations.FirstOrDefault(c => c?.Id == setup.FrontCalibrationId, null) as CalibrationViewModel;
+            SelectedRearCalibration = Calibrations.FirstOrDefault(c => c?.Id == setup.RearCalibrationId, null) as CalibrationViewModel;
         }
         catch (Exception e)
         {
@@ -184,16 +185,16 @@ public partial class SetupViewModel : ItemViewModelBase
         var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
         Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
 
-        mainPagesViewModel.AddLinkageCommand.Execute(null);
+        mainPagesViewModel.LinkagesPage.AddCommand.Execute(null);
     }
-    
+
     [RelayCommand]
     private void AddCalibration()
     {
         var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
         Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
 
-        mainPagesViewModel.AddCalibrationCommand.Execute(null);
+        mainPagesViewModel.CalibrationsPage.AddCommand.Execute(null);
     }
 
     #endregion

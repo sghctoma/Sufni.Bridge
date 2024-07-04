@@ -167,7 +167,7 @@ public partial class CalibrationViewModel : ItemViewModelBase
             {
                 var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
                 Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
-                await mainPagesViewModel.OnEntityAdded(this);
+                mainPagesViewModel.CalibrationsPage.OnAdded(this);
             }
 
             IsDirty = false;
@@ -202,9 +202,10 @@ public partial class CalibrationViewModel : ItemViewModelBase
         var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
         Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
 
-        return !mainPagesViewModel.Setups.Any(s =>
-            (s.SelectedFrontCalibration != null && s.SelectedFrontCalibration.Id == Id) ||
-            (s.SelectedRearCalibration != null && s.SelectedRearCalibration.Id == Id));
+        return !mainPagesViewModel.SetupsPage.Items.Any(s =>
+            s is SetupViewModel svm &&
+            ((svm.SelectedFrontCalibration != null && svm.SelectedFrontCalibration.Id == Id) ||
+            (svm.SelectedRearCalibration != null && svm.SelectedRearCalibration.Id == Id)));
     }
 
     #endregion

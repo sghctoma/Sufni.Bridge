@@ -46,13 +46,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Views\Plots\SufniPlotView.axaml.cs">
-      <DependentUpon>SufniPlotView.axaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="Views/SessionPages/" />
   </ItemGroup>
     

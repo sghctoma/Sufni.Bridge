@@ -2,9 +2,9 @@ using Avalonia.Controls;
 
 namespace Sufni.Bridge.Views.Controls;
 
-public partial class NotificationsView : UserControl
+public partial class UndoDeleteButton : UserControl
 {
-    public NotificationsView()
+    public UndoDeleteButton()
     {
         InitializeComponent();
     }

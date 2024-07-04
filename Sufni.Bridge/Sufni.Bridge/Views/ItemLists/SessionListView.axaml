@@ -1,19 +1,19 @@
 ﻿<UserControl
-    x:Class="Sufni.Bridge.Views.ItemLists.SessionsView"
+    x:Class="Sufni.Bridge.Views.ItemLists.SessionListView"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:v="clr-namespace:Sufni.Bridge.Views.Controls"
-    xmlns:vm="clr-namespace:Sufni.Bridge.ViewModels"
+    xmlns:vm="clr-namespace:Sufni.Bridge.ViewModels.ItemLists"
     d:DesignHeight="600"
     d:DesignWidth="500"
-    x:DataType="vm:MainPagesViewModel"
+    x:DataType="vm:SessionListViewModel"
     Background="#404040"
     mc:Ignorable="d">
 
     <Design.DataContext>
-        <vm:MainPagesViewModel />
+        <vm:SessionListViewModel />
     </Design.DataContext>
 
     <Grid ColumnDefinitions="*" RowDefinitions="auto * auto auto">
@@ -30,7 +30,7 @@
             <TextBox
                 Grid.Row="0"
                 VerticalContentAlignment="Center"
-                Text="{Binding SessionSearchText}"
+                Text="{Binding SearchText}"
                 Watermark="Search ..." />
             <Button
                 Grid.Row="0"
@@ -40,7 +40,7 @@
                 Classes="embedded"
                 Command="{Binding ClearSearchTextCommand}"
                 CommandParameter="session"
-                IsVisible="{Binding SessionSearchText, Converter={x:Static ObjectConverters.IsNotNull}}">
+                IsVisible="{Binding SearchText, Converter={x:Static ObjectConverters.IsNotNull}}">
                 <Image Source="{SvgImage /Assets/fa-xmark.svg}" />
             </Button>
 
@@ -123,8 +123,8 @@
             Grid.Row="1"
             Grid.Column="0"
             Margin="0,5,0,5"
-            Items="{Binding Sessions}"
-            MenuItems="{Binding SessionsMenuItems}" />
+            Items="{Binding Items}"
+            MenuItems="{Binding MenuItems}" />
 
         <!--  Notifications  -->
         <v:NotificationsView

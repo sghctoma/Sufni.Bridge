@@ -23,7 +23,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
 
     public ObservableCollection<ITelemetryDataStore>? TelemetryDataStores { get; set; }
     public ObservableCollection<ITelemetryFile> TelemetryFiles { get; } = [];
-    private readonly SourceCache<SessionViewModel, Guid> sessions;
+    private readonly SourceCache<ItemViewModelBase, Guid> sessions;
 
     [ObservableProperty] private ITelemetryDataStore? selectedDataStore;
     [ObservableProperty] private bool newDataStoresAvailable;
@@ -94,9 +94,9 @@ public partial class ImportSessionsViewModel : ViewModelBase
     #region Constructors
 
     // This is only here for the designer
-    public ImportSessionsViewModel() : this(new SourceCache<SessionViewModel, Guid>(m => m.Id)) {}
+    public ImportSessionsViewModel() : this(new SourceCache<ItemViewModelBase, Guid>(m => m.Id)) {}
     
-    public ImportSessionsViewModel(SourceCache<SessionViewModel, Guid> sessions)
+    public ImportSessionsViewModel(SourceCache<ItemViewModelBase, Guid> sessions)
     {
         databaseService = App.Current?.Services?.GetService<IDatabaseService>();
         var telemetryDataStoreService = App.Current?.Services?.GetService<ITelemetryDataStoreService>();
@@ -287,7 +287,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
         var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
         Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
 
-        mainPagesViewModel.AddSetupCommand.Execute(null);
+        mainPagesViewModel.SetupsPage.AddCommand.Execute(null);
     }
     
     #endregion Commands

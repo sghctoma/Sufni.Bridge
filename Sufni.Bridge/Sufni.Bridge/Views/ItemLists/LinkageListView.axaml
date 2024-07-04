@@ -1,19 +1,19 @@
 ﻿<UserControl
-    x:Class="Sufni.Bridge.Views.ItemLists.SetupsView"
+    x:Class="Sufni.Bridge.Views.ItemLists.LinkageListView"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:v="clr-namespace:Sufni.Bridge.Views.Controls"
-    xmlns:vm="clr-namespace:Sufni.Bridge.ViewModels"
-    d:DesignHeight="400"
+    xmlns:vm="clr-namespace:Sufni.Bridge.ViewModels.ItemLists"
+    d:DesignHeight="600"
     d:DesignWidth="500"
-    x:DataType="vm:MainPagesViewModel"
+    x:DataType="vm:LinkageListViewModel"
     Background="#404040"
     mc:Ignorable="d">
 
     <Design.DataContext>
-        <vm:MainPagesViewModel />
+        <vm:LinkageListViewModel />
     </Design.DataContext>
 
     <Grid ColumnDefinitions="*" RowDefinitions="44 * auto auto">
@@ -24,7 +24,7 @@
             Grid.Column="0"
             Margin="6,5,6,0"
             VerticalContentAlignment="Center"
-            Text="{Binding SetupSearchText}"
+            Text="{Binding SearchText}"
             Watermark="Search ..." />
         <Button
             Grid.Row="0"
@@ -34,32 +34,30 @@
             HorizontalAlignment="Right"
             Classes="embedded"
             Command="{Binding ClearSearchTextCommand}"
-            CommandParameter="setup"
-            IsVisible="{Binding SetupSearchText, Converter={x:Static ObjectConverters.IsNotNull}}">
+            CommandParameter="linkage"
+            IsVisible="{Binding SearchText, Converter={x:Static ObjectConverters.IsNotNull}}">
             <Image Source="{SvgImage /Assets/fa-xmark.svg}" />
         </Button>
 
-        <!--  List of Setups  -->
+        <!--  List of Linkages  -->
         <v:PullableMenuScrollViewer
             Grid.Row="1"
             Grid.Column="0"
             Margin="0,5,0,5"
-            Items="{Binding Setups}"
-            MenuItems="{Binding SetupsMenuItems}" />
+            Items="{Binding Items}"
+            MenuItems="{Binding MenuItems}" />
 
         <!--  Notifications  -->
         <v:NotificationsView
             Grid.Row="2"
             Grid.Column="0"
-            Margin="5,0"
-            IsVisible="{Binding Notifications.Count}" />
+            Margin="5,0" />
 
         <!--  Error messages  -->
         <v:ErrorMessagesView
             Grid.Row="3"
             Grid.Column="0"
-            Margin="5,0"
-            IsVisible="{Binding ErrorMessages.Count}" />
+            Margin="5,0" />
 
         <!--  Undo last deleted  -->
         <v:UndoDeleteButtonView

@@ -2,9 +2,9 @@ using Avalonia.Controls;
 
 namespace Sufni.Bridge.Views.ItemLists;
 
-public partial class LinkagesView : UserControl
+public partial class SessionListView : UserControl
 {
-    public LinkagesView()
+    public SessionListView()
     {
         InitializeComponent();
     }

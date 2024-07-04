@@ -2,9 +2,9 @@ using Avalonia.Controls;
 
 namespace Sufni.Bridge.Views.ItemLists;
 
-public partial class CalibrationsView : UserControl
+public partial class LinkageListView : UserControl
 {
-    public CalibrationsView()
+    public LinkageListView()
     {
         InitializeComponent();
     }

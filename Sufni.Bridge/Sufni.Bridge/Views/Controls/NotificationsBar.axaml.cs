@@ -2,9 +2,9 @@ using Avalonia.Controls;
 
 namespace Sufni.Bridge.Views.Controls;
 
-public partial class ErrorMessagesView : UserControl
+public partial class NotificationsBar : UserControl
 {
-    public ErrorMessagesView()
+    public NotificationsBar()
     {
         InitializeComponent();
     }

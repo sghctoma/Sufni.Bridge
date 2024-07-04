@@ -140,7 +140,7 @@
         </ScrollViewer>
 
         <!--  Notifications  -->
-        <v:NotificationsView
+        <v:NotificationsBar
             Grid.Row="2"
             Grid.Column="0"
             Grid.ColumnSpan="3"
@@ -148,7 +148,7 @@
             ZIndex="10" />
 
         <!--  Error messages  -->
-        <v:ErrorMessagesView
+        <v:ErrorMessagesBar
             Grid.Row="3"
             Grid.Column="0"
             Grid.ColumnSpan="3"

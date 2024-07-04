@@ -3,9 +3,9 @@ using Avalonia.Interactivity;
 
 namespace Sufni.Bridge.Views.Controls;
 
-public partial class CommonButtonLineView : UserControl
+public partial class CommonButtonLine : UserControl
 {
-    public CommonButtonLineView()
+    public CommonButtonLine()
     {
         InitializeComponent();
     }

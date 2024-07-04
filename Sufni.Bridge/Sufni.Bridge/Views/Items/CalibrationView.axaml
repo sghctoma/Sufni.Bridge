@@ -25,7 +25,7 @@
         RowDefinitions="auto auto auto auto * auto">
 
         <!--  Name  -->
-        <v:EditableTitleView
+        <v:EditableTitle
             Grid.Row="0"
             Grid.Column="0"
             Grid.ColumnSpan="2"
@@ -81,14 +81,14 @@
         </ItemsControl>
 
         <!--  Error messages for Calibration instance  -->
-        <v:ErrorMessagesView
+        <v:ErrorMessagesBar
             Grid.Row="3"
             Grid.Column="0"
             Grid.ColumnSpan="2"
             Margin="0,5,0,0" />
 
         <!--  Back, Save, Reset and Delete buttons  -->
-        <v:CommonButtonLineView
+        <v:CommonButtonLine
             Grid.Row="5"
             Grid.Column="0"
             Grid.ColumnSpan="2" />

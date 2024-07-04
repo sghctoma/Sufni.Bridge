@@ -48,21 +48,21 @@
             MenuItems="{Binding MenuItems}" />
 
         <!--  Notifications  -->
-        <v:NotificationsView
+        <v:NotificationsBar
             Grid.Row="2"
             Grid.Column="0"
             Margin="5,0"
             IsVisible="{Binding Notifications.Count}" />
 
         <!--  Error messages  -->
-        <v:ErrorMessagesView
+        <v:ErrorMessagesBar
             Grid.Row="3"
             Grid.Column="0"
             Margin="5,0"
             IsVisible="{Binding ErrorMessages.Count}" />
 
         <!--  Undo last deleted  -->
-        <v:UndoDeleteButtonView
+        <v:UndoDeleteButton
             Grid.Row="0"
             Grid.RowSpan="4"
             Grid.Column="0" />

@@ -2,9 +2,9 @@ using Avalonia.Controls;
 
 namespace Sufni.Bridge.Views.Controls;
 
-public partial class EditableTitleView : UserControl
+public partial class EditableTitle : UserControl
 {
-    public EditableTitleView()
+    public EditableTitle()
     {
         InitializeComponent();
 

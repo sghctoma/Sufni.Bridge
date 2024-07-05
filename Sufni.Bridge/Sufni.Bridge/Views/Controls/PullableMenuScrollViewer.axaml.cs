@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Globalization;
+using System.Threading;
 using Avalonia;
 using Avalonia.Animation;
 using Avalonia.Animation.Easings;
@@ -12,6 +13,7 @@ using Avalonia.Interactivity;
 using Avalonia.Labs.Controls.Base.Pan;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
+using Avalonia.Threading;
 using HapticFeedback;
 using Microsoft.Extensions.DependencyInjection;
 using Sufni.Bridge.ViewModels;
@@ -120,8 +122,11 @@ public partial class PullableMenuScrollViewer : UserControl
         // Move the control back to its original place when we stopped pulling.
         Scroll.AddHandler(Gestures.ScrollGestureEndedEvent, (s, e) =>
         {
-            Scroll.VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto;
-            PullFinished();
+            if (totalPulled != 0)
+            {
+                Scroll.VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto;
+                PullFinished();
+            }
         });
     }
 
@@ -155,13 +160,6 @@ public partial class PullableMenuScrollViewer : UserControl
 
     private void PullUpdate()
     {
-        // Clear the spring back transition if we are just started pulling.
-        if (Scroll.Height == Bounds.Height)
-        {
-            Scroll.Transitions!.Clear();
-            Container.Transitions!.Clear();
-        }
-
         Container.Margin = new Thickness(0, -PullMenu.Bounds.Height - 20 + totalPulled, 0, 0);
         Scroll.Height = Bounds.Height - totalPulled;
 
@@ -205,10 +203,21 @@ public partial class PullableMenuScrollViewer : UserControl
         totalPulled = 0;
         selectedIndex = null;
 
+        Scroll.Transitions!.Clear();
+        Container.Transitions!.Clear();
         Container.Transitions!.Add(marginTransition);
-        Container.Margin = new Thickness(0, -PullMenu.Bounds.Height - 20, 0, 0);
-
         Scroll.Transitions!.Add(heightTransition);
+
+        Container.Margin = new Thickness(0, -PullMenu.Bounds.Height - 20, 0, 0);
         Scroll.Height = Bounds.Height;
+
+        new Thread(() => 
+        {
+            Thread.Sleep(200);
+            Dispatcher.UIThread.Post(new Action(() => {
+                Scroll.Transitions!.Clear();
+                Container.Transitions!.Clear();
+            }));
+        }).Start();
     }
 }

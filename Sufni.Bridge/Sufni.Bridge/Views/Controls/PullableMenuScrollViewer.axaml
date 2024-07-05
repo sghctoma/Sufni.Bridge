@@ -11,11 +11,10 @@
     mc:Ignorable="d">
 
     <UserControl.Resources>
-        <v:NegativeMarginConverter x:Key="NegativeMarginConverter" />
         <v:MenuItemSelectedConverter x:Key="MenuItemSelectedConverter" />
     </UserControl.Resources>
 
-    <Grid Margin="{Binding #PullMenu.Bounds.Height, Converter={StaticResource NegativeMarginConverter}}" RowDefinitions="auto *">
+    <Grid Name="Container" RowDefinitions="auto *">
         <ItemsRepeater
             Name="PullMenu"
             Grid.Row="0"

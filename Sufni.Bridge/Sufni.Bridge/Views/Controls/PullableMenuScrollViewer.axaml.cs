@@ -2,10 +2,13 @@ using System;
 using System.Collections;
 using System.Globalization;
 using Avalonia;
+using Avalonia.Animation;
+using Avalonia.Animation.Easings;
 using Avalonia.Controls;
 using Avalonia.Data;
 using Avalonia.Data.Converters;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Labs.Controls.Base.Pan;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
@@ -14,26 +17,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Sufni.Bridge.ViewModels;
 
 namespace Sufni.Bridge.Views.Controls;
-
-public class NegativeMarginConverter : IValueConverter
-{
-    public static readonly NegativeMarginConverter Instance = new();
-
-    public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
-    {
-        if (value is double v)
-        {
-            return new Thickness(0, -v - 20, 0, 0);
-        }
-
-        return new BindingNotification(new InvalidCastException(), BindingErrorType.Error);
-    }
-
-    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
-    {
-        throw new NotSupportedException();
-    }
-}
 
 public class MenuItemSelectedConverter : IValueConverter
 {
@@ -59,12 +42,26 @@ public partial class PullableMenuScrollViewer : UserControl
 {
     private static readonly double pullRatio = 3;
     private static readonly double menuItemHeight = 30;
+    private readonly DoubleTransition heightTransition = new()
+    {
+        Duration = TimeSpan.FromSeconds(0.2),
+        Property = UserControl.HeightProperty,
+        Easing = new CubicEaseOut(),
+    };
+    private readonly ThicknessTransition marginTransition = new()
+    {
+        Duration = TimeSpan.FromSeconds(0.2),
+        Property = UserControl.MarginProperty,
+        Easing = new CubicEaseOut(),
+    };
     private double totalPulled;
     private int? selectedIndex;
     private readonly IHapticFeedback? hapticFeedback = App.Current?.Services?.GetService<IHapticFeedback>();
     public PullableMenuScrollViewer()
     {
         InitializeComponent();
+        Scroll.Transitions = [];
+        Container.Transitions = [];
 
         // PanGestures are not recognized on a ScrollViewer if it contains labs:Swipe
         // items, so we handle the pull with ScrollGestures, ...
@@ -73,6 +70,12 @@ public partial class PullableMenuScrollViewer : UserControl
         // ... but pulling down with the mouse is not recognized as a ScrollGesture, so
         // we also handle PanGestures.
         AddHandlersForMousePull();
+    }
+
+    protected override void OnLoaded(RoutedEventArgs e)
+    {
+        base.OnLoaded(e);
+        Container.Margin = new Thickness(0, -PullMenu.Bounds.Height - 20, 0, 0);
     }
 
     #region Styled properties
@@ -152,8 +155,14 @@ public partial class PullableMenuScrollViewer : UserControl
 
     private void PullUpdate()
     {
-        var translate = new TranslateTransform(0, totalPulled);
-        PullMenu.SetValue(RenderTransformProperty, translate);
+        // Clear the spring back transition if we are just started pulling.
+        if (Scroll.Height == Bounds.Height)
+        {
+            Scroll.Transitions!.Clear();
+            Container.Transitions!.Clear();
+        }
+
+        Container.Margin = new Thickness(0, -PullMenu.Bounds.Height - 20 + totalPulled, 0, 0);
         Scroll.Height = Bounds.Height - totalPulled;
 
         int? index = (int)(totalPulled - 15) / (int)menuItemHeight - 1;
@@ -195,7 +204,11 @@ public partial class PullableMenuScrollViewer : UserControl
 
         totalPulled = 0;
         selectedIndex = null;
-        PullMenu.SetValue(RenderTransformProperty, null);
+
+        Container.Transitions!.Add(marginTransition);
+        Container.Margin = new Thickness(0, -PullMenu.Bounds.Height - 20, 0, 0);
+
+        Scroll.Transitions!.Add(heightTransition);
         Scroll.Height = Bounds.Height;
     }
 }

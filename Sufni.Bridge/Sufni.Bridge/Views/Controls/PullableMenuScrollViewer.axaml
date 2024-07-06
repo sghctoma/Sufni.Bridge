@@ -54,10 +54,16 @@
             Name="Scroll"
             Grid.Row="1"
             VerticalAlignment="Bottom">
-            <ItemsRepeater Classes="main" ItemsSource="{Binding $parent[v:PullableMenuScrollViewer].Items}">
+            <ItemsRepeater ItemsSource="{Binding $parent[v:PullableMenuScrollViewer].Items}">
                 <ItemsRepeater.ItemTemplate>
                     <DataTemplate>
-                        <v:SwipeToDeleteButton />
+                        <StackPanel>
+                            <v:SwipeToDeleteButton />
+                            <Separator
+                                Height="1"
+                                Margin="0"
+                                Background="#25292c" />
+                        </StackPanel>
                     </DataTemplate>
                 </ItemsRepeater.ItemTemplate>
             </ItemsRepeater>

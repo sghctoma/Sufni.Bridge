@@ -9,7 +9,7 @@
     d:DesignHeight="600"
     d:DesignWidth="500"
     x:DataType="vm:SessionListViewModel"
-    Background="#404040"
+    Background="#15191c"
     mc:Ignorable="d">
 
     <Design.DataContext>
@@ -122,7 +122,7 @@
         <v:PullableMenuScrollViewer
             Grid.Row="1"
             Grid.Column="0"
-            Margin="0,5,0,5"
+            Margin="0,15,0,5"
             Items="{Binding Items}"
             MenuItems="{Binding MenuItems}" />
 

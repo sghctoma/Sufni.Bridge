@@ -73,10 +73,14 @@
             Grid.Column="0"
             Grid.ColumnSpan="3"
             Margin="0,5,0,5">
-            <ItemsRepeater Classes="main" ItemsSource="{Binding TelemetryFiles}">
+            <ItemsRepeater ItemsSource="{Binding TelemetryFiles}">
                 <ItemsRepeater.ItemTemplate>
                     <DataTemplate>
-                        <Expander HorizontalAlignment="Stretch" IsExpanded="False">
+                        <Expander
+                            Margin="0,2,0,1"
+                            HorizontalAlignment="Stretch"
+                            Background="#15191c"
+                            IsExpanded="False">
                             <Expander.Header>
                                 <StackPanel Orientation="Horizontal">
                                     <CheckBox

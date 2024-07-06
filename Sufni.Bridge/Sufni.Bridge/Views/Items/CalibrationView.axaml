@@ -9,7 +9,7 @@
     d:DesignHeight="600"
     d:DesignWidth="500"
     x:DataType="vm:CalibrationViewModel"
-    Background="#15191c"
+    Background="{StaticResource SufniRegion}"
     Focusable="True"
     mc:Ignorable="d">
 

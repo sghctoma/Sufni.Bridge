@@ -11,7 +11,7 @@
     d:DesignHeight="720"
     d:DesignWidth="500"
     x:DataType="vm:MainPagesViewModel"
-    Background="#15191c"
+    Background="{StaticResource SufniRegion}"
     mc:Ignorable="d">
     <Design.DataContext>
         <vm:MainPagesViewModel />
@@ -39,7 +39,7 @@
             <Setter Property="Height" Value="2" />
             <Setter Property="Width" Value="60" />
             <Setter Property="VerticalAlignment" Value="Top" />
-            <Setter Property="Background" Value="#0078D7" />
+            <Setter Property="Background" Value="{StaticResource SufniAccentColor}" />
         </Style>
     </UserControl.Styles>
 
@@ -83,7 +83,7 @@
             Margin="0,0,5,0"
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
-            Foreground="#0078D7">
+            Foreground="{StaticResource SufniAccentColor}">
             <progRing:ProgressRing.IsActive>
                 <MultiBinding Converter="{x:Static BoolConverters.And}">
                     <Binding Path="SyncInProgress" />

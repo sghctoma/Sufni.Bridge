@@ -13,7 +13,7 @@
 
     <UserControl.Styles>
         <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Foreground" Value="#0078D7" />
+            <Setter Property="Foreground" Value="{StaticResource SufniAccentColor}" />
         </Style>
     </UserControl.Styles>
 
@@ -35,7 +35,7 @@
             VerticalContentAlignment="Center"
             Background="#f0f0f0"
             Content="Item deleted."
-            Foreground="#15191c"
+            Foreground="{StaticResource SufniRegion}"
             IsHitTestVisible="False" />
         <Button
             Name="UndoButton"
@@ -47,6 +47,6 @@
             Classes="embedded"
             Command="{Binding UndoDeleteCommand}"
             Content="undo"
-            Foreground="#0078D7" />
+            Foreground="{StaticResource SufniAccentColor}" />
     </Panel>
 </UserControl>

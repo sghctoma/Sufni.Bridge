@@ -9,7 +9,7 @@
     d:DesignHeight="400"
     d:DesignWidth="500"
     x:DataType="vm:SetupListViewModel"
-    Background="#15191c"
+    Background="{StaticResource SufniRegion}"
     mc:Ignorable="d">
 
     <Design.DataContext>

@@ -32,7 +32,7 @@
                             Margin="10,0,10,0"
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Center"
-                            Background="#0078D7"
+                            Background="{StaticResource SufniAccentColor}"
                             BoxShadow="0 0 15 3 #0078D7"
                             CornerRadius="3"
                             IsVisible="{Binding Selected}"
@@ -62,7 +62,7 @@
                             <Separator
                                 Height="1"
                                 Margin="0"
-                                Background="#25292c" />
+                                Background="{StaticResource SufniBackgroundDisabled}" />
                         </StackPanel>
                     </DataTemplate>
                 </ItemsRepeater.ItemTemplate>

@@ -9,7 +9,7 @@
     d:DesignHeight="600"
     d:DesignWidth="500"
     x:DataType="vm:SessionListViewModel"
-    Background="#15191c"
+    Background="{StaticResource SufniRegion}"
     mc:Ignorable="d">
 
     <Design.DataContext>
@@ -63,7 +63,7 @@
             <Border
                 Grid.Row="1"
                 Grid.Column="0"
-                Background="#20262b"
+                Background="{StaticResource SufniBackground}"
                 IsVisible="{Binding DateFilterVisible}">
                 <Grid
                     Margin="1,0,1,0"

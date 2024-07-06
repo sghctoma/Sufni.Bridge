@@ -12,7 +12,7 @@
     d:DesignHeight="600"
     d:DesignWidth="500"
     x:DataType="vm:ImportSessionsViewModel"
-    Background="#15191c"
+    Background="{StaticResource SufniRegion}"
     mc:Ignorable="d">
 
     <Design.DataContext>
@@ -54,7 +54,7 @@
             Width="39"
             Height="39"
             HorizontalContentAlignment="Center"
-            BorderBrush="#505050"
+            BorderBrush="{StaticResource SufniBorderBrush}"
             Command="{Binding OpenDataStoreCommand}"
             Content="..." />
 
@@ -79,7 +79,7 @@
                         <Expander
                             Margin="0,2,0,1"
                             HorizontalAlignment="Stretch"
-                            Background="#15191c"
+                            Background="{StaticResource SufniRegion}"
                             IsExpanded="False">
                             <Expander.Header>
                                 <StackPanel Orientation="Horizontal">
@@ -227,7 +227,7 @@
             Height="40"
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
-            Foreground="#0078D7">
+            Foreground="{StaticResource SufniAccentColor}">
             <progRing:ProgressRing.IsActive>
                 <MultiBinding Converter="{x:Static BoolConverters.Or}">
                     <Binding Path="!TelemetryDataStores.Count" />

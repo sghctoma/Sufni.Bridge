@@ -34,7 +34,7 @@
 
     <UserControl.Styles>
         <Style Selector="Button.item">
-            <Setter Property="Background" Value="#15191c" />
+            <Setter Property="Background" Value="{StaticResource SufniRegion}" />
             <Setter Property="RenderTransform" Value="{x:Null}" />
         </Style>
         <Style Selector="Button.item:pointerover /template/ ContentPresenter#PART_ContentPresenter">

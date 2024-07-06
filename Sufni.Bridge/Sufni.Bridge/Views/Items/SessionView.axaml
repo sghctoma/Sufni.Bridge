@@ -13,7 +13,7 @@
     d:DesignHeight="600"
     d:DesignWidth="500"
     x:DataType="vm:SessionViewModel"
-    Background="#15191c"
+    Background="{StaticResource SufniRegion}"
     Focusable="True"
     mc:Ignorable="d">
 
@@ -63,7 +63,7 @@
                 </Style>
                 <Style Selector="Button.tabheader:pressed /template/ ContentPresenter#PART_ContentPresenter">
                     <Setter Property="FontSize" Value="14" />
-                    <Setter Property="Foreground" Value="#a0a0a0" />
+                    <Setter Property="Foreground" Value="{StaticResource SufniForeground}" />
                     <Setter Property="Background" Value="Transparent" />
                 </Style>
                 <Style Selector="Button.tabheader:pressed /template/ ContentPresenter#PART_ContentPresenter">
@@ -76,9 +76,9 @@
                 </Style>
                 <Style Selector="Button.tabheader:disabled /template/ ContentPresenter#PART_ContentPresenter">
                     <Setter Property="FontSize" Value="14" />
-                    <Setter Property="Foreground" Value="#a0a0a0" />
+                    <Setter Property="Foreground" Value="{StaticResource SufniForeground}" />
                     <Setter Property="Background" Value="Transparent" />
-                    <Setter Property="BorderBrush" Value="#0078D7" />
+                    <Setter Property="BorderBrush" Value="{StaticResource SufniAccentColor}" />
                     <Setter Property="Padding" Value="0,0,0,8" />
                     <Setter Property="BorderThickness" Value="0,0,0,2" />
                 </Style>
@@ -93,8 +93,8 @@
             HorizontalScrollBarVisibility="Hidden"
             HorizontalSnapPointsAlignment="Far"
             HorizontalSnapPointsType="MandatorySingle"
-            IsScrollInertiaEnabled="False"
             IsScrollChainingEnabled="False"
+            IsScrollInertiaEnabled="False"
             PropertyChanged="TabScrollViewer_OnPropertyChanged"
             SizeChanged="TabScrollViewer_OnSizeChanged"
             VerticalScrollBarVisibility="Disabled">
@@ -117,7 +117,7 @@
         </ScrollViewer>
 
         <!--  Error messages for Session instance  -->
-        <v:ErrorMessagesBar Grid.Row="3" Margin="0,5,0,0" />
+        <v:ErrorMessagesBar Grid.Row="3" Margin="10,5,10,0" />
 
         <!--  Back, Save, Reset and Delete buttons  -->
         <v:CommonButtonLine Grid.Row="4" Margin="10,10,10,10" />

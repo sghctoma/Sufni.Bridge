@@ -17,10 +17,14 @@ namespace Sufni.Bridge.Models.Telemetry;
 public class Linkage : Synchronizable
 {
     private LeverageRatioData? leverageRatioData;
-    private double[][]? leverageRatio;
     private double? maxFrontTravel;
     private double? maxRearTravel;
     private double[]? shockWheelCoeffs;
+
+#pragma warning disable IDE0052 // Remove unread private members
+                                // leverageRatio is used by the MessagePack deserializer
+    private double[][]? leverageRatio;
+#pragma warning restore IDE0052 // Remove unread private members
 
     // Just to satisfy sql-net-pcl's parameterless constructor requirement
     // Uninitialized non-nullable property warnings are suppressed with null! initializer.

@@ -46,6 +46,7 @@ public class StorageProviderTelemetryFile : ITelemetryFile
     }
     
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+                               // Init() takes care of this.
     public StorageProviderTelemetryFile(IStorageFile storageFile)
     {
         this.storageFile = storageFile;

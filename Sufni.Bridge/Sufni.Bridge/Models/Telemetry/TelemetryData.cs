@@ -242,7 +242,7 @@ public class TelemetryData
             }
         }
 
-        Airtimes = airtimes.ToArray();
+        Airtimes = [.. airtimes];
     }
 
     private static (double[], int[]) DigitizeVelocity(double[] v, double step)
@@ -395,8 +395,7 @@ public class TelemetryData
         hist = hist.Select(value => value / totalCount * 100.0).ToArray();
 
         return new HistogramData(
-            suspension.TravelBins.ToList().GetRange(0, suspension.TravelBins.Length),
-            hist.ToList());
+            suspension.TravelBins.ToList().GetRange(0, suspension.TravelBins.Length), [.. hist]);
     }
 
     public StackedHistogramData CalculateVelocityHistogram(SuspensionType type)
@@ -436,8 +435,7 @@ public class TelemetryData
         }
         
         return new StackedHistogramData(
-            suspension.VelocityBins.ToList().GetRange(0, suspension.VelocityBins.Length),
-            hist.ToList());
+            suspension.VelocityBins.ToList().GetRange(0, suspension.VelocityBins.Length), [.. hist]);
     }
 
     public NormalDistributionData CalculateNormalDistribution(SuspensionType type)
@@ -474,7 +472,7 @@ public class TelemetryData
             pdf.Add(Normal.PDF(mu, std, ny[i]) * step * 100);
         }
 
-        return new NormalDistributionData(ny.ToList(), pdf);
+        return new NormalDistributionData([.. ny], pdf);
     }
 
     public TravelStatistics CalculateTravelStatistics(SuspensionType type)
@@ -638,11 +636,11 @@ public class TelemetryData
         var msd = sum / frontTrend.Count;
 
         return new BalanceData(
-            frontTravelVelocity.Item1.ToList(),
-            frontTravelVelocity.Item2.ToList(),
+            [.. frontTravelVelocity.Item1],
+            [.. frontTravelVelocity.Item2],
             frontTravelVelocity.Item1.Select(t => frontPoly(t)).ToList(),
-            rearTravelVelocity.Item1.ToList(),
-            rearTravelVelocity.Item2.ToList(),
+            [.. rearTravelVelocity.Item1],
+            [.. rearTravelVelocity.Item2],
             rearTravelVelocity.Item1.Select(t => rearPoly(t)).ToList(),
             msd);
     }

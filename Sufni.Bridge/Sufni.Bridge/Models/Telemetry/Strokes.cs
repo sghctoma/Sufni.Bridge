@@ -117,9 +117,9 @@ public class Strokes
             }
         }
 
-        Compressions = compressions.ToArray();
-        Rebounds = rebounds.ToArray();
-        Idlings = idlings.ToArray();
+        Compressions = [.. compressions];
+        Rebounds = [.. rebounds];
+        Idlings = [.. idlings];
     }
 
     public void Digitize(int[] dt, int[] dv, int[] dvFine)
@@ -183,6 +183,6 @@ public class Strokes
             }
         }
 
-        return strokes.ToArray();
+        return [.. strokes];
     }
 };

@@ -87,8 +87,8 @@ public class RawTelemetryData
             }
         }
 
-        Front = front.ToArray();
-        Rear = rear.ToArray();
+        Front = [.. front];
+        Rear = [.. rear];
     }
 
     public RawTelemetryData(byte[] sstData) : this(new MemoryStream(sstData))

@@ -189,9 +189,9 @@ public class LeverageRatioData
     
     public LeverageRatioData(TextReader reader)
     {
-        WheelTravel = new List<double>();
-        LeverageRatio = new List<double>();
-        ShockTravel = new List<double>();
+        WheelTravel = [];
+        LeverageRatio = [];
+        ShockTravel = [];
         
         var config = new CsvConfiguration(CultureInfo.InvariantCulture)
         {

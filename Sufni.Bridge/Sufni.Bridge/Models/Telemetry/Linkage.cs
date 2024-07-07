@@ -146,7 +146,7 @@ public class LeverageRatioData
     public List<double> LeverageRatio { get; init; }
     public List<double> ShockTravel { get; init; }
     
-    private void ProcessWheelLeverageRatio(IReader reader)
+    private void ProcessWheelLeverageRatio(CsvReader reader)
     {
         var shock = 0.0;
         while (reader.Read())
@@ -161,7 +161,7 @@ public class LeverageRatioData
         }
     }
 
-    private void ProcessWheelTravelShockTravel(IReader reader)
+    private void ProcessWheelTravelShockTravel(CsvReader reader)
     {
         var idx = 0;
 

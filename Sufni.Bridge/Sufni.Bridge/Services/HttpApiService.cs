@@ -28,9 +28,6 @@ internal class HttpApiService : IHttpApiService
     
     #endregion
     
-    // ReSharper disable once UnusedType.Local
-    // ReSharper disable once NotAccessedPositionalProperty.Local
-    // It's used in response.Content.ReadFromJsonAsync<Tokens>() calls
     private record PutResponse(
         [property: JsonPropertyName("id")] Guid Id);
     

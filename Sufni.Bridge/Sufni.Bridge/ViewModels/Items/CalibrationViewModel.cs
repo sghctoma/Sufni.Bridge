@@ -42,7 +42,6 @@ public partial class CalibrationInputViewModel : ViewModelBase
 
     #region Property change handlers
 
-    // ReSharper disable once ParameterHidesMember
     partial void OnValueChanged(double value)
     {
         IsDirty = Math.Abs(value - OriginalValue) > 0.00001;

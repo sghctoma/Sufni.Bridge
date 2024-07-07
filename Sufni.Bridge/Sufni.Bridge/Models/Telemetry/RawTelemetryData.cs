@@ -4,8 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-// ReSharper disable UnusedAutoPropertyAccessor.Global
-
 namespace Sufni.Bridge.Models.Telemetry;
 
 public record Record(ushort ForkAngle, ushort ShockAngle);

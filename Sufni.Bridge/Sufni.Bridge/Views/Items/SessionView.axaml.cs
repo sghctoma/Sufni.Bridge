@@ -5,8 +5,6 @@ using Sufni.Bridge.ViewModels.SessionPages;
 
 namespace Sufni.Bridge.Views.Items;
 
-// ReSharper disable UnusedParameter.Local
-
 public partial class SessionView : UserControl
 {
     private bool sizeChanging;

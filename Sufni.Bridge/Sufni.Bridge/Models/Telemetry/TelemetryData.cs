@@ -7,11 +7,6 @@ using MathNet.Numerics.Statistics;
 using MessagePack;
 using Generate = ScottPlot.Generate;
 
-// ReSharper disable MemberCanBePrivate.Global
-// ReSharper disable NotAccessedPositionalProperty.Global
-// ReSharper disable ClassNeverInstantiated.Global
-// ReSharper disable UnusedAutoPropertyAccessor.Global
-// ReSharper disable PropertyCanBeMadeInitOnly.Global
 #pragma warning disable CS8618
 
 namespace Sufni.Bridge.Models.Telemetry;

@@ -46,7 +46,6 @@ public class Session : Synchronizable
 
     [JsonPropertyName("track"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [Column("track_id")]
-    // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public Guid? Track { get; set; }
 
     [JsonIgnore]

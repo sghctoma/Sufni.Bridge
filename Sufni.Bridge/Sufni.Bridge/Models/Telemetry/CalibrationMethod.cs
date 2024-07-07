@@ -5,9 +5,6 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using SQLite;
 
-// ReSharper disable UnusedAutoPropertyAccessor.Global
-// ReSharper disable UnusedMember.Global
-
 namespace Sufni.Bridge.Models.Telemetry;
 
 public record CalibrationMethodProperties(

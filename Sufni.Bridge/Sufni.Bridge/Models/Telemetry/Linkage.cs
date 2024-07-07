@@ -10,13 +10,6 @@ using MathNet.Numerics;
 using MessagePack;
 using SQLite;
 
-// ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
-// ReSharper disable UnusedAutoPropertyAccessor.Global
-// ReSharper disable MemberCanBePrivate.Global
-// ReSharper disable UnusedMember.Global
-// The code itself does not call some getters / setters explicitly,
-// but they are used by sql-net-pcl and/or JsonSerializer/JsonDeserializer.
-
 namespace Sufni.Bridge.Models.Telemetry;
 
 [Table("linkage")]
@@ -24,8 +17,6 @@ namespace Sufni.Bridge.Models.Telemetry;
 public class Linkage : Synchronizable
 {
     private LeverageRatioData? leverageRatioData;
-    // ReSharper disable once NotAccessedField.Local
-    // The field is accessed by the MessagePack serializer.
     private double[][]? leverageRatio;
     private double? maxFrontTravel;
     private double? maxRearTravel;

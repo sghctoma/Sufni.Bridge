@@ -81,7 +81,7 @@ public class Linkage : Synchronizable
             maxFrontTravel ??= Math.Sin(HeadAngle * Math.PI / 180.0) * MaxFrontStroke ?? 0;
             return maxFrontTravel.Value;
         }
-        init => maxFrontTravel = value;
+        set => maxFrontTravel = value;
     }
 
     [Ignore]
@@ -93,7 +93,7 @@ public class Linkage : Synchronizable
             maxRearTravel ??= Polynomial.Evaluate(MaxRearStroke ?? 0);
             return maxRearTravel.Value;
         }
-        init => maxRearTravel = value;
+        set => maxRearTravel = value;
     }
 
     [Ignore]
@@ -107,7 +107,7 @@ public class Linkage : Synchronizable
             return shockWheelCoeffs;
 
         }
-        init => shockWheelCoeffs = value;
+        set => shockWheelCoeffs = value;
     }
 
     [Ignore] [JsonIgnore] [IgnoreMember] public Polynomial Polynomial => new(ShockWheelCoeffs);
@@ -117,7 +117,7 @@ public class Linkage : Synchronizable
     public double[][]? LeverageRatio
     {
         get => LeverageRatioData?.ToArray();
-        init => leverageRatio = value;
+        set => leverageRatio = value;
     }
 
     [Ignore]

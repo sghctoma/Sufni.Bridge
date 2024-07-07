@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
@@ -30,7 +30,7 @@
     <PackageReference Include="Deadpikle.AvaloniaProgressRing" Version="0.10.6" />
     <PackageReference Include="DynamicData" Version="8.4.1" />
     <PackageReference Include="MathNet.Numerics" Version="6.0.0-beta1" />
-    <PackageReference Include="MessagePack" Version="3.0.54-alpha" />
+    <PackageReference Include="MessagePack" Version="3.0.111-alpha" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0-preview.5.24306.7" />
     <PackageReference Include="ScottPlot" Version="5.0.36" />
     <PackageReference Include="ScottPlot.Avalonia" Version="5.0.36" />

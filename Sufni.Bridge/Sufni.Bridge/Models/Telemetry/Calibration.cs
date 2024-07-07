@@ -34,11 +34,14 @@ public class IdFormatter : IMessagePackFormatter<Guid>
 
 [Table("calibration")]
 [MessagePackObject(keyAsPropertyName: true)]
-public class Calibration : Synchronizable
+public partial class Calibration : Synchronizable
 {
     private Func<Dictionary<string, double>, double>? evaluatorDelegate;
-    private readonly Dictionary<string, double> evaluatorEnvironment = new();
-    
+    private readonly Dictionary<string, double> evaluatorEnvironment = [];
+
+    [GeneratedRegex(@"\s+")]
+    private static partial Regex WhitespacesRegex();
+
     // Just to satisfy sql-net-pcl's parameterless constructor requirement
     // Uninitialized non-nullable property warnings are suppressed with null! initializer.
     public Calibration() { }
@@ -86,7 +89,7 @@ public class Calibration : Synchronizable
 
     public void Prepare(CalibrationMethod method, double maxStroke, double maxTravel)
     {
-        var expression = Regex.Replace(method.Properties.Expression, @"\s+", "");
+        var expression = WhitespacesRegex().Replace(method.Properties.Expression, "");
         var evaluator = Evaluator.Create()
             .UseCulture(CultureInfo.InvariantCulture)
             .AddConstant("MAX_STROKE", maxStroke)
@@ -103,7 +106,7 @@ public class Calibration : Synchronizable
         // Calculate intermediates
         foreach (var intermediate in method.Properties.Intermediates)
         {
-            var exp = Regex.Replace(intermediate.Value, @"\s+", "");
+            var exp = WhitespacesRegex().Replace(intermediate.Value, "");
             evaluatorEnvironment[intermediate.Key] = evaluator.Evaluate(exp, evaluatorEnvironment);
         }
     }

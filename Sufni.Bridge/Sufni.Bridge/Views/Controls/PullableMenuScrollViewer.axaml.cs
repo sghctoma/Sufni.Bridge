@@ -47,16 +47,17 @@ public partial class PullableMenuScrollViewer : UserControl
     private readonly DoubleTransition heightTransition = new()
     {
         Duration = TimeSpan.FromSeconds(0.2),
-        Property = UserControl.HeightProperty,
+        Property = HeightProperty,
         Easing = new CubicEaseOut(),
     };
     private readonly ThicknessTransition marginTransition = new()
     {
         Duration = TimeSpan.FromSeconds(0.2),
-        Property = UserControl.MarginProperty,
+        Property = MarginProperty,
         Easing = new CubicEaseOut(),
     };
     private double totalPulled;
+    private double sameDirectionTotalScrolled;
     private int? selectedIndex;
     private readonly IHapticFeedback? hapticFeedback = App.Current?.Services?.GetService<IHapticFeedback>();
     public PullableMenuScrollViewer()
@@ -64,6 +65,10 @@ public partial class PullableMenuScrollViewer : UserControl
         InitializeComponent();
         Scroll.Transitions = [];
         Container.Transitions = [];
+        TopContainer.Transitions = [];
+
+        // Use ScrollViewer.ScrollChanged to determine TopContainer's visibility.
+        AddHandlersForTopContainer();
 
         // PanGestures are not recognized on a ScrollViewer if it contains labs:Swipe
         // items, so we handle the pull with ScrollGestures, ...
@@ -78,6 +83,12 @@ public partial class PullableMenuScrollViewer : UserControl
     {
         base.OnLoaded(e);
         Container.Margin = new Thickness(0, -PullMenu.Bounds.Height - 20, 0, 0);
+    }
+
+    protected override void OnSizeChanged(SizeChangedEventArgs e)
+    {
+        base.OnSizeChanged(e);
+        Scroll.Height = Bounds.Height - TopContainer.Bounds.Height;
     }
 
     #region Styled properties
@@ -98,13 +109,100 @@ public partial class PullableMenuScrollViewer : UserControl
         set => SetValue(MenuItemsProperty, value);
     }
 
+    public static readonly StyledProperty<Grid> TopContentProperty =
+            AvaloniaProperty.Register<PullableMenuScrollViewer, Grid>(nameof(TopContent));
+
+    public Grid TopContent
+    {
+        get => this.GetValue(TopContentProperty);
+        set => SetValue(TopContentProperty, value);
+    }
+
     #endregion
 
-    protected override void OnSizeChanged(SizeChangedEventArgs e)
+    private void HandlePartiallyVisibleTopContainer(object? sender, RoutedEventArgs eventArgs)
     {
-        base.OnSizeChanged(e);
-        Scroll.Height = Bounds.Height;
+        if (TopContainer.Margin.Top < -TopContainer.Bounds.Height / 2 &&
+                TopContainer.Margin.Top >= -TopContainer.Bounds.Height)
+        {
+            TopContainer.Margin = new Thickness(0, -TopContainer.Bounds.Height, 0, 0);
+            TopContainer.Opacity = 0;
+            Scroll.Height = Bounds.Height;
+        }
+        else
+        {
+            TopContainer.Margin = new Thickness(0, 0, 0, 0);
+            TopContainer.Opacity = 1;
+            Scroll.Height = Bounds.Height - TopContainer.Bounds.Height;
+        }
+
+        eventArgs.Handled = false;
     }
+
+    private void AddHandlersForTopContainer()
+    {
+        Scroll.ScrollChanged += (sender, e) =>
+        {
+            if (e.OffsetDelta.Y == 0)
+            {
+                return;
+            }
+
+            double newTop = 0;
+            double newHeight = 0;
+            var scrollDirectionChanged = (sameDirectionTotalScrolled < 0) != (e.OffsetDelta.Y < 0);
+            sameDirectionTotalScrolled = scrollDirectionChanged ? e.OffsetDelta.Y : sameDirectionTotalScrolled + e.OffsetDelta.Y;
+
+            if (Scroll.Offset.Y == 0 && e.OffsetDelta.Y < 0)
+            {
+                // Make sure to show TopContainer fully when we are at the top.
+                TopContainer.Margin = new Thickness(0, 0, 0, 0);
+                Scroll.Height = Bounds.Height - TopContainer.Bounds.Height;
+            }
+            else if (TopContainer.Margin.Top < 0 && TopContainer.Margin.Top > -TopContainer.Bounds.Height)
+            {
+                // TopContainer is already visible, so we just adjust its position regardless of scroll direction.
+                newTop = TopContainer.Margin.Top - e.OffsetDelta.Y;
+                newHeight = Scroll.Height + e.OffsetDelta.Y;
+            }
+            else if (sameDirectionTotalScrolled > 0 && TopContainer.Margin.Top >= 0)
+            {
+                // Scrolling down while TopContainer is fully visible, so we immediately start to slide it out.
+                newTop = -sameDirectionTotalScrolled;
+                newHeight = Bounds.Height + sameDirectionTotalScrolled;
+            }
+            else if (sameDirectionTotalScrolled < -100 && TopContainer.Margin.Top <= -TopContainer.Bounds.Height)
+            {
+                // Scrolling up while TopContainer is not visible, so we start to slide it in after
+                // a certain amount (100 pixels) of scrolling.
+                var topContainerVisibleSize = -sameDirectionTotalScrolled - 100;
+                newTop = -TopContainer.Bounds.Height + topContainerVisibleSize;
+                newHeight = Bounds.Height - topContainerVisibleSize;
+            }
+            else
+            {
+                // None of the above scenarios happened, so we don't want to adjust TopContainer's position.
+                return;
+            }
+
+            // Restrict the calculated values for TopContainer's top margin and Scroll's height to proper
+            // boundaries, and set these new values.
+            newTop = Math.Min(newTop, 0);
+            newTop = Math.Max(newTop, -TopContainer.Bounds.Height);
+            TopContainer.Margin = new Thickness(0, newTop, 0, 0);
+            newHeight = Math.Min(newHeight, Bounds.Height);
+            newHeight = Math.Max(newHeight, Bounds.Height - TopContainer.Bounds.Height);
+            Scroll.Height = newHeight;
+
+            // Set TopContainer's opacity based on how much of it is visible.
+            var opacity = 1 + TopContainer.Margin.Top / TopContainer.Bounds.Height;
+            TopContainer.Opacity = Math.Max(0, Math.Min(opacity, 1));
+        };
+
+        Scroll.AddHandler(Gestures.ScrollGestureEndedEvent, HandlePartiallyVisibleTopContainer);
+        Scroll.PointerMoved += HandlePartiallyVisibleTopContainer;
+    }
+
     private void AddHandlersForTouchPull()
     {
         // When we scroll down while being at the top of the scroll viewer, we
@@ -138,30 +236,28 @@ public partial class PullableMenuScrollViewer : UserControl
             Threshold = 10,
         };
 
-        panGestureRecognizer.OnPan += PanGestureRecognizer_OnPan;
-        Scroll.GestureRecognizers.Add(panGestureRecognizer);
-    }
-
-    private void PanGestureRecognizer_OnPan(object? sender, PanUpdatedEventArgs e)
-    {
-        if (Scroll.Offset.Y == 0)
+        panGestureRecognizer.OnPan += (s, e) =>
         {
-            if (e.StatusType == PanGestureStatus.Completed)
+            if (Scroll.Offset.Y == 0)
             {
-                PullFinished();
+                if (e.StatusType == PanGestureStatus.Completed)
+                {
+                    PullFinished();
+                }
+                else
+                {
+                    totalPulled = e.TotalY / pullRatio;
+                    PullUpdate();
+                }
             }
-            else
-            {
-                totalPulled = e.TotalY / pullRatio;
-                PullUpdate();
-            }
-        }
+        };
+        Scroll.GestureRecognizers.Add(panGestureRecognizer);
     }
 
     private void PullUpdate()
     {
         Container.Margin = new Thickness(0, -PullMenu.Bounds.Height - 20 + totalPulled, 0, 0);
-        Scroll.Height = Bounds.Height - totalPulled;
+        Scroll.Height = Bounds.Height - TopContainer.Bounds.Height - totalPulled;
 
         int? index = (int)(totalPulled - 15) / (int)menuItemHeight - 1;
         index = index < 0 ? null : index;
@@ -209,7 +305,7 @@ public partial class PullableMenuScrollViewer : UserControl
         Scroll.Transitions!.Add(heightTransition);
 
         Container.Margin = new Thickness(0, -PullMenu.Bounds.Height - 20, 0, 0);
-        Scroll.Height = Bounds.Height;
+        Scroll.Height = Bounds.Height - TopContainer.Bounds.Height;
 
         new Thread(() => 
         {

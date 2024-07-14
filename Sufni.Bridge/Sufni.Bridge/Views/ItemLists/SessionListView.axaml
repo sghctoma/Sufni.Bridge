@@ -18,113 +18,115 @@
 
     <Grid ColumnDefinitions="*" RowDefinitions="auto * auto auto">
 
-        <!--  Filter  -->
-        <Grid
-            Grid.Row="0"
-            Grid.Column="0"
-            Margin="6,5,6,0"
-            ColumnDefinitions="*"
-            RowDefinitions="39 auto">
-
-            <!--  Search box  -->
-            <TextBox
-                Grid.Row="0"
-                VerticalContentAlignment="Center"
-                Text="{Binding SearchText}"
-                Watermark="Search ..." />
-            <Button
-                Grid.Row="0"
-                Width="30"
-                Margin="0,0,30,0"
-                HorizontalAlignment="Right"
-                Classes="embedded"
-                Command="{Binding ClearSearchTextCommand}"
-                CommandParameter="session"
-                IsVisible="{Binding SearchText, Converter={x:Static ObjectConverters.IsNotNull}}">
-                <Image Source="{SvgImage /Assets/fa-xmark.svg}" />
-            </Button>
-
-            <!--  Date picker opener button  -->
-            <Button
-                Grid.Row="0"
-                HorizontalAlignment="Right"
-                Classes="embedded"
-                Command="{Binding ToggleDateFilterCommand}">
-                <Image Height="14" Source="{SvgImage /Assets/fa-filter.svg}" />
-                <Button.IsEnabled>
-                    <MultiBinding Converter="{x:Static BoolConverters.And}">
-                        <Binding Converter="{x:Static ObjectConverters.IsNull}" Path="DateFilterFrom" />
-                        <Binding Converter="{x:Static ObjectConverters.IsNull}" Path="DateFilterTo" />
-                    </MultiBinding>
-                </Button.IsEnabled>
-            </Button>
-
-            <!--  Date pickers  -->
-            <Border
-                Grid.Row="1"
-                Grid.Column="0"
-                Background="{StaticResource SufniBackground}"
-                IsVisible="{Binding DateFilterVisible}">
-                <Grid
-                    Margin="1,0,1,0"
-                    ColumnDefinitions="* auto *"
-                    RowDefinitions="auto">
-
-                    <!--  From  -->
-                    <CalendarDatePicker
-                        Grid.Column="0"
-                        Margin="5"
-                        HorizontalAlignment="Stretch"
-                        DisplayDateEnd="{Binding DateFilterTo}"
-                        SelectedDate="{Binding DateFilterFrom}" />
-                    <Button
-                        Grid.Column="0"
-                        Width="30"
-                        Margin="0,0,20,0"
-                        HorizontalAlignment="Right"
-                        Classes="embedded"
-                        Command="{Binding ClearDateFilterCommand}"
-                        CommandParameter="from"
-                        IsVisible="{Binding DateFilterFrom, Converter={x:Static ObjectConverters.IsNotNull}}">
-                        <Image Source="{SvgImage /Assets/fa-xmark.svg}" />
-                    </Button>
-
-                    <!--  Arrow  -->
-                    <TextBlock
-                        Grid.Column="1"
-                        VerticalAlignment="Center"
-                        Text="→" />
-
-                    <!--  To  -->
-                    <CalendarDatePicker
-                        Grid.Row="0"
-                        Grid.Column="2"
-                        Margin="5"
-                        HorizontalAlignment="Stretch"
-                        DisplayDateStart="{Binding DateFilterFrom}"
-                        SelectedDate="{Binding DateFilterTo}" />
-                    <Button
-                        Grid.Column="2"
-                        Width="30"
-                        Margin="0,0,20,0"
-                        HorizontalAlignment="Right"
-                        Classes="embedded"
-                        Command="{Binding ClearDateFilterCommand}"
-                        CommandParameter="to"
-                        IsVisible="{Binding DateFilterTo, Converter={x:Static ObjectConverters.IsNotNull}}">
-                        <Image Source="{SvgImage /Assets/fa-xmark.svg}" />
-                    </Button>
-                </Grid>
-            </Border>
-        </Grid>
-
         <!--  List of Sessions  -->
         <v:PullableMenuScrollViewer
             Grid.Row="1"
             Grid.Column="0"
             Margin="0,15,0,5"
             Items="{Binding Items}"
-            MenuItems="{Binding MenuItems}" />
+            MenuItems="{Binding MenuItems}">
+            <v:PullableMenuScrollViewer.TopContent>
+                <!--  Filter  -->
+                <Grid
+                    Margin="20,0,20,20"
+                    ColumnDefinitions="*"
+                    RowDefinitions="39 auto">
+
+                    <!--  Search box  -->
+                    <TextBox
+                        Grid.Row="0"
+                        VerticalContentAlignment="Center"
+                        BorderThickness="0"
+                        CornerRadius="5"
+                        Text="{Binding SearchText}"
+                        Watermark="Search ..." />
+                    <Button
+                        Grid.Row="0"
+                        Width="30"
+                        Margin="0,0,30,0"
+                        HorizontalAlignment="Right"
+                        Classes="embedded"
+                        Command="{Binding ClearSearchTextCommand}"
+                        CommandParameter="session"
+                        IsVisible="{Binding SearchText, Converter={x:Static ObjectConverters.IsNotNull}}">
+                        <Image Source="{SvgImage /Assets/fa-xmark.svg}" />
+                    </Button>
+
+                    <!--  Date picker opener button  -->
+                    <Button
+                        Grid.Row="0"
+                        HorizontalAlignment="Right"
+                        Classes="embedded"
+                        Command="{Binding ToggleDateFilterCommand}">
+                        <Image Height="14" Source="{SvgImage /Assets/fa-filter.svg}" />
+                        <Button.IsEnabled>
+                            <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                <Binding Converter="{x:Static ObjectConverters.IsNull}" Path="DateFilterFrom" />
+                                <Binding Converter="{x:Static ObjectConverters.IsNull}" Path="DateFilterTo" />
+                            </MultiBinding>
+                        </Button.IsEnabled>
+                    </Button>
+
+                    <!--  Date pickers  -->
+                    <Border
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Background="{StaticResource SufniBackground}"
+                        IsVisible="{Binding DateFilterVisible}">
+                        <Grid
+                            Margin="1,0,1,0"
+                            ColumnDefinitions="* auto *"
+                            RowDefinitions="auto">
+
+                            <!--  From  -->
+                            <CalendarDatePicker
+                                Grid.Column="0"
+                                Margin="5"
+                                HorizontalAlignment="Stretch"
+                                DisplayDateEnd="{Binding DateFilterTo}"
+                                SelectedDate="{Binding DateFilterFrom}" />
+                            <Button
+                                Grid.Column="0"
+                                Width="30"
+                                Margin="0,0,20,0"
+                                HorizontalAlignment="Right"
+                                Classes="embedded"
+                                Command="{Binding ClearDateFilterCommand}"
+                                CommandParameter="from"
+                                IsVisible="{Binding DateFilterFrom, Converter={x:Static ObjectConverters.IsNotNull}}">
+                                <Image Source="{SvgImage /Assets/fa-xmark.svg}" />
+                            </Button>
+
+                            <!--  Arrow  -->
+                            <TextBlock
+                                Grid.Column="1"
+                                VerticalAlignment="Center"
+                                Text="→" />
+
+                            <!--  To  -->
+                            <CalendarDatePicker
+                                Grid.Row="0"
+                                Grid.Column="2"
+                                Margin="5"
+                                HorizontalAlignment="Stretch"
+                                DisplayDateStart="{Binding DateFilterFrom}"
+                                SelectedDate="{Binding DateFilterTo}" />
+                            <Button
+                                Grid.Column="2"
+                                Width="30"
+                                Margin="0,0,20,0"
+                                HorizontalAlignment="Right"
+                                Classes="embedded"
+                                Command="{Binding ClearDateFilterCommand}"
+                                CommandParameter="to"
+                                IsVisible="{Binding DateFilterTo, Converter={x:Static ObjectConverters.IsNotNull}}">
+                                <Image Source="{SvgImage /Assets/fa-xmark.svg}" />
+                            </Button>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </v:PullableMenuScrollViewer.TopContent>
+        </v:PullableMenuScrollViewer>
 
         <!--  Notifications  -->
         <v:NotificationsBar

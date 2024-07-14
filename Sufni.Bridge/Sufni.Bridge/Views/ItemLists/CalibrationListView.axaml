@@ -16,46 +16,51 @@
         <vm:CalibrationListViewModel />
     </Design.DataContext>
 
-    <Grid ColumnDefinitions="*" RowDefinitions="44 * auto auto">
-
-        <!--  Search box  -->
-        <TextBox
-            Grid.Row="0"
-            Grid.Column="0"
-            Margin="6,5,6,0"
-            VerticalContentAlignment="Center"
-            Text="{Binding SearchText}"
-            Watermark="Search ..." />
-        <Button
-            Grid.Row="0"
-            Grid.Column="0"
-            Width="30"
-            Margin="6,5,15,0"
-            HorizontalAlignment="Right"
-            Classes="embedded"
-            Command="{Binding ClearSearchTextCommand}"
-            CommandParameter="calibration"
-            IsVisible="{Binding SearchText, Converter={x:Static ObjectConverters.IsNotNull}}">
-            <Image Source="{SvgImage /Assets/fa-xmark.svg}" />
-        </Button>
+    <Grid ColumnDefinitions="*" RowDefinitions="* auto auto">
 
         <!--  List of Calibrations  -->
         <v:PullableMenuScrollViewer
-            Grid.Row="1"
+            Grid.Row="0"
             Grid.Column="0"
             Margin="0,15,0,5"
             Items="{Binding Items}"
-            MenuItems="{Binding MenuItems}" />
+            MenuItems="{Binding MenuItems}">
+            <v:PullableMenuScrollViewer.TopContent>
+                <Grid
+                    Margin="20,0,20,20"
+                    ColumnDefinitions="*"
+                    RowDefinitions="39">
+
+                    <!--  Search box  -->
+                    <TextBox
+                        VerticalContentAlignment="Center"
+                        BorderThickness="0"
+                        CornerRadius="5"
+                        Text="{Binding SearchText}"
+                        Watermark="Search ..." />
+                    <Button
+                        Width="30"
+                        Margin="6,5,15,0"
+                        HorizontalAlignment="Right"
+                        Classes="embedded"
+                        Command="{Binding ClearSearchTextCommand}"
+                        CommandParameter="calibration"
+                        IsVisible="{Binding SearchText, Converter={x:Static ObjectConverters.IsNotNull}}">
+                        <Image Source="{SvgImage /Assets/fa-xmark.svg}" />
+                    </Button>
+                </Grid>
+            </v:PullableMenuScrollViewer.TopContent>
+        </v:PullableMenuScrollViewer>
 
         <!--  Notifications  -->
         <v:NotificationsBar
-            Grid.Row="2"
+            Grid.Row="1"
             Grid.Column="0"
             Margin="5,0" />
 
         <!--  Error messages  -->
         <v:ErrorMessagesBar
-            Grid.Row="3"
+            Grid.Row="2"
             Grid.Column="0"
             Margin="5,0" />
 

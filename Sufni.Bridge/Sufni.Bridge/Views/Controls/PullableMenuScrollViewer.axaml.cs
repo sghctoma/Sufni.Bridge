@@ -127,13 +127,11 @@ public partial class PullableMenuScrollViewer : UserControl
         {
             TopContainer.Margin = new Thickness(0, -TopContainer.Bounds.Height, 0, 0);
             TopContainer.Opacity = 0;
-            Scroll.Height = Bounds.Height;
         }
         else
         {
             TopContainer.Margin = new Thickness(0, 0, 0, 0);
             TopContainer.Opacity = 1;
-            Scroll.Height = Bounds.Height - TopContainer.Bounds.Height;
         }
 
         eventArgs.Handled = false;
@@ -163,7 +161,7 @@ public partial class PullableMenuScrollViewer : UserControl
             {
                 // TopContainer is already visible, so we just adjust its position regardless of scroll direction.
                 newTop = TopContainer.Margin.Top - e.OffsetDelta.Y;
-                newHeight = Scroll.Height + e.OffsetDelta.Y;
+                newHeight = Scroll.Height;
             }
             else if (sameDirectionTotalScrolled > 0 && TopContainer.Margin.Top >= 0)
             {

@@ -96,13 +96,13 @@
             Grid.Row="1"
             Grid.Column="0"
             Grid.ColumnSpan="3"
-            Margin="0,0,0,5"
+            Background="{StaticResource SufniBackground}"
             SelectedIndex="{Binding SelectedIndex}"
             TabStripPlacement="Bottom">
             <TabControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <UniformGrid
-                        Margin="3,0,3,0"
+                        Margin="3,0,3,5"
                         HorizontalAlignment="Stretch"
                         Rows="1" />
                 </ItemsPanelTemplate>

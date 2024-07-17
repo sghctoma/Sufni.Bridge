@@ -15,6 +15,6 @@
     Icon="/Assets/sufni-icon.png"
     mc:Ignorable="d">
 
-    <views:MainView Margin="0,0,0,5" />
+    <views:MainView />
 
 </Window>

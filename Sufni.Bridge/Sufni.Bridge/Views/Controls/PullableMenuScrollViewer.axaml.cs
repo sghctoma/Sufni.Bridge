@@ -256,6 +256,7 @@ public partial class PullableMenuScrollViewer : UserControl
 
     private void PullUpdate()
     {
+        PullMenu.IsVisible = true;
         Container.Margin = new Thickness(0, -PullMenu.Bounds.Height - 20 + totalPulled, 0, 0);
         Scroll.Height = Bounds.Height - TopContainer.Bounds.Height - totalPulled;
 
@@ -286,6 +287,7 @@ public partial class PullableMenuScrollViewer : UserControl
 
     private void PullFinished()
     {
+        PullMenu.IsVisible = false;
         if (selectedIndex is not null &&
             selectedIndex < PullMenu.ItemsSourceView!.Count &&
             PullMenu.ItemsSourceView![PullMenu.ItemsSourceView.Count - selectedIndex.Value - 1] is PullMenuItemViewModel selected &&

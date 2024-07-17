@@ -31,6 +31,7 @@
                 Grid.Row="0"
                 Margin="0,0,0,20"
                 HorizontalAlignment="Stretch"
+                IsVisible="false"
                 ItemsSource="{Binding $parent[v:PullableMenuScrollViewer].MenuItems}">
                 <ItemsRepeater.Layout>
                     <NonVirtualizingStackLayout Orientation="Vertical" />

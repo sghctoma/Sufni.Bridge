@@ -20,9 +20,9 @@ public partial class SettingsViewModel : ViewModelBase
     [ObservableProperty] private string? username;
     [ObservableProperty] private string? password;
     [ObservableProperty] private bool isRegistered;
-    
+
     #endregion
-    
+
     #region Property change handlers
 
     partial void OnIsRegisteredChanged(bool value)
@@ -31,14 +31,14 @@ public partial class SettingsViewModel : ViewModelBase
     }
 
     #endregion
-    
+
     #region Private members
-    
+
     private ISecureStorage? secureStorage;
     private IHttpApiService? httpApiService;
 
     #endregion Private members
-    
+
     #region Constructors
 
     public SettingsViewModel()
@@ -54,7 +54,7 @@ public partial class SettingsViewModel : ViewModelBase
     {
         secureStorage = App.Current?.Services?.GetService<ISecureStorage>();
         httpApiService = App.Current?.Services?.GetService<IHttpApiService>();
-        
+
         Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
         Debug.Assert(secureStorage != null, nameof(secureStorage) + " != null");
 
@@ -75,7 +75,7 @@ public partial class SettingsViewModel : ViewModelBase
     {
         Debug.Assert(httpApiService != null, nameof(httpApiService) + " != null");
         Debug.Assert(secureStorage != null, nameof(secureStorage) + " != null");
-        
+
         if (string.IsNullOrEmpty(url) || string.IsNullOrEmpty(refreshToken))
         {
             IsRegistered = false;
@@ -129,7 +129,7 @@ public partial class SettingsViewModel : ViewModelBase
             IsRegistered = true;
             ErrorMessages.Clear();
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             ErrorMessages.Add($"Could not register: {e.Message}");
         }
@@ -166,7 +166,7 @@ public partial class SettingsViewModel : ViewModelBase
     private async Task RegisterUnregister()
     {
         if (IsRegistered) await UnregisterAsync();
-        else 
+        else
         {
             await RegisterAsync();
             OpenPreviousPage();

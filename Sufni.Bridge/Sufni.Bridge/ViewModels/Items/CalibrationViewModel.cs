@@ -13,26 +13,26 @@ namespace Sufni.Bridge.ViewModels.Items;
 public partial class CalibrationInputViewModel : ViewModelBase
 {
     #region Observable properties
-    
+
     [ObservableProperty] private string name;
     [ObservableProperty] private double value;
     [ObservableProperty] private bool isDirty;
     [ObservableProperty] private double originalValue;
-    
+
     #endregion
 
     #region Constructors
 
     public CalibrationInputViewModel(string name)
-    {    
+    {
         OriginalValue = value;
         Name = name;
         Value = 0.0;
         IsDirty = true;
     }
-    
+
     public CalibrationInputViewModel(string name, double value)
-    {    
+    {
         OriginalValue = value;
         Name = name;
         Value = value;
@@ -56,7 +56,7 @@ public partial class CalibrationViewModel : ItemViewModelBase
     public bool IsInDatabase;
 
     #region Observable properties
-    
+
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
     [NotifyCanExecuteChangedFor(nameof(ResetCommand))]
@@ -64,7 +64,7 @@ public partial class CalibrationViewModel : ItemViewModelBase
 
     public ObservableCollection<CalibrationMethod> CalibrationMethods { get; }
     public ObservableCollection<CalibrationInputViewModel> Inputs { get; } = [];
-    
+
     #endregion
 
     #region Property change handlers
@@ -76,7 +76,7 @@ public partial class CalibrationViewModel : ItemViewModelBase
             IsDirty = true;
             return;
         }
-        
+
         Inputs.Clear();
         if (value.Id == calibration.MethodId)
         {
@@ -116,7 +116,7 @@ public partial class CalibrationViewModel : ItemViewModelBase
         calibration = new Calibration();
         ResetImplementation();
     }
-    
+
     public CalibrationViewModel(Calibration calibration, ObservableCollection<CalibrationMethod> calibrationMethods, bool fromDatabase)
     {
         this.calibration = calibration;

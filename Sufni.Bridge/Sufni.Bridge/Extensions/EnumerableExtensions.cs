@@ -6,8 +6,8 @@ namespace Sufni.Bridge.Extensions;
 // source: https://markheath.net/post/suppress-exceptions-linq
 public static class EnumerableExtensions
 {
-    public static IEnumerable<TResult> TrySelect<TSource, TResult, TException>(this IEnumerable<TSource> source, 
-        Func<TSource, TResult> selector, 
+    public static IEnumerable<TResult> TrySelect<TSource, TResult, TException>(this IEnumerable<TSource> source,
+        Func<TSource, TResult> selector,
         Action<TSource, TException>? exceptionAction)
         where TException : Exception
     {
@@ -22,7 +22,7 @@ public static class EnumerableExtensions
             }
             catch (TException ex)
             {
-                exceptionAction?.Invoke(s,ex);
+                exceptionAction?.Invoke(s, ex);
             }
             if (success)
             {

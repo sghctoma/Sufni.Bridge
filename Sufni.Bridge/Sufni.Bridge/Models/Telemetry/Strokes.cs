@@ -31,7 +31,7 @@ public class Stroke
     [IgnoreMember] public double Length { get; private set; }
     [IgnoreMember] public double Duration { get; set; }
     [IgnoreMember] public bool AirCandidate { get; set; }
-    
+
     public Stroke() { }
 
     public Stroke(int start, int end, double duration, double[] travel, double[] velocity, double maxTravel)
@@ -76,7 +76,7 @@ public class Strokes
     public Stroke[] Compressions { get; set; }
     public Stroke[] Rebounds { get; set; }
     [IgnoreMember] public Stroke[] Idlings { get; private set; }
-    
+
     public void Categorize(Stroke[] strokes)
     {
         var compressions = new List<Stroke>();
@@ -126,10 +126,10 @@ public class Strokes
             s.DigitizedVelocity = dv[s.Start..(s.End + 1)];
             s.FineDigitizedVelocity = dvFine[s.Start..(s.End + 1)];
         }
-        
+
         foreach (var s in Rebounds)
         {
-            s.DigitizedTravel = dt[s.Start..(s.End+1)];
+            s.DigitizedTravel = dt[s.Start..(s.End + 1)];
             s.DigitizedVelocity = dv[s.Start..(s.End + 1)];
             s.FineDigitizedVelocity = dvFine[s.Start..(s.End + 1)];
         }

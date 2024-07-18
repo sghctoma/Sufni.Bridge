@@ -8,20 +8,20 @@ namespace Sufni.Bridge.ViewModels;
 
 public partial class MainViewModel : ViewModelBase
 {
-   [ObservableProperty] private Thickness contentControlMargin;
-   [ObservableProperty] private Thickness outerPanelMargin;
-   [ObservableProperty] private Thickness safeAreaPadding;
-   [ObservableProperty] private ViewModelBase currentView;
-   private readonly Stack<ViewModelBase> viewHistory = new();
-   private readonly MainPagesViewModel? mainPagesViewModel;
+    [ObservableProperty] private Thickness contentControlMargin;
+    [ObservableProperty] private Thickness outerPanelMargin;
+    [ObservableProperty] private Thickness safeAreaPadding;
+    [ObservableProperty] private ViewModelBase currentView;
+    private readonly Stack<ViewModelBase> viewHistory = new();
+    private readonly MainPagesViewModel? mainPagesViewModel;
 
-   public MainViewModel()
-   {
-      mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
-      Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
+    public MainViewModel()
+    {
+        mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
+        Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
 
-      CurrentView = mainPagesViewModel;
-   }
+        CurrentView = mainPagesViewModel;
+    }
 
     private void SetMargins()
     {
@@ -48,14 +48,14 @@ public partial class MainViewModel : ViewModelBase
     }
 
     public void OpenView(ViewModelBase view)
-   {
-      viewHistory.Push(CurrentView);
-      CurrentView = view;
-   }
+    {
+        viewHistory.Push(CurrentView);
+        CurrentView = view;
+    }
 
-   public void OpenPreviousView()
-   {
-      CurrentView = viewHistory.Pop();
-      Debug.Assert(CurrentView != null, nameof(CurrentView) + " != null");
-   }
+    public void OpenPreviousView()
+    {
+        CurrentView = viewHistory.Pop();
+        Debug.Assert(CurrentView != null, nameof(CurrentView) + " != null");
+    }
 }

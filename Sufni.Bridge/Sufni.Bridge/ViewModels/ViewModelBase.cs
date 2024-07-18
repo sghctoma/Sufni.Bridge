@@ -10,13 +10,13 @@ namespace Sufni.Bridge.ViewModels
     {
         public ObservableCollection<string> ErrorMessages { get; } = [];
         public ObservableCollection<string> Notifications { get; } = [];
-        
+
         [RelayCommand]
         private void ClearErrors(object? o)
         {
             ErrorMessages.Clear();
         }
-        
+
         [RelayCommand]
         private void ClearNotifications(object? o)
         {
@@ -28,10 +28,10 @@ namespace Sufni.Bridge.ViewModels
         {
             var mainViewModel = App.Current?.Services?.GetService<MainViewModel>();
             Debug.Assert(mainViewModel != null, nameof(mainViewModel) + " != null");
-            
+
             mainViewModel.OpenView(view);
         }
-        
+
         [RelayCommand]
         protected static void OpenPreviousPage()
         {

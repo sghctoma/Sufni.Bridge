@@ -15,14 +15,14 @@ public class TravelHistogramPlot(Plot plot, SuspensionType type) : TelemetryPlot
             : telemetryData.Linkage.MaxRearTravel;
         var avgPercentage = statistics.Average / mx * 100.0;
         var maxPercentage = statistics.Max / mx * 100.0;
-        
+
         var avgString = $"{statistics.Average:F2} mm ({avgPercentage:F2}%)";
         var maxString = $"{statistics.Max:F2} mm ({maxPercentage:F2}%) / {statistics.Bottomouts} bottom outs";
 
         AddLabelWithHorizontalLine(avgString, statistics.Average, LabelLinePosition.Above);
         AddLabelWithHorizontalLine(maxString, statistics.Max, LabelLinePosition.Below);
     }
-    
+
     public override void LoadTelemetryData(TelemetryData telemetryData)
     {
         base.LoadTelemetryData(telemetryData);
@@ -54,7 +54,7 @@ public class TravelHistogramPlot(Plot plot, SuspensionType type) : TelemetryPlot
         // Set to 0.05 to hide the border line at 0 values. Otherwise it would
         // seem that there are actual measure travel data there too.
         Plot.Axes.SetLimits(left: 0.05);
-        
+
         AddStatistics(telemetryData);
     }
 }

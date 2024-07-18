@@ -77,7 +77,7 @@ public record BalanceData(
 public class TelemetryData
 {
     public const int TravelBinsForVelocityHistogram = 10;
-        
+
     #region Public properties
 
     public string Name { get; set; }
@@ -118,14 +118,14 @@ public class TelemetryData
     }
 
     #endregion
-    
+
     #region Private helpers for ProcessRecording
 
     private static double[] Linspace(double min, double max, int num)
     {
         var step = (max - min) / (num - 1);
         var bins = new double[num];
-        
+
         for (var i = 0; i < num; i++)
         {
             bins[i] = min + step * i;
@@ -133,7 +133,7 @@ public class TelemetryData
 
         return bins;
     }
-    
+
     private static int[] Digitize(double[] data, double[] bins)
     {
         var inds = new int[data.Length];
@@ -155,7 +155,7 @@ public class TelemetryData
 
     private void CalculateAirTimes()
     {
-        var airtimes  = new List<Airtime>();
+        var airtimes = new List<Airtime>();
 
         if (Front.Present && Rear.Present)
         {
@@ -250,9 +250,9 @@ public class TelemetryData
         var data = Digitize(v, bins);
         return (bins, data);
     }
-    
+
     #endregion
-    
+
     #region PSST conversion
 
     public byte[] ProcessRecording(ushort[] front, ushort[] rear)
@@ -270,7 +270,7 @@ public class TelemetryData
         {
             throw new Exception("Front and rear record counts are not equal!");
         }
-        
+
         // Create time array
         var recordCount = Math.Max(fc, rc);
         var time = new double[recordCount];
@@ -317,12 +317,13 @@ public class TelemetryData
             if (Front.Strokes.Compressions.Length == 0 && Front.Strokes.Rebounds.Length == 0)
             {
                 Front.Present = false;
-            } else
+            }
+            else
             {
                 Front.Strokes.Digitize(dt, dv, dvFine);
             }
         }
-        
+
         if (Rear.Present)
         {
             Rear.Travel = new double[rc];
@@ -339,7 +340,7 @@ public class TelemetryData
                 x = Math.Min(x, Linkage.MaxRearTravel);
                 Rear.Travel[i] = x;
             }
-            
+
             var tbins = Linspace(0, Linkage.MaxRearTravel, Parameters.TravelHistBins + 1);
             var dt = Digitize(Rear.Travel, tbins);
             Rear.TravelBins = tbins;
@@ -356,12 +357,13 @@ public class TelemetryData
             if (Rear.Strokes.Compressions.Length == 0 && Rear.Strokes.Rebounds.Length == 0)
             {
                 Rear.Present = false;
-            } else
+            }
+            else
             {
                 Rear.Strokes.Digitize(dt, dv, dvFine);
             }
         }
-        
+
         CalculateAirTimes();
 
         return MessagePackSerializer.Serialize(this);
@@ -403,7 +405,7 @@ public class TelemetryData
         {
             hist[i] = Generate.Zeros(TravelBinsForVelocityHistogram);
         }
-        
+
         var totalCount = 0;
         foreach (var s in suspension.Strokes.Compressions.Concat(suspension.Strokes.Rebounds))
         {
@@ -428,7 +430,7 @@ public class TelemetryData
 
             largestBin = Math.Max(travelSum, largestBin);
         }
-        
+
         return new StackedHistogramData(
             suspension.VelocityBins.ToList().GetRange(0, suspension.VelocityBins.Length), [.. hist]);
     }
@@ -473,12 +475,12 @@ public class TelemetryData
     public TravelStatistics CalculateTravelStatistics(SuspensionType type)
     {
         var suspension = type == SuspensionType.Front ? Front : Rear;
-        
+
         var sum = 0.0;
         var count = 0.0;
         var mx = 0.0;
         var bo = 0;
-        
+
         foreach (var stroke in suspension.Strokes.Compressions.Concat(suspension.Strokes.Rebounds))
         {
             sum += stroke.Stat.SumTravel;
@@ -523,9 +525,9 @@ public class TelemetryData
         }
 
         return new VelocityStatistics(
-            rsum / rcount, 
-            maxr, 
-            csum / ccount, 
+            rsum / rcount,
+            maxr,
+            csum / ccount,
             maxc);
     }
 
@@ -582,13 +584,13 @@ public class TelemetryData
             lsr * totalPercentage,
             hsr * totalPercentage);
     }
-    
+
     private static Func<double, double> FitPolynomial(double[] x, double[] y)
     {
         var coefficients = Fit.Polynomial(x, y, 1);
         return t => coefficients[1] * t + coefficients[0];
     }
-    
+
     private (double[], double[]) TravelVelocity(SuspensionType suspensionType, BalanceType balanceType)
     {
         var suspension = suspensionType == SuspensionType.Front ? Front : Rear;
@@ -603,12 +605,12 @@ public class TelemetryData
         foreach (var s in strokes)
         {
             t.Add(s.Stat.MaxTravel / travelMax * 100);
-            
+
             // Use positive values for rebound too, because ScottPlot can't invert axis easily. 
-            v.Add(balanceType == BalanceType.Rebound ?  -s.Stat.MaxVelocity : s.Stat.MaxVelocity);
+            v.Add(balanceType == BalanceType.Rebound ? -s.Stat.MaxVelocity : s.Stat.MaxVelocity);
         }
 
-        var  tArray = t.ToArray();
+        var tArray = t.ToArray();
         var vArray = v.ToArray();
 
         Array.Sort(tArray, vArray);
@@ -623,10 +625,10 @@ public class TelemetryData
 
         var frontPoly = FitPolynomial(frontTravelVelocity.Item1, frontTravelVelocity.Item2);
         var rearPoly = FitPolynomial(rearTravelVelocity.Item1, rearTravelVelocity.Item2);
-        
+
         var frontTrend = frontTravelVelocity.Item1.Select(t => frontPoly(t)).ToList();
         var rearTrend = rearTravelVelocity.Item1.Select(t => rearPoly(t)).ToList();
-        
+
         var sum = frontTrend.Zip(rearTrend, (fx, gx) => fx - gx).Sum();
         var msd = sum / frontTrend.Count;
 
@@ -639,6 +641,6 @@ public class TelemetryData
             rearTravelVelocity.Item1.Select(t => rearPoly(t)).ToList(),
             msd);
     }
-    
+
     #endregion
 };

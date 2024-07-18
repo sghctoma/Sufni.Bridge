@@ -34,14 +34,14 @@ public class RawTelemetryData
 
         var count = ((int)stream.Length - 16) / 4;
         var records = new List<Record>(count);
-        
+
         for (var i = 0; i < count; i++)
         {
             records.Add(new Record(
                 reader.ReadUInt16(),
                 reader.ReadUInt16()));
         }
-        
+
         var hasFront = records[0].ForkAngle != 0xffff;
         var hasRear = records[0].ShockAngle != 0xffff;
 

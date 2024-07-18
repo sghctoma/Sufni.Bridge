@@ -17,7 +17,7 @@ public class MassStorageTelemetryFile : ITelemetryFile
     public string Description { get; set; }
     public DateTime StartTime { get; init; }
     public string Duration { get; init; }
-    
+
     public MassStorageTelemetryFile(FileInfo fileInfo)
     {
         this.fileInfo = fileInfo;
@@ -44,7 +44,7 @@ public class MassStorageTelemetryFile : ITelemetryFile
         Name = fileInfo.Name;
         Description = $"Imported from {fileInfo.Name}";
     }
-    
+
     public async Task<byte[]> GeneratePsstAsync(Linkage linkage, Calibration? frontCal, Calibration? rearCal)
     {
         var rawData = await File.ReadAllBytesAsync(fileInfo.FullName);
@@ -54,7 +54,7 @@ public class MassStorageTelemetryFile : ITelemetryFile
             frontCal, rearCal, linkage);
         return telemetryData.ProcessRecording(rawTelemetryData.Front, rawTelemetryData.Rear);
     }
-    
+
     public Task OnImported()
     {
         Imported = true;

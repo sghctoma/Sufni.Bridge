@@ -22,7 +22,7 @@ public partial class ItemListViewModelBase : ViewModelBase
     public ObservableCollection<PullMenuItemViewModel> MenuItems { get; set; } = [];
     [ObservableProperty] private ItemViewModelBase? lastDeleted;
 
-    public virtual Task LoadFromDatabase() { return Task.CompletedTask;}
+    public virtual Task LoadFromDatabase() { return Task.CompletedTask; }
     public virtual void ConnectSource()
     {
         Source.Connect()
@@ -33,9 +33,9 @@ public partial class ItemListViewModelBase : ViewModelBase
             .DisposeMany()
             .Subscribe();
     }
-    
+
     protected virtual void AddImplementation() { }
-    protected virtual Task DeleteImplementation(ItemViewModelBase vm) { return Task.CompletedTask;}
+    protected virtual Task DeleteImplementation(ItemViewModelBase vm) { return Task.CompletedTask; }
 
 #pragma warning disable CS8618 // "items" is populated in the ConnectSource method
     public ItemListViewModelBase()

@@ -21,7 +21,7 @@ public class MassStorageTelemetryDataStore : ITelemetryDataStore
             .ToList();
         return Task.FromResult(files);
     }
-    
+
     public MassStorageTelemetryDataStore(DriveInfo driveInfo)
     {
         DriveInfo = driveInfo;

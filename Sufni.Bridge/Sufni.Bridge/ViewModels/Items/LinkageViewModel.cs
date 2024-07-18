@@ -16,19 +16,19 @@ public partial class LinkageViewModel : ItemViewModelBase
 {
     private Linkage linkage;
     public bool IsInDatabase;
-    
+
     #region Observable properties
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
     [NotifyCanExecuteChangedFor(nameof(ResetCommand))]
     private double headAngle;
-    
+
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
     [NotifyCanExecuteChangedFor(nameof(ResetCommand))]
     private double? frontStroke;
-    
+
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
     [NotifyCanExecuteChangedFor(nameof(ResetCommand))]
@@ -38,7 +38,7 @@ public partial class LinkageViewModel : ItemViewModelBase
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
     [NotifyCanExecuteChangedFor(nameof(ResetCommand))]
     private LeverageRatioData? leverageRatioData;
-    
+
     #endregion
 
     #region Constructors
@@ -49,7 +49,7 @@ public partial class LinkageViewModel : ItemViewModelBase
         IsInDatabase = false;
         ResetImplementation();
     }
-    
+
     public LinkageViewModel(Linkage linkage, bool fromDatabase)
     {
         this.linkage = linkage;
@@ -127,9 +127,9 @@ public partial class LinkageViewModel : ItemViewModelBase
         var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
         Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
 
-        return !mainPagesViewModel.SetupsPage.Items.Any(s => 
-            s is SetupViewModel svm && 
-            svm.SelectedLinkage != null && 
+        return !mainPagesViewModel.SetupsPage.Items.Any(s =>
+            s is SetupViewModel svm &&
+            svm.SelectedLinkage != null &&
             svm.SelectedLinkage.Id == Id);
     }
 
@@ -150,7 +150,7 @@ public partial class LinkageViewModel : ItemViewModelBase
     {
         var filesService = App.Current?.Services?.GetService<IFilesService>();
         Debug.Assert(filesService != null, nameof(filesService) + " != null");
-        
+
         var file = await filesService.OpenLeverageRatioFileAsync();
         if (file is null) return;
 
@@ -172,6 +172,6 @@ public partial class LinkageViewModel : ItemViewModelBase
             ErrorMessages.Add($"Leverage ratio file could not be read: {e.Message}");
         }
     }
-    
+
     #endregion
 }

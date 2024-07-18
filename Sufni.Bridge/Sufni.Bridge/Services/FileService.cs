@@ -17,7 +17,7 @@ public class FilesService : IFilesService
     public async Task<IStorageFile?> OpenLeverageRatioFileAsync()
     {
         Debug.Assert(target != null, nameof(target) + " != null");
-        
+
         var files = await target.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions()
         {
             Title = "Open Leverage Ratio file",

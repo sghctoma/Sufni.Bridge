@@ -24,7 +24,7 @@ public partial class SessionViewModel : ItemViewModelBase
     private DamperPageViewModel DamperPage { get; } = new();
     private BalancePageViewModel BalancePage { get; } = new();
     private NotesPageViewModel NotesPage { get; } = new();
-    public ObservableCollection<PageViewModelBase> Pages {get; }
+    public ObservableCollection<PageViewModelBase> Pages { get; }
     public string Description => NotesPage.Description ?? "";
     public override bool IsComplete => session.HasProcessedData;
 
@@ -55,12 +55,12 @@ public partial class SessionViewModel : ItemViewModelBase
         DamperPage.FrontHsrPercentage = cache.FrontHsrPercentage;
         DamperPage.RearHsrPercentage = cache.RearHsrPercentage;
 
-        if (cache.CompressionBalance is not null) 
+        if (cache.CompressionBalance is not null)
         {
             BalancePage.CompressionBalance = cache.CompressionBalance;
             BalancePage.ReboundBalance = cache.ReboundBalance;
         }
-        else 
+        else
         {
             Pages.Remove(BalancePage);
         }
@@ -111,8 +111,8 @@ public partial class SessionViewModel : ItemViewModelBase
                 DamperPage.FrontHscPercentage = fvb.HighSpeedCompression;
             });
         }
-        
-        if (telemetryData.Rear.Present) 
+
+        if (telemetryData.Rear.Present)
         {
             var rth = new TravelHistogramPlot(new Plot(), SuspensionType.Rear);
             rth.LoadTelemetryData(telemetryData);
@@ -155,12 +155,12 @@ public partial class SessionViewModel : ItemViewModelBase
         {
             Dispatcher.UIThread.Post(() => { Pages.Remove(BalancePage); });
         }
-        
+
         await databaseService.PutSessionCacheAsync(sessionCache);
     }
 
     #endregion
-    
+
     #region Constructors
 
     public SessionViewModel()
@@ -169,7 +169,7 @@ public partial class SessionViewModel : ItemViewModelBase
         IsInDatabase = false;
         Pages = [SpringPage, DamperPage, BalancePage, NotesPage];
     }
-    
+
     public SessionViewModel(Session session, bool fromDatabase)
     {
         this.session = session;

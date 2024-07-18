@@ -32,7 +32,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(ImportSessionsCommand))]
     private Guid? selectedSetup;
-    
+
     #endregion Observable properties
 
     #region Property change handlers
@@ -40,7 +40,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
     private async void GetDataStoreFiles(object? dataStore)
     {
         ImportInProgress = true;
-        
+
         TelemetryFiles.Clear();
         var files = await (dataStore as ITelemetryDataStore)!.GetFiles();
         Dispatcher.UIThread.Post(() =>
@@ -53,7 +53,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
 
         ImportInProgress = false;
     }
-    
+
     async partial void OnSelectedDataStoreChanged(ITelemetryDataStore? value)
     {
         Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
@@ -68,18 +68,18 @@ public partial class ImportSessionsViewModel : ViewModelBase
         // Need to clear the DataStoresAvailable flag so that the notification does not show
         // up when the first datastore appears and auto-selected.
         ClearNewDataStoresAvailable();
-        
+
         try
         {
             var boards = await databaseService.GetBoardsAsync();
             var selectedBoard = boards.FirstOrDefault(b => b?.Id.ToLower() == value.BoardId, null);
             SelectedSetup = selectedBoard?.SetupId;
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             ErrorMessages.Add($"Error while changing data store: {e.Message}");
         }
-        
+
         new Thread(GetDataStoreFiles).Start(value);
     }
 
@@ -90,22 +90,22 @@ public partial class ImportSessionsViewModel : ViewModelBase
     private readonly IDatabaseService? databaseService;
 
     #endregion Private members
-    
+
     #region Constructors
 
     // This is only here for the designer
-    public ImportSessionsViewModel() : this(new SourceCache<ItemViewModelBase, Guid>(m => m.Id)) {}
-    
+    public ImportSessionsViewModel() : this(new SourceCache<ItemViewModelBase, Guid>(m => m.Id)) { }
+
     public ImportSessionsViewModel(SourceCache<ItemViewModelBase, Guid> sessions)
     {
         databaseService = App.Current?.Services?.GetService<IDatabaseService>();
         var telemetryDataStoreService = App.Current?.Services?.GetService<ITelemetryDataStoreService>();
 
         this.sessions = sessions;
-        
+
         Debug.Assert(databaseService != null, nameof(telemetryDataStoreService) + " != null");
         Debug.Assert(telemetryDataStoreService != null, nameof(telemetryDataStoreService) + " != null");
-        
+
         TelemetryDataStores = telemetryDataStoreService.DataStores;
         TelemetryDataStores.CollectionChanged += (_, e) =>
         {
@@ -143,20 +143,20 @@ public partial class ImportSessionsViewModel : ViewModelBase
     }
 
     #endregion
-    
+
     #region Public methods
 
     public async Task EvaluateSetupExists()
     {
         Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
-        
+
         var boards = await databaseService.GetBoardsAsync();
         var selectedBoard = boards.FirstOrDefault(b => b?.Id.ToLower() == SelectedDataStore?.BoardId, null);
         SelectedSetup = selectedBoard?.SetupId;
     }
 
     #endregion
-    
+
     #region Commands
 
     [RelayCommand]
@@ -178,7 +178,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
             Notifications.Add("Folder is already opened in mass-storage mode!");
             return;
         }
-        
+
         var dataStore = new StorageProviderTelemetryDataStore(folder);
         await dataStore.Initialization;
 
@@ -190,9 +190,9 @@ public partial class ImportSessionsViewModel : ViewModelBase
         Debug.Assert(SelectedSetup != null);
         Debug.Assert(SelectedDataStore != null);
         Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
-        
+
         ImportInProgress = true;
-        
+
         foreach (var telemetryFile in TelemetryFiles.Where(f => f.ShouldBeImported))
         {
             try
@@ -204,7 +204,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
                 {
                     throw new Exception("Linkage is missing");
                 }
-                
+
                 // Get front Calibration
                 var fcal = await databaseService.GetCalibrationAsync(setup.FrontCalibrationId ?? Guid.Empty);
                 var fmethod = fcal is null ? null : await databaseService.GetCalibrationMethodAsync(fcal.MethodId);
@@ -212,7 +212,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
                 {
                     throw new Exception("Front calibration method is missing.");
                 }
-                
+
                 // Get rear Calibration
                 var rcal = await databaseService.GetCalibrationAsync(setup.RearCalibrationId ?? Guid.Empty);
                 var rmethod = rcal is null ? null : await databaseService.GetCalibrationMethodAsync(rcal.MethodId);
@@ -220,20 +220,20 @@ public partial class ImportSessionsViewModel : ViewModelBase
                 {
                     throw new Exception("Rear calibration method is missing.");
                 }
-                
+
                 fcal?.Prepare(fmethod!, linkage.MaxFrontStroke!.Value, linkage.MaxFrontTravel);
                 rcal?.Prepare(rmethod!, linkage.MaxRearStroke!.Value, linkage.MaxRearTravel);
                 var psst = await telemetryFile.GeneratePsstAsync(linkage, fcal, rcal);
-                
+
                 var session = new Session(
                     id: Guid.NewGuid(),
                     name: telemetryFile.Name,
                     description: telemetryFile.Description,
                     setup: SelectedSetup!.Value,
                     timestamp: (int)((DateTimeOffset)telemetryFile.StartTime).ToUnixTimeSeconds())
-                    {
-                        ProcessedData = psst
-                    };
+                {
+                    ProcessedData = psst
+                };
 
                 await databaseService.PutSessionAsync(session);
                 await telemetryFile.OnImported();
@@ -253,7 +253,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
                 });
             }
         }
-        
+
         var files = await SelectedDataStore.GetFiles();
         TelemetryFiles.Clear();
         foreach (var file in files)
@@ -280,7 +280,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
     {
         NewDataStoresAvailable = false;
     }
-    
+
     [RelayCommand]
     private static void AddSetup()
     {
@@ -289,6 +289,6 @@ public partial class ImportSessionsViewModel : ViewModelBase
 
         mainPagesViewModel.SetupsPage.AddCommand.Execute(null);
     }
-    
+
     #endregion Commands
 }

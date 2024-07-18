@@ -105,7 +105,7 @@ public class Linkage : Synchronizable
         set => shockWheelCoeffs = value;
     }
 
-    [Ignore] [JsonIgnore] [IgnoreMember] public Polynomial Polynomial => new(ShockWheelCoeffs);
+    [Ignore][JsonIgnore][IgnoreMember] public Polynomial Polynomial => new(ShockWheelCoeffs);
 
     [Ignore]
     [JsonIgnore]
@@ -118,7 +118,7 @@ public class Linkage : Synchronizable
     [Ignore]
     [JsonIgnore]
     [IgnoreMember]
-    public LeverageRatioData? LeverageRatioData 
+    public LeverageRatioData? LeverageRatioData
     {
         get
         {
@@ -140,7 +140,7 @@ public class LeverageRatioData
     public List<double> WheelTravel { get; init; }
     public List<double> LeverageRatio { get; init; }
     public List<double> ShockTravel { get; init; }
-    
+
     private void ProcessWheelLeverageRatio(CsvReader reader)
     {
         var shock = 0.0;
@@ -148,7 +148,7 @@ public class LeverageRatioData
         {
             var wheel = reader.GetField<double>("Wheel_T");
             var leverage = reader.GetField<double>("Leverage_R");
-            
+
             WheelTravel.Add(wheel);
             LeverageRatio.Add(leverage);
             ShockTravel.Add(shock);
@@ -165,7 +165,7 @@ public class LeverageRatioData
             var shock = reader.GetField<double>("Shock_T");
             var wheel = reader.GetField<double>("Wheel_T");
             double lr = 0;
-            
+
             if (idx > 0)
             {
                 var sdiff = shock - ShockTravel[idx - 1];
@@ -181,27 +181,27 @@ public class LeverageRatioData
             idx++;
         }
     }
-    
+
     public LeverageRatioData(TextReader reader)
     {
         WheelTravel = [];
         LeverageRatio = [];
         ShockTravel = [];
-        
+
         var config = new CsvConfiguration(CultureInfo.InvariantCulture)
         {
             DetectDelimiter = true,
             AllowComments = true,
             Comment = '#'
         };
-        
+
         using var csvReader = new CsvReader(reader, config);
 
         if (!csvReader.Read() || !csvReader.ReadHeader() || !csvReader.HeaderRecord!.Contains("Wheel_T"))
         {
             throw new Exception("Failed processing leverage data.");
         }
-        
+
         if (csvReader.HeaderRecord!.Contains("Leverage_R"))
         {
             ProcessWheelLeverageRatio(csvReader);
@@ -218,7 +218,7 @@ public class LeverageRatioData
         WheelTravel = new List<double>(data.Length);
         LeverageRatio = new List<double>(data.Length);
         ShockTravel = new List<double>(data.Length);
-        
+
         foreach (var d in data)
         {
             WheelTravel.Add(d[0]);
@@ -239,8 +239,8 @@ public class LeverageRatioData
 
     public override string ToString()
     {
-        return string.Join("\n", WheelTravel.Zip(LeverageRatio, (wt, lr) => 
-            string.Create(CultureInfo.InvariantCulture,$"{wt},{lr}")));
+        return string.Join("\n", WheelTravel.Zip(LeverageRatio, (wt, lr) =>
+            string.Create(CultureInfo.InvariantCulture, $"{wt},{lr}")));
     }
 
     public override int GetHashCode()

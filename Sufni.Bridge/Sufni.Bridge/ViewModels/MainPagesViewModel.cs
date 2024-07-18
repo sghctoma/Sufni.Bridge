@@ -106,13 +106,13 @@ public partial class MainPagesViewModel : ViewModelBase
     }
 
     #endregion
-    
+
     #region Private methods
 
     private async Task LoadDatabaseContent()
     {
         DatabaseLoaded = false;
-        
+
         await CalibrationsPage.LoadFromDatabase();
         await LinkagesPage.LoadFromDatabase();
         await SetupsPage.LoadFromDatabase();
@@ -120,7 +120,7 @@ public partial class MainPagesViewModel : ViewModelBase
 
         DatabaseLoaded = true;
     }
-    
+
     #endregion
 
     #region Commands
@@ -158,7 +158,7 @@ public partial class MainPagesViewModel : ViewModelBase
 
         SyncInProgress = false;
     }
-    
+
     [RelayCommand(CanExecute = nameof(CanSync))]
     private void Sync()
     {
@@ -172,7 +172,7 @@ public partial class MainPagesViewModel : ViewModelBase
         Debug.Assert(mainViewModel != null, nameof(mainViewModel) + " != null");
         mainViewModel.OpenView(SettingsPage);
     }
-    
+
     [RelayCommand]
     private void ShowImportPage()
     {

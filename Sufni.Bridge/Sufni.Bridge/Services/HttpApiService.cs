@@ -17,7 +17,7 @@ internal class HttpApiService : IHttpApiService
 
     private string? serverUrl;
     private readonly HttpClient client = new(Handler);
-    
+
     private static readonly HttpClientHandler Handler = new()
     {
         UseCookies = false,
@@ -25,19 +25,19 @@ internal class HttpApiService : IHttpApiService
         ServerCertificateCustomValidationCallback = (_, _, _, _) => true
 #endif
     };
-    
+
     #endregion
-    
+
     private record PutResponse(
         [property: JsonPropertyName("id")] Guid Id);
-    
+
     public async Task<string> RefreshTokensAsync(string url, string refreshToken)
     {
         serverUrl = url;
 
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", refreshToken);
         using HttpResponseMessage response = await client.PostAsync($"{serverUrl}/auth/refresh", null);
-        
+
         response.EnsureSuccessStatusCode();
         var tokens = await response.Content.ReadFromJsonAsync<Tokens>();
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens!.AccessToken);
@@ -69,7 +69,7 @@ internal class HttpApiService : IHttpApiService
         _ = await client.DeleteAsync($"{serverUrl}/auth/logout");
         client.DefaultRequestHeaders.Authorization = null;
     }
-    
+
     public async Task<SynchronizationData> PullSyncAsync(int since = 0)
     {
         using var response = await client.GetAsync($"{serverUrl}/api/sync/pull?since={since}");

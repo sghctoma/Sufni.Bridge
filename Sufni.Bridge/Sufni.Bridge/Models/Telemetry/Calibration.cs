@@ -45,7 +45,7 @@ public partial class Calibration : Synchronizable
     // Just to satisfy sql-net-pcl's parameterless constructor requirement
     // Uninitialized non-nullable property warnings are suppressed with null! initializer.
     public Calibration() { }
-    
+
     public Calibration(Guid id, string name, Guid methodId, Dictionary<string, double> inputs)
     {
         Id = id;
@@ -68,7 +68,7 @@ public partial class Calibration : Synchronizable
     [Column("method_id")]
     [MessagePackFormatter(typeof(IdFormatter))]
     public Guid MethodId { get; set; }
-    
+
     [JsonPropertyName("inputs")]
     [Ignore]
     public Dictionary<string, double> Inputs { get; set; } = null!;
@@ -96,13 +96,13 @@ public partial class Calibration : Synchronizable
             .AddConstant("MAX_TRAVEL", maxTravel)
             .Build();
         evaluatorDelegate = evaluator.CreateDelegate(expression);
-        
+
         // Set calibration variables (a.k.a. inputs)
         foreach (var input in Inputs)
         {
             evaluatorEnvironment[input.Key] = input.Value;
         }
-        
+
         // Calculate intermediates
         foreach (var intermediate in method.Properties.Intermediates)
         {

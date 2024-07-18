@@ -19,22 +19,22 @@ public partial class SetupViewModel : ItemViewModelBase
     public bool IsInDatabase;
 
     #region Observable properties
-    
+
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
     [NotifyCanExecuteChangedFor(nameof(ResetCommand))]
     private string? boardId;
-    
+
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
     [NotifyCanExecuteChangedFor(nameof(ResetCommand))]
     private LinkageViewModel? selectedLinkage;
-    
+
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
     [NotifyCanExecuteChangedFor(nameof(ResetCommand))]
     private CalibrationViewModel? selectedFrontCalibration;
-    
+
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
     [NotifyCanExecuteChangedFor(nameof(ResetCommand))]
@@ -42,14 +42,14 @@ public partial class SetupViewModel : ItemViewModelBase
 
     public ReadOnlyObservableCollection<ItemViewModelBase> Linkages => linkages;
     private readonly ReadOnlyObservableCollection<ItemViewModelBase> linkages;
-    
+
     public ReadOnlyObservableCollection<ItemViewModelBase> Calibrations => calibrations;
     private readonly ReadOnlyObservableCollection<ItemViewModelBase> calibrations;
-    
+
     #endregion
-    
+
     #region Constructors
-    
+
     public SetupViewModel()
     {
         setup = new Setup();
@@ -58,7 +58,7 @@ public partial class SetupViewModel : ItemViewModelBase
         linkages = new ReadOnlyObservableCollection<ItemViewModelBase>([]);
         calibrations = new ReadOnlyObservableCollection<ItemViewModelBase>([]);
     }
-    
+
     public SetupViewModel(Setup setup, string? boardId, bool fromDatabase,
         SourceCache<ItemViewModelBase, Guid> linkagesSourceCache,
         SourceCache<ItemViewModelBase, Guid> calibrationsSourceCache)
@@ -67,17 +67,17 @@ public partial class SetupViewModel : ItemViewModelBase
         IsInDatabase = fromDatabase;
         Id = setup.Id;
         BoardId = originalBoardId = boardId;
-        
+
         linkagesSourceCache.Connect()
             .Bind(out linkages)
             .DisposeMany()
             .Subscribe();
-        
+
         calibrationsSourceCache.Connect()
             .Bind(out calibrations)
             .DisposeMany()
             .Subscribe();
-        
+
         ResetImplementation();
     }
 
@@ -105,9 +105,9 @@ public partial class SetupViewModel : ItemViewModelBase
     protected override async Task SaveImplementation()
     {
         Debug.Assert(SelectedLinkage != null, nameof(SelectedLinkage) + " != null");
-        Debug.Assert(!(SelectedFrontCalibration == null && SelectedRearCalibration == null), 
+        Debug.Assert(!(SelectedFrontCalibration == null && SelectedRearCalibration == null),
             nameof(SelectedFrontCalibration) + " and " + nameof(SelectedRearCalibration) + " can't be both null");
-        
+
         var databaseService = App.Current?.Services?.GetService<IDatabaseService>();
         Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
 
@@ -120,33 +120,33 @@ public partial class SetupViewModel : ItemViewModelBase
                 SelectedFrontCalibration?.Id,
                 SelectedRearCalibration?.Id);
             Id = await databaseService.PutSetupAsync(newSetup);
-            
+
             // If this setup was already associated with another board, clear that association.
             // Do not delete the board though, it might be picked up later.
             if (!string.IsNullOrEmpty(originalBoardId) && IsInDatabase && originalBoardId != BoardId)
             {
                 await databaseService.PutBoardAsync(new Board(originalBoardId, null));
             }
-            
+
             // If the board ID changed, or this is a new setup, associate it with the board ID.
             if (!string.IsNullOrEmpty(BoardId) && (!IsInDatabase || originalBoardId != BoardId))
             {
                 await databaseService.PutBoardAsync(new Board(BoardId!, Id));
             }
-            
+
             setup = newSetup;
             originalBoardId = BoardId;
-            
+
             SaveCommand.NotifyCanExecuteChanged();
             ResetCommand.NotifyCanExecuteChanged();
-            
+
             // We notify even if the setup was already in the database, since we need to reevaluate
             // if a setup exists for the import page.
             var mainPagesViewModel = App.Current?.Services?.GetService<MainPagesViewModel>();
             Debug.Assert(mainPagesViewModel != null, nameof(mainPagesViewModel) + " != null");
             mainPagesViewModel.SetupsPage.OnAdded(this);
             await mainPagesViewModel.ImportSessionsPage.EvaluateSetupExists();
-            
+
             IsInDatabase = true;
 
             OpenPreviousPage();
@@ -156,7 +156,7 @@ public partial class SetupViewModel : ItemViewModelBase
             ErrorMessages.Add($"Setup could not be saved: {e.Message}");
         }
     }
-    
+
     protected override Task ResetImplementation()
     {
         try
@@ -178,7 +178,7 @@ public partial class SetupViewModel : ItemViewModelBase
     #endregion
 
     #region Commands
-     
+
     [RelayCommand]
     private void AddLinkage()
     {

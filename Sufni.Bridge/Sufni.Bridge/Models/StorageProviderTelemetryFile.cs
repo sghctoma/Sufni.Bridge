@@ -44,20 +44,20 @@ public class StorageProviderTelemetryFile : ITelemetryFile
         Name = storageFile.Name;
         Description = $"Imported from {storageFile.Name}";
     }
-    
+
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-                               // Init() takes care of this.
+    // Init() takes care of this.
     public StorageProviderTelemetryFile(IStorageFile storageFile)
     {
         this.storageFile = storageFile;
         Initialization = Init();
     }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    
+
     public async Task<byte[]> GeneratePsstAsync(Linkage linkage, Calibration? frontCal, Calibration? rearCal)
     {
         await Initialization;
-        
+
         await using var stream = await storageFile.OpenReadAsync();
         var rawTelemetryData = new RawTelemetryData(stream);
         var telemetryData = new TelemetryData(storageFile.Name,
@@ -65,11 +65,11 @@ public class StorageProviderTelemetryFile : ITelemetryFile
             frontCal, rearCal, linkage);
         return telemetryData.ProcessRecording(rawTelemetryData.Front, rawTelemetryData.Rear);
     }
-    
+
     public async Task OnImported()
     {
         await Initialization;
-        
+
         Imported = true;
         var parent = await storageFile.GetParentAsync();
         var parentItems = parent!.GetItemsAsync();
@@ -85,7 +85,7 @@ public class StorageProviderTelemetryFile : ITelemetryFile
         {
             throw new Exception("The \"uploaded\" folder could not be accessed.");
         }
-        
+
         await storageFile.MoveAsync(uploaded);
     }
 }

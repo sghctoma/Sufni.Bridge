@@ -24,7 +24,7 @@ public class CalibrationMethod : Synchronizable
     // Just to satisfy sql-net-pcl's parameterless constructor requirement
     // Uninitialized non-nullable property warnings are suppressed with null! initializer.
     public CalibrationMethod() { }
-    
+
     public CalibrationMethod(Guid id, string name, string description, CalibrationMethodProperties properties)
     {
         Id = id;

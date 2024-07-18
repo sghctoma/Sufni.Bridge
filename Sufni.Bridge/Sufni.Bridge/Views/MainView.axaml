@@ -8,7 +8,13 @@
     d:DesignHeight="600"
     d:DesignWidth="500"
     x:DataType="vm:MainViewModel"
-    Background="{StaticResource SufniRegion}"
+    Background="{StaticResource SufniBackgroundDisabled}"
+    TopLevel.AutoSafeAreaPadding="False"
     mc:Ignorable="d">
-    <ContentControl Content="{Binding CurrentView}" />
+    <Panel Margin="{Binding OuterPanelMargin}" Background="{StaticResource SufniRegion}">
+        <ContentControl
+            Margin="{Binding ContentControlMargin}"
+            VerticalAlignment="Stretch"
+            Content="{Binding CurrentView}" />
+    </Panel>
 </UserControl>

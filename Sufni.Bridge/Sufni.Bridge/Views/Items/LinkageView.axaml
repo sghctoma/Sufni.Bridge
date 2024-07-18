@@ -29,7 +29,7 @@
 
     <Grid
         MinWidth="300"
-        Margin="20,0,20,20"
+        Margin="20,0,20,10"
         HorizontalAlignment="Stretch"
         ColumnDefinitions="auto *"
         RowDefinitions="auto auto auto auto auto * auto auto">

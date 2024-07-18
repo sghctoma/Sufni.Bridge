@@ -20,7 +20,7 @@
     </Design.DataContext>
 
     <Grid
-        Margin="20,20,20,20"
+        Margin="20,20,20,10"
         ColumnDefinitions="auto * auto"
         RowDefinitions="44 * auto auto 39">
 

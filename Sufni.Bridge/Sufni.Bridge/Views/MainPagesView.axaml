@@ -96,7 +96,7 @@
             Grid.Row="1"
             Grid.Column="0"
             Grid.ColumnSpan="3"
-            Background="{StaticResource SufniBackground}"
+            Background="{StaticResource SufniBackgroundDisabled}"
             SelectedIndex="{Binding SelectedIndex}"
             TabStripPlacement="Bottom">
             <TabControl.ItemsPanel>

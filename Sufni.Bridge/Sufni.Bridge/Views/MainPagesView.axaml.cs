@@ -1,6 +1,6 @@
 using Avalonia.Controls;
-using Avalonia.Controls.Primitives;
-using Avalonia.Input;
+using Avalonia.VisualTree;
+using System.Linq;
 
 namespace Sufni.Bridge.Views;
 
@@ -9,20 +9,20 @@ public partial class MainPagesView : UserControl
     public MainPagesView()
     {
         InitializeComponent();
-    }
-
-    private void MenuTabItem_OnPointerPressed(object? sender, PointerPressedEventArgs e)
-    {
-        if (sender is Control ctl)
+        ContentOverlay.PointerPressed += (s, e) =>
         {
-            FlyoutBase.ShowAttachedFlyout(ctl);
-        }
-
-        e.Handled = true;
-    }
-
-    private void MenuTabItem_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
-    {
-        e.Handled = true;
+            MainSplitView.IsPaneOpen = false;
+        };
+        MenuPanel.Loaded += (s, e) =>
+        {
+            var menuItems = MenuPanel.GetVisualDescendants().OfType<MenuItem>();
+            foreach (var menuItem in menuItems)
+            {
+                menuItem.PointerPressed += (s, e) =>
+                {
+                    MainSplitView.IsPaneOpen = false;
+                };
+            }
+        };
     }
 }

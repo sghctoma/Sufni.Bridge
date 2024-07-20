@@ -68,12 +68,6 @@
         <SolidColorBrush x:Key="CalendarDatePickerBorderBrushPointerOver" Color="{StaticResource SufniBorderBrush}" />
 
         <!--  Flyout colors  -->
-        <SolidColorBrush x:Key="MenuFlyoutPresenterBackground" Color="{StaticResource SufniRegion}" />
-        <SolidColorBrush x:Key="MenuFlyoutItemForeground" Color="{StaticResource SufniForeground}" />
-        <SolidColorBrush x:Key="MenuFlyoutItemForegroundPointerOver" Color="#c0c0c0" />
-        <SolidColorBrush x:Key="MenuFlyoutItemBackgroundPointerOver" Color="{StaticResource SufniRegion}" />
-        <SolidColorBrush x:Key="MenuFlyoutItemForegroundPressed" Color="#c0c0c0" />
-        <SolidColorBrush x:Key="MenuFlyoutItemBackgroundPressed" Color="{StaticResource SufniRegion}" />
         <SolidColorBrush x:Key="FlyoutPresenterBackground" Color="{StaticResource SufniBackground}" />
         <Thickness x:Key="FlyoutContentThemePadding">0</Thickness>
         <x:Double x:Key="FlyoutThemeMaxWidth">600</x:Double>
@@ -147,12 +141,6 @@
         </Style>
         <Style Selector="CalendarDayButton">
             <Setter Property="FontSize" Value="14" />
-        </Style>
-
-        <!--  Global styles for Flyouts  -->
-        <Style Selector="MenuItem">
-            <Setter Property="Foreground" Value="{StaticResource SufniForeground}" />
-            <Setter Property="Height" Value="39" />
         </Style>
     </Application.Styles>
 

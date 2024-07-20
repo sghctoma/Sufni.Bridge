@@ -25,6 +25,7 @@ public partial class MainPagesViewModel : ViewModelBase
     [ObservableProperty] private SettingsViewModel settingsPage = new();
     [ObservableProperty] private int selectedIndex;
     [ObservableProperty] private bool syncInProgress;
+    [ObservableProperty] private bool isMenuPaneOpen;
 
     #endregion
 
@@ -179,6 +180,12 @@ public partial class MainPagesViewModel : ViewModelBase
         var mainViewModel = App.Current?.Services?.GetService<MainViewModel>();
         Debug.Assert(mainViewModel != null, nameof(mainViewModel) + " != null");
         mainViewModel.OpenView(ImportSessionsPage);
+    }
+
+    [RelayCommand]
+    private void OpenMenuPane()
+    {
+        IsMenuPaneOpen = true;
     }
 
     #endregion

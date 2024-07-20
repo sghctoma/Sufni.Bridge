@@ -2,30 +2,32 @@
     x:Class="Sufni.Bridge.Views.ItemLists.SessionListView"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:Sufni.Bridge.Views.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:v="clr-namespace:Sufni.Bridge.Views.Controls"
-    xmlns:vm="clr-namespace:Sufni.Bridge.ViewModels.ItemLists"
+    xmlns:v="clr-namespace:Sufni.Bridge.Views"
+    xmlns:vm="clr-namespace:Sufni.Bridge.ViewModels"
+    xmlns:vml="clr-namespace:Sufni.Bridge.ViewModels.ItemLists"
     d:DesignHeight="600"
     d:DesignWidth="500"
-    x:DataType="vm:SessionListViewModel"
+    x:DataType="vml:SessionListViewModel"
     Background="{StaticResource SufniRegion}"
     mc:Ignorable="d">
 
     <Design.DataContext>
-        <vm:SessionListViewModel />
+        <vml:SessionListViewModel />
     </Design.DataContext>
 
     <Grid ColumnDefinitions="*" RowDefinitions="auto * auto auto">
 
         <!--  List of Sessions  -->
-        <v:PullableMenuScrollViewer
+        <controls:PullableMenuScrollViewer
             Grid.Row="1"
             Grid.Column="0"
             Margin="0,15,0,5"
             Items="{Binding Items}"
             MenuItems="{Binding MenuItems}">
-            <v:PullableMenuScrollViewer.TopContent>
+            <controls:PullableMenuScrollViewer.TopContent>
                 <!--  Filter  -->
                 <Grid
                     Margin="20,0,20,20"
@@ -35,12 +37,21 @@
                     <!--  Search box  -->
                     <TextBox
                         Grid.Row="0"
+                        Padding="35,0,0,0"
                         VerticalContentAlignment="Center"
                         BorderThickness="0"
                         CornerRadius="5"
                         IsFocused="{Binding SearchBoxIsFocused, Mode=OneWayToSource}"
                         Text="{Binding SearchText}"
                         Watermark="Search ..." />
+                    <Button
+                        Grid.Row="0"
+                        Width="32"
+                        HorizontalAlignment="Left"
+                        Classes="embedded"
+                        Command="{Binding $parent[v:MainPagesView].((vm:MainPagesViewModel)DataContext).OpenMenuPaneCommand}">
+                        <Image Margin="0,2,0,0" Source="{SvgImage /Assets/fa-bars.svg}" />
+                    </Button>
                     <Button
                         Grid.Row="0"
                         Width="30"
@@ -117,25 +128,25 @@
                         </Grid>
                     </Border>
                 </Grid>
-            </v:PullableMenuScrollViewer.TopContent>
-        </v:PullableMenuScrollViewer>
+            </controls:PullableMenuScrollViewer.TopContent>
+        </controls:PullableMenuScrollViewer>
 
         <!--  Notifications  -->
-        <v:NotificationsBar
+        <controls:NotificationsBar
             Grid.Row="2"
             Grid.Column="0"
             Margin="5,0"
             ZIndex="10" />
 
         <!--  Error messages  -->
-        <v:ErrorMessagesBar
+        <controls:ErrorMessagesBar
             Grid.Row="3"
             Grid.Column="0"
             Margin="5,0"
             ZIndex="10" />
 
         <!--  Undo last deleted  -->
-        <v:UndoDeleteButton
+        <controls:UndoDeleteButton
             Grid.Row="0"
             Grid.RowSpan="4"
             Grid.Column="0" />

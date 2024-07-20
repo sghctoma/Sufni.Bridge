@@ -14,6 +14,7 @@ public partial class SessionListViewModel : ItemListViewModelBase
     [ObservableProperty] private DateTime? dateFilterFrom;
     [ObservableProperty] private DateTime? dateFilterTo;
     [ObservableProperty] private bool dateFilterVisible;
+    [ObservableProperty] private bool searchBoxIsFocused;
 
     public override void ConnectSource()
     {
@@ -42,6 +43,13 @@ public partial class SessionListViewModel : ItemListViewModelBase
         Source.Refresh();
     }
 
+    partial void OnSearchBoxIsFocusedChanged(bool value)
+    {
+        if (value)
+        {
+            DateFilterVisible = true;
+        }
+    }
     private async Task LoadSessionsAsync()
     {
         Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
@@ -66,6 +74,11 @@ public partial class SessionListViewModel : ItemListViewModelBase
         await LoadSessionsAsync();
     }
 
+    protected override void SearchTextCleared()
+    {
+        DateFilterVisible = false;
+    }
+
     [RelayCommand]
     private void ClearDateFilter(string which)
     {
@@ -85,5 +98,4 @@ public partial class SessionListViewModel : ItemListViewModelBase
     {
         DateFilterVisible = !DateFilterVisible;
     }
-
 }

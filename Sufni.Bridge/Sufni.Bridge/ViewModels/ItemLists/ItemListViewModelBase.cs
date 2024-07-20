@@ -36,6 +36,7 @@ public partial class ItemListViewModelBase : ViewModelBase
 
     protected virtual void AddImplementation() { }
     protected virtual Task DeleteImplementation(ItemViewModelBase vm) { return Task.CompletedTask; }
+    protected virtual void SearchTextCleared() { }
 
 #pragma warning disable CS8618 // "items" is populated in the ConnectSource method
     public ItemListViewModelBase()
@@ -77,6 +78,7 @@ public partial class ItemListViewModelBase : ViewModelBase
     private void ClearSearchText()
     {
         SearchText = null;
+        SearchTextCleared();
     }
 
     [RelayCommand]

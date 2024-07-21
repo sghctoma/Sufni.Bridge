@@ -28,7 +28,15 @@
         </Style>
     </UserControl.Styles>
 
-    <StackPanel Background="{StaticResource SufniBackground}">
+    <StackPanel>
+        <StackPanel.Background>
+            <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                <LinearGradientBrush.GradientStops>
+                    <GradientStop Offset="0.7" Color="{StaticResource SufniRegion}" />
+                    <GradientStop Offset="1" Color="{StaticResource SufniBackgroundDisabled}" />
+                </LinearGradientBrush.GradientStops>
+            </LinearGradientBrush>
+        </StackPanel.Background>
         <MenuItem
             Command="{Binding OpenPageCommand}"
             CommandParameter="{Binding ImportSessionsPage}"

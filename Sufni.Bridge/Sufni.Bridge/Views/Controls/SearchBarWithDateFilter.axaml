@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:progRing="clr-namespace:AvaloniaProgressRing;assembly=AvaloniaProgressRing"
     xmlns:v="clr-namespace:Sufni.Bridge.Views"
     xmlns:vm="clr-namespace:Sufni.Bridge.ViewModels"
     xmlns:vml="clr-namespace:Sufni.Bridge.ViewModels.ItemLists"
@@ -45,8 +46,10 @@
 
         <!--  Close search button  -->
         <Button
+            Name="CloseButton"
             Grid.Row="0"
             Width="30"
+            Margin="0,0,5,0"
             HorizontalAlignment="Right"
             Classes="embedded"
             Command="{Binding ClearSearchTextCommand}">
@@ -59,6 +62,37 @@
                 </MultiBinding>
             </Button.IsVisible>
         </Button>
+
+        <!--  Connection indicator  -->
+        <Button
+            Margin="0,0,5,0"
+            HorizontalAlignment="Right"
+            Classes="embedded">
+            <Button.IsVisible>
+                <MultiBinding Converter="{x:Static BoolConverters.And}">
+                    <Binding Path="$parent[v:MainPagesView].((vm:MainPagesViewModel)DataContext).SettingsPage.IsRegistered" />
+                    <Binding Path="!$parent[v:MainPagesView].((vm:MainPagesViewModel)DataContext).SyncInProgress" />
+                    <Binding Path="!#CloseButton.IsVisible" />
+                </MultiBinding>
+            </Button.IsVisible>
+            <Image
+                Width="20"
+                Opacity="0.5"
+                Source="{SvgImage /Assets/fa-link_green.svg}" />
+        </Button>
+
+        <!--  Synchronization indicator  -->
+        <progRing:ProgressRing
+            Width="15"
+            Height="15"
+            Margin="0,0,10,0"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Center"
+            Foreground="{StaticResource SufniAccentColor}">
+            <progRing:ProgressRing.IsActive>
+                <Binding Path="$parent[v:MainPagesView].((vm:MainPagesViewModel)DataContext).SyncInProgress" />
+            </progRing:ProgressRing.IsActive>
+        </progRing:ProgressRing>
 
         <!--  Date pickers  -->
         <Border

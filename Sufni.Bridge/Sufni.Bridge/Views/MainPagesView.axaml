@@ -6,7 +6,6 @@
     xmlns:controls="clr-namespace:Sufni.Bridge.Views.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:progRing="clr-namespace:AvaloniaProgressRing;assembly=AvaloniaProgressRing"
     xmlns:v="clr-namespace:Sufni.Bridge.Views.ItemLists"
     xmlns:vm="clr-namespace:Sufni.Bridge.ViewModels"
     d:DesignHeight="720"
@@ -59,57 +58,10 @@
         </SplitView.Pane>
         <SplitView.Content>
             <Panel>
-                <Grid ColumnDefinitions="auto * 40" RowDefinitions="30 *">
-
-                    <!--  Title  -->
-                    <TextBlock
-                        Grid.Row="0"
-                        Grid.Column="1"
-                        Margin="15,0,0,0"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        FontWeight="Black"
-                        IsHitTestVisible="False"
-                        Text="Sufni Suspension Telemetry" />
-
-                    <!--  Connection indicator  -->
-                    <Button
-                        Grid.Row="0"
-                        Grid.Column="2"
-                        Margin="0,0,5,0"
-                        Classes="embedded">
-                        <Button.IsVisible>
-                            <MultiBinding Converter="{x:Static BoolConverters.And}">
-                                <Binding Path="SettingsPage.IsRegistered" />
-                                <Binding Path="!SyncInProgress" />
-                            </MultiBinding>
-                        </Button.IsVisible>
-                        <Image
-                            Width="20"
-                            Opacity="0.5"
-                            Source="{SvgImage /Assets/fa-link_green.svg}" />
-                    </Button>
-
-                    <!--  Synchronization indicator  -->
-                    <progRing:ProgressRing
-                        Grid.Row="0"
-                        Grid.Column="2"
-                        Width="20"
-                        Height="20"
-                        Margin="0,0,5,0"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        Foreground="{StaticResource SufniAccentColor}">
-                        <progRing:ProgressRing.IsActive>
-                            <MultiBinding Converter="{x:Static BoolConverters.And}">
-                                <Binding Path="SyncInProgress" />
-                            </MultiBinding>
-                        </progRing:ProgressRing.IsActive>
-                    </progRing:ProgressRing>
+                <Grid ColumnDefinitions="auto * 40">
 
                     <!--  Menu tab  -->
                     <TabControl
-                        Grid.Row="1"
                         Grid.Column="0"
                         Grid.ColumnSpan="3"
                         Background="{StaticResource SufniBackgroundDisabled}"

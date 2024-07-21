@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using DynamicData;
 using DynamicData.Binding;
 using Sufni.Bridge.ViewModels.Items;
@@ -11,11 +9,6 @@ namespace Sufni.Bridge.ViewModels.ItemLists;
 
 public partial class SessionListViewModel : ItemListViewModelBase
 {
-    [ObservableProperty] private DateTime? dateFilterFrom;
-    [ObservableProperty] private DateTime? dateFilterTo;
-    [ObservableProperty] private bool dateFilterVisible;
-    [ObservableProperty] private bool searchBoxIsFocused;
-
     public override void ConnectSource()
     {
         Source.Connect()
@@ -33,23 +26,6 @@ public partial class SessionListViewModel : ItemListViewModelBase
             .Subscribe();
     }
 
-    partial void OnDateFilterFromChanged(DateTime? value)
-    {
-        Source.Refresh();
-    }
-
-    partial void OnDateFilterToChanged(DateTime? value)
-    {
-        Source.Refresh();
-    }
-
-    partial void OnSearchBoxIsFocusedChanged(bool value)
-    {
-        if (value)
-        {
-            DateFilterVisible = true;
-        }
-    }
     private async Task LoadSessionsAsync()
     {
         Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
@@ -72,30 +48,5 @@ public partial class SessionListViewModel : ItemListViewModelBase
     {
         Source.Clear();
         await LoadSessionsAsync();
-    }
-
-    protected override void SearchTextCleared()
-    {
-        DateFilterVisible = false;
-    }
-
-    [RelayCommand]
-    private void ClearDateFilter(string which)
-    {
-        switch (which)
-        {
-            case "from":
-                DateFilterFrom = null;
-                break;
-            case "to":
-                DateFilterTo = null;
-                break;
-        }
-    }
-
-    [RelayCommand]
-    private void ToggleDateFilter()
-    {
-        DateFilterVisible = !DateFilterVisible;
     }
 }

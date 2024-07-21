@@ -109,10 +109,10 @@ public partial class PullableMenuScrollViewer : UserControl
         set => SetValue(MenuItemsProperty, value);
     }
 
-    public static readonly StyledProperty<Grid> TopContentProperty =
-            AvaloniaProperty.Register<PullableMenuScrollViewer, Grid>(nameof(TopContent));
+    public static readonly StyledProperty<Control> TopContentProperty =
+            AvaloniaProperty.Register<PullableMenuScrollViewer, Control>(nameof(TopContent));
 
-    public Grid TopContent
+    public Control TopContent
     {
         get => this.GetValue(TopContentProperty);
         set => SetValue(TopContentProperty, value);

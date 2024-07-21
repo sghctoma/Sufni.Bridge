@@ -22,6 +22,11 @@ public partial class ItemListViewModelBase : ViewModelBase
     public ObservableCollection<PullMenuItemViewModel> MenuItems { get; set; } = [];
     [ObservableProperty] private ItemViewModelBase? lastDeleted;
 
+    [ObservableProperty] private bool searchBoxIsFocused;
+    [ObservableProperty] private DateTime? dateFilterFrom;
+    [ObservableProperty] private DateTime? dateFilterTo;
+    [ObservableProperty] private bool dateFilterVisible;
+
     public virtual Task LoadFromDatabase() { return Task.CompletedTask; }
     public virtual void ConnectSource()
     {
@@ -36,7 +41,6 @@ public partial class ItemListViewModelBase : ViewModelBase
 
     protected virtual void AddImplementation() { }
     protected virtual Task DeleteImplementation(ItemViewModelBase vm) { return Task.CompletedTask; }
-    protected virtual void SearchTextCleared() { }
 
 #pragma warning disable CS8618 // "items" is populated in the ConnectSource method
     public ItemListViewModelBase()
@@ -54,6 +58,24 @@ public partial class ItemListViewModelBase : ViewModelBase
     public void OnAdded(ItemViewModelBase vm)
     {
         Source.AddOrUpdate(vm);
+    }
+
+    partial void OnDateFilterFromChanged(DateTime? value)
+    {
+        Source.Refresh();
+    }
+
+    partial void OnDateFilterToChanged(DateTime? value)
+    {
+        Source.Refresh();
+    }
+
+    partial void OnSearchBoxIsFocusedChanged(bool value)
+    {
+        if (value)
+        {
+            DateFilterVisible = true;
+        }
     }
 
     public async Task Delete(ItemViewModelBase vm)
@@ -78,7 +100,7 @@ public partial class ItemListViewModelBase : ViewModelBase
     private void ClearSearchText()
     {
         SearchText = null;
-        SearchTextCleared();
+        DateFilterVisible = false;
     }
 
     [RelayCommand]
@@ -112,5 +134,25 @@ public partial class ItemListViewModelBase : ViewModelBase
 
         Source.AddOrUpdate(LastDeleted);
         LastDeleted = null;
+    }
+
+    [RelayCommand]
+    private void ClearDateFilter(string which)
+    {
+        switch (which)
+        {
+            case "from":
+                DateFilterFrom = null;
+                break;
+            case "to":
+                DateFilterTo = null;
+                break;
+        }
+    }
+
+    [RelayCommand]
+    private void ToggleDateFilter()
+    {
+        DateFilterVisible = !DateFilterVisible;
     }
 }

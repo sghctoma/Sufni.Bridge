@@ -48,7 +48,8 @@
         Name="MainSplitView"
         DisplayMode="Overlay"
         IsPaneOpen="{Binding IsMenuPaneOpen, Mode=TwoWay}"
-        OpenPaneLength="200">
+        OpenPaneLength="160"
+        UseLightDismissOverlayMode="True">
         <SplitView.Pane>
             <controls:SidePanel
                 Name="MenuPanel"
@@ -58,14 +59,6 @@
         </SplitView.Pane>
         <SplitView.Content>
             <Panel>
-                <Border
-                    Name="ContentOverlay"
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Stretch"
-                    Background="{StaticResource SufniRegion}"
-                    IsVisible="{Binding IsMenuPaneOpen}"
-                    Opacity="0.8"
-                    ZIndex="10" />
                 <Grid ColumnDefinitions="auto * 40" RowDefinitions="30 *">
 
                     <!--  Title  -->

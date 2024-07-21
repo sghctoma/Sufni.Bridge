@@ -67,6 +67,11 @@ public partial class PullableMenuScrollViewer : UserControl
         Container.Transitions = [];
         TopContainer.Transitions = [];
 
+        TopContainer.SizeChanged += (s, e) =>
+        {
+            Scroll.Height = Bounds.Height - TopContainer.Bounds.Height;
+        };
+
         // Use ScrollViewer.ScrollChanged to determine TopContainer's visibility.
         AddHandlersForTopContainer();
 

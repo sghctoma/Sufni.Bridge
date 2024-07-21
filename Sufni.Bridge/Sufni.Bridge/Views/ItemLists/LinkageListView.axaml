@@ -35,6 +35,7 @@
 
                     <!--  Search box  -->
                     <TextBox
+                        Name="SearchBox"
                         Padding="35,0,0,0"
                         VerticalContentAlignment="Center"
                         BorderThickness="0"
@@ -51,12 +52,11 @@
                     </Button>
                     <Button
                         Width="30"
-                        Margin="6,5,15,0"
                         HorizontalAlignment="Right"
                         Classes="embedded"
                         Command="{Binding ClearSearchTextCommand}"
                         CommandParameter="linkage"
-                        IsVisible="{Binding SearchText, Converter={x:Static ObjectConverters.IsNotNull}}">
+                        IsVisible="{Binding #SearchBox.IsFocused}">
                         <Image Source="{SvgImage /Assets/fa-xmark.svg}" />
                     </Button>
                 </Grid>

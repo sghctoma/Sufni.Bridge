@@ -20,8 +20,7 @@ public partial class SessionListViewModel : ItemListViewModelBase
                             svm.Description!.Contains(SearchText, StringComparison.CurrentCultureIgnoreCase)))
             .Filter(svm => (DateFilterFrom is null || svm.Timestamp >= DateFilterFrom) &&
                            (DateFilterTo is null || svm.Timestamp <= DateFilterTo))
-            .Sort(SortExpressionComparer<ItemViewModelBase>.Descending(svm => svm.Timestamp!))
-            .Bind(out items)
+            .SortAndBind(out items, SortExpressionComparer<ItemViewModelBase>.Descending(svm => svm.Timestamp!))
             .DisposeMany()
             .Subscribe();
     }

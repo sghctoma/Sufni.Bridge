@@ -31,7 +31,7 @@
     <PackageReference Include="DynamicData" Version="8.4.1" />
     <PackageReference Include="MathNet.Numerics" Version="6.0.0-beta1" />
     <PackageReference Include="MessagePack" Version="3.0.111-alpha" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0-preview.5.24306.7" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0-preview.6.24327.7" />
     <PackageReference Include="ScottPlot" Version="5.0.36" />
     <PackageReference Include="ScottPlot.Avalonia" Version="5.0.36" />
     <PackageReference Include="sqlite-net-pcl" Version="1.9.172" />

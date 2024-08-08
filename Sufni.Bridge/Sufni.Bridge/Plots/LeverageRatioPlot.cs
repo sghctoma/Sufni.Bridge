@@ -17,12 +17,12 @@ public class LeverageRatioPlot(Plot plot) : SufniPlot(plot)
         {
             return;
         }
-        
+
         var lr = Plot.Add.Scatter(data.WheelTravel, data.LeverageRatio);
         lr.MarkerStyle.IsVisible = false;
         lr.LineStyle.Color = Color.FromHex("#ffffbf");
         lr.LineStyle.Width = 2;
-        
+
         Plot.Axes.SetLimits(data.WheelTravel.Min(), data.WheelTravel.Max(),
             data.LeverageRatio.Min(), data.LeverageRatio.Max());
     }

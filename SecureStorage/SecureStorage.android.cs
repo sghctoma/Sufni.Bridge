@@ -14,19 +14,19 @@ public class SecureStorage : ISecureStorage
     {
         _ = InitAsync();
     }
-    
+
     private async Task InitAsync()
     {
         sharedPreferences = await GetEncryptedSharedPreferences();
     }
-    
+
     private async Task<ISharedPreferences?> GetEncryptedSharedPreferences()
     {
-        Debug.Assert(EncryptedSharedPreferences.PrefValueEncryptionScheme.Aes256Gcm != null, 
+        Debug.Assert(EncryptedSharedPreferences.PrefValueEncryptionScheme.Aes256Gcm != null,
             "EncryptedSharedPreferences.PrefValueEncryptionScheme.Aes256Gcm != null");
-        Debug.Assert(EncryptedSharedPreferences.PrefKeyEncryptionScheme.Aes256Siv != null, 
+        Debug.Assert(EncryptedSharedPreferences.PrefKeyEncryptionScheme.Aes256Siv != null,
             "EncryptedSharedPreferences.PrefKeyEncryptionScheme.Aes256Siv != null");
-        
+
         try
         {
             var context = Application.Context;

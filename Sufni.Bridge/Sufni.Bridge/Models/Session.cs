@@ -7,10 +7,12 @@ namespace Sufni.Bridge.Models;
 [Table("session")]
 public class Session : Synchronizable
 {
+    private byte[]? processedData;
+
     // Just to satisfy sql-net-pcl's parameterless constructor requirement
     // Uninitialized non-nullable property warnings are suppressed with null! initializer.
     public Session() { }
-    
+
     public Session(Guid id, string name, string description, Guid? setup, int? timestamp = null, Guid? track = null)
     {
         Id = id;
@@ -44,50 +46,61 @@ public class Session : Synchronizable
 
     [JsonPropertyName("track"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [Column("track_id")]
-    // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public Guid? Track { get; set; }
 
     [JsonIgnore]
     [Column("data")]
-    public byte[]? ProcessedData { get; set; }
-    
+    public byte[]? ProcessedData
+    {
+        get => processedData;
+        set
+        {
+            HasProcessedData = value is not null;
+            processedData = value;
+        }
+    }
+
     [JsonIgnore]
     [Column("front_springrate")]
     public string? FrontSpringRate { get; set; }
-    
+
     [JsonIgnore]
     [Column("rear_springrate")]
     public string? RearSpringRate { get; set; }
-    
+
     [JsonIgnore]
     [Column("front_hsc")]
     public uint? FrontHighSpeedCompression { get; set; }
-    
+
     [JsonIgnore]
     [Column("rear_hsc")]
     public uint? RearHighSpeedCompression { get; set; }
-    
+
     [JsonIgnore]
     [Column("front_lsc")]
     public uint? FrontLowSpeedCompression { get; set; }
-    
+
     [JsonIgnore]
     [Column("rear_lsc")]
     public uint? RearLowSpeedCompression { get; set; }
-    
+
     [JsonIgnore]
     [Column("front_lsr")]
     public uint? FrontLowSpeedRebound { get; set; }
-    
+
     [JsonIgnore]
     [Column("rear_lsr")]
     public uint? RearLowSpeedRebound { get; set; }
-    
+
     [JsonIgnore]
     [Column("front_hsr")]
     public uint? FrontHighSpeedRebound { get; set; }
-    
+
     [JsonIgnore]
     [Column("rear_hsr")]
     public uint? RearHighSpeedRebound { get; set; }
+
+    [JsonIgnore]
+    [Column("has_data")]
+    public bool HasProcessedData { get; set; }
 }

@@ -34,15 +34,18 @@ public class IdFormatter : IMessagePackFormatter<Guid>
 
 [Table("calibration")]
 [MessagePackObject(keyAsPropertyName: true)]
-public class Calibration : Synchronizable
+public partial class Calibration : Synchronizable
 {
     private Func<Dictionary<string, double>, double>? evaluatorDelegate;
-    private readonly Dictionary<string, double> evaluatorEnvironment = new();
-    
+    private readonly Dictionary<string, double> evaluatorEnvironment = [];
+
+    [GeneratedRegex(@"\s+")]
+    private static partial Regex WhitespacesRegex();
+
     // Just to satisfy sql-net-pcl's parameterless constructor requirement
     // Uninitialized non-nullable property warnings are suppressed with null! initializer.
     public Calibration() { }
-    
+
     public Calibration(Guid id, string name, Guid methodId, Dictionary<string, double> inputs)
     {
         Id = id;
@@ -65,7 +68,7 @@ public class Calibration : Synchronizable
     [Column("method_id")]
     [MessagePackFormatter(typeof(IdFormatter))]
     public Guid MethodId { get; set; }
-    
+
     [JsonPropertyName("inputs")]
     [Ignore]
     public Dictionary<string, double> Inputs { get; set; } = null!;
@@ -86,24 +89,24 @@ public class Calibration : Synchronizable
 
     public void Prepare(CalibrationMethod method, double maxStroke, double maxTravel)
     {
-        var expression = Regex.Replace(method.Properties.Expression, @"\s+", "");
+        var expression = WhitespacesRegex().Replace(method.Properties.Expression, "");
         var evaluator = Evaluator.Create()
             .UseCulture(CultureInfo.InvariantCulture)
             .AddConstant("MAX_STROKE", maxStroke)
             .AddConstant("MAX_TRAVEL", maxTravel)
             .Build();
         evaluatorDelegate = evaluator.CreateDelegate(expression);
-        
+
         // Set calibration variables (a.k.a. inputs)
         foreach (var input in Inputs)
         {
             evaluatorEnvironment[input.Key] = input.Value;
         }
-        
+
         // Calculate intermediates
         foreach (var intermediate in method.Properties.Intermediates)
         {
-            var exp = Regex.Replace(intermediate.Value, @"\s+", "");
+            var exp = WhitespacesRegex().Replace(intermediate.Value, "");
             evaluatorEnvironment[intermediate.Key] = evaluator.Evaluate(exp, evaluatorEnvironment);
         }
     }

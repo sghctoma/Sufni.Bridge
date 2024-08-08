@@ -14,49 +14,44 @@ public class SqLiteDatabaseService : IDatabaseService
 {
     private Task Initialization { get; }
     private readonly SQLiteAsyncConnection connection;
-    
-    private static readonly List<CalibrationMethod> DefaultCalibrationMethods = new()
-    {
+
+    private static readonly List<CalibrationMethod> DefaultCalibrationMethods =
+    [
         new(CalibrationMethod.FractionId,
-            "fraction", 
+            "fraction",
             "Sample is in fraction of maximum suspension stroke.",
-            new CalibrationMethodProperties(
-                new List<string>(),
-                new Dictionary<string, string>(),
-                "sample * MAX_STROKE")),
+            new CalibrationMethodProperties([], [], "sample * MAX_STROKE")),
         new(CalibrationMethod.PercentageId,
-            "percentage", 
+            "percentage",
             "Sample is in percentage of maximum suspension stroke.",
             new CalibrationMethodProperties(
-                new List<string>(),
+                [],
                 new Dictionary<string, string>()
                 {
                     {"factor", "MAX_STROKE / 100.0"}
                 },
                 "sample * factor")),
         new(CalibrationMethod.LinearId,
-            "linear", 
+            "linear",
             "Sample is linearly distributed within a given range.",
             new CalibrationMethodProperties(
-                new List<string>()
-                {
+                [
                     "min_measurement",
                     "max_measurement"
-                },
+                ],
                 new Dictionary<string, string>()
                 {
                     {"factor", "MAX_STROKE / (max_measurement - min_measurement)"}
                 },
                 "(sample - min_measurement) * factor")),
         new(CalibrationMethod.IsoscelesId,
-            "as5600-isosceles-triangle", 
+            "as5600-isosceles-triangle",
             "Triangle setup with the sensor between the base and leg.",
             new CalibrationMethodProperties(
-                new List<string>()
-                {
+                [
                     "arm",
                     "max"
-                },
+                ],
                 new Dictionary<string, string>()
                 {
                     {"start_angle", "acos(max / 2.0 / arm)"},
@@ -65,15 +60,14 @@ public class SqLiteDatabaseService : IDatabaseService
                 },
                 "max - (dbl_arm * cos((factor*sample) + start_angle))")),
         new(CalibrationMethod.TriangleId,
-            "as5600-triangle", 
+            "as5600-triangle",
             "Triangle setup with the sensor between two known sides.",
             new CalibrationMethodProperties(
-                new List<string>()
-                {
+                [
                     "arm1",
                     "arm2",
                     "max"
-                },
+                ],
                 new Dictionary<string, string>()
                 {
                     {"start_angle", "acos((arm1^2+arm2^2-max^2)/(2*arm1*arm2))"},
@@ -82,8 +76,8 @@ public class SqLiteDatabaseService : IDatabaseService
                     {"dbl_arm1_arm2", "2 * arm1 * arm2"},
                 },
                 "max - sqrt(arms_sqr_sum - dbl_arm1_arm2 * cos(start_angle-(factor*sample)))")),
-    };
-    
+    ];
+
     public SqLiteDatabaseService()
     {
         var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Sufni.Bridge");
@@ -91,7 +85,7 @@ public class SqLiteDatabaseService : IDatabaseService
         {
             Directory.CreateDirectory(dir);
         }
-        
+
         connection = new SQLiteAsyncConnection(Path.Combine(dir, "sst.db"));
         Initialization = Init();
     }
@@ -134,14 +128,14 @@ public class SqLiteDatabaseService : IDatabaseService
     public async Task<List<Board>> GetBoardsAsync()
     {
         await Initialization;
-        
+
         return await connection.Table<Board>().Where(b => b.Deleted == null).ToListAsync();
     }
-    
+
     public async Task<List<Board>> GetChangedBoardsAsync(int since)
     {
         await Initialization;
-        
+
         return await connection.Table<Board>()
             .Where(b => b.Updated > since || (b.Deleted != null && b.Deleted > since))
             .ToListAsync();
@@ -177,18 +171,18 @@ public class SqLiteDatabaseService : IDatabaseService
             await connection.UpdateAsync(board);
         }
     }
-    
+
     public async Task<List<Linkage>> GetLinkagesAsync()
     {
         await Initialization;
-        
+
         return await connection.Table<Linkage>().Where(t => t.Deleted == null).ToListAsync();
     }
 
     public async Task<List<Linkage>> GetChangedLinkagesAsync(int since)
     {
         await Initialization;
-        
+
         return await connection.Table<Linkage>()
             .Where(l => l.Updated > since || (l.Deleted != null && l.Deleted > since))
             .ToListAsync();
@@ -197,7 +191,7 @@ public class SqLiteDatabaseService : IDatabaseService
     public async Task<Linkage?> GetLinkageAsync(Guid id)
     {
         await Initialization;
-        
+
         return await connection.Table<Linkage>()
             .Where(l => l.Id == id && l.Deleted == null)
             .FirstOrDefaultAsync();
@@ -206,7 +200,7 @@ public class SqLiteDatabaseService : IDatabaseService
     public async Task<Guid> PutLinkageAsync(Linkage linkage)
     {
         await Initialization;
-        
+
         var existing = await connection.Table<Linkage>()
             .Where(l => l.Id == linkage.Id && l.Deleted == null)
             .FirstOrDefaultAsync() is not null;
@@ -245,7 +239,7 @@ public class SqLiteDatabaseService : IDatabaseService
     public async Task<List<CalibrationMethod>> GetChangedCalibrationMethodsAsync(int since)
     {
         await Initialization;
-        
+
         return await connection.Table<CalibrationMethod>()
             .Where(c => c.Updated > since || (c.Deleted != null && c.Deleted > since))
             .ToListAsync();
@@ -254,12 +248,12 @@ public class SqLiteDatabaseService : IDatabaseService
     public async Task<CalibrationMethod?> GetCalibrationMethodAsync(Guid id)
     {
         await Initialization;
-        
+
         return await connection.Table<CalibrationMethod>()
             .Where(c => c.Id == id && c.Deleted == null)
             .FirstOrDefaultAsync();
     }
-    
+
     public async Task<Guid> PutCalibrationMethodAsync(CalibrationMethod calibrationMethod)
     {
         await Initialization;
@@ -292,17 +286,17 @@ public class SqLiteDatabaseService : IDatabaseService
             await connection.UpdateAsync(calibrationMethod);
         }
     }
-    
+
     public async Task<List<Calibration>> GetCalibrationsAsync()
     {
         await Initialization;
         return await connection.Table<Calibration>().Where(c => c.Deleted == null).ToListAsync();
     }
-    
+
     public async Task<List<Calibration>> GetChangedCalibrationsAsync(int since)
     {
         await Initialization;
-        
+
         return await connection.Table<Calibration>()
             .Where(c => c.Updated > since || (c.Deleted != null && c.Deleted > since))
             .ToListAsync();
@@ -311,7 +305,7 @@ public class SqLiteDatabaseService : IDatabaseService
     public async Task<Calibration?> GetCalibrationAsync(Guid id)
     {
         await Initialization;
-        
+
         return await connection.Table<Calibration>()
             .Where(c => c.Id == id && c.Deleted == null)
             .FirstOrDefaultAsync();
@@ -355,11 +349,11 @@ public class SqLiteDatabaseService : IDatabaseService
         await Initialization;
         return await connection.Table<Setup>().Where(s => s.Deleted == null).ToListAsync();
     }
-    
+
     public async Task<List<Setup>> GetChangedSetupsAsync(int since)
     {
         await Initialization;
-        
+
         return await connection.Table<Setup>()
             .Where(s => s.Updated > since || (s.Deleted != null && s.Deleted > since))
             .ToListAsync();
@@ -368,7 +362,7 @@ public class SqLiteDatabaseService : IDatabaseService
     public async Task<Setup?> GetSetupAsync(Guid id)
     {
         await Initialization;
-        
+
         return await connection.Table<Setup>()
             .Where(s => s.Id == id && s.Deleted == null)
             .FirstOrDefaultAsync();
@@ -410,7 +404,7 @@ public class SqLiteDatabaseService : IDatabaseService
     public async Task<List<Session>> GetSessionsAsync()
     {
         await Initialization;
-        
+
         const string query = """
                              SELECT
                                  id,
@@ -420,7 +414,11 @@ public class SqLiteDatabaseService : IDatabaseService
                                  timestamp,
                                  track_id,
                                  front_springrate, front_hsc, front_lsc, front_lsr, front_hsr,
-                                 rear_springrate, rear_hsc, rear_lsc, rear_lsr, rear_hsr
+                                 rear_springrate, rear_hsc, rear_lsc, rear_lsr, rear_hsr,
+                                 CASE
+                                    WHEN data IS NOT NULL THEN 1
+                                    ELSE 0
+                                 END AS has_data
                              FROM
                                  session
                              WHERE
@@ -442,7 +440,7 @@ public class SqLiteDatabaseService : IDatabaseService
     public async Task<List<Session>> GetChangedSessionsAsync(int since)
     {
         await Initialization;
-        
+
         return await connection.Table<Session>()
             .Where(s => s.Updated > since || (s.Deleted != null && s.Deleted > since))
             .ToListAsync();
@@ -455,7 +453,7 @@ public class SqLiteDatabaseService : IDatabaseService
             "SELECT data FROM session WHERE deleted IS null AND id = ?", id);
         return sessions.Count == 1 ? MessagePackSerializer.Deserialize<TelemetryData>(sessions[0].ProcessedData) : null;
     }
-    
+
     public async Task<byte[]?> GetSessionRawPsstAsync(Guid id)
     {
         await Initialization;
@@ -486,8 +484,8 @@ public class SqLiteDatabaseService : IDatabaseService
                                  """;
             await connection.ExecuteAsync(query,
                 [
-                    session.Name, 
-                    session.Description, 
+                    session.Name,
+                    session.Description,
                     session.FrontSpringRate,
                     session.FrontHighSpeedCompression,
                     session.FrontLowSpeedCompression,
@@ -570,12 +568,12 @@ public class SqLiteDatabaseService : IDatabaseService
         var s = await connection.Table<Synchronization>().FirstOrDefaultAsync();
         return s?.LastSyncTime ?? 0;
     }
-    
+
     public async Task UpdateLastSyncTimeAsync()
     {
         await Initialization;
 
-        await connection.QueryAsync<Synchronization>("UPDATE sync SET last_sync_time = ?", 
+        await connection.QueryAsync<Synchronization>("UPDATE sync SET last_sync_time = ?",
             (int)DateTimeOffset.Now.ToUnixTimeSeconds());
     }
 }

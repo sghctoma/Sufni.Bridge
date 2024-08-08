@@ -4,8 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-// ReSharper disable UnusedAutoPropertyAccessor.Global
-
 namespace Sufni.Bridge.Models.Telemetry;
 
 public record Record(ushort ForkAngle, ushort ShockAngle);
@@ -36,14 +34,14 @@ public class RawTelemetryData
 
         var count = ((int)stream.Length - 16) / 4;
         var records = new List<Record>(count);
-        
+
         for (var i = 0; i < count; i++)
         {
             records.Add(new Record(
                 reader.ReadUInt16(),
                 reader.ReadUInt16()));
         }
-        
+
         var hasFront = records[0].ForkAngle != 0xffff;
         var hasRear = records[0].ShockAngle != 0xffff;
 
@@ -87,8 +85,8 @@ public class RawTelemetryData
             }
         }
 
-        Front = front.ToArray();
-        Rear = rear.ToArray();
+        Front = [.. front];
+        Rear = [.. rear];
     }
 
     public RawTelemetryData(byte[] sstData) : this(new MemoryStream(sstData))

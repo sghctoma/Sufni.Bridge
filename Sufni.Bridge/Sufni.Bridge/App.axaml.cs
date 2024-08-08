@@ -25,6 +25,7 @@ public partial class App : Application
 #endif
         RegisteredServices.Collection.AddSingleton<ITelemetryDataStoreService, TelemetryDataStoreService>();
         RegisteredServices.Collection.AddSingleton<IDatabaseService, SqLiteDatabaseService>();
+        RegisteredServices.Collection.AddSingleton<ISynchronizationService, SynchronizationService>();
     }
 
     public override void Initialize()
@@ -58,6 +59,7 @@ public partial class App : Application
                 singleViewPlatform.MainView.Loaded += (_, _) =>
                 {
                     var topLevel = TopLevel.GetTopLevel(singleViewPlatform.MainView);
+                    mainViewModel!.SafeAreaPadding = topLevel!.InsetsManager!.SafeAreaPadding;
                     fileService.SetTarget(topLevel);
                 };
                 break;

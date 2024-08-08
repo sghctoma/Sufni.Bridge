@@ -16,7 +16,7 @@ public class NetworkTelemetryFile : ITelemetryFile
     public string Duration { get; init; }
 
     private readonly IPEndPoint ipEndPoint;
-    
+
     public async Task<byte[]> GeneratePsstAsync(Linkage linkage, Calibration? frontCal, Calibration? rearCal)
     {
         var idString = FileName[..5].TrimStart('0');
@@ -34,7 +34,7 @@ public class NetworkTelemetryFile : ITelemetryFile
         Imported = true;
         return Task.CompletedTask;
     }
-    
+
     public NetworkTelemetryFile(IPEndPoint source, ushort sampleRate, string name, ulong size, ulong timestamp)
     {
         var count = (size - 16 /* sizeof(header) */) / 4 /* sizeof(record) */;

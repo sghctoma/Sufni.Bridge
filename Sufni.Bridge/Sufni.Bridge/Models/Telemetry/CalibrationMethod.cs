@@ -5,9 +5,6 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using SQLite;
 
-// ReSharper disable UnusedAutoPropertyAccessor.Global
-// ReSharper disable UnusedMember.Global
-
 namespace Sufni.Bridge.Models.Telemetry;
 
 public record CalibrationMethodProperties(
@@ -27,7 +24,7 @@ public class CalibrationMethod : Synchronizable
     // Just to satisfy sql-net-pcl's parameterless constructor requirement
     // Uninitialized non-nullable property warnings are suppressed with null! initializer.
     public CalibrationMethod() { }
-    
+
     public CalibrationMethod(Guid id, string name, string description, CalibrationMethodProperties properties)
     {
         Id = id;

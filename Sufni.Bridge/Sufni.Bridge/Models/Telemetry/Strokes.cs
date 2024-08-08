@@ -3,10 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using MessagePack;
 
-// ReSharper disable ClassNeverInstantiated.Global
-// ReSharper disable MemberCanBePrivate.Global
-// ReSharper disable PropertyCanBeMadeInitOnly.Global
-// ReSharper disable UnusedAutoPropertyAccessor.Global
 #pragma warning disable CS8618
 
 namespace Sufni.Bridge.Models.Telemetry;
@@ -35,7 +31,7 @@ public class Stroke
     [IgnoreMember] public double Length { get; private set; }
     [IgnoreMember] public double Duration { get; set; }
     [IgnoreMember] public bool AirCandidate { get; set; }
-    
+
     public Stroke() { }
 
     public Stroke(int start, int end, double duration, double[] travel, double[] velocity, double maxTravel)
@@ -80,7 +76,7 @@ public class Strokes
     public Stroke[] Compressions { get; set; }
     public Stroke[] Rebounds { get; set; }
     [IgnoreMember] public Stroke[] Idlings { get; private set; }
-    
+
     public void Categorize(Stroke[] strokes)
     {
         var compressions = new List<Stroke>();
@@ -117,9 +113,9 @@ public class Strokes
             }
         }
 
-        Compressions = compressions.ToArray();
-        Rebounds = rebounds.ToArray();
-        Idlings = idlings.ToArray();
+        Compressions = [.. compressions];
+        Rebounds = [.. rebounds];
+        Idlings = [.. idlings];
     }
 
     public void Digitize(int[] dt, int[] dv, int[] dvFine)
@@ -130,10 +126,10 @@ public class Strokes
             s.DigitizedVelocity = dv[s.Start..(s.End + 1)];
             s.FineDigitizedVelocity = dvFine[s.Start..(s.End + 1)];
         }
-        
+
         foreach (var s in Rebounds)
         {
-            s.DigitizedTravel = dt[s.Start..(s.End+1)];
+            s.DigitizedTravel = dt[s.Start..(s.End + 1)];
             s.DigitizedVelocity = dv[s.Start..(s.End + 1)];
             s.FineDigitizedVelocity = dvFine[s.Start..(s.End + 1)];
         }
@@ -183,6 +179,6 @@ public class Strokes
             }
         }
 
-        return strokes.ToArray();
+        return [.. strokes];
     }
 };

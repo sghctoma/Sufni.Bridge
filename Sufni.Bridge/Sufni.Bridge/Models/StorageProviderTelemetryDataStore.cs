@@ -33,7 +33,7 @@ public class StorageProviderTelemetryDataStore : ITelemetryDataStore
 
         var files = new List<ITelemetryFile>();
         var items = Folder.GetItemsAsync();
-        await foreach (var item in items) 
+        await foreach (var item in items)
         {
             if (item.Name.EndsWith(".SST") && item is IStorageFile file)
             {
@@ -56,14 +56,14 @@ public class StorageProviderTelemetryDataStore : ITelemetryDataStore
                 boardIdFile = file;
                 if (uploadedFolder is not null) break;
             }
-            
+
             if (item.Name.Equals("uploaded") && item is IStorageFolder folder)
             {
                 uploadedFolder = folder;
                 if (boardIdFile is not null) break;
             }
         }
-        
+
         if (uploadedFolder is null)
             await Folder.CreateFolderAsync("uploaded");
 
@@ -74,7 +74,7 @@ public class StorageProviderTelemetryDataStore : ITelemetryDataStore
         await stream.ReadExactlyAsync(buffer, 0, 16);
         BoardId = Encoding.ASCII.GetString(buffer).ToLower();
     }
-    
+
     public StorageProviderTelemetryDataStore(IStorageFolder folder)
     {
         Folder = folder;

@@ -2,6 +2,7 @@
     x:Class="Sufni.Bridge.App"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:labs="using:Avalonia.Labs.Controls"
     xmlns:local="using:Sufni.Bridge"
     RequestedThemeVariant="Dark">
     <!--  "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options.  -->
@@ -10,55 +11,90 @@
         <local:ViewLocator />
     </Application.DataTemplates>
 
+    <Application.Resources>
+        <!--  Common colors  -->
+        <Color x:Key="SufniForeground">#a0a0a0</Color>
+        <Color x:Key="SufniRegion">#15191c</Color>
+        <Color x:Key="SufniBackground">#20262b</Color>
+        <Color x:Key="SufniForegroundDisabled">#606060</Color>
+        <Color x:Key="SufniBackgroundDisabled">#25292c</Color>
+        <Color x:Key="SufniBackgroundPointerOver">#2c3032</Color>
+        <Color x:Key="SufniBorderBrush">#505050</Color>
+        <Color x:Key="SufniDangerColor">#bf312d</Color>
+        <Color x:Key="SufniAccentColor">#0078d7</Color>
+
+        <!--  Expander colors  -->
+        <SolidColorBrush x:Key="ExpanderHeaderBackground" Color="{StaticResource SufniBackground}" />
+        <SolidColorBrush x:Key="ExpanderHeaderBackgroundPressed" Color="{StaticResource SufniBackground}" />
+        <SolidColorBrush x:Key="ExpanderHeaderBackgroundPointerOver" Color="{StaticResource SufniBackground}" />
+
+        <!--  Button colors  -->
+        <SolidColorBrush x:Key="ButtonBackground" Color="{StaticResource SufniBackground}" />
+        <SolidColorBrush x:Key="ButtonForeground" Color="{StaticResource SufniForeground}" />
+        <SolidColorBrush x:Key="ButtonBackgroundDisabled" Color="{StaticResource SufniBackgroundDisabled}" />
+        <SolidColorBrush x:Key="ButtonForegroundDisabled" Color="{StaticResource SufniForegroundDisabled}" />
+        <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="{StaticResource SufniBackgroundPointerOver}" />
+        <SolidColorBrush x:Key="ButtonForegroundPointerOver" Color="{StaticResource SufniForeground}" />
+        <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="{StaticResource SufniBackgroundPointerOver}" />
+        <SolidColorBrush x:Key="ButtonForegroundPressed" Color="{StaticResource SufniForeground}" />
+
+        <!--  TextBox colors  -->
+        <SolidColorBrush x:Key="TextControlForeground" Color="{StaticResource SufniForeground}" />
+        <SolidColorBrush x:Key="TextControlBackground" Color="{StaticResource SufniBackground}" />
+        <SolidColorBrush x:Key="TextControlBorderBrush" Color="{StaticResource SufniBorderBrush}" />
+        <SolidColorBrush x:Key="TextControlForegroundDisabled" Color="{StaticResource SufniForegroundDisabled}" />
+        <SolidColorBrush x:Key="TextControlBackgroundDisabled" Color="{StaticResource SufniBackgroundDisabled}" />
+        <SolidColorBrush x:Key="TextControlBorderBrushDisabled" Color="#303030" />
+        <SolidColorBrush x:Key="TextControlForegroundPointerOver" Color="{StaticResource SufniForeground}" />
+        <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="#10161b" />
+        <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="{StaticResource SufniBorderBrush}" />
+        <SolidColorBrush x:Key="TextControlForegroundFocused" Color="{StaticResource SufniForeground}" />
+        <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="#10161b" />
+        <SolidColorBrush x:Key="TextControlBorderBrushFocused" Color="{StaticResource SufniAccentColor}" />
+
+        <!--  ComboBox colors  -->
+        <SolidColorBrush x:Key="ComboBoxForeground" Color="{StaticResource SufniForeground}" />
+        <SolidColorBrush x:Key="ComboBoxBackground" Color="{StaticResource SufniBackground}" />
+        <SolidColorBrush x:Key="ComboBoxBorderBrush" Color="{StaticResource SufniBorderBrush}" />
+        <SolidColorBrush x:Key="ComboBoxBackgroundPointerOver" Color="{StaticResource SufniBackgroundPointerOver}" />
+        <SolidColorBrush x:Key="ComboBoxBorderBrushPointerOver" Color="{StaticResource SufniBorderBrush}" />
+        <SolidColorBrush x:Key="ComboBoxBackgroundPressed" Color="{StaticResource SufniBackgroundPointerOver}" />
+        <SolidColorBrush x:Key="ComboBoxBorderBrushPressed" Color="{StaticResource SufniBorderBrush}" />
+        <SolidColorBrush x:Key="ComboBoxDropDownBackground" Color="{StaticResource SufniBackground}" />
+
+        <!--  CalendarDatePicker colors  -->
+        <SolidColorBrush x:Key="CalendarDatePickerForeground" Color="{StaticResource SufniForeground}" />
+        <SolidColorBrush x:Key="CalendarDatePickerBorderBrush" Color="{StaticResource SufniBorderBrush}" />
+        <SolidColorBrush x:Key="CalendarDatePickerBorderBrushPointerOver" Color="{StaticResource SufniBorderBrush}" />
+
+        <!--  Flyout colors  -->
+        <SolidColorBrush x:Key="FlyoutPresenterBackground" Color="{StaticResource SufniBackground}" />
+        <Thickness x:Key="FlyoutContentThemePadding">0</Thickness>
+        <x:Double x:Key="FlyoutThemeMaxWidth">600</x:Double>
+        <CornerRadius x:Key="OverlayCornerRadius">3</CornerRadius>
+        <Thickness x:Key="FlyoutBorderThemeThickness">0</Thickness>
+    </Application.Resources>
+
     <Application.Styles>
         <FluentTheme />
-        <StyleInclude Source="/Views/ErrorMessagesControl.axaml" />
-        <StyleInclude Source="/Views/NotificationsControl.axaml" />
+        <labs:ControlThemes />
         <StyleInclude Source="/Views/Plots/SufniPlotView.axaml" />
         <StyleInclude Source="/Views/Plots/VelocityBandView.axaml" />
-        <StyleInclude Source="/Views/CommonButtonLine.axaml" />
-        <StyleInclude Source="/Views/EditableTitleControl.axaml" />
         <StyleInclude Source="avares://AvaloniaProgressRing/Styles/ProgressRing.xaml" />
 
         <!--  Global styles for TextBlock  -->
         <Style Selector="TextBlock">
-            <Setter Property="Foreground" Value="#a0a0a0" />
+            <Setter Property="Foreground" Value="{StaticResource SufniForeground}" />
         </Style>
 
         <!--  Global styles for Label  -->
         <Style Selector="Label">
-            <Setter Property="Foreground" Value="#a0a0a0" />
-        </Style>
-
-        <!--  Global styles for CheckBlock  -->
-        <Style Selector="CheckBox">
-            <Setter Property="Background" Value="#20262b" />
-            <Setter Property="Foreground" Value="#a0a0a0" />
-        </Style>
-
-        <!--  Global styles for Expander  -->
-        <Style Selector="Expander">
-            <Setter Property="Background" Value="#15191c" />
-        </Style>
-        <Style Selector="Expander ToggleButton:pressed /template/ Border">
-            <Setter Property="Background" Value="#20262b" />
+            <Setter Property="Foreground" Value="{StaticResource SufniForeground}" />
         </Style>
 
         <!--  Global styles for Button  -->
-        <Style Selector="Button">
-            <Setter Property="Background" Value="#20262b" />
-            <Setter Property="Foreground" Value="#a0a0a0" />
-        </Style>
-        <Style Selector="Button:disabled /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="#25292c" />
-            <Setter Property="TextElement.Foreground" Value="#606060" />
-        </Style>
         <Style Selector="Button:disabled Image">
             <Setter Property="Opacity" Value="0.3" />
-        </Style>
-        <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="TextElement.Foreground" Value="#a0a0a0" />
-            <Setter Property="Background" Value="#2c3032" />
         </Style>
 
         <!--  Global styles for Buttons embedded in TextBoxes  -->
@@ -72,119 +108,40 @@
 
         <!--  Global styles for "dangerous" Buttons  -->
         <Style Selector="Button.dangerous">
-            <Setter Property="Foreground" Value="#bf312d" />
+            <Setter Property="Foreground" Value="{StaticResource SufniDangerColor}" />
         </Style>
         <Style Selector="Button.dangerous:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Foreground" Value="#bf312d" />
+            <Setter Property="Foreground" Value="{StaticResource SufniDangerColor}" />
         </Style>
 
         <!--  Global styles for NumericUpDown  -->
         <Style Selector="NumericUpDown">
             <Setter Property="Height" Value="39" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
-            <Setter Property="Background" Value="#20262b" />
-            <Setter Property="Foreground" Value="#a0a0a0" />
-            <Setter Property="BorderBrush" Value="#505050" />
+            <Setter Property="Background" Value="{StaticResource SufniBackground}" />
+            <Setter Property="Foreground" Value="{StaticResource SufniForeground}" />
+            <Setter Property="BorderBrush" Value="{StaticResource SufniBorderBrush}" />
         </Style>
 
         <!--  Global styles for TextBox  -->
         <Style Selector="TextBox">
             <Setter Property="MinHeight" Value="39" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
-            <Setter Property="Background" Value="#20262b" />
-            <Setter Property="Foreground" Value="#a0a0a0" />
-            <Setter Property="BorderBrush" Value="#505050" />
-        </Style>
-        <Style Selector="TextBox:disabled /template/ Border">
-            <Setter Property="Background" Value="#25292c" />
-            <Setter Property="BorderBrush" Value="#303030" />
-        </Style>
-        <Style Selector="TextBox:pointerover /template/ Border">
-            <Setter Property="Background" Value="#10161b" />
-            <Setter Property="BorderBrush" Value="#505050" />
-        </Style>
-        <Style Selector="TextBox:focus /template/ Border">
-            <Setter Property="Background" Value="#10161b" />
-            <Setter Property="BorderBrush" Value="#0078D7" />
-            <Setter Property="BorderThickness" Value="1" />
-        </Style>
-        <Style Selector="TextBox:focus:pointerover /template/ Border">
-            <Setter Property="Background" Value="#10161b" />
-            <Setter Property="BorderBrush" Value="#0078D7" />
-            <Setter Property="BorderThickness" Value="1" />
-        </Style>
-        <Style Selector="TextBox:pointerover /template/ TextPresenter#PART_TextPresenter">
-            <Setter Property="TextElement.Foreground" Value="#a0a0a0" />
-        </Style>
-        <Style Selector="TextBox:focus /template/ TextPresenter#PART_TextPresenter">
-            <Setter Property="TextElement.Foreground" Value="#a0a0a0" />
-        </Style>
-        <Style Selector="TextBox:disabled /template/ TextPresenter#PART_TextPresenter">
-            <Setter Property="TextElement.Foreground" Value="#606060" />
         </Style>
 
         <!--  Global styles for ComboBox  -->
         <Style Selector="ComboBox">
             <Setter Property="Height" Value="39" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
-            <Setter Property="Background" Value="#20262b" />
-            <Setter Property="Foreground" Value="#a0a0a0" />
-            <Setter Property="BorderBrush" Value="#505050" />
-        </Style>
-        <Style Selector="ComboBox:pointerover /template/ Border">
-            <Setter Property="Background" Value="#2c3032" />
-            <Setter Property="BorderBrush" Value="#505050" />
-        </Style>
-
-        <!--  Global styles for the main ItemsRepeaters' items  -->
-        <Style Selector="ItemsRepeater.main &gt; Expander">
-            <Setter Property="Margin" Value="0,2, 0, 1" />
-        </Style>
-        <Style Selector="ItemsRepeater.main &gt; Border">
-            <Setter Property="Margin" Value="6,2, 6, 1" />
         </Style>
 
         <!--  Global styles for CalendarDatePicker  -->
-        <Style Selector="CalendarDatePicker">
-            <Setter Property="Foreground" Value="#a0a0a0" />
-            <Setter Property="BorderBrush" Value="#505050" />
-        </Style>
-        <Style Selector="CalendarDatePicker:pointerover /template/ Border">
-            <Setter Property="BorderBrush" Value="#505050" />
-        </Style>
         <Style Selector="CalendarDatePicker Button">
             <Setter Property="FontSize" Value="14" />
         </Style>
         <Style Selector="CalendarDayButton">
             <Setter Property="FontSize" Value="14" />
         </Style>
-
-        <!--  Global styles for Flyouts  -->
-        <Style Selector="MenuFlyoutPresenter">
-            <Setter Property="Background" Value="#15191c" />
-            <Setter Property="Foreground" Value="#a0a0a0" />
-        </Style>
-        <Style Selector="MenuItem">
-            <Setter Property="Foreground" Value="#a0a0a0" />
-            <Setter Property="Height" Value="39" />
-        </Style>
-        <Style Selector="MenuItem:pointerover /template/ Border#PART_LayoutRoot">
-            <Setter Property="Background" Value="#15191c" />
-        </Style>
-        <Style Selector="MenuItem:pointerover /template/ ContentPresenter#PART_HeaderPresenter">
-            <Setter Property="TextElement.Foreground" Value="#c0c0c0" />
-        </Style>
     </Application.Styles>
-
-    <Application.Resources>
-        <SolidColorBrush x:Key="ComboBoxDropDownBackground" Color="#20262b" />
-        <SolidColorBrush x:Key="ExpanderHeaderBackgroundPointerOver" Color="#20262b" />
-        <SolidColorBrush x:Key="ExpanderHeaderBackground" Color="#20262b" />
-        <SolidColorBrush x:Key="FlyoutPresenterBackground" Color="#20262b" />
-        <Thickness x:Key="FlyoutContentThemePadding">0</Thickness>
-        <x:Double x:Key="FlyoutThemeMaxWidth">600</x:Double>
-        <CornerRadius x:Key="OverlayCornerRadius">3</CornerRadius>
-        <Thickness x:Key="FlyoutBorderThemeThickness">0</Thickness>
-    </Application.Resources>
 
 </Application>

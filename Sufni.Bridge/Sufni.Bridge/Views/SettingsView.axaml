@@ -4,12 +4,12 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:v="clr-namespace:Sufni.Bridge.Views"
+    xmlns:v="clr-namespace:Sufni.Bridge.Views.Controls"
     xmlns:vm="clr-namespace:Sufni.Bridge.ViewModels"
     d:DesignHeight="600"
     d:DesignWidth="500"
     x:DataType="vm:SettingsViewModel"
-    Background="#15191c"
+    Background="{StaticResource SufniRegion}"
     mc:Ignorable="d">
 
     <Design.DataContext>
@@ -55,10 +55,6 @@
             Content="cancel"
             IsDefault="{Binding IsRegistered}"
             IsTabStop="False" />
-        <v:ErrorMessagesControl
-            Margin="2,4"
-            ClearErrorsCommand="{Binding ClearErrorsCommand}"
-            ErrorMessages="{Binding ErrorMessages}"
-            IsVisible="{Binding ErrorMessages.Count}" />
+        <v:ErrorMessagesBar Margin="2,4" />
     </StackPanel>
 </UserControl>

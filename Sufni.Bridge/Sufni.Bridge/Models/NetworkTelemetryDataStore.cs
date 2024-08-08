@@ -14,7 +14,7 @@ public class NetworkTelemetryDataStore : ITelemetryDataStore
     public string? BoardId { get; private set; }
     private readonly IPEndPoint ipEndPoint;
     public readonly Task Initialization;
-    
+
     public async Task<List<ITelemetryFile>> GetFiles()
     {
         var directoryInfo = await SstTcpClient.GetFile(ipEndPoint, 0);
@@ -37,7 +37,7 @@ public class NetworkTelemetryDataStore : ITelemetryDataStore
 
         return files.OrderByDescending(f => f.StartTime).ToList();
     }
-    
+
     public NetworkTelemetryDataStore(IPAddress address, int port)
     {
         ipEndPoint = new IPEndPoint(address, port);

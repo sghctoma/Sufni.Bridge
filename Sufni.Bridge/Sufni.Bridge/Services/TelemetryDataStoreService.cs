@@ -20,7 +20,7 @@ internal class DriveInfoComparer : IEqualityComparer<DriveInfo>
 
         if (ds1 is null || ds2 is null)
             return false;
-        
+
         if (!ds1.IsReady || !ds2.IsReady)
             return false;
 
@@ -35,13 +35,13 @@ internal class TelemetryDataStoreService : ITelemetryDataStoreService
     private const string ServiceType = "_gosst._tcp";
     private static readonly object DataStoreLock = new();
     public ObservableCollection<ITelemetryDataStore> DataStores { get; } = new();
-    
+
     private void GetMassStorageDatastores()
     {
         var x = DriveInfo.GetDrives();
         var comparer = new DriveInfoComparer();
         var current = DriveInfo.GetDrives()
-            .Where(drive => drive.IsReady && 
+            .Where(drive => drive.IsReady &&
                 (drive.DriveFormat == "FAT32" || drive.DriveFormat == "msdos") &&
                 File.Exists($"{drive.RootDirectory}/BOARDID"))
             .ToArray();
@@ -51,7 +51,7 @@ internal class TelemetryDataStoreService : ITelemetryDataStoreService
             .ToArray();
         var added = current.Except(known, comparer).ToArray();
         var removed = known.Except(current, comparer).ToArray();
-        
+
         foreach (var drive in added)
         {
             DataStores.Add(new MassStorageTelemetryDataStore(drive));
@@ -60,7 +60,7 @@ internal class TelemetryDataStoreService : ITelemetryDataStoreService
         foreach (var drive in removed)
         {
             var toRemove = DataStores
-                .First(ds => ds is MassStorageTelemetryDataStore msds && 
+                .First(ds => ds is MassStorageTelemetryDataStore msds &&
                              comparer.Equals(msds.DriveInfo, drive));
             DataStores.Remove(toRemove);
         }
@@ -78,7 +78,7 @@ internal class TelemetryDataStoreService : ITelemetryDataStoreService
             DataStores.Remove(toRemove);
         }
     }
-    
+
     private async Task AddNetworkDataStore(ServiceAnnouncementEventArgs e)
     {
         var ipAddress = e.Announcement.Address;
@@ -86,10 +86,10 @@ internal class TelemetryDataStoreService : ITelemetryDataStoreService
 
         var ds = new NetworkTelemetryDataStore(ipAddress, port);
         await ds.Initialization;
-        
+
         lock (DataStoreLock)
         {
-            DataStores.Add(ds); 
+            DataStores.Add(ds);
         }
     }
 
@@ -109,16 +109,16 @@ internal class TelemetryDataStoreService : ITelemetryDataStoreService
 
         return toRemove;
     }
-    
+
     public TelemetryDataStoreService()
     {
         var serviceDiscovery = App.Current?.Services?.GetService<IServiceDiscovery>();
         Debug.Assert(serviceDiscovery != null, nameof(serviceDiscovery) + " != null");
-        
+
         serviceDiscovery.ServiceAdded += async (_, e) => await AddNetworkDataStore(e);
         serviceDiscovery.ServiceRemoved += (_, e) => RemoveNetworkDataStore(e);
         serviceDiscovery.StartBrowse(ServiceType);
-        
+
         GetMassStorageDatastores();
         var timer = new Timer(1000);
         timer.AutoReset = true;

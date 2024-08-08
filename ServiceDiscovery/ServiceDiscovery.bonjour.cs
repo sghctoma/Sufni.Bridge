@@ -12,7 +12,7 @@ public class ServiceDiscovery : IServiceDiscovery
     private readonly DispatchQueue dispatchQueue = new("com.sghctoma.sufni-bridge.serviceDiscovery");
     private IPAddress? currentIpAddress;
     private ushort? currentPort;
-    
+
     private readonly NWParameters parameters = new()
     {
         LocalOnly = true,
@@ -40,9 +40,9 @@ public class ServiceDiscovery : IServiceDiscovery
                     currentIpAddress = endpoint is not null ? IPAddress.Parse(endpoint.Address) : null;
                     currentPort = endpoint?.PortNumber;
                     connection.Cancel();
-                    
+
                     if (currentIpAddress is null || currentPort is null) return;
-                    
+
                     ServiceAdded?.Invoke(this, new ServiceAnnouncementEventArgs(new ServiceAnnouncement()
                     {
                         Address = currentIpAddress,
@@ -59,24 +59,24 @@ public class ServiceDiscovery : IServiceDiscovery
     private void OnServiceRemoved()
     {
         if (currentIpAddress is null || currentPort is null) return;
-        
+
         ServiceRemoved?.Invoke(this, new ServiceAnnouncementEventArgs(new ServiceAnnouncement()
         {
             Address = currentIpAddress,
             Port = currentPort.Value,
         }));
     }
-    
+
     public void StartBrowse(string type)
     {
         var browserDescriptor = NWBrowserDescriptor.CreateBonjourService(type, "local.");
         var browser = new NWBrowser(browserDescriptor, parameters);
         browser.SetDispatchQueue(dispatchQueue);
-        
+
         browser.CompleteChangesDelegate = changes =>
         {
             if (changes is null) return;
-            
+
             foreach (var change in changes)
             {
                 switch (change.change)

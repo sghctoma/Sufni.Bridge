@@ -19,6 +19,7 @@
     <PackageReference Include="Adletec.Sonic" Version="1.5.0" />
     <PackageReference Include="Avalonia" Version="11.1.2" />
     <PackageReference Include="Avalonia.Controls.ItemsRepeater" Version="11.1.2" />
+    <PackageReference Include="Avalonia.Labs.Controls" Version="11.1.0" />
     <PackageReference Include="Avalonia.Svg.Skia" Version="11.1.0" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.1.2" />
     <PackageReference Include="Avalonia.Fonts.Inter" Version="11.1.2" />
@@ -41,7 +42,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\SecureStorage\SecureStorage.csproj" />
     <ProjectReference Include="..\..\ServiceDiscovery\ServiceDiscovery.csproj" />
-    <ProjectReference Include="..\..\submodules\Avalonia.Labs\src\Avalonia.Labs.Controls\Avalonia.Labs.Controls.csproj" />
     <ProjectReference Include="..\..\HapticFeedback\HapticFeedback.csproj" />
   </ItemGroup>
 

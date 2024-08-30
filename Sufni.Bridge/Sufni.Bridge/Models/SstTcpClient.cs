@@ -53,4 +53,27 @@ public static class SstTcpClient
 
         return buffer;
     }
+
+    public static async Task TrashFile(IPEndPoint ipEndPoint, int fileId)
+    {
+        using Socket client = new(ipEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+        await client.ConnectAsync(ipEndPoint);
+
+        // Get identifier as little-endian byte array
+        var id = BitConverter.GetBytes(-fileId);
+        if (!BitConverter.IsLittleEndian)
+        {
+            Array.Reverse(id);
+        }
+
+        // Request file
+        await client.SendAsync(new byte[]
+        {
+            0x03, 0x00, 0x00, 0x00,    // 3: file request command
+            id[0], id[1], id[2], id[3] // negative file id
+        }, SocketFlags.None);
+
+        // Send file received signal. Server will close connection after receiving this.
+        await client.SendAsync(new byte[] { 0x05, 0x00, 0x00, 0x00 });
+    }
 }

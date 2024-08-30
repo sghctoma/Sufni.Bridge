@@ -21,6 +21,7 @@
         <Color x:Key="SufniBackgroundPointerOver">#2c3032</Color>
         <Color x:Key="SufniBorderBrush">#505050</Color>
         <Color x:Key="SufniDangerColor">#bf312d</Color>
+        <Color x:Key="SufniDangerColorDark">#9f110d</Color>
         <Color x:Key="SufniAccentColor">#0078d7</Color>
 
         <!--  Expander colors  -->

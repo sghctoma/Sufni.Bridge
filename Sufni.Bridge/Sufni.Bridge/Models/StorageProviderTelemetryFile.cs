@@ -14,7 +14,7 @@ public class StorageProviderTelemetryFile : ITelemetryFile
 
     public string Name { get; set; }
     public string FileName => storageFile.Name;
-    public bool ShouldBeImported { get; set; }
+    public bool? ShouldBeImported { get; set; }
     public bool Imported { get; set; }
     public string Description { get; set; }
     public DateTime StartTime { get; private set; }
@@ -38,7 +38,7 @@ public class StorageProviderTelemetryFile : ITelemetryFile
         var timestamp = reader.ReadInt64();
 
         var duration = TimeSpan.FromSeconds((double)count / sampleRate);
-        ShouldBeImported = duration.TotalSeconds >= 5;
+        ShouldBeImported = duration.TotalSeconds >= 5 ? true : null;
         StartTime = DateTimeOffset.FromUnixTimeSeconds(timestamp).DateTime;
         Duration = duration.ToString(@"hh\:mm\:ss");
         Name = storageFile.Name;
@@ -87,5 +87,27 @@ public class StorageProviderTelemetryFile : ITelemetryFile
         }
 
         await storageFile.MoveAsync(uploaded);
+    }
+
+    public async Task OnTrashed()
+    {
+        await Initialization;
+
+        var parent = await storageFile.GetParentAsync();
+        var parentItems = parent!.GetItemsAsync();
+        IStorageFolder? trash = null;
+        await foreach (var item in parentItems)
+        {
+            if (!item.Name.Equals("trash")) continue;
+            trash = item as IStorageFolder;
+            break;
+        }
+
+        if (trash is null)
+        {
+            throw new Exception("The \"trash\" folder could not be accessed.");
+        }
+
+        await storageFile.MoveAsync(trash);
     }
 }

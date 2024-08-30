@@ -9,7 +9,7 @@ public class NetworkTelemetryFile : ITelemetryFile
 {
     public string Name { get; set; }
     public string FileName { get; }
-    public bool ShouldBeImported { get; set; }
+    public bool? ShouldBeImported { get; set; }
     public bool Imported { get; set; }
     public string Description { get; set; }
     public DateTime StartTime { get; init; }
@@ -20,8 +20,8 @@ public class NetworkTelemetryFile : ITelemetryFile
     public async Task<byte[]> GeneratePsstAsync(Linkage linkage, Calibration? frontCal, Calibration? rearCal)
     {
         var idString = FileName[..5].TrimStart('0');
-        var idUint = int.Parse(idString);
-        var rawData = await SstTcpClient.GetFile(ipEndPoint, idUint);
+        var idInt = int.Parse(idString);
+        var rawData = await SstTcpClient.GetFile(ipEndPoint, idInt);
         var rawTelemetryData = new RawTelemetryData(rawData);
         var telemetryData = new TelemetryData(FileName,
             rawTelemetryData.Version, rawTelemetryData.SampleRate, rawTelemetryData.Timestamp,
@@ -35,11 +35,18 @@ public class NetworkTelemetryFile : ITelemetryFile
         return Task.CompletedTask;
     }
 
+    public async Task OnTrashed()
+    {
+        var idString = FileName[..5].TrimStart('0');
+        var idUint = int.Parse(idString);
+        await SstTcpClient.TrashFile(ipEndPoint, idUint);
+    }
+
     public NetworkTelemetryFile(IPEndPoint source, ushort sampleRate, string name, ulong size, ulong timestamp)
     {
         var count = (size - 16 /* sizeof(header) */) / 4 /* sizeof(record) */;
         var duration = TimeSpan.FromSeconds((double)count / sampleRate);
-        ShouldBeImported = duration.TotalSeconds >= 5;
+        ShouldBeImported = duration.TotalSeconds >= 5 ? true : null;
         StartTime = DateTimeOffset.FromUnixTimeSeconds((int)timestamp).DateTime;
         Duration = duration.ToString(@"hh\:mm\:ss");
         Name = name;

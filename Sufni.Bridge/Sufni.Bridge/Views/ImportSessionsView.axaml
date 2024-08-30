@@ -19,6 +19,28 @@
         <vm:ImportSessionsViewModel />
     </Design.DataContext>
 
+    <UserControl.Styles>
+        <Style Selector="ToggleButton.importchoice:indeterminate /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource SufniDangerColor}" />
+        </Style>
+        <Style Selector="ToggleButton.importchoice:indeterminate:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource SufniDangerColorDark}" />
+        </Style>
+
+        <Style Selector="ToggleButton.importchoice">
+            <Setter Property="Content" Value="Ignore" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+        <Style Selector="ToggleButton.importchoice:checked">
+            <Setter Property="Content" Value="Import" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+        <Style Selector="ToggleButton.importchoice:indeterminate">
+            <Setter Property="Content" Value="Trash" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+    </UserControl.Styles>
+
     <Grid
         Margin="20,20,20,10"
         ColumnDefinitions="auto * auto"
@@ -83,10 +105,14 @@
                             IsExpanded="False">
                             <Expander.Header>
                                 <StackPanel Orientation="Horizontal">
-                                    <CheckBox
+                                    <ToggleButton
+                                        Width="60"
+                                        Margin="0,0,10,0"
                                         HorizontalAlignment="Left"
-                                        Content=""
-                                        IsChecked="{Binding ShouldBeImported}" />
+                                        HorizontalContentAlignment="Center"
+                                        Classes="importchoice"
+                                        IsChecked="{Binding ShouldBeImported}"
+                                        IsThreeState="True" />
                                     <TextBlock
                                         Margin="2"
                                         VerticalAlignment="Center"

@@ -12,7 +12,7 @@ public class MassStorageTelemetryFile : ITelemetryFile
 
     public string Name { get; set; }
     public string FileName => fileInfo.Name;
-    public bool ShouldBeImported { get; set; }
+    public bool? ShouldBeImported { get; set; }
     public bool Imported { get; set; }
     public string Description { get; set; }
     public DateTime StartTime { get; init; }
@@ -38,7 +38,7 @@ public class MassStorageTelemetryFile : ITelemetryFile
         var timestamp = reader.ReadInt64();
 
         var duration = TimeSpan.FromSeconds((double)count / sampleRate);
-        ShouldBeImported = duration.TotalSeconds >= 5;
+        ShouldBeImported = duration.TotalSeconds >= 5 ? true : null;
         StartTime = DateTimeOffset.FromUnixTimeSeconds(timestamp).DateTime;
         Duration = duration.ToString(@"hh\:mm\:ss");
         Name = fileInfo.Name;
@@ -60,6 +60,13 @@ public class MassStorageTelemetryFile : ITelemetryFile
         Imported = true;
         File.Move(fileInfo.FullName,
             $"{Path.GetDirectoryName(fileInfo.FullName)}/uploaded/{fileInfo.Name}");
+        return Task.CompletedTask;
+    }
+
+    public Task OnTrashed()
+    {
+        File.Move(fileInfo.FullName,
+            $"{Path.GetDirectoryName(fileInfo.FullName)}/trash/{fileInfo.Name}");
         return Task.CompletedTask;
     }
 }

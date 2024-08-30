@@ -193,7 +193,7 @@ public partial class ImportSessionsViewModel : ViewModelBase
 
         ImportInProgress = true;
 
-        foreach (var telemetryFile in TelemetryFiles.Where(f => f.ShouldBeImported))
+        foreach (var telemetryFile in TelemetryFiles.Where(f => f.ShouldBeImported.HasValue && f.ShouldBeImported.Value))
         {
             try
             {
@@ -252,6 +252,11 @@ public partial class ImportSessionsViewModel : ViewModelBase
                     ErrorMessages.Add($"Could not import {telemetryFile.Name}: {e.Message}");
                 });
             }
+        }
+
+        foreach (var telemetryFile in TelemetryFiles.Where(f => !f.ShouldBeImported.HasValue))
+        {
+            await telemetryFile.OnTrashed();
         }
 
         var files = await SelectedDataStore.GetFiles();

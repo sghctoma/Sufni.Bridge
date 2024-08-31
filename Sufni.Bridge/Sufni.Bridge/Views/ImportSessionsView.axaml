@@ -104,31 +104,57 @@
                             Background="{StaticResource SufniRegion}"
                             IsExpanded="False">
                             <Expander.Header>
-                                <StackPanel Orientation="Horizontal">
+                                <Grid
+                                    HorizontalAlignment="Stretch"
+                                    ColumnDefinitions="auto * *"
+                                    RowDefinitions="* *">
+
+                                    <!--  Import/Trash/Ignore button  -->
                                     <ToggleButton
+                                        Grid.Row="0"
+                                        Grid.RowSpan="2"
+                                        Grid.Column="0"
                                         Width="60"
-                                        Margin="0,0,10,0"
                                         HorizontalAlignment="Left"
                                         HorizontalContentAlignment="Center"
                                         Classes="importchoice"
                                         IsChecked="{Binding ShouldBeImported}"
                                         IsThreeState="True" />
+
+                                    <!--  Name  -->
                                     <TextBlock
+                                        Grid.Row="0"
+                                        Grid.RowSpan="2"
+                                        Grid.Column="1"
                                         Margin="2"
+                                        HorizontalAlignment="Stretch"
                                         VerticalAlignment="Center"
                                         FontWeight="Black"
-                                        Text="{Binding FileName}" />
+                                        Text="{Binding FileName}"
+                                        TextAlignment="Center" />
+
+                                    <!--  Date  -->
                                     <TextBlock
+                                        Grid.Row="0"
+                                        Grid.Column="2"
                                         Margin="2"
+                                        HorizontalAlignment="Stretch"
                                         VerticalAlignment="Center"
                                         FontSize="12"
-                                        Text="{Binding StartTime}" />
+                                        Text="{Binding StartTime}"
+                                        TextAlignment="Right" />
+
+                                    <!--  Duration  -->
                                     <TextBlock
+                                        Grid.Row="1"
+                                        Grid.Column="2"
                                         Margin="2"
+                                        HorizontalAlignment="Stretch"
                                         VerticalAlignment="Center"
                                         FontSize="12"
-                                        Text="{Binding Duration, StringFormat=({0})}" />
-                                </StackPanel>
+                                        Text="{Binding Duration, StringFormat=duration: {0}}"
+                                        TextAlignment="Right" />
+                                </Grid>
                             </Expander.Header>
                             <Grid
                                 Height="150"
@@ -214,7 +240,7 @@
                 HorizontalContentAlignment="Center"
                 VerticalContentAlignment="Center"
                 Command="{Binding ImportSessionsCommand}"
-                Content="import selected" />
+                Content="process selected" />
 
             <!--  Create Session button  -->
             <Button

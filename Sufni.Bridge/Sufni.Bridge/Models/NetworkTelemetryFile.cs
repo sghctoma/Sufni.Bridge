@@ -38,8 +38,8 @@ public class NetworkTelemetryFile : ITelemetryFile
     public async Task OnTrashed()
     {
         var idString = FileName[..5].TrimStart('0');
-        var idUint = int.Parse(idString);
-        await SstTcpClient.TrashFile(ipEndPoint, idUint);
+        var idInt = int.Parse(idString);
+        await SstTcpClient.TrashFile(ipEndPoint, idInt);
     }
 
     public NetworkTelemetryFile(IPEndPoint source, ushort sampleRate, string name, ulong size, ulong timestamp)

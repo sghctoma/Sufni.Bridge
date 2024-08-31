@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
@@ -66,12 +67,18 @@ public static class SstTcpClient
             Array.Reverse(id);
         }
 
-        // Request file
+        // Request file with negative ID
         await client.SendAsync(new byte[]
         {
             0x03, 0x00, 0x00, 0x00,    // 3: file request command
             id[0], id[1], id[2], id[3] // negative file id
         }, SocketFlags.None);
+
+        // Wait for server to acknowledge file deletion
+        var statusBuffer = new byte[4];
+        await client.ReceiveAsync(statusBuffer);
+        var status = BitConverter.ToInt32(statusBuffer.AsSpan()[..4]);
+        Debug.Assert(status == 10);
 
         // Send file received signal. Server will close connection after receiving this.
         await client.SendAsync(new byte[] { 0x05, 0x00, 0x00, 0x00 });

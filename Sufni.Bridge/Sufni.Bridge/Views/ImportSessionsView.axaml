@@ -106,7 +106,7 @@
                             <Expander.Header>
                                 <Grid
                                     HorizontalAlignment="Stretch"
-                                    ColumnDefinitions="auto * *"
+                                    ColumnDefinitions="auto * auto"
                                     RowDefinitions="* *">
 
                                     <!--  Import/Trash/Ignore button  -->
@@ -141,7 +141,7 @@
                                         HorizontalAlignment="Stretch"
                                         VerticalAlignment="Center"
                                         FontSize="12"
-                                        Text="{Binding StartTime}"
+                                        Text="{Binding StartTime, StringFormat={}{0: yyyy-MM-dd HH:mm}}"
                                         TextAlignment="Right" />
 
                                     <!--  Duration  -->

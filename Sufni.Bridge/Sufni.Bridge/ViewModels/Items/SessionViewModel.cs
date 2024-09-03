@@ -277,7 +277,7 @@ public partial class SessionViewModel : ItemViewModelBase
 
             if (!await LoadCache())
             {
-                new Thread(CreateCache).Start(bounds);
+                await Task.Factory.StartNew(() => CreateCache(bounds));
             }
         }
         catch (Exception e)

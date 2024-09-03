@@ -8,42 +8,12 @@ now, the application has a limited functionality compared to the
 [web-based dashboard](https://github.com/sghctoma/sst/wiki/03-Dashboard), but
 it does not require an internet connection.
 
-<style>
-  /* Container for the gallery */
-  .gallery {
-    display: flex;
-    overflow-x: auto;
-    white-space: nowrap;
-  }
+| ![](pics/import.png) | ![](pics/sessions.png) | ![](pics/spring.png) | ![](pics/damper.png) |
+|---|---|---|---|
 
-  /* Styling for each image */
-  .gallery img {
-    flex: 0 0 auto;
-    width: auto;
-    height: 400px;
-    margin-right: 10px;
-  }
 
-  /* Optional: Remove scrollbar styles for a cleaner look (not supported on all browsers) */
-  .gallery::-webkit-scrollbar {
-    display: none;
-  }
-  .gallery {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-</style>
-
-<div class="gallery">
-  <img src="pics/import.png" alt="Import">
-  <img src="pics/sessions.png" alt="Sessions">
-  <img src="pics/spring.png" alt="Spring">
-  <img src="pics/damper.png" alt="Damper">
-  <img src="pics/balance.png" alt="Balance">
-  <img src="pics/notes.png" alt="Notes">
-  <img src="pics/linkage.png" alt="Linkage">
-</div>
-<br />
+| ![](pics/balance.png) | ![](pics/notes.png) | ![](pics/linkage.png) | ![](pics/calibration.png) |
+|---|---|---|--|
 
 Important limitations:
 

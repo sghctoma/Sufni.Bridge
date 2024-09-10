@@ -14,6 +14,7 @@ public class HttpApiServiceStub : IHttpApiService
     private static readonly Guid CalibrationMethodFractionId = Guid.Parse("230e04a092ce42189a3c23bf3cde2b05");
     private static readonly Guid CalibrationMethodPercentageId = Guid.Parse("c619045af435427797cb1e2c1fddcfeb");
     private static readonly Guid CalibrationMethodLinearId = Guid.Parse("3e799d5a5652430e900c06a3277ab1dc");
+    private static readonly Guid CalibrationMethodLinearPotmeterId = Guid.Parse("347cf9a82df54ef8b63936b36357f08f");
     private static readonly Guid CalibrationMethodIsoscelesId = Guid.Parse("12f4a1b922f74524abcbdaa99a5c1c3a");
     private static readonly Guid CalibrationMethodTriangleId = Guid.Parse("9a27abc4125148a2b64989fb315ca2de");
     private static readonly Guid LinkageId1 = Guid.Parse("aa230fd54c864b3b99c81252dfea0055");
@@ -130,6 +131,19 @@ public class HttpApiServiceStub : IHttpApiService
                     {"factor", "MAX_STROKE / (max_measurement - min_measurement)"}
                 },
                 "(sample - min_measurement) * factor")),
+        new(CalibrationMethod.LinearPotmeterId,
+            "linear-potmeter",
+            "Sample is the ADC value read from a linear potentiometer.",
+            new CalibrationMethodProperties(
+                [
+                    "stroke",
+                    "resolution"
+                ],
+                new Dictionary<string, string>()
+                {
+                    {"factor", "stroke / (2^resolution)"}
+                },
+                "sample * factor")),
         new(CalibrationMethodIsoscelesId,
             "as5600-isosceles-triangle",
             "Triangle setup with the sensor between the base and leg.",

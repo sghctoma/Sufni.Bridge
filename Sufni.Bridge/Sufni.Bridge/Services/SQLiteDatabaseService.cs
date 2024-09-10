@@ -44,6 +44,19 @@ public class SqLiteDatabaseService : IDatabaseService
                     {"factor", "MAX_STROKE / (max_measurement - min_measurement)"}
                 },
                 "(sample - min_measurement) * factor")),
+        new(CalibrationMethod.LinearPotmeterId,
+            "linear-potmeter",
+            "Sample is the ADC value read from a linear potentiometer.",
+            new CalibrationMethodProperties(
+                [
+                    "stroke",
+                    "resolution"
+                ],
+                new Dictionary<string, string>()
+                {
+                    {"factor", "stroke / (2^resolution)"}
+                },
+                "sample * factor")),
         new(CalibrationMethod.IsoscelesId,
             "as5600-isosceles-triangle",
             "Triangle setup with the sensor between the base and leg.",

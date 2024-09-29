@@ -32,7 +32,15 @@ public class NetworkTelemetryDataStore : ITelemetryDataStore
             var size = reader.ReadUInt64();
             var timestamp = reader.ReadUInt64();
 
-            files.Add(new NetworkTelemetryFile(ipEndPoint, sampleRate, name, size, timestamp));
+            try
+            {
+                var f = new NetworkTelemetryFile(ipEndPoint, sampleRate, name, size, timestamp);
+                files.Add(f);
+            }
+            catch (Exception)
+            {
+                // we don't care, the invalid file just simply won't show up in the list
+            }
         }
 
         return files.OrderByDescending(f => f.StartTime).ToList();

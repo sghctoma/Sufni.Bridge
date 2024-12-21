@@ -68,7 +68,7 @@ public partial class SessionViewModel : ItemViewModelBase
         return true;
     }
 
-    private async void CreateCache(object? bounds)
+    private async Task CreateCache(object? bounds)
     {
         var databaseService = App.Current?.Services?.GetService<IDatabaseService>();
         Debug.Assert(databaseService != null, nameof(databaseService) + " != null");
@@ -277,7 +277,7 @@ public partial class SessionViewModel : ItemViewModelBase
 
             if (!await LoadCache())
             {
-                await Task.Factory.StartNew(() => CreateCache(bounds));
+                await CreateCache(bounds);
             }
         }
         catch (Exception e)

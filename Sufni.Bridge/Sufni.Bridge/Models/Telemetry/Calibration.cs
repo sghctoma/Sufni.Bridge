@@ -16,6 +16,13 @@ public class IdFormatter : IMessagePackFormatter<Guid>
 {
     public Guid Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
     {
+        // Need to check type first, because CLR/MessagePack.MessagePackSerializationExceptions
+        // are not caught by the catch block
+        if (reader.NextMessagePackType == MessagePackType.Integer)
+        {
+            Int32Formatter.Instance.Deserialize(ref reader, options);
+            return Guid.Empty;
+        }
         try
         {
             return GuidFormatter.Instance.Deserialize(ref reader, options);

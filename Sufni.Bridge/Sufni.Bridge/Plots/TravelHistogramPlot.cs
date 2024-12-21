@@ -41,8 +41,8 @@ public class TravelHistogramPlot(Plot plot, SuspensionType type) : TelemetryPlot
                 Position = tuple.First,
                 Value = tuple.Second,
                 FillColor = color.WithOpacity(),
-                BorderColor = color,
-                BorderLineWidth = 1.5f,
+                LineColor = color,
+                LineWidth = 1.5f,
                 Orientation = Orientation.Horizontal,
                 Size = step * 0.65f,
             })

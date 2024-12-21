@@ -104,8 +104,8 @@ public class VelocityHistogramPlot(Plot plot, SuspensionType type) : TelemetryPl
                     ValueBase = nextBarBase,
                     Value = nextBarBase + data.Values[i][j],
                     FillColor = palette[j].WithOpacity(0.8),
-                    BorderColor = Colors.Black,
-                    BorderLineWidth = 0.5f,
+                    LineColor = Colors.Black,
+                    LineWidth = 0.5f,
                     Orientation = Orientation.Horizontal,
                     Size = step * 0.95,
                 });

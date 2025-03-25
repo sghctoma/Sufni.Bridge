@@ -20,7 +20,7 @@
     
     <ItemGroup Condition="'$(TargetFramework)' == 'net9.0-windows'">
         <Compile Include="SecureStorage.win.cs" />
-        <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="9.0.0" />
+        <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="9.0.3" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework)' == 'net9.0-android'">

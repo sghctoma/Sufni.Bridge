@@ -25,7 +25,7 @@
 
     <ItemGroup Condition="'$(TargetFramework)' == 'net9.0-android'">
         <PackageReference Include="Xamarin.AndroidX.Security.SecurityCrypto" Version="1.1.0.2-alpha06" />
-        <PackageReference Include="Xamarin.Google.Crypto.Tink.Android" Version="1.15.0.2" />
+        <PackageReference Include="Xamarin.Google.Crypto.Tink.Android" Version="1.16.0.1" />
         <Compile Include="SecureStorage.android.cs" />
     </ItemGroup>
 
